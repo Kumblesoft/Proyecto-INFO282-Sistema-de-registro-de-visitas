@@ -2,9 +2,7 @@ import React, { useState } from 'react'
 import * as eva from '@eva-design/eva'
 import { ApplicationProvider, Datepicker, Button, Text } from '@ui-kitten/components'
 import { StyleSheet, View } from 'react-native'
-import ItemSelector from "./components/ItemSelector" // Importa el componente ItemSelector
-import CheckboxGroup from "./components/CheckboxGroup" // Importa el componente CheckboxGroup
-import RadioButtonGroup from "./components/RadioButtonGroup" // Importa el nuevo componente RadioButtonGroup
+import  ComponentTypes, { OptionSelector } from './components/selector/OptionSelector'
 
 // Opciones para el select
 const testItems = [
@@ -19,28 +17,11 @@ export default function App() {
   const [selectedOptions, setSelectedOptions] = useState([])
   const [selectedRadio, setSelectedRadio] = useState(null)
 
-  // Callback para cuando se seleccione una opción en el select
-  const handleSelect = value => {
-    console.log("Valor seleccionado:", value)
-  }
-
-  // Callback para cuando se seleccionen opciones en los checkboxes
-  const handleCheckboxSelect = values => {
-    console.log("Valores seleccionados en checkboxes:", values)
-    setSelectedOptions(values) // Actualiza el estado con los valores seleccionados
-  }
-
-  // Callback para cuando se seleccione una opción en los radio buttons
-  const handleRadioSelect = value => {
-    console.log("Valor seleccionado en radio buttons:", value)
-    setSelectedRadio(value) // Actualiza el estado con el valor seleccionado
-  }
+  const handleOptionSelector = value => console.log(value)
 
   return (
     <ApplicationProvider {...eva} theme={eva.light}>
       <View style={styles.container}>
-        {/* ItemSelector con opciones */}
-        <ItemSelector items={testItems} onSelect={handleSelect} />
 
         <Text category="h1" style={styles.title}>Select a Date</Text>
 
@@ -55,27 +36,30 @@ export default function App() {
         <Text style={styles.selectedDate}>
           Selected Date: {date.toDateString()}
         </Text>
-
-        {/* CheckboxGroup con opciones */}
-        <CheckboxGroup items={testItems} onSelect={handleCheckboxSelect} />
-
-        {/* Mostrar opciones seleccionadas de checkboxes */}
-        <Text style={styles.selectedCheckboxes}>
-          Selected Checkboxes: {selectedOptions.join(', ')}
-        </Text>
-
-        {/* RadioButtonGroup con opciones */}
-        <RadioButtonGroup items={testItems} onSelect={handleRadioSelect} />
-
-        {/* Mostrar opción seleccionada de radio buttons */}
-        <Text style={styles.selectedRadio}>
-          Selected Radio: {selectedRadio || 'Ninguno'} {/* Muestra 'Ninguno' si no hay selección */}
-        </Text>
-
         {/* Botón para reiniciar la fecha */}
         <Button onPress={() => setDate(new Date())} style={styles.clearButton}>
           Reset to Today
         </Button>
+
+        <OptionSelector items={testItems} 
+          type={ComponentTypes.SELECT}
+          title="Selector Dopdown"
+          defaultOption={"option1"}
+          placeholder="seleccione"/>
+          
+        <OptionSelector items={testItems} 
+          type={ComponentTypes.RADIO}
+          title="Selector Radio"
+          defaultOption={"option2"}
+          placeholder="SISIASJLDASJKLD"/>
+        
+        <OptionSelector items={testItems} 
+          type={ComponentTypes.CHECKBOX}
+          title="Selector Checkbox"
+          defaultOption={"option3"}
+          placeholder="seleccione"/>
+
+
       </View>
     </ApplicationProvider>
   );
