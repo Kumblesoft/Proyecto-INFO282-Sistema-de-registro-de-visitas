@@ -1,25 +1,23 @@
-import React, { useState } from 'react';
-import { CheckBox, Text } from '@ui-kitten/components';
-import { View, StyleSheet } from 'react-native';
+import React, { useState } from 'react'
+import { CheckBox, Text } from '@ui-kitten/components'
+import { View, StyleSheet } from 'react-native'
 
 const CheckboxGroup = ({ items, onSelect }) => {
-  const [selectedValues, setSelectedValues] = useState([]);
+  const [selectedValues, setSelectedValues] = useState([])
 
-  const handleSelect = (itemValue) => {
+  const handleSelect = itemValue => {
     const newSelectedValues = selectedValues.includes(itemValue)
       ? selectedValues.filter(value => value !== itemValue) // Desmarcar
-      : [...selectedValues, itemValue]; // Marcar
+      : [...selectedValues, itemValue] // Marcar
 
-    setSelectedValues(newSelectedValues);
+    setSelectedValues(newSelectedValues)
 
-    if (onSelect) {
-      onSelect(newSelectedValues); // Llama al callback con los valores seleccionados
-    }
-  };
+    if (onSelect) onSelect(newSelectedValues) // Llama al callback con los valores seleccionados
+  }
 
   return (
     <View style={styles.container}>
-      {items.map((item) => (
+      {items.map(item => (
         <CheckBox
           key={item.value}
           checked={selectedValues.includes(item.value)}
@@ -29,13 +27,13 @@ const CheckboxGroup = ({ items, onSelect }) => {
         </CheckBox>
       ))}
     </View>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
-    marginVertical: 10,
-  },
-});
+    marginVertical: 10
+  }
+})
 
-export default CheckboxGroup;
+export default CheckboxGroup
