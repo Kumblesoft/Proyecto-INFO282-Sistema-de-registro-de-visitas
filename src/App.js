@@ -1,81 +1,88 @@
-import React, { useState } from 'react'
-import * as eva from '@eva-design/eva'
-import { ApplicationProvider, Datepicker, Button, Text } from '@ui-kitten/components'
-import { StyleSheet, View } from 'react-native'
-import ItemSelector from "./components/ItemSelector" // Importa el componente ItemSelector
-import CheckboxGroup from "./components/CheckboxGroup" // Importa el componente CheckboxGroup
-import RadioButtonGroup from "./components/RadioButtonGroup" // Importa el nuevo componente RadioButtonGroup
+import React, { useState } from 'react';
+import * as eva from '@eva-design/eva';
+import { ApplicationProvider, Datepicker, Button, Text, Modal, Card } from '@ui-kitten/components';
+import { StyleSheet, View } from 'react-native';
+import ItemSelector from "./components/ItemSelector";
+import CheckboxGroup from "./components/CheckboxGroup";
+import RadioButtonGroup from "./components/RadioButtonGroup";
+import HourSelector from "./components/HourSelector"; // Importamos el componente HourSelector
 
-// Opciones para el select
 const testItems = [
   { value: 'option1', name: 'Opción 1' },
   { value: 'option2', name: 'Opción 2' },
   { value: 'option3', name: 'Opción 3' }
-]
+];
 
 export default function App() {
-  // Estado para la fecha seleccionada
-  const [date, setDate] = useState(new Date())
-  const [selectedOptions, setSelectedOptions] = useState([])
-  const [selectedRadio, setSelectedRadio] = useState(null)
+  const [date, setDate] = useState(new Date());
+  const [selectedOptions, setSelectedOptions] = useState([]);
+  const [selectedRadio, setSelectedRadio] = useState(null);
+  const [showHourSelector, setShowHourSelector] = useState(false); // Estado para la ventana emergente
 
-  // Callback para cuando se seleccione una opción en el select
-  const handleSelect = value => {
-    console.log("Valor seleccionado:", value)
-  }
+  const handleSelect = (value) => {
+    console.log("Valor seleccionado:", value);
+  };
 
-  // Callback para cuando se seleccionen opciones en los checkboxes
-  const handleCheckboxSelect = values => {
-    console.log("Valores seleccionados en checkboxes:", values)
-    setSelectedOptions(values) // Actualiza el estado con los valores seleccionados
-  }
+  const handleCheckboxSelect = (values) => {
+    setSelectedOptions(values);
+  };
 
-  // Callback para cuando se seleccione una opción en los radio buttons
-  const handleRadioSelect = value => {
-    console.log("Valor seleccionado en radio buttons:", value)
-    setSelectedRadio(value) // Actualiza el estado con el valor seleccionado
-  }
+  const handleRadioSelect = (value) => {
+    setSelectedRadio(value);
+  };
+
+  const handleHourSelect = () => {
+    setShowHourSelector(true); // Abre el modal
+  };
+
+  const closeHourSelector = () => {
+    setShowHourSelector(false); // Cierra el modal
+  };
 
   return (
     <ApplicationProvider {...eva} theme={eva.light}>
       <View style={styles.container}>
-        {/* ItemSelector con opciones */}
         <ItemSelector items={testItems} onSelect={handleSelect} />
-
         <Text category="h1" style={styles.title}>Select a Date</Text>
 
-        {/* UI Kitten DatePicker */}
-        <Datepicker
-          date={date}
-          onSelect={nextDate => setDate(nextDate)}
-          style={styles.datePicker}
-        />
+        <Datepicker date={date} onSelect={nextDate => setDate(nextDate)} style={styles.datePicker} />
 
-        {/* Mostrar la fecha seleccionada */}
-        <Text style={styles.selectedDate}>
-          Selected Date: {date.toDateString()}
-        </Text>
+        <Text style={styles.selectedDate}>Selected Date: {date.toDateString()}</Text>
 
-        {/* CheckboxGroup con opciones */}
         <CheckboxGroup items={testItems} onSelect={handleCheckboxSelect} />
 
-        {/* Mostrar opciones seleccionadas de checkboxes */}
         <Text style={styles.selectedCheckboxes}>
           Selected Checkboxes: {selectedOptions.join(', ')}
         </Text>
 
-        {/* RadioButtonGroup con opciones */}
         <RadioButtonGroup items={testItems} onSelect={handleRadioSelect} />
 
-        {/* Mostrar opción seleccionada de radio buttons */}
         <Text style={styles.selectedRadio}>
-          Selected Radio: {selectedRadio || 'Ninguno'} {/* Muestra 'Ninguno' si no hay selección */}
+          Selected Radio: {selectedRadio || 'Ninguno'}
         </Text>
 
-        {/* Botón para reiniciar la fecha */}
         <Button onPress={() => setDate(new Date())} style={styles.clearButton}>
           Reset to Today
         </Button>
+
+        <Button onPress={handleHourSelect} style={styles.clearButton}>
+          Abrir Selector de Hora
+        </Button>
+
+        {/* Modal para el HourSelector */}
+        <Modal
+          visible={showHourSelector}
+          animationType="slide"
+          transparent={true}
+          onRequestClose={closeHourSelector} // Maneja el cierre al presionar fuera del modal
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              {/* Componente HourSelector */}
+              <HourSelector onClose={closeHourSelector} />
+            </View>
+          </View>
+        </Modal>
       </View>
     </ApplicationProvider>
   );
@@ -86,28 +93,28 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 16
+    padding: 16,
   },
   title: {
-    marginBottom: 20
+    marginBottom: 20,
   },
   datePicker: {
     width: 300,
-    marginBottom: 20
+    marginBottom: 20,
   },
   selectedDate: {
     marginVertical: 20,
-    fontSize: 16
+    fontSize: 16,
   },
   selectedCheckboxes: {
     marginVertical: 20,
-    fontSize: 16
+    fontSize: 16,
   },
   selectedRadio: {
     marginVertical: 20,
-    fontSize: 16
+    fontSize: 16,
   },
   clearButton: {
-    marginTop: 20
-  }
+    marginTop: 20,
+  },
 });
