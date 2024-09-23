@@ -5,6 +5,7 @@ import { StyleSheet, View } from 'react-native'
 import ItemSelector from "./components/ItemSelector" // Importa el componente ItemSelector
 import CheckboxGroup from "./components/CheckboxGroup" // Importa el componente CheckboxGroup
 import RadioButtonGroup from "./components/RadioButtonGroup" // Importa el nuevo componente RadioButtonGroup
+import DateSelector from './components/DateSelector'
 
 // Opciones para el select
 const testItems = [
@@ -15,10 +16,9 @@ const testItems = [
 
 export default function App() {
   // Estado para la fecha seleccionada
-  const [date, setDate] = useState(new Date())
   const [selectedOptions, setSelectedOptions] = useState([])
   const [selectedRadio, setSelectedRadio] = useState(null)
-
+  const [selectedDate, setSelectedDate] = useState(new Date());
   // Callback para cuando se seleccione una opción en el select
   const handleSelect = value => {
     console.log("Valor seleccionado:", value)
@@ -45,15 +45,14 @@ export default function App() {
         <Text category="h1" style={styles.title}>Select a Date</Text>
 
         {/* UI Kitten DatePicker */}
-        <Datepicker
-          date={date}
-          onSelect={nextDate => setDate(nextDate)}
-          style={styles.datePicker}
+        <DateSelector
+          date={selectedDate}
+          onSelectDate={nextDate => setSelectedDate(nextDate)}
         />
 
         {/* Mostrar la fecha seleccionada */}
         <Text style={styles.selectedDate}>
-          Selected Date: {date.toDateString()}
+          Selected Date: {selectedDate.toDateString()}
         </Text>
 
         {/* CheckboxGroup con opciones */}
