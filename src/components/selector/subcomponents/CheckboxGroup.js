@@ -1,30 +1,25 @@
-import React, { useEffect, useState } from 'react'
-import { CheckBox, Text } from '@ui-kitten/components'
-import { View, StyleSheet } from 'react-native'
+import React, { useState } from 'react';
+import { CheckBox, Text } from '@ui-kitten/components';
+import { View, StyleSheet } from 'react-native';
 
-const CheckboxGroup = ({ items, onSelect, value }) => {
-  const [selectedValues, setSelectedValues] = useState([])
+export default CheckboxGroup = ({ items, onSelect, value, maxChecked }) => {
+  maxChecked ??= items.length // Si no se especifica menos, se pueden pulsar todas
+
+  const [selectedValues] = useState(new Set()) // Usar el estado como referencia de un Set
+  if (value) [value].flatMap(value => selectedValues.add(value)) // Setear los valores iniciales
 
   const handleSelect = itemValue => {
-    const newSelectedValues = selectedValues.includes(itemValue)
-      ? selectedValues.filter(val => val !== itemValue) // Desmarcar
-      : [...selectedValues, itemValue] // Marcar
-
-    setSelectedValues(newSelectedValues)
-
-    if (onSelect) onSelect(newSelectedValues) // Llama al callback con los valores seleccionados
+    if (selectedValues.has(itemValue)) selectedValues.delete(itemValue) // Eliminar si ya estaba seleccionado
+    else if (selectedValues.size < maxChecked) selectedValues.add(itemValue) // Añadir si no está seleccionado y no excede el límite
+    if (onSelect) onSelect(Array.from(selectedValues)) // Llamar al callback con los valores seleccionados
   }
-
-  useEffect(() => {
-    setSelectedValues(Array.isArray(value) ? value : [value]) // Asigna el valor por defecto
-  }, [value])
 
   return (
     <View style={styles.container}>
       {items.map(item => (
         <View key={item.value} style={styles.checkboxContainer}>
           <CheckBox
-            checked={selectedValues.includes(item.value)}
+            checked={selectedValues.has(item.value)} // Verificar si el valor está seleccionado
             onChange={() => handleSelect(item.value)}
             style={styles.checkbox} // Estilo personalizado
           >
@@ -48,4 +43,3 @@ const styles = StyleSheet.create({
   }
 })
 
-export default CheckboxGroup

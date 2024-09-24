@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import * as eva from '@eva-design/eva'
 import { ApplicationProvider, Datepicker, Button, Text } from '@ui-kitten/components'
 import { StyleSheet, View } from 'react-native'
-import  ComponentTypes, { OptionSelector } from './components/selector/OptionSelector'
+import  OptionSelector, { OptionComponentType, OptionSelectorFeatures } from './components/selector/OptionSelector'
 
 // Opciones para el select
 const testItems = [
@@ -14,10 +14,6 @@ const testItems = [
 export default function App() {
   // Estado para la fecha seleccionada
   const [date, setDate] = useState(new Date())
-  const [selectedOptions, setSelectedOptions] = useState([])
-  const [selectedRadio, setSelectedRadio] = useState(null)
-
-  const handleOptionSelector = value => console.log(value)
 
   return (
     <ApplicationProvider {...eva} theme={eva.light}>
@@ -41,25 +37,27 @@ export default function App() {
           Reset to Today
         </Button>
 
-        <OptionSelector items={testItems} 
-          type={ComponentTypes.SELECT}
-          title="Selector Dopdown"
-          defaultOption={"option1"}
-          placeholder="seleccione"/>
-          
-        <OptionSelector items={testItems} 
-          type={ComponentTypes.RADIO}
-          title="Selector Radio"
-          defaultOption={"option2"}
-          placeholder="SISIASJLDASJKLD"/>
         
         <OptionSelector items={testItems} 
-          type={ComponentTypes.CHECKBOX}
-          title="Selector Checkbox"
-          defaultOption={"option3"}
-          placeholder="seleccione"/>
-
-
+          type={OptionComponentType.DROPDOWN}
+        />
+          
+        <OptionSelector items={testItems} 
+          type={OptionComponentType.RADIO}
+          optionalFeatures={
+            OptionSelectorFeatures({title:"Selector Radio"})}
+        />
+        
+        <OptionSelector items={testItems} 
+          type={OptionComponentType.CHECKBOX}
+          optionalFeatures={
+            OptionSelectorFeatures({
+              title:"Checkbox group",
+              defaultOption:"option3",
+              maxChecked:1,
+              required:true})}
+        />
+      
       </View>
     </ApplicationProvider>
   );
