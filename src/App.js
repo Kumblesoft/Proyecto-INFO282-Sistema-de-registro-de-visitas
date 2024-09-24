@@ -22,15 +22,14 @@ export default function App() {
         <Text category="h1" style={styles.title}>Select a Date</Text>
 
         {/* UI Kitten DatePicker */}
-        <Datepicker
-          date={date}
-          onSelect={nextDate => setDate(nextDate)}
-          style={styles.datePicker}
+        <DateSelector
+          date={selectedDate}
+          onSelectDate={nextDate => setSelectedDate(nextDate)}
         />
 
         {/* Mostrar la fecha seleccionada */}
         <Text style={styles.selectedDate}>
-          Selected Date: {date.toDateString()}
+          Selected Date: {selectedDate.toDateString()}
         </Text>
         {/* Botón para reiniciar la fecha */}
         <Button onPress={() => setDate(new Date())} style={styles.clearButton}>
