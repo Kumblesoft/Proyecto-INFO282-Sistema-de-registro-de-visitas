@@ -3,15 +3,14 @@ import { CheckBox, Text } from '@ui-kitten/components';
 import { View, StyleSheet } from 'react-native';
 
 export default CheckboxGroup = ({ items, onSelect, value, maxChecked }) => {
-  maxChecked ??= items.length // Si no se especifica menos, se pueden pulsar todas
-
   const [selectedValues] = useState(new Set()) // Usar el estado como referencia de un Set
-  if (value) [value].flatMap(value => selectedValues.add(value)) // Setear los valores iniciales
+  if (value) [value].flat().map(value => selectedValues.add(value)) // Setear los valores iniciales
 
   const handleSelect = itemValue => {
     if (selectedValues.has(itemValue)) selectedValues.delete(itemValue) // Eliminar si ya estaba seleccionado
-    else if (selectedValues.size < maxChecked) selectedValues.add(itemValue) // Añadir si no está seleccionado y no excede el límite
-    if (onSelect) onSelect(Array.from(selectedValues)) // Llamar al callback con los valores seleccionados
+    else if (selectedValues.size < (maxChecked || items.length)) selectedValues.add(itemValue) // Añadir si no está seleccionado y no excede el límite
+    
+		if (onSelect) onSelect(Array.from(selectedValues)) // Llamar al callback con los valores seleccionados
   }
 
   return (
