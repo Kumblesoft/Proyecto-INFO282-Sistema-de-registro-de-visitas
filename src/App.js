@@ -6,13 +6,13 @@ import EntradaTexto from "./components/EntradaTexto"
 import SaveButton from "./components/SaveButton"
 import  OptionSelector, { OptionComponentType, OptionSelectorFeatures } from './components/selector/OptionSelector'
 import DateSelector from './components/DateSelector'
+import HourSelector from "./components/HourSelector"; // Importamos el componente HourSelector
 
-// Opciones para el select
 const testItems = [
   { value: 'option1', name: 'Opción 1' },
   { value: 'option2', name: 'Opción 2' },
   { value: 'option3', name: 'Opción 3' }
-]
+];
 
 // Campos del formulario
 const testFields = {
@@ -22,6 +22,7 @@ const testFields = {
 }
 
 export default function App() {
+  const [time, setTime] = useState("" + (new Date().getHours()).toString().padStart(2,"0") + ":" + (new Date().getMinutes()).toString().padStart(2,"0"));
   // Estado para los datos del formulario
   const [textData, setTextData] = useState(testFields)
   const [date, setDate] = useState(new Date())
@@ -89,6 +90,8 @@ export default function App() {
         />
       {/* Componente EntradaTexto */}
       <EntradaTexto items={testFields} onSelect={handleChange} />
+      {/*Componente selector de hora */}
+      <HourSelector time={time} setTime={setTime} />
         </View>
       </ScrollView>
 
@@ -96,6 +99,7 @@ export default function App() {
       <Button onPress={saveButtonRef.handleSubmit} style={styles.fixedButton}>
         Guardar
       </Button>
+        
     </ApplicationProvider>
   )
 }
@@ -105,7 +109,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 16
+    padding: 16,
   },
   scrollContent: {
     paddingBottom: 100, // Espacio para que no tape el botón al final
@@ -118,19 +122,19 @@ const styles = StyleSheet.create({
   },
   datePicker: {
     width: 300,
-    marginBottom: 20
+    marginBottom: 20,
   },
   selectedDate: {
     marginVertical: 20,
-    fontSize: 16
+    fontSize: 16,
   },
   selectedCheckboxes: {
     marginVertical: 20,
-    fontSize: 16
+    fontSize: 16,
   },
   selectedRadio: {
     marginVertical: 20,
-    fontSize: 16
+    fontSize: 16,
   },
   fixedButton: {
     position: 'absolute',
