@@ -1,76 +1,47 @@
-import React, { useState } from 'react';
-import { Button, Text, Layout } from '@ui-kitten/components';
-import { StyleSheet, ScrollView, View } from 'react-native';
+import React, { useState } from 'react'
+import { Button, Text, Layout } from '@ui-kitten/components'
+import { StyleSheet, ScrollView, View } from 'react-native'
+import { TimerPickerModal } from "react-native-timer-picker"
+import { LinearGradient } from "expo-linear-gradient"
+import * as Haptics from "expo-haptics" // for haptic feedback
 
-const hours = Array.from({ length: 12 }, (_, i) => i + 1); // Generar horas de 1 a 12
-const minutes = Array.from({ length: 60 }, (_, i) => i); // Generar minutos de 0 a 59
+const HourSelector = ({time,setTime}) => {
+    const [showPicker, setShowPicker] = useState(false)
 
-export default function HourSelector({ onClose }) {
-    const [selectedTime, setSelectedTime] = useState({ hour: 1, minute: 0, period: 'AM' });
+    const formatTime = ({hours, minutes}) => `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`
+    
+
+    const setNowTime = () => {
+        setTime((new Date().getHours()).toString().padStart(2,"0") + ":" + (new Date().getMinutes()).toString().padStart(2,"0"))
+    }
 
     return (
-        <Layout style={styles.container}>
-        <Text category="h1">Selecciona una hora</Text>
-
-        <View style={styles.pickerContainer}>
-            {/* Selector de horas */}
-            <ScrollView showsVerticalScrollIndicator={false} height={150} width={50}>
-            {hours.map(hour => (
-                <Text
-                key={hour}
-                style={[
-                    styles.timeText,
-                    selectedTime.hour === hour ? styles.selectedText : null,
-                ]}
-                onPress={() => setSelectedTime(prev => ({ ...prev, hour }))}
-                >
-                {hour}
-                </Text>
-            ))}
-            </ScrollView>
-
-            {/* Selector de minutos */}
-            <ScrollView showsVerticalScrollIndicator={false} height={150} width={50}>
-            {minutes.map(minute => (
-                <Text
-                key={minute}
-                style={[
-                    styles.timeText,
-                    selectedTime.minute === minute ? styles.selectedText : null,
-                ]}
-                onPress={() => setSelectedTime(prev => ({ ...prev, minute }))}
-                >
-                {minute < 10 ? `0${minute}` : minute}
-                </Text>
-            ))}
-            </ScrollView>
-
-            {/* Selector de AM/PM */}
-            <View style={styles.periodContainer}>
-            {['AM', 'PM'].map(period => (
-                <Text
-                key={period}
-                style={[
-                    styles.timeText,
-                    selectedTime.period === period ? styles.selectedText : null,
-                ]}
-                onPress={() => setSelectedTime(prev => ({ ...prev, period }))}
-                >
-                {period}
-                </Text>
-            ))}
-            </View>
-        </View>
-
-        <Text category="h6" style={styles.selectedTime}>
-            Hora seleccionada: {selectedTime.hour}:{selectedTime.minute < 10 ? `0${selectedTime.minute}` : selectedTime.minute} {selectedTime.period}
-        </Text>
-
-        <Button style={styles.closeButton} onPress={onClose}>
-            Cerrar
-        </Button>
-        </Layout>
-    );
+        <Layout>
+            <Button status='basic' onPress={()=>setShowPicker(true)} appearance='outline' style={styles.button} >{time}</Button>
+                <Button onPress={()=>setNowTime()}>Reset time</Button>
+            <TimerPickerModal
+                visible={showPicker}
+                setIsVisible={setShowPicker}
+                onConfirm={(pickedDuration) => {
+                    setTime(formatTime(pickedDuration))
+                    setShowPicker(false)
+                }}
+                modalTitle="Selecciona una hora"
+                onCancel={() => setShowPicker(false)}
+                closeOnOverlayPress
+                LinearGradient={LinearGradient}
+                Haptics={Haptics}
+                styles={{
+                    theme: "light",
+                }}
+                modalProps={{
+                    overlayOpacity: 0.2,
+                }}
+                hideSeconds={true}
+                agressivelyGetLatestDuretion={true}
+            />
+        </Layout>   
+    )
 }
 
 const styles = StyleSheet.create({
@@ -104,4 +75,9 @@ const styles = StyleSheet.create({
     closeButton: {
         marginTop: 20,
     },
-});
+    button: {
+        margin: 2,
+    }
+})
+
+export default HourSelector

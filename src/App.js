@@ -14,11 +14,11 @@ const testItems = [
 ];
 
 export default function App() {
+  const [time, setTime] = useState("" + (new Date().getHours()).toString().padStart(2,"0") + ":" + (new Date().getMinutes()).toString().padStart(2,"0"));
   const [date, setDate] = useState(new Date());
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [selectedRadio, setSelectedRadio] = useState(null);
-  const [showHourSelector, setShowHourSelector] = useState(false); // Estado para la ventana emergente
-
+  
   const handleSelect = (value) => {
     console.log("Valor seleccionado:", value);
   };
@@ -64,25 +64,8 @@ export default function App() {
         <Button onPress={() => setDate(new Date())} style={styles.clearButton}>
           Reset to Today
         </Button>
+        <HourSelector time={time} setTime={setTime} />
 
-        <Button onPress={handleHourSelect} style={styles.clearButton}>
-          Abrir Selector de Hora
-        </Button>
-
-        {/* Modal para el HourSelector */}
-        <Modal
-          visible={showHourSelector}
-          animationType="slide"
-          transparent={true}
-          onRequestClose={closeHourSelector} // Maneja el cierre al presionar fuera del modal
-        >
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContainer}>
-              {/* Componente HourSelector */}
-              <HourSelector onClose={closeHourSelector} />
-            </View>
-          </View>
-        </Modal>
       </View>
     </ApplicationProvider>
   );
