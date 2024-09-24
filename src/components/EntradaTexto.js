@@ -2,16 +2,16 @@ import React, { useState, useEffect } from 'react'
 import { View, Text, TextInput, StyleSheet } from 'react-native'
 
 const EntradaTexto = ({ items, onSelect }) => {
-  const [formData, setFormData] = useState(items || {})
+  const [textData, setTextData] = useState(items || {})
   const [fields, setFields] = useState(Object.keys(items || {}))
 
 
   const handleChange = (name, value) => {
-    const updatedFormData = {
-      ...formData,
+    const updatedTextData = {
+      ...textData,
       [name]: value,
     }
-    setFormData(updatedFormData)
+    setTextData(updatedTextData)
     // Llama a la función `onSelect` 
     onSelect(name, value)
   }
@@ -24,7 +24,7 @@ const EntradaTexto = ({ items, onSelect }) => {
           <Text style={styles.label}>{field.charAt(0).toUpperCase() + field.slice(1)}</Text>
           <TextInput
             style={styles.input}
-            value={formData[field] || ''}
+            value={textData[field] || ''}
             placeholder={`Ingrese su ${field}`}
             onChangeText={(value) => handleChange(field, value)}
             placeholderTextColor="#888"

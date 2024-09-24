@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
 import * as eva from '@eva-design/eva'
-import { ApplicationProvider, Datepicker, Button, Text } from '@ui-kitten/components'
-import * as FileSystem from 'expo-file-system'
-import { StyleSheet, View, ScrollView, Alert } from 'react-native'
-import ItemSelector from "./components/ItemSelector" // Importa el componente ItemSelector
-import CheckboxGroup from "./components/CheckboxGroup" // Importa el componente CheckboxGroup
-import RadioButtonGroup from "./components/RadioButtonGroup" // Importa el nuevo componente RadioButtonGroup
+import { ApplicationProvider, Datepicker, Text, Button } from '@ui-kitten/components'
+import { StyleSheet, View, ScrollView } from 'react-native'
+import ItemSelector from "./components/ItemSelector"
+import CheckboxGroup from "./components/CheckboxGroup"
+import RadioButtonGroup from "./components/RadioButtonGroup"
 import EntradaTexto from "./components/EntradaTexto"
+import SaveButton from "./components/SaveButton"
 
 // Opciones para el select
 const testItems = [
@@ -24,61 +24,29 @@ const testFields = {
 
 export default function App() {
   // Estado para los datos del formulario
-  const [formData, setFormData] = useState(testFields)
+  const [textData, setTextData] = useState(testFields)
   const [date, setDate] = useState(new Date())
   const [selectedOptions, setSelectedOptions] = useState([])
   const [selectedRadio, setSelectedRadio] = useState(null)
 
-  // Callback para cuando se seleccione una opción en el select
-  const handleSelect = value => {
-    console.log("Valor seleccionado:", value)
-  }
-
-  // Callback para cuando se seleccionen opciones en los checkboxes
-  const handleCheckboxSelect = values => {
-    console.log("Valores seleccionados en checkboxes:", values)
-    setSelectedOptions(values) // Actualiza el estado con los valores seleccionados
-  }
-
-  // Callback para cuando se seleccione una opción en los radio buttons
-  const handleRadioSelect = value => {
-    console.log("Valor seleccionado en radio buttons:", value)
-    setSelectedRadio(value) // Actualiza el estado con el valor seleccionado
-  }
-
   // Callback para manejar cambios en los campos
   const handleChange = (name, value) => {
-    //console.log("Valor seleccionado en", name, ":", value)
-    setFormData({
-      ...formData,
+    setTextData({
+      ...textData,
       [name]: value,
     })
   }
 
-  // Guardar datos en archivo local (esto está simulado)
-  const handleSubmit = async () => {
-    // Verificar que todos los campos del formulario estén rellenados
-    const allFieldsFilled = Object.values(formData).every(value => value.trim() !== '')
-
-    if (!allFieldsFilled) {
-      Alert.alert('Error', 'Debe rellenar todos los campos')
-      return
+  // Usar SaveButton con su lógica de guardado
+  const saveButtonRef = SaveButton({
+    textData,
+    selectedOptions,
+    selectedRadio,
+    date,
+    onSave: (data) => {
+      console.log("Datos guardados exitosamente:", data)
     }
-
-    try {
-      const fileUri = FileSystem.documentDirectory + 'formData.json'
-      const dataToSave = { selectedOptions, selectedRadio, date, formData }
-      console.log ("Datos guardados:", dataToSave)
-      // Guardar datos como JSON
-      // await FileSystem.writeAsStringAsync(fileUri, JSON.stringify(dataToSave))
-
-      console.log('Datos guardados en:', fileUri)
-      Alert.alert('Éxito', 'Datos guardados correctamente')
-    } catch (error) {
-      console.error('Error al guardar los datos:', error)
-      Alert.alert('Error', 'No se pudo guardar los datos')
-    }
-  }
+  })
 
   return (
     <ApplicationProvider {...eva} theme={eva.light}>
@@ -88,7 +56,7 @@ export default function App() {
         <Text style={styles.title}>(Nombre Formulario)</Text>
         <View style={styles.container}>
           {/* ItemSelector con opciones */}
-          <ItemSelector items={testItems} onSelect={handleSelect} />
+          <ItemSelector items={testItems} onSelect={value => console.log("Valor seleccionado:", value)} />
 
           <Text category="h1" style={styles.title}>Select a Date</Text>
 
@@ -105,7 +73,7 @@ export default function App() {
           </Text>
 
           {/* CheckboxGroup con opciones */}
-          <CheckboxGroup items={testItems} onSelect={handleCheckboxSelect} />
+          <CheckboxGroup items={testItems} onSelect={setSelectedOptions} />
 
           {/* Mostrar opciones seleccionadas de checkboxes */}
           <Text style={styles.selectedCheckboxes}>
@@ -113,27 +81,22 @@ export default function App() {
           </Text>
 
           {/* RadioButtonGroup con opciones */}
-          <RadioButtonGroup items={testItems} onSelect={handleRadioSelect} />
+          <RadioButtonGroup items={testItems} onSelect={setSelectedRadio} />
 
           {/* Mostrar opción seleccionada de radio buttons */}
           <Text style={styles.selectedRadio}>
             Selected Radio: {selectedRadio || 'Ninguno'} {/* Muestra 'Ninguno' si no hay selección */}
           </Text>
 
-          {/* Botón para reiniciar la fecha */}
-          <Button onPress={() => setDate(new Date())} style={styles.clearButton}>
-            Reset to Today
-          </Button> 
-
-          {/* Componente CamposDB */}
+          {/* Componente EntradaTexto */}
           <EntradaTexto items={testFields} onSelect={handleChange} />
         </View>
       </ScrollView>
 
-      {/* Botón fijo */}
-      <View style={styles.fixedButton}>
-        <Button title="Guardar" onPress={handleSubmit} />
-      </View>
+      {/* Botón para guardar que llama al método handleSubmit de SaveButton */}
+      <Button onPress={saveButtonRef.handleSubmit} style={styles.fixedButton}>
+        Guardar
+      </Button>
     </ApplicationProvider>
   )
 }
@@ -170,13 +133,13 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     fontSize: 16
   },
-  clearButton: {
-    marginTop: 20
-  },
   fixedButton: {
     position: 'absolute',
+    marginBottom:20,
     bottom: 20, // Posiciona el botón 20 píxeles desde abajo
-    left: 100,
-    right: 100,
+    left: '50%', // Lo mueve al centro horizontal
+    transform: [{ translateX: -50 }], // Ajusta el botón al centro
+    width: 100, // Hace el botón más pequeño
   }
+
 });
