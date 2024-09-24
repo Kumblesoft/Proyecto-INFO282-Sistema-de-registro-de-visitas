@@ -3,7 +3,7 @@ import React from 'react'
 import { Alert } from 'react-native'
 import * as FileSystem from 'expo-file-system'
 
-const SaveButton = ({ textData, selectedOptions, selectedRadio, date, onSave }) => {
+const SaveButton = ({ textData, onSave }) => {
 
 const handleSubmit = async () => {    // Verificar que todos los campos de texto estén rellenados
     const allFieldsFilled = Object.values(textData).every(value => value.trim() !== '')
@@ -14,7 +14,7 @@ const handleSubmit = async () => {    // Verificar que todos los campos de texto
     }
 
     try {
-        const dataToSave = { selectedOptions, selectedRadio, date, textData }
+        const dataToSave = { textData }
         console.log('Datos guardados:', dataToSave)
 
       // Guardar datos como JSON

@@ -2,11 +2,10 @@ import React, { useState } from 'react'
 import * as eva from '@eva-design/eva'
 import { ApplicationProvider, Datepicker, Text, Button } from '@ui-kitten/components'
 import { StyleSheet, View, ScrollView } from 'react-native'
-import ItemSelector from "./components/ItemSelector"
-import CheckboxGroup from "./components/CheckboxGroup"
-import RadioButtonGroup from "./components/RadioButtonGroup"
 import EntradaTexto from "./components/EntradaTexto"
 import SaveButton from "./components/SaveButton"
+import  OptionSelector, { OptionComponentType, OptionSelectorFeatures } from './components/selector/OptionSelector'
+import DateSelector from './components/DateSelector'
 
 // Opciones para el select
 const testItems = [
@@ -26,9 +25,7 @@ export default function App() {
   // Estado para los datos del formulario
   const [textData, setTextData] = useState(testFields)
   const [date, setDate] = useState(new Date())
-  const [selectedOptions, setSelectedOptions] = useState([])
-  const [selectedRadio, setSelectedRadio] = useState(null)
-
+  const [selectedDate, setSelectedDate] = useState(new Date())
   // Callback para manejar cambios en los campos
   const handleChange = (name, value) => {
     setTextData({
@@ -40,9 +37,6 @@ export default function App() {
   // Usar SaveButton con su lógica de guardado
   const saveButtonRef = SaveButton({
     textData,
-    selectedOptions,
-    selectedRadio,
-    date,
     onSave: (data) => {
       console.log("Datos guardados exitosamente:", data)
     }
@@ -55,41 +49,46 @@ export default function App() {
       <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
         <Text style={styles.title}>(Nombre Formulario)</Text>
         <View style={styles.container}>
-          {/* ItemSelector con opciones */}
-          <ItemSelector items={testItems} onSelect={value => console.log("Valor seleccionado:", value)} />
 
           <Text category="h1" style={styles.title}>Select a Date</Text>
 
-          {/* UI Kitten DatePicker */}
-          <Datepicker
-            date={date}
-            onSelect={nextDate => setDate(nextDate)}
-            style={styles.datePicker}
-          />
+        {/* UI Kitten DatePicker */}
+        <DateSelector
+          date={selectedDate}
+          onSelectDate={nextDate => setSelectedDate(nextDate)}
+        />
 
-          {/* Mostrar la fecha seleccionada */}
-          <Text style={styles.selectedDate}>
-            Selected Date: {date.toDateString()}
-          </Text>
+        {/* Mostrar la fecha seleccionada */}
+        <Text style={styles.selectedDate}>
+          Selected Date: {selectedDate.toDateString()}
+        </Text>
+        {/* Botón para reiniciar la fecha */}
+        <Button onPress={() => setDate(new Date())} style={styles.clearButton}>
+          Reset to Today
+        </Button>
 
-          {/* CheckboxGroup con opciones */}
-          <CheckboxGroup items={testItems} onSelect={setSelectedOptions} />
-
-          {/* Mostrar opciones seleccionadas de checkboxes */}
-          <Text style={styles.selectedCheckboxes}>
-            Selected Checkboxes: {selectedOptions.join(', ')}
-          </Text>
-
-          {/* RadioButtonGroup con opciones */}
-          <RadioButtonGroup items={testItems} onSelect={setSelectedRadio} />
-
-          {/* Mostrar opción seleccionada de radio buttons */}
-          <Text style={styles.selectedRadio}>
-            Selected Radio: {selectedRadio || 'Ninguno'} {/* Muestra 'Ninguno' si no hay selección */}
-          </Text>
-
-          {/* Componente EntradaTexto */}
-          <EntradaTexto items={testFields} onSelect={handleChange} />
+        
+        <OptionSelector items={testItems} 
+          type={OptionComponentType.DROPDOWN}
+        />
+          
+        <OptionSelector items={testItems} 
+          type={OptionComponentType.RADIO}
+          optionalFeatures={
+            OptionSelectorFeatures({title:"Selector Radio"})}
+        />
+        
+        <OptionSelector items={testItems} 
+          type={OptionComponentType.CHECKBOX}
+          optionalFeatures={
+            OptionSelectorFeatures({
+              title:"Checkbox group",
+              defaultOption:"option3",
+              maxChecked:1,
+              required:true})}
+        />
+      {/* Componente EntradaTexto */}
+      <EntradaTexto items={testFields} onSelect={handleChange} />
         </View>
       </ScrollView>
 
