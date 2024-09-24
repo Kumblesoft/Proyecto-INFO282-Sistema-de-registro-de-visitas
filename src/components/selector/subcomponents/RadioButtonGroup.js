@@ -1,9 +1,15 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Radio, RadioGroup, Text } from '@ui-kitten/components'
-import { View, StyleSheet } from 'react-native'
+import { StyleSheet } from 'react-native'
 
-const RadioButtonGroup = ({ items, onSelect }) => {
+const RadioButtonGroup = ({ items, onSelect, defaultOption }) => {
   const [selectedIndex, setSelectedIndex] = useState(null)
+
+  // Al cargar, selecciona el valor predeterminado si se pasa
+  useEffect(() => {
+    const index = items.findIndex(item => item.value === defaultOption) 
+    setSelectedIndex(index !== -1 ? index : null)
+  }, [defaultOption])
 
   const handleSelect = index => {
     setSelectedIndex(index) // Actualiza el índice seleccionado
