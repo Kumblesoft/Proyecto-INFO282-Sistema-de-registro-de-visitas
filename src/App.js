@@ -3,6 +3,7 @@ import * as eva from '@eva-design/eva'
 import { ApplicationProvider, Datepicker, Button, Text } from '@ui-kitten/components'
 import { StyleSheet, View } from 'react-native'
 import  OptionSelector, { OptionComponentType, OptionSelectorFeatures } from './components/selector/OptionSelector'
+import DateSelector from './components/DateSelector'
 
 // Opciones para el select
 const testItems = [
@@ -14,6 +15,7 @@ const testItems = [
 export default function App() {
   // Estado para la fecha seleccionada
   const [date, setDate] = useState(new Date())
+  const [selectedDate, setSelectedDate] = useState(new Date())
 
   return (
     <ApplicationProvider {...eva} theme={eva.light}>
@@ -59,7 +61,7 @@ export default function App() {
       
       </View>
     </ApplicationProvider>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
