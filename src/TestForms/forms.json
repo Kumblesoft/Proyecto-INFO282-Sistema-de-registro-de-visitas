@@ -1,0 +1,106 @@
+[
+	{
+		"nombre formulario": "Formulario 1",
+		"formato salida": "JSON",
+		"nombre archivo salida": "respuestas formulario 1.json",
+		"ultima modificacion": "11/11/11",
+		"campos": [
+			{
+				"tipo": "selector",
+				"nombre": "Edad del participante",
+				"obligatorio": true,
+				"salida": "edad",
+				"opcion predeterminada": null,
+				"texto predeterminado": "Seleccione su edad",
+				"opciones": [
+					{
+						"nombre": "18 años",
+						"valor": "18"
+					},
+					{
+						"nombre": "19 años",
+						"valor": "19"
+					}
+				]
+			},
+			{
+				"tipo": "texto",
+				"nombre": "Ingrese un mensaje",
+				"obligatorio": true,
+				"salida": "mensaje",
+				"limitaciones": [
+					"solo letras"
+				],
+				"formato": [
+					"solo mayusculas"
+				]
+			},
+			{
+				"tipo": "fecha",
+				"nombre": "Fecha de Hoy",
+				"obligatorio": true,
+				"salida": "fecha",
+				"limitaciones": [
+					"no editable"
+				],
+				"formato": "dd/mm/aaaa",
+				"fecha predeterminada": "hoy"
+			}
+		],
+		"accion personalizada": "()=>{console.log('Hacer algo')}"
+	},
+	{
+		"nombre formulario": "Formulario 2",
+		"formato salida": "JSON",
+		"nombre archivo salida": "respuestas formulario 2.json",
+		"ultima modificacion": "12/12/12",
+		"campos": [
+			{
+				"tipo": "selector",
+				"nombre": "Nivel de educación",
+				"obligatorio": true,
+				"salida": "nivel_educacion",
+				"opcion predeterminada": null,
+				"texto predeterminado": "Seleccione su nivel de educación",
+				"opciones": [
+					{
+						"nombre": "Secundaria",
+						"valor": "secundaria"
+					},
+					{
+						"nombre": "Universidad",
+						"valor": "universidad"
+					},
+					{
+						"nombre": "Postgrado",
+						"valor": "postgrado"
+					}
+				]
+			},
+			{
+				"tipo": "texto",
+				"nombre": "Comentarios adicionales",
+				"obligatorio": false,
+				"salida": "comentarios",
+				"limitaciones": [
+					"sin limitación de caracteres"
+				],
+				"formato": [
+					"texto libre"
+				]
+			},
+			{
+				"tipo": "fecha",
+				"nombre": "Fecha de nacimiento",
+				"obligatorio": true,
+				"salida": "fecha_nacimiento",
+				"limitaciones": [
+					"no editable"
+				],
+				"formato": "dd/mm/aaaa",
+				"fecha predeterminada": "nueva"
+			}
+		],
+		"accion personalizada": "()=>{console.log('Formulario 2 enviado')}"
+	}
+]
