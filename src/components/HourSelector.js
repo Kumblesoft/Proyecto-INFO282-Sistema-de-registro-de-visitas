@@ -7,6 +7,13 @@ import * as Haptics from "expo-haptics" // for haptic feedback
 
 const HourSelector = ({time,setTime}) => {
     const [showPicker, setShowPicker] = useState(false)
+    
+    const limitations = {
+        required: false,
+        disable: false
+    }
+
+    const hourTitle = "Select a Hour"
 
     const formatTime = ({hours, minutes}) => `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`
     
@@ -17,8 +24,9 @@ const HourSelector = ({time,setTime}) => {
 
     return (
         <Layout>
-            <Button status='basic' onPress={()=>setShowPicker(true)} appearance='outline' style={styles.button} >{time}</Button>
-                <Button onPress={()=>setNowTime()}>Reset time</Button>
+            <Text>{limitations["required"] ? hourTitle + "*": hourTitle }</Text>
+            <Button disabled={limitations["disable"]} status='success' onPress={()=>setShowPicker(true)} appearance='outline' style={styles.hour} size='large'>{time}</Button>
+            <Button style={styles.button} onPress={()=>setNowTime()}>Reset time</Button>
             <TimerPickerModal
                 visible={showPicker}
                 setIsVisible={setShowPicker}
@@ -75,8 +83,15 @@ const styles = StyleSheet.create({
     closeButton: {
         marginTop: 20,
     },
+    hour: {
+        margin: 2,
+        paddingVertical: 12,
+        paddingHorizontal: 120,
+    },
     button: {
         margin: 2,
+        paddingVertical: 12,
+        paddingHorizontal: 12,
     }
 })
 
