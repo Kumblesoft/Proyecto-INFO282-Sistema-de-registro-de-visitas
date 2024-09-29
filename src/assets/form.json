@@ -31,7 +31,7 @@
 				"solo letras"
 			],
 			"formato":[
-				"solo mayusculas",
+				"solo mayusculas"
 			]
 		},
 		{
@@ -43,7 +43,8 @@
 				"no editable"
 			],
 			"formato":"dd/mm/aaaa",
-			"fecha predeterminada":"hoy", /*hoy, -/-/+3 (mas 3 dias por ejemplo), -/+3/-, 11/11/11*/ 
+			"texto predeterminado":"Ingrese fecha",
+			"fecha predeterminada":"hoy" 
 		}
 	],
 	"accion personalizada":"()=>{console.log('Hacer algo')}"
