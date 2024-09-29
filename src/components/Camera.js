@@ -72,7 +72,7 @@ const openGaleria = async (setImage) => {
     if (!isValidSize) return;
 
     setImage(imageUri); // Guardar la imagen en el estado
-    Alert.alert('Imagen seleccionada correctamente de la galería.');
+    
   }
 };
 
