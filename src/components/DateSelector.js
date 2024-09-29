@@ -15,7 +15,7 @@ export const OptionDateFeatures = options => {
 
 const DateSelector = ({ onChange, optionalFeatures}) => {
   optionalFeatures ??= {}
-  const { title, placeholder, defaultDate, dateFormat, required, disabled } = optionalFeatures
+  const { title, defaultDate, dateFormat, required, disabled } = optionalFeatures
   const [selectedDate, setSelectedDate] = useState(defaultDate ? new Date() : null);
 
   const handleDateChange = (nextDate) => {

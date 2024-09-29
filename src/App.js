@@ -41,6 +41,13 @@ const App = () => {
         "limitaciones": ["no editable"],
         "formato": "dd/mm/aaaa",
         "fecha predeterminada": "hoy"
+      },
+      {
+        "tipo": "hora",
+        "nombre": "Hora actual",
+        "hora predeterminada": "actual",
+        "obligatorio": true,
+        "limitaciones": ["no editable"],
       }
     ],
     "accion personalizada": "()=>{console.log('Hacer algo')}"

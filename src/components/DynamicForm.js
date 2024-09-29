@@ -4,7 +4,7 @@ import { Layout, Text } from '@ui-kitten/components'
 import  OptionSelector, { OptionComponentType, OptionSelectorFeatures } from './selector/OptionSelector' // Componente personalizado para el selector
 import EntradaTexto from './EntradaTexto' // Componente personalizado para el campo de texto
 import DateSelector, {OptionDateFeatures} from './DateSelector' // Componente personalizado para la selección de fecha
-
+import HourSelector, {OptionalTimeFeatures} from './HourSelector'
 
 const DynamicForm = ({ formData }) => {
 const [formState, setFormState] = useState({})
@@ -58,14 +58,11 @@ const renderField = (field) => {
                 required:true})}
             />
         )
-    
-    
-
     case 'fecha':
         return (
         <DateSelector
             value={formState[field.salida]}
-            onChange={(date) => handleInputChange(field.salida, date)}
+            onChange={(value) => handleInputChange(field.salida, value)}
             optionalFeatures={OptionDateFeatures({
                 title:field.nombre,
                 placeholder:field["texto predeterminado"],
@@ -76,7 +73,21 @@ const renderField = (field) => {
             })}
         />
         )
-
+    
+    case 'hora':
+        const now = (new Date().getHours()).toString().padStart(2,"0") + ":" + (new Date().getMinutes()).toString().padStart(2,"0")
+        return (
+            <HourSelector
+                value = {formState[field.salida]}
+                onChange={(value) => handleInputChange(field.salida, value)}
+                optionalFeatures={OptionalTimeFeatures({
+                    title: field["nombre"],
+                    defaultTime: field["hora predeterminada"]==="actual" ? now : null,
+                    disabled: field["limitaciones"].includes("no editable"),
+                    required: field["obligatorio"]
+                })}
+            />
+        )
     default:
         return null
     }
