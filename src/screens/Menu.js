@@ -1,6 +1,7 @@
 import React from "react"
 import { StyleSheet, View, TouchableOpacity, StatusBar } from "react-native"
 import { Text, Layout } from "@ui-kitten/components" 
+import { Alert } from 'react-native';
 import Svg, { Circle } from "react-native-svg"
 import { useNavigation } from '@react-navigation/native' 
 import { useFormContext } from '../context/FormContext' // Importa el contexto
@@ -15,9 +16,13 @@ export default function Menu() {
 
   const handleRellenarPress = () => {
     selectedForm ?
-      console.log("Formulario seleccionado:", selectedForm) :
-      console.log("No se ha seleccionado ningún formulario")
+      navigation.navigate('Form') :
+      //console.log("No se ha seleccionado ningún formulario")
+      Alert.alert('Error', 'Seleccione un formulario primero')
+      
   }
+   const handleSavedFormsPress = () => navigation.navigate('SavedForms') // Nueva función para navegar a SavedForms
+
 
   return (
     <Layout style={{ flex: 1 }}>
@@ -46,6 +51,13 @@ export default function Menu() {
             <Text style={styles.buttonText}>Formularios</Text>
           </TouchableOpacity>
         </View>
+
+        <View style={styles.footer}>
+          <TouchableOpacity style={styles.buttonFormularios} onPress={handleSavedFormsPress}>
+            <Text style={styles.buttonText}>Formularios Guardados</Text> 
+          </TouchableOpacity>
+        </View>
+        
       </View>
     </Layout>
   )

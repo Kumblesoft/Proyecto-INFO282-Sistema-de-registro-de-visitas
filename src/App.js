@@ -5,6 +5,8 @@ import { ApplicationProvider } from "@ui-kitten/components"
 import * as eva from "@eva-design/eva"
 import Menu from "./screens/Menu"
 import FormSelectorScreen from "./screens/FormSelectorScreen" // Importa tu pantalla de selección de formularios
+import TestForm from "./screens/TestForm"
+import SavedForms from "./screens/SavedFormsScreen"
 import { FormProvider } from './context/FormContext'
 
 const Stack = createNativeStackNavigator()
@@ -17,6 +19,8 @@ export default function App() {
           <Stack.Navigator initialRouteName="Menu">
             <Stack.Screen name="Menu" component={Menu} />
             <Stack.Screen name="FormSelector" component={FormSelectorScreen} />
+            <Stack.Screen name="Form" component={TestForm} />
+            <Stack.Screen name="SavedForms" component={SavedForms} />
           </Stack.Navigator>
         </FormProvider>
       </NavigationContainer>
