@@ -72,6 +72,7 @@ const handleSubmit = async () => {
       console.log("Formulario guardado:", newForm)
       
       setFormState({})
+      Alert.alert("Formulario guardado")
     } catch (error) {
       console.error("Error al guardar el formulario:", error)
     }
