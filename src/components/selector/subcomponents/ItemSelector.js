@@ -10,14 +10,14 @@ const ItemSelector = ({ items, onSelect, value, placeholder }) => {
     const selectedItem = items[index.row] // Obtén el elemento seleccionado usando el índice
 
     setSelectedIndex(index) // Actualiza el índice seleccionado
-    setSelectedValue(selectedItem.name) // Cambia aquí para mostrar el nombre
+    setSelectedValue(selectedItem.nombre) // Cambia aquí para mostrar el nombre
 
-    if (onSelect) onSelect(selectedItem.value) // Llama al callback con el valor seleccionado
+    if (onSelect) onSelect(selectedItem.valor) // Llama al callback con el valor seleccionado
   }
 
   useEffect(() => {
-    const selectedItem = items.find(item => item.value === value) // Encuentra el elemento por el valor
-    setSelectedValue(selectedItem ? selectedItem.name : null) // Muestra el nombre si se encuentra, o null
+    const selectedItem = items.find(item => item.valor === value) // Encuentra el elemento por el valor
+    setSelectedValue(selectedItem ? selectedItem.nombre : null) // Muestra el nombre si se encuentra, o null
   }, [value, items])
 
   return (
@@ -29,7 +29,7 @@ const ItemSelector = ({ items, onSelect, value, placeholder }) => {
       style={styles.select} // Aplica estilo para el ancho mínimo
     >
       {items.map(item => (
-        <SelectItem key={item.value} title={item.name} /> // Crea las opciones del dropdown
+        <SelectItem key={item.valor} title={item.nombre} /> // Crea las opciones del dropdown
       ))}
     </Select>
   )
