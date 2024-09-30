@@ -14,10 +14,19 @@ export default function Menu() {
   const handleFormulariosPress = () => navigation.navigate('FormSelector', { forms }) // Solo pasar forms
 
   const handleRellenarPress = () => {
+    if (selectedForm) {
+      navigation.navigate('FormFiller', { form: selectedForm });
+    } 
+    else {
+      console.log("No se ha seleccionado ningún formulario");
+    }
+  };
+  /*const handleRellenarPress = () => {
     selectedForm ?
       console.log("Formulario seleccionado:", selectedForm) :
       console.log("No se ha seleccionado ningún formulario")
-  }
+      navigation.navigate('FormFiller', { formData: forms })
+  }*/
 
   return (
     <Layout style={{ flex: 1 }}>
