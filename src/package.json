@@ -10,12 +10,19 @@
   },
   "dependencies": {
     "@eva-design/eva": "^2.2.0",
+    "@react-navigation/native": "^6.1.18",
+    "@react-navigation/native-stack": "^6.11.0",
     "@ui-kitten/components": "^5.3.1",
+    "date-fns": "^4.1.0",
     "expo": "~51.0.32",
+    "expo-haptics": "^13.0.1",
+    "expo-linear-gradient": "^13.0.2",
     "expo-status-bar": "~1.12.1",
     "react": "18.2.0",
     "react-native": "0.74.5",
-    "react-native-svg": "^15.7.1"
+    "react-native-fs": "^2.20.0",
+    "react-native-svg": "^15.7.1",
+    "react-native-timer-picker": "^1.10.3"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2"
