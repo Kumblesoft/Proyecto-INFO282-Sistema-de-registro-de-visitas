@@ -11,6 +11,7 @@ const FormSelectorScreen = ({ route }) => {
 
   const handleSelectForm = form => {
     setSelectedForm(form)
+    navigation.navigate('Menu')
   }
 
   const renderItem = ({ item }) => (
@@ -31,8 +32,8 @@ const FormSelectorScreen = ({ route }) => {
         <Text style={styles.backButtonText}>Volver</Text>
       </TouchableOpacity>
     </View>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {

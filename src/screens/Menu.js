@@ -1,7 +1,7 @@
 import React from "react"
 import { StyleSheet, View, TouchableOpacity, StatusBar } from "react-native"
 import { Text, Layout } from "@ui-kitten/components" 
-import { Alert } from 'react-native';
+import { Alert } from 'react-native'
 import Svg, { Circle } from "react-native-svg"
 import { useNavigation } from '@react-navigation/native' 
 import { useFormContext } from '../context/FormContext' // Importa el contexto

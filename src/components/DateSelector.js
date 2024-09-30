@@ -2,48 +2,79 @@ import React, { useState, useEffect } from 'react'
 import { View } from 'react-native'
 import { Text, Datepicker, NativeDateService } from '@ui-kitten/components'
 
-
-// Función para convertir el formato personalizado al formato de date-fns
+/**
+ * Converts a custom date format to a format compatible with date-fns.
+ *
+ * @param {string} format - The custom date format string.
+ * @returns {string} The converted format compatible with date-fns.
+ */
 const manageDateFormat = (format) => {
   const mapping = {
-    'dd': 'dd',  // Día en dos dígitos
-    'mm': 'MM',  // Mes en dos dígitos (mayúsculas para el mes)
-    'aaaa': 'YYYY',  // Año en cuatro dígitos
+    'dd': 'dd',  // Day in two digits
+    'mm': 'MM',  // Month in two digits (uppercase for month)
+    'aaaa': 'YYYY',  // Year in four digits
   }
 
-  // Reemplaza cualquier instancia de los formatos personalizados con los de date-fns
   return format
     .replace(/dd/, mapping['dd'])
     .replace(/mm/, mapping['mm'])
     .replace(/aaaa/, mapping['aaaa'])
 }
 
-export const OptionDateFeatures = (options = {}) => {
+/**
+ * Represents optional features for the DateSelector component.
+ *
+ * @param {Object} options - Options for configuring the DateSelector.
+ * @param {string} [options.title] - The title displayed above the date picker.
+ * @param {string} [options.defaultOption] - Default date value can be 'hoy' for today's date.
+ * @param {string} [options.dateFormat] - The format of the date displayed.
+ * @param {boolean} [options.disabled=false] - Whether the date picker is disabled.
+ * @param {boolean} [options.required=false] - Whether the field is required.
+ * @returns {Object} An object containing the defined optional features.
+ */
+export const OptionDateFeatures = (options ={}) => {
   return {
-    title: options.title ?? "", // Valor por defecto
+    title: options.title ?? "",
     defaultDate: options.defaultOption === "hoy" ? new Date() : options.defaultOption ?? new Date(),
-    dateFormat: manageDateFormat(options.dateFormat ?? 'dd/MM/yyyy') , // Formato de fecha por defecto
-    disabled: options.disabled ?? false, // Deshabilitado por defecto en falso
-    required: options.required ?? false, // Requerido por defecto en falso
+    dateFormat: manageDateFormat(options.dateFormat ?? 'dd/MM/yyyy'),
+    disabled: options.disabled ?? false,
+    required: options.required ?? false,
   }
 }
 
-const DateSelector = ({ onChange, optionalFeatures = {} }) => {
-  const { title, defaultDate, dateFormat, required, disabled } = optionalFeatures
+/**
+ * A component that allows users to select a date.
+ *
+ * @param {Function} onChange - Callback function called when the selected date changes.
+ * @param {Object} optionalFeatures - Configuration options for the DateSelector.
+ * @returns {JSX.Element} The rendered DateSelector component.
+ */
+const DateSelector = ({ onChange, optionalFeatures}) => {
+  const {
+    title = "",
+    defaultDate = new Date(),
+    dateFormat = 'dd/MM/yyyy',
+    required = false,
+    disabled = false
+  } = optionalFeatures ?? {}
+
   const [selectedDate, setSelectedDate] = useState(defaultDate ? new Date(defaultDate) : null)
 
   const configuredDateService = new NativeDateService('en', { format: dateFormat })
-  // Solo ejecutar el efecto una vez cuando el componente está deshabilitado
+
   useEffect(() => {
     if (disabled && defaultDate) {
       const formattedDate = configuredDateService.format(new Date(defaultDate), dateFormat)
-      console.log(dateFormat)
-      onChange(formattedDate)  // Actualiza solo una vez si está deshabilitado
-      setSelectedDate(new Date(defaultDate)) // Establece la fecha predeterminada
+      onChange(formattedDate)
+      setSelectedDate(new Date(defaultDate))
     }
-    // Añadimos una condición para que solo se ejecute una vez si está deshabilitado
   }, [disabled])
 
+  /**
+   * Handles changes to the selected date.
+   *
+   * @param {Date} nextDate - The newly selected date.
+   */
   const handleDateChange = (nextDate) => {
     setSelectedDate(nextDate)
     const formattedDate = nextDate ? configuredDateService.format(nextDate, dateFormat) : ""

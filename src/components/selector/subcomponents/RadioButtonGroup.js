@@ -13,14 +13,14 @@ const RadioButtonGroup = ({ items, onSelect, defaultOption }) => {
 
   const handleSelect = index => {
     setSelectedIndex(index) // Actualiza el índice seleccionado
-    if (onSelect) onSelect(items[index].value) // Llama al callback con el valor seleccionado
+    if (onSelect) onSelect(items[index].valor) // Llama al callback con el valor seleccionado
   }
 
   return (
     <RadioGroup selectedIndex={selectedIndex} onChange={handleSelect}>
       {items.map(item => (
-        <Radio key={item.value} style={styles.radio}>
-          <Text>{item.name}</Text>
+        <Radio key={item.valor} style={styles.radio}>
+          <Text>{item.nombre}</Text>
         </Radio>
       ))}
     </RadioGroup>

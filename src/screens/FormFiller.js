@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { ScrollView, View } from 'react-native';
-import { Layout, Button, Text } from '@ui-kitten/components';
-import DynamicForm from '../components/DynamicForm';
+import React, { useState } from 'react'
+import { ScrollView, View } from 'react-native'
+import { Layout, Button, Text } from '@ui-kitten/components'
+import DynamicForm from '../components/DynamicForm'
 
 const FormFillerScreen = ({ route }) => {
-  const { form } = route.params; // Datos del formulario pasado desde el FormSelector
+  const { form } = route.params // Datos del formulario pasado desde el FormSelector
 
     return (
         <Layout style={{ flex: 1, padding: 16 }}>
@@ -19,7 +19,7 @@ const FormFillerScreen = ({ route }) => {
             </View>
         </ScrollView>
         </Layout>
-    );
-};
+    )
+}
 
-export default FormFillerScreen;
+export default FormFillerScreen

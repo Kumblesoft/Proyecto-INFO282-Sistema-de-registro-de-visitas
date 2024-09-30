@@ -50,7 +50,7 @@ const HourSelector = ({value, onChange, optionalFeatures}) => {
         <Layout>
             <Text>{required ? title + "*": title }</Text>
             <Button disabled={disabled} status='success' onPress={()=>setShowPicker(true)} appearance='outline' style={styles.hour} size='large'>{value}</Button>
-            <Button style={styles.button} onPress={()=>setNowTime()}>Reset time</Button>
+            <Button style={styles.button} onPress={()=>setNowTime()}>{"Reset time"}</Button>
             <TimerPickerModal
                 visible={showPicker}
                 setIsVisible={setShowPicker}

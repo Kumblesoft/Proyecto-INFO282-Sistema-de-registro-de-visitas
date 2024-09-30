@@ -11,7 +11,7 @@ export class Result {
      */
     constructor() {
       if (this.constructor === Result) {
-        throw new Error("Abstract classes can't be instantiated.");
+        throw new Error("Abstract classes can't be instantiated.")
       }
     }
 
