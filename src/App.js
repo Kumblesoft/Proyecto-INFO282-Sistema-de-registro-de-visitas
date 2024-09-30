@@ -1,20 +1,29 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from "react"
+import { NavigationContainer } from '@react-navigation/native'
+import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import { ApplicationProvider } from "@ui-kitten/components"
+import * as eva from "@eva-design/eva"
+import Menu from "./screens/Menu"
+import FormSelectorScreen from "./screens/FormSelectorScreen" // Importa tu pantalla de selección de formularios
+import FormFiller from "./screens/FormFiller"
+import SavedForms from "./screens/SavedFormsScreen"
+import { FormProvider } from './context/FormContext'
+
+const Stack = createNativeStackNavigator()
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+    <ApplicationProvider {...eva} theme={eva.light}>
+      <NavigationContainer>
+        <FormProvider>
+          <Stack.Navigator initialRouteName="Menu">
+            <Stack.Screen name="Menu" component={Menu} />
+            <Stack.Screen name="FormSelector" component={FormSelectorScreen} />
+            <Stack.Screen name="SavedForms" component={SavedForms} />
+            <Stack.Screen name="FormFiller" component={FormFiller} />
+          </Stack.Navigator>
+        </FormProvider>
+      </NavigationContainer>
+    </ApplicationProvider>
+  )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
