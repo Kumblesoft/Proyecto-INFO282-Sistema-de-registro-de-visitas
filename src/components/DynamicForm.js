@@ -5,6 +5,7 @@ import  OptionSelector, { OptionComponentType, OptionSelectorFeatures } from './
 import EntradaTexto from './EntradaTexto' // Componente personalizado para el campo de texto
 import DateSelector, {OptionDateFeatures} from './DateSelector' // Componente personalizado para la selección de fecha
 import HourSelector, {OptionalTimeFeatures} from './HourSelector'
+import CameraConfiguration, {Camera} from './Camera'
 
 const DynamicForm = ({ formData }) => {
 const [formState, setFormState] = useState({})
@@ -88,6 +89,18 @@ const renderField = (field) => {
                 })}
             />
         )
+    
+    case 'camara':
+        return(
+        <Camera 
+            title = {field["nombre"]}
+            required = {field["obligatorio"]}
+            cameraConfiguration = {new CameraConfiguration(
+                setImage = ((value) => handleInputChange(field.salida, value)), 
+                allowsEditing = field["editable"],
+                aspect = field["relacion de aspecto"],
+            )}
+        />)
     default:
         return null
     }

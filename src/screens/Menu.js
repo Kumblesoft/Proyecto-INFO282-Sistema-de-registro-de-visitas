@@ -15,21 +15,13 @@ export default function Menu() {
   const handleFormulariosPress = () => navigation.navigate('FormSelector', { forms }) // Solo pasar forms
 
   const handleRellenarPress = () => {
-    if (selectedForm) {
-      navigation.navigate('FormFiller', { form: selectedForm });
-    } 
-    else {
-      console.log("No se ha seleccionado ningún formulario");
-    }
-  };
-  /*const handleRellenarPress = () => {
     selectedForm ?
-      navigation.navigate('Form') :
+      navigation.navigate('FormFiller', { form: selectedForm}) :
       //console.log("No se ha seleccionado ningún formulario")
       Alert.alert('Error', 'Seleccione un formulario primero')
-      
   }
-   const handleSavedFormsPress = () => navigation.navigate('SavedForms') // Nueva función para navegar a SavedForms
+
+  const handleSavedFormsPress = () => navigation.navigate('SavedForms') // Nueva función para navegar a SavedForms
 
 
   return (

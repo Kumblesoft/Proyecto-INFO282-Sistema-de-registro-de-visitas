@@ -43,8 +43,16 @@
 				"limitaciones": [
 					"no editable"
 				],
-				"formato": "dd/mm/aaaa",
+				"formato": "dd/aaaa/mm",
 				"fecha predeterminada": "hoy"
+			},
+			{
+				"tipo": "camara",
+				"nombre": "Foto personal",
+				"obligatorio": true,
+				"salida": "foto",
+				"editable": true,
+				"relacion de aspecto": ""
 			}
 		],
 		"accion personalizada": "()=>{console.log('Hacer algo')}"

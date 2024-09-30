@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { Button, Image, View, StyleSheet, Alert, Linking, TouchableOpacity, Modal } from 'react-native'
 import * as ImagePicker from 'expo-image-picker'
 import * as MediaLibrary from 'expo-media-library'
-
+import { Text } from '@ui-kitten/components'
 /**
  * Class representing the configuration settings for the camera.
  */
@@ -48,7 +48,7 @@ class CameraConfiguration {
  * 
  * @returns {JSX.Element} Rendered camera component.
  */
-export const Camera = ({ cameraConfiguration }) => {
+export const Camera = ({title, required, cameraConfiguration }) => {
   const [image, setImage] = useState(null) //! Modify this when the display modal is no longer needed
   const [isModalVisible, setModalVisible] = useState(false) 
 
@@ -103,6 +103,12 @@ export const Camera = ({ cameraConfiguration }) => {
 
   return (
     <View style={styles.container}>
+      {title && (
+        <Text category="h6">
+          {title}
+          {required ? "*" : ""}
+        </Text>
+      )}
       <Button title="Abrir Cámara" onPress={openCamera} />
       <Button title="Seleccionar Imagen de Galería" onPress={openGallery} />
 
