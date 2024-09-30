@@ -5,33 +5,39 @@ import { TimerPickerModal } from "react-native-timer-picker"
 import { LinearGradient } from "expo-linear-gradient"
 import * as Haptics from "expo-haptics" // for haptic feedback
 
-const HourSelector = ({time,setTime}) => {
-    const [showPicker, setShowPicker] = useState(false)
-    
-    const limitations = {
-        required: false,
-        disable: false
-    }
 
-    const hourTitle = "Select a Hour"
+export const OptionalTimeFeatures = options => {
+    return {
+        title: options.title,
+        defaultTime: options.defaultTime ?? "00:00",
+        disabled: options.disabled ?? false,
+        required: options.required ?? false,
+    }
+}
+
+const HourSelector = ({value, onChange, optionalFeatures}) => {
+    const [showPicker, setShowPicker] = useState(false)
+    optionalFeatures ??= {}
+
+    const {title, defaultTime, disabled, required} = optionalFeatures
 
     const formatTime = ({hours, minutes}) => `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`
-    
+    var value = defaultTime
 
     const setNowTime = () => {
-        setTime((new Date().getHours()).toString().padStart(2,"0") + ":" + (new Date().getMinutes()).toString().padStart(2,"0"))
+        onChange((new Date().getHours()).toString().padStart(2,"0") + ":" + (new Date().getMinutes()).toString().padStart(2,"0"))
     }
 
     return (
         <Layout>
-            <Text>{limitations["required"] ? hourTitle + "*": hourTitle }</Text>
-            <Button disabled={limitations["disable"]} status='success' onPress={()=>setShowPicker(true)} appearance='outline' style={styles.hour} size='large'>{time}</Button>
+            <Text>{required ? title + "*": title }</Text>
+            <Button disabled={disabled} status='success' onPress={()=>setShowPicker(true)} appearance='outline' style={styles.hour} size='large'>{value}</Button>
             <Button style={styles.button} onPress={()=>setNowTime()}>Reset time</Button>
             <TimerPickerModal
                 visible={showPicker}
                 setIsVisible={setShowPicker}
                 onConfirm={(pickedDuration) => {
-                    setTime(formatTime(pickedDuration))
+                    onChange(formatTime(pickedDuration))
                     setShowPicker(false)
                 }}
                 modalTitle="Selecciona una hora"

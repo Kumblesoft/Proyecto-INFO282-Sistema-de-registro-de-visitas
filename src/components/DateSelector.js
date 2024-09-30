@@ -1,34 +1,45 @@
-import React from 'react';
-import { Datepicker, Layout, Text } from '@ui-kitten/components';
-import { StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View } from 'react-native';
+import { Text, Datepicker } from '@ui-kitten/components';
+import { format } from 'date-fns';
 
-const DateSelector = ({ date, onSelectDate }) => {
+export const OptionDateFeatures = options => {
+  return {
+    title: options.title,
+    defaultDate: options.defaultOption ? "hoy" : new Date(),
+    dateFormat: options.dateFormat,
+    disabled: options.disabled,
+    required: options.required ?? false, // Usa false como valor por defecto
+  }
+}
+
+const DateSelector = ({ onChange, optionalFeatures}) => {
+  optionalFeatures ??= {}
+  const { title, defaultDate, dateFormat, required, disabled } = optionalFeatures
+  const [selectedDate, setSelectedDate] = useState(defaultDate ? new Date() : null);
+
+  const handleDateChange = (nextDate) => {
+    setSelectedDate(nextDate);
+    const formattedDate = nextDate ? format(nextDate, dateFormat) : "";
+    onChange(formattedDate);
+  };
+
   return (
-    <Layout style={styles.container}>
-      <Text category="h6" style={styles.label}>
-        Select Date
-      </Text>
-
+    <View style={{ marginVertical: 10 }}>
+      {!title ? <></> : 
+          <Text category="h6" >{ 
+              title +
+              (required ? "*" : "")}
+          </Text>
+      }
       <Datepicker
-        date={date}
-        onSelect={onSelectDate}
-        style={styles.datePicker}
+        date={selectedDate}
+        onSelect={handleDateChange}
+        disabled={disabled}
       />
-    </Layout>
+    </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: 20,
-    alignItems: 'center',
-  },
-  label: {
-    marginBottom: 10,
-  },
-  datePicker: {
-    width: 300,
-  },
-});
-
 export default DateSelector;
+
