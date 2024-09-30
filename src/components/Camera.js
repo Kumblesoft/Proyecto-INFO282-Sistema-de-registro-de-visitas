@@ -1,101 +1,110 @@
-import React, { useState, useEffect } from 'react';
-import { Button, Image, View, StyleSheet, Alert, TouchableOpacity, Modal } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
-import * as MediaLibrary from 'expo-media-library';
-import * as FileSystem from 'expo-file-system';
+import { Result, Err, Ok } from '../commonStructures/resultEnum'
+import React, { useState } from 'react'
+import { Button, Image, View, StyleSheet, Alert, Linking, TouchableOpacity, Modal } from 'react-native'
+import * as ImagePicker from 'expo-image-picker'
+import * as MediaLibrary from 'expo-media-library'
 
-// Tamaño máximo de la imagen en MB
-const MAX_IMAGE_SIZE_MB = 10;
-
-const checkImageSize = async (uri) => {
-  const fileInfo = await FileSystem.getInfoAsync(uri);
-  const fileSizeInMB = fileInfo.size / (1024 * 1024); // Convertir a MB
-
-  if (fileSizeInMB > MAX_IMAGE_SIZE_MB) {
-    Alert.alert(`La imagen supera el tamaño máximo permitido de ${MAX_IMAGE_SIZE_MB}MB`);
-    return false;
-  }
-  return true;
-};
-
-const openCamera = async (setImage) => {
-  const { status: cameraStatus } = await ImagePicker.requestCameraPermissionsAsync();
-  if (cameraStatus !== 'granted') {
-    Alert.alert('Se requiere permiso para acceder a la cámara');
-    return;
+/**
+ * Class representing the configuration settings for the camera.
+ */
+class CameraConfiguration {
+  /**
+   * Create a CameraConfiguration instance.
+   * @param {function} setImage - Function to set the image.
+   * @param {boolean} [allowsEditing=true] - Indicates if editing is allowed.
+   * @param {Array<number>} [aspect=[4, 3]] - The aspect ratio for the camera.
+   * @param {number} [quality=1] - The quality of the image (0 to 1).
+   */
+  constructor(setImage = img => {}, allowsEditing = true, aspect = [4, 3], quality = 1) {
+    this.setImage = setImage
+    this.allowsEditing = allowsEditing
+    this.aspect = aspect
+    this.quality = quality
   }
 
-  const result = await ImagePicker.launchCameraAsync({
-    allowsEditing: true,
-    aspect: [4, 3],
-    quality: 1, // Ajustar la calidad según sea necesario
-  });
-
-  if (!result.canceled) {
-    const imageUri = result.assets[0].uri;
-
-    // Comprobar el tamaño de la imagen
-    const isValidSize = await checkImageSize(imageUri);
-    if (!isValidSize) return;
-
-    // Guardar la imagen en la galería
-    try {
-      const asset = await MediaLibrary.createAssetAsync(imageUri);
-      await MediaLibrary.createAlbumAsync('Fotos', asset, false);
-      Alert.alert('Imagen guardada correctamente en la galería.');
-    } catch (error) {
-      console.log('Error al guardar la imagen en la galería:', error);
+  /**
+   * Get the camera configuration settings.
+   * @returns {Object} The camera settings.
+   * @property {boolean} allowsEditing - Indicates if editing is allowed.
+   * @property {Array<number>} aspect - The aspect ratio for the camera.
+   * @property {number} quality - The quality of the image.
+   */
+  getSettings() {
+    return {
+      allowsEditing: this.allowsEditing,
+      aspect: this.aspect,
+      quality: this.quality
     }
-
-    setImage(imageUri); // Guardar la imagen en el estado
   }
-};
+}
 
-const openGaleria = async (setImage) => {
-  const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-  if (status !== 'granted') {
-    Alert.alert('Se requiere permiso para acceder a la galería');
-    return;
-  }
 
-  const result = await ImagePicker.launchImageLibraryAsync({
-    allowsEditing: true,
-    aspect: [4, 3],
-    quality: 1, // Ajustar la calidad según sea necesario
-  });
+/**
+ * Camera component for capturing images or selecting them from the gallery.
+ *
+ * @param {Object} cameraConfiguration - Configuration object for the camera.
+ * @param {function} cameraConfiguration.setImage - Function to set the selected image.
+ * @param {function} cameraConfiguration.setImageSetter - Function to update the image setter function.
+ * 
+ * @returns {JSX.Element} Rendered camera component.
+ */
+export const Camera = ({ cameraConfiguration }) => {
+  const [image, setImage] = useState(null) //! Modify this when the display modal is no longer needed
+  const [isModalVisible, setModalVisible] = useState(false) 
 
-  if (!result.canceled) {
-    const imageUri = result.assets[0].uri;
-
-    // Comprobar el tamaño de la imagen
-    const isValidSize = await checkImageSize(imageUri);
-    if (!isValidSize) return;
-
-    setImage(imageUri); // Guardar la imagen en el estado
+  async function openMedia(cameraConfiguration, launchFunction) {
+    let { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
     
-  }
-};
-
-const Camera = () => {
-  const [image, setImage] = useState(null);
-  const [isModalVisible, setModalVisible] = useState(false); // Estado para controlar el modal de previsualización
-
-  const toggleModal = () => setModalVisible(!isModalVisible); // Función para mostrar u ocultar el modal
-
-  // Solicitar permisos para la galería y la cámara en el montaje del componente
-  useEffect(() => {
-    (async () => {
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('Se requiere permiso para acceder a la galería');
+    // Check if permissions are granted, if not show alert and return
+    if (status !== 'granted') {
+      Alert.alert(
+        'Permissions Required',
+        'Camera/Gallery permissions are required to proceed. Please enable them in your app settings.',
+        [
+          { text: 'Cancel', style: 'cancel' }, 
+          { text: 'Open Settings', onPress: () => Linking.openSettings() } // Redirect to settings
+        ]
+      )
+    }
+    if (status !== 'granted') return (new Err('Permissions not granted by user')).show()
+  
+    const result = await launchFunction(cameraConfiguration.getSettings())
+    if (result.canceled) return new Err('Operation cancelled')
+    
+    const imageUri = result.assets[0].uri
+  
+    // Save the image in the gallery
+    if (launchFunction === ImagePicker.launchCameraAsync) {
+      try {
+        const asset = await MediaLibrary.createAssetAsync(imageUri)
+        await MediaLibrary.createAlbumAsync('Fotos', asset, false)
+      } catch (error) {
+        return new Err(`Error saving file in gallery: ${error}`).show()
       }
-    })();
-  }, []);
+    }
+    
+    console.log(cameraConfiguration)
+    cameraConfiguration.setImage(imageUri) // Save the image in the state
+    return new Ok(imageUri)
+  }
+
+  const openCamera = async () => openMedia(cameraConfiguration, ImagePicker.launchCameraAsync)
+  const openGallery = async () => openMedia(cameraConfiguration, ImagePicker.launchImageLibraryAsync)
+  const toggleModal = () => setModalVisible(!isModalVisible) 
+  
+  // Create a new function that combines the existing behavior with additional functionality
+  const originalSetImage = cameraConfiguration.setImage.bind(cameraConfiguration) // Preserve the original context
+  
+  //! Modify this when the display modal is no longer needed
+  cameraConfiguration.setImage = img => {
+      originalSetImage(img) // Call the original setImage function
+      setImage(img) // Call the additional function
+  } 
 
   return (
     <View style={styles.container}>
-      <Button title="Abrir Cámara" onPress={() => openCamera(setImage)} />
-      <Button title="Seleccionar Imagen de Galería" onPress={() => openGaleria(setImage)} />
+      <Button title="Abrir Cámara" onPress={openCamera} />
+      <Button title="Seleccionar Imagen de Galería" onPress={openGallery} />
 
       {image && (
         <TouchableOpacity onPress={toggleModal}>
@@ -110,31 +119,31 @@ const Camera = () => {
         </View>
       </Modal>
     </View>
-  );
-};
+  )
+}
 
-export default Camera;
+export default CameraConfiguration
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   thumbnail: {
     width: 100,
     height: 100,
     marginTop: 20,
-    borderRadius: 10,
+    borderRadius: 10
   },
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    backgroundColor: 'rgba(0, 0, 0, 0.8)'
   },
   fullImage: {
     width: 300,
-    height: 300,
-  },
-});
+    height: 300
+  }
+})
