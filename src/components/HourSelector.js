@@ -5,7 +5,17 @@ import { TimerPickerModal } from "react-native-timer-picker"
 import { LinearGradient } from "expo-linear-gradient"
 import * as Haptics from "expo-haptics" // for haptic feedback
 
-
+/**
+ * The setter for the optuinal features
+ *
+ * @param {options} OptionalTimeFeatures - options for the hour selector,
+ * The options object can have the following properties:
+ * @param {string} [options.title] - A string to display as the title.
+ * @param {string} [options.defaulttime] - The initial string to show when selecting the hour.
+ * @param {boolean} [options.disabled] - defines if the HourSelector field is enabled or disabled..
+ * @param {boolean} [options.required=false] - Indicates whether the field is required.
+ * @returns {OptionalTimeFeatures} - The Layout that displays the whole HourSelector.
+ **/
 export const OptionalTimeFeatures = options => {
     return {
         title: options.title,
@@ -15,6 +25,14 @@ export const OptionalTimeFeatures = options => {
     }
 }
 
+/**
+ * The logic and layout of the hour selector 
+ * 
+ * @param {string} value - define the current time
+ * @param {Function} onChange - function used to update the current time.
+ * @param {Object} OptionalTimeFeatures - options for the hour selector,
+* @returns {Layout} - The Layout that displays the whole HourSelector.
+ **/
 const HourSelector = ({value, onChange, optionalFeatures}) => {
     const [showPicker, setShowPicker] = useState(false)
     optionalFeatures ??= {}
@@ -58,6 +76,7 @@ const HourSelector = ({value, onChange, optionalFeatures}) => {
     )
 }
 
+// Define the styles of the different elements of the hour selector
 const styles = StyleSheet.create({
     container: {
         padding: 20,
