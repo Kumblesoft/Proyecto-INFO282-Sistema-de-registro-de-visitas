@@ -4,16 +4,15 @@ import { Alert } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useNavigation } from '@react-navigation/native'
 
-const SaveButton = ({formData, onSave}) => {
+const SaveButton = ({title, formData,}) => {
     const navigation = useNavigation()
 
     const handleSubmit = async () => {
     // Verificar que todos los campos de texto estén rellenados
-    const allFieldsFilled = Object.values(formData).every(value => value.trim() !== '')
-
+    //const allFieldsFilled = Object.values(formData).every(value => value.trim() !== '')
+    const allFieldsFilled = true
     if (!allFieldsFilled) {
         Alert.alert('Error', 'Debe rellenar todos los campos de texto')
-        return
     }
 
     try {
@@ -23,9 +22,11 @@ const SaveButton = ({formData, onSave}) => {
       // Crea un form para guardar
         const newForm = {
         id: Date.now().toString(), // Generar un ID único
-        nombreFormulario: formData.titulo || 'Formulario Sin Nombre', // usar el nombre dado
+        nombreFormulario: title || 'Formulario Sin Nombre', 
+        datos:formData,
         }
-
+         // Imprimir en consola los datos que se van a guardar
+        console.log("Datos que se guardarán:", newForm);
       // Guarda el formulario
         await AsyncStorage.setItem('savedForms', JSON.stringify([...existingForms, newForm]))
 

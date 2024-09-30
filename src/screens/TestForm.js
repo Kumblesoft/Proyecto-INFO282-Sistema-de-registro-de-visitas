@@ -25,7 +25,10 @@ export default function TestForm() {
     const [time, setTime] = useState("" + new Date().getHours().toString().padStart(2, "0") + ":" + new Date().getMinutes().toString().padStart(2, "0"))
     const [textData, setTextData] = useState(testFields)
     const [selectedDate, setSelectedDate] = useState(new Date())
-    const [titulo, setTitulo] = useState('')// Estado separado para el título
+    const [title, setTitle] = useState('')// Estado separado para el título
+    const [dropdownValue, setDropdownValue] = useState(null); // Estado para Dropdown
+    const [radioValue, setRadioValue] = useState(null); // Estado para Radio
+    const [checkboxValues, setCheckboxValues] = useState([]); // Estado para Checkbox
 
     const handleChange = (name, value) => {
         setTextData({
@@ -33,13 +36,29 @@ export default function TestForm() {
             [name]: value,
         })
     }
+    const handleDropdownSelect = (value) => {
+        setDropdownValue(value);
+    };
+
+    const handleRadioSelect = (value) => {
+        setRadioValue(value);
+    };
+
+    const handleCheckboxSelect = (values) => {
+        setCheckboxValues(values);
+    };
 
     const saveButtonRef = SaveButton({
-        formData: { ...textData, titulo }, // Incluyendo el título y textData por ahora para guardarlo
-        onSave: (data) => {
-            console.log("Datos guardados exitosamente:", data)
-        },
-    })
+        title: title,
+        formData: {
+            ...textData,
+            selectedDate,
+            time,
+            dropdownValue,
+            radioValue,
+            checkboxValues,
+        }, // Incluyendo todas las selecciones
+    });
 
     return (
         <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
@@ -48,8 +67,8 @@ export default function TestForm() {
                 {/* Campo para el título del formulario */}
                 <TextInput
                     placeholder="Ingrese el título del formulario"
-                    value={titulo}
-                    onChangeText={setTitulo}
+                    value={title}
+                    onChangeText={setTitle}
                     style={styles.textInput} // Estilo para el campo de texto
                 />
 
@@ -63,10 +82,23 @@ export default function TestForm() {
                     Reset to Today
                 </Button>
 
-                <OptionSelector items={testItems} type={OptionComponentType.DROPDOWN} />
-                <OptionSelector items={testItems} type={OptionComponentType.RADIO} optionalFeatures={OptionSelectorFeatures({ title: "Selector Radio" })} />
-                <OptionSelector items={testItems} type={OptionComponentType.CHECKBOX} optionalFeatures={OptionSelectorFeatures({ title: "Checkbox group", defaultOption: "option3", maxChecked: 1, required: true })} />
-
+                <OptionSelector 
+                    items={testItems} 
+                    type={OptionComponentType.DROPDOWN} 
+                    onSelect={handleDropdownSelect} // Manejo de selección de Dropdown
+                />
+                <OptionSelector 
+                    items={testItems} 
+                    type={OptionComponentType.RADIO} 
+                    onSelect={handleRadioSelect} // Manejo de selección de Radio
+                    optionalFeatures={OptionSelectorFeatures({ title: "Selector Radio" })} 
+                />
+                <OptionSelector 
+                    items={testItems} 
+                    type={OptionComponentType.CHECKBOX} 
+                    onSelect={handleCheckboxSelect} // Manejo de selección de Checkbox
+                    optionalFeatures={OptionSelectorFeatures({ title: "Checkbox group", defaultOption: "option3", maxChecked: 2, required: true })} 
+                />
                 <EntradaTexto items={testFields} onSelect={handleChange} />
                 <HourSelector time={time} setTime={setTime} />
             </View>

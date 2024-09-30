@@ -27,8 +27,8 @@ const SavedForms = () => {
     }
 
     useEffect(() => {
-    fetchSavedForms()
-    }, [])
+        fetchSavedForms()
+        }, [])
 
     const renderItem = ({ item }) => (
     <View style={styles.formItem}>
