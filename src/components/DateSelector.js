@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { View } from 'react-native'
 import { Text, Datepicker, NativeDateService } from '@ui-kitten/components'
 
@@ -10,7 +10,7 @@ import { Text, Datepicker, NativeDateService } from '@ui-kitten/components'
  */
 const manageDateFormat = (format) => {
   const mapping = {
-    'dd': 'dd',  // Day in two digits
+    'dd': 'DD',  // Day in two digits
     'mm': 'MM',  // Month in two digits (uppercase for month)
     'aaaa': 'YYYY',  // Year in four digits
   }
@@ -35,8 +35,8 @@ const manageDateFormat = (format) => {
 export const OptionDateFeatures = (options ={}) => {
   return {
     title: options.title ?? "",
-    defaultDate: options.defaultOption === "hoy" ? new Date() : options.defaultOption ?? new Date(),
-    dateFormat: manageDateFormat(options.dateFormat ?? 'dd/MM/yyyy'),
+    defaultDate: options.defaultDate === "hoy" ? new Date() : new Date(options.defaultDate),
+    dateFormat: manageDateFormat(options.dateFormat ?? 'DD/MM/YYYY'),
     disabled: options.disabled ?? false,
     required: options.required ?? false,
   }
@@ -49,26 +49,29 @@ export const OptionDateFeatures = (options ={}) => {
  * @param {Object} optionalFeatures - Configuration options for the DateSelector.
  * @returns {JSX.Element} The rendered DateSelector component.
  */
-const DateSelector = ({ onChange, optionalFeatures}) => {
+const DateSelector = ({value, onChange, optionalFeatures}) => {
+  const hasInitialized = useRef(false)
   const {
     title = "",
     defaultDate = new Date(),
-    dateFormat = 'dd/MM/yyyy',
+    dateFormat = 'DD/MM/YYYY',
     required = false,
     disabled = false
   } = optionalFeatures ?? {}
 
-  const [selectedDate, setSelectedDate] = useState(defaultDate ? new Date(defaultDate) : null)
-
-  const configuredDateService = new NativeDateService('en', { format: dateFormat })
-
+  const [selectedDate, setSelectedDate] = useState(null)
+  const configuredDateService = new NativeDateService('en', {
+    startDayOfWeek:1,
+    format: dateFormat
+  })
   useEffect(() => {
-    if (disabled && defaultDate) {
-      const formattedDate = configuredDateService.format(new Date(defaultDate), dateFormat)
+    if (defaultDate && !hasInitialized.current) {
+      setSelectedDate(defaultDate) 
+      const formattedDate = configuredDateService.format(defaultDate, dateFormat)
       onChange(formattedDate)
-      setSelectedDate(new Date(defaultDate))
+      hasInitialized.current = true
     }
-  }, [disabled])
+  }, [onChange, defaultDate])
 
   /**
    * Handles changes to the selected date.
@@ -77,7 +80,7 @@ const DateSelector = ({ onChange, optionalFeatures}) => {
    */
   const handleDateChange = (nextDate) => {
     setSelectedDate(nextDate)
-    const formattedDate = nextDate ? configuredDateService.format(nextDate, dateFormat) : ""
+    const formattedDate = configuredDateService.format(nextDate, dateFormat)
     onChange(formattedDate)
   }
 
