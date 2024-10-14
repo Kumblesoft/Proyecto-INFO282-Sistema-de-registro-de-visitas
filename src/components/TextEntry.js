@@ -1,6 +1,13 @@
 import React, { useState } from 'react'
 import { View, StyleSheet } from 'react-native'
-import { Text, Input } from '@ui-kitten/components'
+import { Text, Input, Button, Layout, Icon, IconElement} from '@ui-kitten/components'
+
+const AlertIcon = (props) => (
+  <Icon
+    name='alert-circle'
+    {...props}
+  />
+); 
 
 /**
  * Represents optional features for the TextEntry component.
@@ -73,13 +80,25 @@ const TextEntry = ({ optionalFeatures, onSelect }) => {
     }
   }
 
+ 
   return (
     <View style={styles.container}>
       {title && (
-        <Text category="h6" style={styles.label}>
-          {title}
-          {required ? "*" : ""}
-        </Text>
+        <Layout style={required ? styles.required : styles.label} level='1'>
+          <Text category={required ? "label" :"p1"}>
+            {title}
+          </Text>
+          { required ?
+            <Button
+              style={styles.button}
+              appearance='ghost'
+              status='danger'
+              accessoryLeft={AlertIcon}
+            /> 
+            :
+            <></>
+          }
+        </Layout>
       )}
       <Input
         style={styles.input}
@@ -99,6 +118,16 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 15,
     color: '#333',
+  },
+  button: {
+    margin: 2,
+    heigth: 1,
+  },
+  required: {
+    fontSize: 15,
+    color: '#333',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
   },
   input: {
     borderWidth: 1,

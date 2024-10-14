@@ -106,7 +106,7 @@
 					"no editable"
 				],
 				"formato": "dd/mm/aaaa",
-				"fecha predeterminada": "nueva"
+				"fecha predeterminada": "hoy"
 			}
 		],
 		"accion personalizada": "()=>{console.log('Formulario 2 enviado')}"
