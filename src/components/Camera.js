@@ -53,10 +53,11 @@ export const Camera = ({title, required, cameraConfiguration }) => {
   const [isModalVisible, setModalVisible] = useState(false) 
 
   async function openMedia(cameraConfiguration, launchFunction) {
-    let { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
-    
+    let mediaPermissions = await ImagePicker.requestMediaLibraryPermissionsAsync()
+    let cameraPermissions = await ImagePicker.requestCameraPermissionsAsync()    
+
     // Check if permissions are granted, if not show alert and return
-    if (status !== 'granted') {
+    if (mediaPermissions.status !== 'granted' || cameraPermissions.status !== 'granted') {
       Alert.alert(
         'Permissions Required',
         'Camera/Gallery permissions are required to proceed. Please enable them in your app settings.',
@@ -66,7 +67,8 @@ export const Camera = ({title, required, cameraConfiguration }) => {
         ]
       )
     }
-    if (status !== 'granted') return (new Err('Permissions not granted by user')).show()
+    if (mediaPermissions.status !== 'granted' || cameraPermissions.status !== 'granted')
+       return (new Err('Permissions not granted by user')).show()
   
     const result = await launchFunction(cameraConfiguration.getSettings())
     if (result.canceled) return new Err('Operation cancelled')
