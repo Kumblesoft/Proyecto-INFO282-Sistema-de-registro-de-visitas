@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import {Button, Alert} from 'react-native'
 import { Layout } from '@ui-kitten/components'
 import  OptionSelector, { OptionComponentType, OptionSelectorFeatures } from './selector/OptionSelector'
@@ -7,7 +7,7 @@ import DateSelector, {OptionDateFeatures} from './DateSelector'
 import HourSelector, {OptionalTimeFeatures} from './HourSelector'
 import CameraConfiguration, {Camera} from './Camera'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-
+import { Err, Ok } from '../commonStructures/resultEnum'
 
 /**
  * A component that renders a dynamic form based on the provided form data.
@@ -21,7 +21,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 
 
 const DynamicForm = ({ formData }) => {
-const [formState, setFormState] = useState({})
+const formState = new Map()
 
 
   /**
@@ -31,7 +31,7 @@ const [formState, setFormState] = useState({})
    * @param {string} value - The new value for the field.
    */
 const handleInputChange = (field, value) => {
-    setFormState({ ...formState, [field]: value })
+    formState.set(field,value)
 }
 
 /**
@@ -42,12 +42,11 @@ const handleInputChange = (field, value) => {
    */
 const handleSubmit = async () => {
     const requiredFields = formData.campos.filter(field => field.obligatorio)
-    const emptyFields = requiredFields.filter(field => !formState[field.salida])
-    if (emptyFields.length > 0) {
-      Alert.alert('Error', 'Por favor, completa todos los campos obligatorios.')
-      return
+    const emptyFields = requiredFields.some(field => !formState.get(field.salida))
+    if (emptyFields) {
+        return (new Err('Completa todos los campos obligatorios')).show()
     }
-
+    
 
     try {
       const savedFormsString = await AsyncStorage.getItem('savedForms')
@@ -71,7 +70,7 @@ const handleSubmit = async () => {
       await AsyncStorage.setItem('savedForms', JSON.stringify(storedForms))
       console.log("Formulario guardado:", newForm)
       
-      setFormState({})
+      formState.clear()
       Alert.alert("Formulario guardado")
     } catch (error) {
       console.error("Error al guardar el formulario:", error)
@@ -138,7 +137,7 @@ const renderField = (field, index) => {
         return (
         <DateSelector
             key={`fecha-${index}`}  
-            value={formState[field.salida]}
+            value={formState.get(field.salida)}
             onChange={(value) => handleInputChange(field.salida, value)}
             optionalFeatures={OptionDateFeatures({
             title: field.nombre,
@@ -155,7 +154,7 @@ const renderField = (field, index) => {
         return (
         <HourSelector
             key={`hora-${index}`}  
-            value={formState[field.salida]}
+            value={formState.get(field.salida)}
             onChange={(value) => handleInputChange(field.salida, value)}
             optionalFeatures={OptionalTimeFeatures({
             title: field.nombre,
