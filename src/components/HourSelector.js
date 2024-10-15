@@ -1,9 +1,16 @@
 import React, { useState} from 'react'
-import { Button, Text, Layout } from '@ui-kitten/components'
+import { Button, Text, Layout, Icon } from '@ui-kitten/components'
 import { StyleSheet} from 'react-native'
 import { TimerPickerModal } from "react-native-timer-picker"
 import { LinearGradient } from "expo-linear-gradient"
 import * as Haptics from "expo-haptics" // for haptic feedback
+
+const AlertIcon = (props) => (
+  <Icon
+    name='alert-circle'
+    {...props}
+  />
+);
 
 /**
  * The setter for the optuinal features
@@ -50,7 +57,14 @@ const HourSelector = ({onChange, optionalFeatures = {}}) => {
 
     return (
         <Layout>
-            <Text>{required ? title + "*": title }</Text>
+            <View style={styles.text}>
+                <Text style={styles.text} category={required ? "label" :"p2"}>
+                    {title}
+                </Text> 
+                <Text status='danger'> 
+                    {required ? "*": " "} 
+                </Text>
+            </View>
             <Button disabled={disabled} status='success' onPress={()=>setShowPicker(true)} appearance='outline' style={styles.hour} size='large'>{hour}</Button>
             <Button style={styles.button} onPress={()=>setNowTime()}>{"Reset time"}</Button>
             <TimerPickerModal
@@ -75,6 +89,16 @@ const HourSelector = ({onChange, optionalFeatures = {}}) => {
                 hideSeconds={true}
                 agressivelyGetLatestDuretion={true}
             />
+            { required ?
+                <Layout accessoryLeft={AlertIcon} size='small' style={styles.alert}>
+                    <Icon status='danger' fill='#FF0000' name='alert-circle'style={styles.icon}/> 
+                    <Text style={styles.alert} category="p2">
+                        Por favor seleccione una opcion
+                    </Text>
+                </Layout>
+                :
+                <></>
+            }
         </Layout>   
     )
 }
@@ -120,7 +144,26 @@ const styles = StyleSheet.create({
         margin: 2,
         paddingVertical: 12,
         paddingHorizontal: 12,
-    }
+    },
+    text: {
+        marginHorizontal: '1%',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'left',
+    },
+    alert: {
+        flex: 1,
+        margin: 1,
+        marginHorizontal: '1%',
+        color: '#ff0000',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'left',
+    },
+    icon: {
+        width: 20,
+        height: 20,
+    },
 })
 
 export default HourSelector
