@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { View, StyleSheet } from 'react-native'
-import { Text, Input, Button, Layout, Icon, IconElement} from '@ui-kitten/components'
+import { Text, Input, Button, Layout, ViewPager, Icon, IconElement} from '@ui-kitten/components'
 
 const AlertIcon = (props) => (
   <Icon
@@ -84,27 +84,26 @@ const TextEntry = ({ optionalFeatures, onSelect }) => {
   return (
     <View style={styles.container}>
       {title && (
-        <Layout style={required ? styles.required : styles.label} level='1'>
-          <Text category={required ? "label" :"p1"}>
+      <View style={styles.text}>
+          <Text style={styles.text} category={required ? "label" :"p2"}>
             {title}
+          </Text> 
+          <Text status='danger'> 
+            {required ? "*": " "} 
           </Text>
-          { required ?
-            <Button
-              style={styles.button}
-              appearance='ghost'
-              status='danger'
-              accessoryLeft={AlertIcon}
-            /> 
-            :
-            <></>
-          }
-        </Layout>
+      </View>
       )}
-      <Input
-        style={styles.input}
-        value={inputValue}
-        onChangeText={handleChange} 
-      />
+      <Input style={styles.input} value={inputValue} onChangeText={handleChange} />
+      { required ?
+        <Layout accessoryLeft={AlertIcon} size='small' style={styles.alert}>
+          <Icon status='danger' fill='#FF0000' name='alert-circle'style={styles.icon}/> 
+          <Text style={styles.alert} category="p2">
+            Por favor rellene este campo
+          </Text>
+        </Layout>
+        :
+        <></>
+      }
     </View>
   )
 }
@@ -114,20 +113,32 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     backgroundColor: '#ffffff',
+    flexWrap:'wrap',
+    justifyContent: 'left',
   },
   label: {
-    fontSize: 15,
+    fontSize: 10,
     color: '#333',
   },
-  button: {
-    margin: 2,
-    heigth: 1,
-  },
-  required: {
-    fontSize: 15,
-    color: '#333',
+  text: {
+    marginHorizontal: '2%',
     flexDirection: 'row',
     flexWrap: 'wrap',
+    justifyContent: 'left',
+  },
+  alert: {
+    flex: 1,
+    margin: 1,
+    marginHorizontal: '3%',
+    color: '#ff0000',
+    top: -10,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'left',
+  },
+  icon: {
+    width: 20,
+    height: 20,
   },
   input: {
     borderWidth: 1,
