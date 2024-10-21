@@ -8,6 +8,7 @@ import FormSelectorScreen from "./screens/FormSelectorScreen" // Importa tu pant
 import FormFiller from "./screens/FormFiller"
 import SavedForms from "./screens/SavedFormsScreen"
 import { FormProvider } from './context/FormContext'
+import { Header } from "react-native/Libraries/NewAppScreen"
 
 const Stack = createNativeStackNavigator()
 
@@ -17,10 +18,10 @@ export default function App() {
       <NavigationContainer>
         <FormProvider>
           <Stack.Navigator initialRouteName="Menu">
-            <Stack.Screen name="Menu" component={Menu} />
-            <Stack.Screen name="FormSelector" component={FormSelectorScreen} />
-            <Stack.Screen name="SavedForms" component={SavedForms} />
-            <Stack.Screen name="FormFiller" component={FormFiller} />
+            <Stack.Screen name="Menu" component={Menu} options={{headerShown:false}}/>
+            <Stack.Screen name="FormSelector" component={FormSelectorScreen} options={{headerShown:false}}/>
+            <Stack.Screen name="SavedForms" component={SavedForms} options={{headerShown:false}}/>
+            <Stack.Screen name="FormFiller" component={FormFiller} options={{headerShown:false}} />
           </Stack.Navigator>
         </FormProvider>
       </NavigationContainer>

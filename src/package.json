@@ -15,6 +15,7 @@
     "@react-navigation/native-stack": "^6.11.0",
     "@ui-kitten/components": "^5.3.1",
     "@ui-kitten/date-fns": "^5.3.1",
+    "@ui-kitten/eva-icons": "^5.3.1",
     "date-fns": "^4.1.0",
     "expo": "~51.0.37",
     "expo-haptics": "^13.0.1",
@@ -25,6 +26,7 @@
     "react": "18.2.0",
     "react-native": "0.74.5",
     "react-native-fs": "^2.20.0",
+    "react-native-linear-gradient": "^2.8.3",
     "react-native-svg": "^15.7.1",
     "react-native-timer-picker": "^1.10.3",
     "realm": "^12.13.1"

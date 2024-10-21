@@ -2,7 +2,7 @@ import React from "react"
 import { StyleSheet, View, TouchableOpacity, StatusBar } from "react-native"
 import { Text, Layout } from "@ui-kitten/components" 
 import { Alert } from 'react-native'
-import Svg, { Circle } from "react-native-svg"
+import Svg, { Circle, Defs, Stop, LinearGradient as SvgLinearGradient } from "react-native-svg"
 import { useNavigation } from '@react-navigation/native' 
 import { useFormContext } from '../context/FormContext' // Importa el contexto
 
@@ -29,7 +29,13 @@ export default function Menu() {
       <StatusBar barStyle="dark-content" backgroundColor="#3F704D" />
       <View style={styles.container}>
         <Svg height="70%" width="100%" style={styles.svgStyle}>
-          <Circle cx="50%" cy="10%" r="80%" fill="#3F704D" />
+        <Defs>
+          <SvgLinearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <Stop offset="0%" stopColor="#01a29d" stopOpacity="1" />
+            <Stop offset="100%" stopColor="#9dfbad" stopOpacity="1" />
+          </SvgLinearGradient>
+        </Defs>
+        <Circle cx="50%" cy="10%" r="80%" fill="url(#grad)" />
         </Svg>
 
         <View style={styles.header}>
@@ -80,7 +86,10 @@ const styles = StyleSheet.create({
   },
   title: {
     fontWeight: "bold",
-    color: "white"
+    color: "white",
+    textShadowColor: "black",
+    textShadowOffset: {width: 0, height: 2},
+    textShadowRadius: 0.2,
   },
   subtitle: {
     color: "white",
@@ -102,7 +111,13 @@ const styles = StyleSheet.create({
     width: 170,
     height: 170,
     borderRadius: 95,
-    backgroundColor: "#707EF6",
+    borderColor: "#000",
+    backgroundColor: "#5a6bf7",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.9,
+    shadowRadius: 10,
+    elevation: 15,
     alignItems: "center",
     justifyContent: "center",
     position: "absolute",
@@ -118,7 +133,7 @@ const styles = StyleSheet.create({
     marginBottom: 50
   },
   buttonFormularios: {
-    backgroundColor: "#707EF6",
+    backgroundColor: "#5a6bf7",
     paddingHorizontal: 30,
     paddingVertical: 10,
     borderRadius: 20
