@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
 import { View, StyleSheet } from 'react-native'
-import { Text, Input } from '@ui-kitten/components'
+
+import { Text, Input, Button, Layout, ViewPager, Icon } from '@ui-kitten/components'
 import { Err, Ok } from '../commonStructures/resultEnum'
+
 
 /**
  * Represents optional features for the TextEntry component.
@@ -79,21 +81,31 @@ const TextEntry = ({ optionalFeatures, onSelect }) => {
     return new Ok("Correct input")
   }
 
+ 
   return (
     <View style={styles.container}>
       {title && (
-        <Text category="h6" style={styles.label}>
-          {title}
-          {required ? "*" : ""}
-        </Text>
+      <View style={styles.text}>
+          <Text style={styles.text} category={required ? "label" :"p2"}>
+            {title}
+          </Text> 
+          <Text status='danger'> 
+            {required ? "*": " "} 
+          </Text>
+      </View>
       )}
-      {!isValidInput && <Text style={{ color: 'red' }}>Entrada Invalida</Text>}
-      <Input
-        style={styles.input}
-        value={inputValue}
-        onChangeText={handleChange} 
-        keyboardType={limitations && limitations.includes("solo numeros") ? "numeric" : "default"} // Solo números
-      />
+
+      <Input style={styles.input} value={inputValue} onChangeText={handleChange} />
+      { required ?
+        <Layout size='small' style={styles.alert}>
+          <Icon status='danger' fill='#FF0000' name='alert-circle'style={styles.icon}/> 
+          <Text style={styles.alert} category="p2">
+            Por favor rellene este campo
+          </Text>
+        </Layout>
+        :
+        <></>
+      }
     </View>
   )
 }
@@ -103,10 +115,32 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     backgroundColor: '#ffffff',
+    flexWrap:'wrap',
+    justifyContent: 'left',
   },
   label: {
-    fontSize: 15,
+    fontSize: 10,
     color: '#333',
+  },
+  text: {
+    marginHorizontal: '2%',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'left',
+  },
+  alert: {
+    flex: 1,
+    margin: 1,
+    marginHorizontal: '3%',
+    color: '#ff0000',
+    top: -10,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'left',
+  },
+  icon: {
+    width: 20,
+    height: 20,
   },
   input: {
     borderWidth: 1,

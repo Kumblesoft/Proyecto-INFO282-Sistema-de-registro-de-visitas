@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { View } from 'react-native'
-import { Text, Datepicker, NativeDateService } from '@ui-kitten/components'
-
+import { View, StyleSheet } from 'react-native'
+import { Text, Layout, Icon, Datepicker, NativeDateService } from '@ui-kitten/components'
 /**
  * Converts a custom date format to a format compatible with date-fns.
  *
@@ -87,10 +86,14 @@ const DateSelector = ({value, onChange, optionalFeatures}) => {
   return (
     <View style={{ marginVertical: 10 }}>
       {title && (
-        <Text category="h6">
-          {title}
-          {required ? "*" : ""}
-        </Text>
+        <View style={styles.text}>
+          <Text style={styles.text} category={required ? "label" :"p2"}>
+            {title}
+          </Text> 
+          <Text status='danger'> 
+            {required ? "*": " "} 
+          </Text>
+        </View>
       )}
       <Datepicker
         date={selectedDate}
@@ -98,8 +101,40 @@ const DateSelector = ({value, onChange, optionalFeatures}) => {
         onSelect={handleDateChange}
         disabled={disabled}
       />
+      { required ?
+        <Layout size='small' style={styles.alert}>
+          <Icon status='danger' fill='#FF0000' name='alert-circle'style={styles.icon}/> 
+          <Text style={styles.alert} category="p2">
+            Por favor seleccione una fecha
+          </Text>
+        </Layout>
+        :
+        <></>
+      }
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  text: {
+    marginHorizontal: '1%',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'left',
+  },
+  alert: {
+    flex: 1,
+    margin: 1,
+    marginHorizontal: '1%',
+    color: '#ff0000',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'left',
+  },
+  icon: {
+    width: 20,
+    height: 20,
+  },
+})
 
 export default DateSelector
