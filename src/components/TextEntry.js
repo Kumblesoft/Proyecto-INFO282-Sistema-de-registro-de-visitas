@@ -1,13 +1,6 @@
 import React, { useState } from 'react'
 import { View, StyleSheet } from 'react-native'
-import { Text, Input, Button, Layout, ViewPager, Icon, IconElement} from '@ui-kitten/components'
-
-const AlertIcon = (props) => (
-  <Icon
-    name='alert-circle'
-    {...props}
-  />
-); 
+import { Text, Input, Button, Layout, ViewPager, Icon } from '@ui-kitten/components'
 
 /**
  * Represents optional features for the TextEntry component.
@@ -95,7 +88,7 @@ const TextEntry = ({ optionalFeatures, onSelect }) => {
       )}
       <Input style={styles.input} value={inputValue} onChangeText={handleChange} />
       { required ?
-        <Layout accessoryLeft={AlertIcon} size='small' style={styles.alert}>
+        <Layout size='small' style={styles.alert}>
           <Icon status='danger' fill='#FF0000' name='alert-circle'style={styles.icon}/> 
           <Text style={styles.alert} category="p2">
             Por favor rellene este campo

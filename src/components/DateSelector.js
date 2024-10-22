@@ -1,14 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { View, StyleSheet } from 'react-native'
 import { Text, Layout, Icon, Datepicker, NativeDateService } from '@ui-kitten/components'
-
-const AlertIcon = (props) => (
-  <Icon
-    name='alert-circle'
-    {...props}
-  />
-);
-
 /**
  * Converts a custom date format to a format compatible with date-fns.
  *
@@ -110,10 +102,10 @@ const DateSelector = ({value, onChange, optionalFeatures}) => {
         disabled={disabled}
       />
       { required ?
-        <Layout accessoryLeft={AlertIcon} size='small' style={styles.alert}>
+        <Layout size='small' style={styles.alert}>
           <Icon status='danger' fill='#FF0000' name='alert-circle'style={styles.icon}/> 
           <Text style={styles.alert} category="p2">
-            Por favor seleccione una opcion
+            Por favor seleccione una fecha
           </Text>
         </Layout>
         :

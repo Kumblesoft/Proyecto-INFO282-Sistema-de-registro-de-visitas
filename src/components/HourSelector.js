@@ -1,17 +1,9 @@
 import React, { useState} from 'react'
 import { Button, Text, Layout, Icon } from '@ui-kitten/components'
-import { StyleSheet} from 'react-native'
+import { View, StyleSheet } from 'react-native'
 import { TimerPickerModal } from "react-native-timer-picker"
 import { LinearGradient } from "expo-linear-gradient"
 import * as Haptics from "expo-haptics" // for haptic feedback
-
-const AlertIcon = (props) => (
-  <Icon
-    name='alert-circle'
-    {...props}
-  />
-);
-
 /**
  * The setter for the optuinal features
  *
@@ -64,9 +56,22 @@ const HourSelector = ({onChange, optionalFeatures = {}}) => {
                 <Text status='danger'> 
                     {required ? "*": " "} 
                 </Text>
-            </View>
-            <Button disabled={disabled} status='success' onPress={()=>setShowPicker(true)} appearance='outline' style={styles.hour} size='large'>{hour}</Button>
-            <Button style={styles.button} onPress={()=>setNowTime()}>{"Reset time"}</Button>
+            </View> 
+            <Button disabled={disabled} onPress={()=>setShowPicker(true)} appearance='outline' style={styles.hour} size='large'>{hour}</Button>
+            { required ?
+                <Layout size='small' style={styles.alert}>
+                    <Icon status='danger' fill='#FF0000' name='alert-circle'style={styles.icon}/> 
+                    <Text style={styles.alert} category="p2">
+                        Por favor seleccione una hora
+                    </Text>
+                </Layout>
+                :
+                <></>
+            }
+            { disabled ? 
+                <></> : 
+                <Button style={styles.button} onPress={()=>setNowTime()}>{"Reset time"}</Button>
+            }
             <TimerPickerModal
                 visible={showPicker}
                 setIsVisible={setShowPicker}
@@ -89,16 +94,7 @@ const HourSelector = ({onChange, optionalFeatures = {}}) => {
                 hideSeconds={true}
                 agressivelyGetLatestDuretion={true}
             />
-            { required ?
-                <Layout accessoryLeft={AlertIcon} size='small' style={styles.alert}>
-                    <Icon status='danger' fill='#FF0000' name='alert-circle'style={styles.icon}/> 
-                    <Text style={styles.alert} category="p2">
-                        Por favor seleccione una opcion
-                    </Text>
-                </Layout>
-                :
-                <></>
-            }
+            
         </Layout>   
     )
 }
