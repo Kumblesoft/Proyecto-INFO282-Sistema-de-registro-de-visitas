@@ -113,7 +113,7 @@ const DateSelector = ({value, onChange, optionalFeatures}) => {
         <Layout accessoryLeft={AlertIcon} size='small' style={styles.alert}>
           <Icon status='danger' fill='#FF0000' name='alert-circle'style={styles.icon}/> 
           <Text style={styles.alert} category="p2">
-            Por favor rellene este campo
+            Por favor seleccione una opcion
           </Text>
         </Layout>
         :
