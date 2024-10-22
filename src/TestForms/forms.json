@@ -106,7 +106,7 @@
 					"no editable"
 				],
 				"formato": "dd/mm/aaaa",
-				"fecha predeterminada": "nueva"
+				"fecha predeterminada": "hoy"
 			}
 		],
 		"accion personalizada": "()=>{console.log('Formulario 2 enviado')}"
@@ -145,9 +145,29 @@
 			  "obligatorio": true,
 			  "salida": "edad",
 			  "limitaciones": [
-				"solo numeros"
+				"solo enteros positivos"
 			  ],
 			  "formato": []
+			},
+			{
+				"tipo": "texto",
+				"nombre": "Ingrese cualquier numero real",
+				"obligatorio": true,
+				"salida": "real",
+				"limitaciones": [
+				  "solo numeros"
+				],
+				"formato": []
+			},
+			{
+				"tipo": "texto",
+				"nombre": "Ingrese cualquier entero",
+				"obligatorio": true,
+				"salida": "entero",
+				"limitaciones": [
+				  "solo enteros"
+				],
+				"formato": []
 			},
 			{
 			  "tipo": "texto",

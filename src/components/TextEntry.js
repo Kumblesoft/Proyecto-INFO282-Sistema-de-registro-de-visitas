@@ -30,8 +30,37 @@ const limitationMap = new Map([
   ["solo letras", text => ((/^[a-zA-Z\s]*$/)).test(text)],
   ["no numeros", text => !(/[0-9]/).test(text)],
   ["solo numeros", text => /^-?\d+([.,]\d+)?$/.test(text)], // Acepta solo números reales (incluyendo negativos y decimales con punto)
-  ["solo enteros", text => /^-?\d+$/.test(text)] // Acepta solo enteros (positivos o negativos)
+  ["solo enteros", text => /^-?\d+$/.test(text)], // Acepta solo enteros (positivos o negativos)
+  ["solo enteros positivos y cero", text => /^\d+$/.test(text)]
 ])
+
+const limitationBehaviour = new Map([
+  ["solo letras", {
+    validationFunction: text => ((/^[a-zA-Z\s]*$/)).test(text),
+    keyboardType: "default"
+  }], 
+  ["no numeros", {
+    validationFunction: text => !(/[0-9]/).test(text),
+    keyboardType: "default"
+  }],
+  ["solo numeros", {
+    validationFunction: text => /^-?\d+([.,]\d+)?$/.test(text),
+    keyboardType: "numeric"
+  }],
+  ["solo enteros", {
+    validationFunction: text => /^-?\d+$/.test(text),
+    keyboardType: "numeric"
+  }],
+  ["solo enteros positivos y cero", {
+    validationFunction: text => /^\d+$/.test(text),
+    keyboardType: "numeric"
+  }],
+  ["email", {
+    validationFunction: text => /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i.test(text),
+    keyboardType: "default"
+  }]
+])
+
 
 /**
  * Map that defines transformation functions as formatting for the fields
@@ -54,7 +83,7 @@ const TextEntry = ({ optionalFeatures, onSelect }) => {
   const { title, required, limitations, format } = optionalFeatures
   const [ inputValue, setInputValue ] = useState('')
 
-  const [ isValidInput, setIsValidInput ] = useState(true)
+  const [ invalidLimitations, setInvalidLimitations ] = useState([])
 
   /**
    * Handles changes to the input field and validates the input against specified limitations.
@@ -64,16 +93,26 @@ const TextEntry = ({ optionalFeatures, onSelect }) => {
   const handleChange = text => {
     
     // Limitations
-    if (text === "") {
-      setIsValidInput(true)
+    if (text === '') {
+      setInvalidLimitations('')
       return new Ok("Empty string")
     }
 
-    setIsValidInput(limitations.every(limitation => limitationMap.get(limitation)(text)))
-    if (!isValidInput) return new Err("No cumple las limitaciones")
+    const tempInvalidLimitations = []
+    limitations.map(limitation => {
+      if (!limitationMap.get(limitation)(text)) {
+        const limitationName = String.fromCharCode(limitation.charCodeAt(0) - 32) + limitation.substr(1)
+        tempInvalidLimitations.push(limitationName) 
+      }
+    })
+    setInvalidLimitations(tempInvalidLimitations)
+    console.log(limitationBehaviour.get(limitations.at(0)).keyboardType)
+
+
+    if (invalidLimitations.length) return new Err("No cumple las limitaciones")
       
     // Formatting
-    formattedText = format.forEach(formattingOption => text = formatMap.get(formattingOption)(text))
+    const formattedText = format.forEach(formattingOption => text = formatMap.get(formattingOption)(text))
     setInputValue(formattedText)
     onSelect(formattedText)   
     return new Ok("Correct input")
@@ -87,12 +126,12 @@ const TextEntry = ({ optionalFeatures, onSelect }) => {
           {required ? "*" : ""}
         </Text>
       )}
-      {!isValidInput && <Text style={{ color: 'red' }}>Entrada Invalida</Text>}
+      { invalidLimitations.length ? invalidLimitations.map(name => <Text style={{ color: 'red' }}> -{name} </Text>) : <></>}
       <Input
         style={styles.input}
         value={inputValue}
         onChangeText={handleChange} 
-        keyboardType={limitations && limitations.includes("solo numeros") ? "numeric" : "default"} // Solo números
+        keyboardType={limitations} // Solo números
       />
     </View>
   )
