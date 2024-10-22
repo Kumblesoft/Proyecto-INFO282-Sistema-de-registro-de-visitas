@@ -1,5 +1,5 @@
 import React, { useState} from 'react'
-import { Button, Text, Layout } from '@ui-kitten/components'
+import { Button, Text, Layout, Icon, IconElement } from '@ui-kitten/components'
 import { StyleSheet} from 'react-native'
 import { TimerPickerModal } from "react-native-timer-picker"
 import { LinearGradient } from "expo-linear-gradient"
@@ -25,6 +25,21 @@ export const OptionalTimeFeatures = options => {
     }
 }
 
+const StarIcon = (props) => (
+    <Icon
+        {...props}
+        name='reset'
+    />
+);
+
+export const IconSimpleUsageShowcase = () => (
+    <Icon
+        style={styles.icon}
+        fill='#8F9BB3'
+        name='star'
+    />
+);
+
 /**
  * The logic and layout of the hour selector 
  * 
@@ -49,10 +64,11 @@ const HourSelector = ({onChange, optionalFeatures = {}}) => {
     }
 
     return (
-        <Layout>
-            <Text>{required ? title + "*": title }</Text>
+        <Layout style={styles.container}>
+            <Text style={styles.titles}>{required ? title + "*": title }</Text>
+            <Layout style={styles.buttonContainer}>
             <Button disabled={disabled} status='success' onPress={()=>setShowPicker(true)} appearance='outline' style={styles.hour} size='large'>{hour}</Button>
-            <Button style={styles.button} onPress={()=>setNowTime()}>{"Reset time"}</Button>
+            <Button style={styles.button} onPress={()=>setNowTime()}>{"⟲"}</Button>
             <TimerPickerModal
                 visible={showPicker}
                 setIsVisible={setShowPicker}
@@ -75,6 +91,7 @@ const HourSelector = ({onChange, optionalFeatures = {}}) => {
                 hideSeconds={true}
                 agressivelyGetLatestDuretion={true}
             />
+            </Layout>
         </Layout>   
     )
 }
@@ -82,9 +99,23 @@ const HourSelector = ({onChange, optionalFeatures = {}}) => {
 // Define the styles of the different elements of the hour selector
 const styles = StyleSheet.create({
     container: {
-        padding: 20,
-        borderRadius: 10,
-        alignItems: 'center',
+        padding: 10,
+        marginBottom: 15,
+        borderRadius: 8,
+        backgroundColor: '#ffffff', // Color fondo suave
+        borderWidth: 1,
+        borderColor: '#9beba5',
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.9,
+        shadowRadius: 2,
+        elevation: 3,
+        alignItems: 'flex-start'
+    },
+    titles: {
+        fontWeight: 'bold',
+        marginBottom: 10,
+        margin: 2,
     },
     pickerContainer: {
         flexDirection: 'row',
@@ -118,8 +149,20 @@ const styles = StyleSheet.create({
     },
     button: {
         margin: 2,
-        paddingVertical: 12,
-        paddingHorizontal: 12,
+        paddingVertical: 5,
+        paddingHorizontal: 5,
+        fontWeight: 'bold',
+        fontSize: 10,
+    },
+    buttonContainer: {
+        flexDirection: 'row',  // Coloca los botones uno al lado del otro
+        justifyContent: 'space-between',  // Espacio entre los botones
+        marginBottom: 10,
+        backgroundColor: '#F5F5F5',
+    },
+    icon: {
+        width: 32,
+        height: 32,
     }
 })
 

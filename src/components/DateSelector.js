@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { View } from 'react-native'
-import { Text, Datepicker, NativeDateService } from '@ui-kitten/components'
+import { View, StyleSheet } from 'react-native'
+import { Text, Datepicker, NativeDateService, Layout } from '@ui-kitten/components'
 
 /**
  * Converts a custom date format to a format compatible with date-fns.
@@ -85,9 +85,9 @@ const DateSelector = ({value, onChange, optionalFeatures}) => {
   }
 
   return (
-    <View style={{ marginVertical: 10 }}>
+    <Layout style={styles.containerBox}>
       {title && (
-        <Text category="h6">
+        <Text category="h6" style={styles.titles}>
           {title}
           {required ? "*" : ""}
         </Text>
@@ -97,9 +97,35 @@ const DateSelector = ({value, onChange, optionalFeatures}) => {
         dateService={configuredDateService}
         onSelect={handleDateChange}
         disabled={disabled}
+        style={styles.datepicker}
       />
-    </View>
+    </Layout>
   )
 }
+
+const styles = StyleSheet.create({
+  titles: {
+        fontWeight: 'bold',
+        marginBottom: 10,
+        margin: 2,
+  },
+  containerBox: {
+    padding: 10,
+    marginBottom: 15,
+    borderRadius: 8,
+    backgroundColor: '#ffffff', // Color fondo suave
+    borderWidth: 1,
+    borderColor: '#9beba5',
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.9,
+    shadowRadius: 2,
+    elevation: 3,
+    alignItems: 'flex-start'
+  },
+  datepicker: {
+    width: 360,
+  }
+})
 
 export default DateSelector

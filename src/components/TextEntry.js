@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { View, StyleSheet } from 'react-native'
-import { Text, Input } from '@ui-kitten/components'
+import { Text, Input, Layout } from '@ui-kitten/components'
 
 /**
  * Represents optional features for the TextEntry component.
@@ -74,19 +74,19 @@ const TextEntry = ({ optionalFeatures, onSelect }) => {
   }
 
   return (
-    <View style={styles.container}>
-      {title && (
-        <Text category="h6" style={styles.label}>
-          {title}
-          {required ? "*" : ""}
-        </Text>
-      )}
-      <Input
-        style={styles.input}
-        value={inputValue}
-        onChangeText={handleChange} 
-      />
-    </View>
+    <Layout style={styles.containerBox}>
+        {title && (
+          <Text category="h6" style={styles.label}>
+            {title}
+            {required ? "*" : ""}
+          </Text>
+        )}
+        <Input
+          style={styles.input}
+          value={inputValue}
+          onChangeText={handleChange}
+        />
+    </Layout>
   )
 }
 
@@ -99,14 +99,33 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 15,
     color: '#333',
+    alignSelf: 'flex-start',
+    marginBottom: 12,
   },
   input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 10,
+    borderWidth: 0,
+    borderBottomWidth: 2,    
+    borderBottomColor: '#000',
+    backgroundColor: 'transparent',
     borderRadius: 5,
+    borderColor: '#ccc',
     backgroundColor: '#fff',
     fontSize: 15,
+    alignSelf: 'flex-start',
+  },
+  containerBox: {
+    padding: 10,
+    marginBottom: 15,
+    borderRadius: 8,
+    backgroundColor: '#ffffff', // Color fondo suave
+    borderWidth: 1,
+    borderColor: '#9beba5',
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.9,
+    shadowRadius: 2,
+    elevation: 3,
+    alignItems: 'flex-start'
   },
 })
 
