@@ -32,8 +32,8 @@ const FormFillerScreen = ({ route }) => {
     );
 
     return (
-            <Layout>
-                <ScrollView>
+            <Layout style={styles.layoutContainer}>
+                <ScrollView style={styles.layoutContainer}>
                     <LinearGradient colors={['#29C9A2', '#A0ECA5']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
                         <TopNavigation
                             title={renderTitle}
@@ -48,8 +48,7 @@ const FormFillerScreen = ({ route }) => {
                         <DynamicForm formData={form}/>
                     </View>
                     
-                    <View style={{flex: 1, padding: 16, marginTop: 20 }}>
-                    </View>
+                    
                 </ScrollView>
             </Layout>
 
@@ -72,9 +71,13 @@ const styles = StyleSheet.create({
     backIcon: {
         width: 25,
         height: 25,
+    },
     gradient: {
         paddingVertical: 10, // Ajusta el padding para dar espacio al texto
     },
+    layoutContainer:{
+        backgroundColor: '#fff',
+        flex: 1,
     },
 });
 

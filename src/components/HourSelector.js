@@ -5,6 +5,10 @@ import { TimerPickerModal } from "react-native-timer-picker"
 import { LinearGradient } from "expo-linear-gradient"
 import * as Haptics from "expo-haptics" // for haptic feedback
 
+const resetIcon = (props) => (
+    <Icon name='sync-outline' {...props} />
+);
+
 /**
  * The setter for the optuinal features
  *
@@ -68,7 +72,7 @@ const HourSelector = ({onChange, optionalFeatures = {}}) => {
             <Text style={styles.titles}>{required ? title + "*": title }</Text>
             <Layout style={styles.buttonContainer}>
             <Button disabled={disabled} status='success' onPress={()=>setShowPicker(true)} appearance='outline' style={styles.hour} size='large'>{hour}</Button>
-            <Button style={styles.button} onPress={()=>setNowTime()}>{"⟲"}</Button>
+            <Button style={styles.button} onPress={()=>setNowTime()} accessoryLeft={resetIcon}></Button>
             <TimerPickerModal
                 visible={showPicker}
                 setIsVisible={setShowPicker}

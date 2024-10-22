@@ -1,6 +1,6 @@
 import React from 'react'
-import {Button, Alert} from 'react-native'
-import { Layout } from '@ui-kitten/components'
+import {Alert} from 'react-native'
+import {Button, Text, Layout, TouchableOpacity, Icon, IconElement } from '@ui-kitten/components'
 import  OptionSelector, { OptionComponentType, OptionSelectorFeatures } from './selector/OptionSelector'
 import TextEntry, {OptionalTextFeatures} from './TextEntry' 
 import DateSelector, {OptionDateFeatures} from './DateSelector' 
@@ -8,7 +8,11 @@ import HourSelector, {OptionalTimeFeatures} from './HourSelector'
 import CameraConfiguration, {Camera} from './Camera'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Err, Ok } from '../commonStructures/resultEnum'
+import { StyleSheet } from "react-native" 
 
+const tickIcon = (props) => (
+    <Icon  name='checkmark-outline' { ...props} />
+);
 /**
  * A component that renders a dynamic form based on the provided form data.
  *
@@ -197,11 +201,29 @@ const renderField = (field, index) => {
 }
 
 return (
-    <Layout>
+    <Layout style={styles.layoutContainer}>
     {formData.campos.map((field, index) => renderField(field, index))}
-    <Button title="Enviar" onPress={handleSubmit} />
+    <Button onPress={handleSubmit} style={styles.button} status='primary' accessoryRight={tickIcon}>
+        <Text style={styles.buttonText}>Guardar</Text>
+    </Button>
+    
     </Layout>
 )
 }
+
+const styles = StyleSheet.create({
+    button: {
+        borderRadius: 10,
+        borderColor: "#53a75f"
+    },
+    buttonText: {
+        color: 'white',
+        fontWeight: "bold",
+        fontSize: 30
+    },
+    layoutContainer:{
+        backgroundColor: "#ffffff"
+    }
+})
 
 export default DynamicForm

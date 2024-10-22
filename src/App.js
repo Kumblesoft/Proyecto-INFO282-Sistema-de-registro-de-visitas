@@ -1,7 +1,7 @@
 import React from "react"
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { ApplicationProvider } from "@ui-kitten/components"
+import { ApplicationProvider, IconRegistry } from "@ui-kitten/components"
 import * as eva from "@eva-design/eva"
 import Menu from "./screens/Menu"
 import FormSelectorScreen from "./screens/FormSelectorScreen" // Importa tu pantalla de selección de formularios
@@ -9,12 +9,22 @@ import FormFiller from "./screens/FormFiller"
 import SavedForms from "./screens/SavedFormsScreen"
 import { FormProvider } from './context/FormContext'
 import { Header } from "react-native/Libraries/NewAppScreen"
+import {EvaIconsPack} from "@ui-kitten/eva-icons"
+
+const myTheme = {
+  ...eva.light, // Usamos el tema claro de Eva Design
+  'color-primary-default': '#6ddb7c',  // Color principal (normal)
+  'color-primary-active': '#4caf50',   // Color cuando se presiona el botón
+  'color-primary-hover': '#81c784',    // Color cuando está en hover o toque
+}
 
 const Stack = createNativeStackNavigator()
 
 export default function App() {
   return (
-    <ApplicationProvider {...eva} theme={eva.light}>
+    <>
+    <IconRegistry icons={EvaIconsPack} />
+    <ApplicationProvider {...eva} theme={myTheme}>
       <NavigationContainer>
         <FormProvider>
           <Stack.Navigator initialRouteName="Menu">
@@ -26,5 +36,6 @@ export default function App() {
         </FormProvider>
       </NavigationContainer>
     </ApplicationProvider>
+    </>
   )
 }
