@@ -1,6 +1,9 @@
 import React, { useState } from 'react'
 import { View, StyleSheet } from 'react-native'
+
 import { Text, Input, Button, Layout, ViewPager, Icon } from '@ui-kitten/components'
+import { Err, Ok } from '../commonStructures/resultEnum'
+
 
 /**
  * Represents optional features for the TextEntry component.
@@ -23,6 +26,25 @@ export const OptionalTextFeatures = (options = {}) => {
 }
 
 /**
+ * Map that defines the validator functions for each limitation
+ */
+const limitationMap = new Map([
+  ["solo letras", text => ((/^[a-zA-Z\s]*$/)).test(text)],
+  ["no numeros", text => !(/[0-9]/).test(text)],
+  ["solo numeros", text => /^-?\d+([.,]\d+)?$/.test(text)], // Acepta solo números reales (incluyendo negativos y decimales con punto)
+  ["solo enteros", text => /^-?\d+$/.test(text)] // Acepta solo enteros (positivos o negativos)
+])
+
+/**
+ * Map that defines transformation functions as formatting for the fields
+ */
+const formatMap = new Map([
+  ["solo mayusculas", input => input.toUpperCase()],
+  ["solo minusculas", input => input.toUpperCase()]
+])
+
+
+/**
  * A component for text entry that allows users to input text with optional validation.
  *
  * @param {Object} props - Props for the TextEntry component.
@@ -32,45 +54,31 @@ export const OptionalTextFeatures = (options = {}) => {
  */
 const TextEntry = ({ optionalFeatures, onSelect }) => {
   const { title, required, limitations, format } = optionalFeatures
-  const [inputValue, setInputValue] = useState('')
+  const [ inputValue, setInputValue ] = useState('')
+
+  const [ isValidInput, setIsValidInput ] = useState(true)
 
   /**
    * Handles changes to the input field and validates the input against specified limitations.
    *
    * @param {string} text - The new input value.
    */
-  const handleChange = (text) => {
-    let isValid = true
-
-    if (limitations.includes("solo letras")) {
-      const regex = /^[a-zA-Z\s]*$/ 
-      isValid = regex.test(text)
+  const handleChange = text => {
+    
+    // Limitations
+    if (text === "") {
+      setIsValidInput(true)
+      return new Ok("Empty string")
     }
 
-    if (limitations.includes("no numeros")) {
-      const regex = /[0-9]/ 
-      isValid = isValid && !regex.test(text)
-    }
-    if (limitations.includes("solo numeros")) {
-      const regex = /[0-9]/ 
-      isValid = regex.test(text)
-    }
-
-    if (isValid) {
-
-      let formattedText = text
-      format.forEach(condition => {
-        if (condition === "solo mayusculas") {
-          formattedText = formattedText.toUpperCase() 
-        }
-        if (condition === "solo minusculas") {
-          formattedText = formattedText.toLowerCase() 
-        }
-      })
-
-      setInputValue(formattedText)
-      onSelect(formattedText) 
-    }
+    setIsValidInput(limitations.every(limitation => limitationMap.get(limitation)(text)))
+    if (!isValidInput) return new Err("No cumple las limitaciones")
+      
+    // Formatting
+    formattedText = format.forEach(formattingOption => text = formatMap.get(formattingOption)(text))
+    setInputValue(formattedText)
+    onSelect(formattedText)   
+    return new Ok("Correct input")
   }
 
  
@@ -86,6 +94,7 @@ const TextEntry = ({ optionalFeatures, onSelect }) => {
           </Text>
       </View>
       )}
+
       <Input style={styles.input} value={inputValue} onChangeText={handleChange} />
       { required ?
         <Layout size='small' style={styles.alert}>
