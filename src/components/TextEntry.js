@@ -24,16 +24,8 @@ export const OptionalTextFeatures = (options = {}) => {
 }
 
 /**
- * Map that defines the validator functions for each limitation
+ * Map that defines the validator functions and behaviour of each limitation
  */
-const limitationMap = new Map([
-  ["solo letras", text => ((/^[a-zA-Z\s]*$/)).test(text)],
-  ["no numeros", text => !(/[0-9]/).test(text)],
-  ["solo numeros", text => /^-?\d+([.,]\d+)?$/.test(text)], // Acepta solo números reales (incluyendo negativos y decimales con punto)
-  ["solo enteros", text => /^-?\d+$/.test(text)], // Acepta solo enteros (positivos o negativos)
-  ["solo enteros positivos y cero", text => /^\d+$/.test(text)]
-])
-
 const limitationBehaviour = new Map([
   ["solo letras", {
     validationFunction: text => ((/^[a-zA-Z\s]*$/)).test(text),
@@ -100,14 +92,14 @@ const TextEntry = ({ optionalFeatures, onSelect }) => {
 
     const tempInvalidLimitations = []
     limitations.map(limitation => {
-      if (!limitationMap.get(limitation)(text)) {
+      console.log(limitation)
+      if (!limitationBehaviour.get(limitation).validationFunction(text)) {
         const limitationName = String.fromCharCode(limitation.charCodeAt(0) - 32) + limitation.substr(1)
         tempInvalidLimitations.push(limitationName) 
       }
     })
     setInvalidLimitations(tempInvalidLimitations)
     console.log(limitationBehaviour.get(limitations.at(0)).keyboardType)
-
 
     if (invalidLimitations.length) return new Err("No cumple las limitaciones")
       
