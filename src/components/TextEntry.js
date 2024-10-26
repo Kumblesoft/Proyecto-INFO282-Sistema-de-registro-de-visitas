@@ -108,7 +108,7 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef}) => {
       </View>
       )}
 
-      <Input style={styles.input} value={inputValue} onChangeText={handleChange} />
+      <Input style={[styles.input, isRequiredAlert && { borderColor: '#ff0000', }]} value={inputValue} onChangeText={handleChange} />
       { isRequiredAlert ?
         <Layout size='small' style={styles.alert}>
           <Icon status='danger' fill='#FF0000' name='alert-circle'style={styles.icon}/> 
