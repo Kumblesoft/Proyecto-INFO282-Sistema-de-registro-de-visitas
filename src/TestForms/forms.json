@@ -8,7 +8,7 @@
 			{
 				"tipo": "selector",
 				"nombre": "Edad del participante",
-				"obligatorio": false,
+				"obligatorio": true,
 				"salida": "edad",
 				"opcion predeterminada": null,
 				"texto predeterminado": "Seleccione su edad",
@@ -106,7 +106,7 @@
 					"no editable"
 				],
 				"formato": "dd/mm/aaaa",
-				"fecha predeterminada": "nueva"
+				"fecha predeterminada": "2024-10-01"
 			}
 		],
 		"accion personalizada": "()=>{console.log('Formulario 2 enviado')}"
@@ -329,7 +329,7 @@
 				{ "nombre": "Diseño", "valor": "diseno" },
 				{ "nombre": "Marketing", "valor": "marketing" }
 			  ],
-			  "opcion predeterminada": [],
+			  "opcion predeterminada": null,
 			  "texto predeterminado": "Selecciona tus habilidades",
 			  "cantidad de elecciones": 2,
 			  "obligatorio": true,
@@ -343,7 +343,7 @@
 				{ "nombre": "Intermedio", "valor": "intermedio" },
 				{ "nombre": "Avanzado", "valor": "avanzado" }
 			  ],
-			  "opcion predeterminada": "principiante",
+			  "opcion predeterminada": null,
 			  "texto predeterminado": "Selecciona tu nivel",
 			  "cantidad de elecciones": 1,
 			  "obligatorio": true,

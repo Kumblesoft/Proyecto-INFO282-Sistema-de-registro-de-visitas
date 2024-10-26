@@ -1,4 +1,4 @@
-import React, {useRef} from 'react'
+import React from 'react'
 import {Button, Alert} from 'react-native'
 import { Layout } from '@ui-kitten/components'
 import  OptionSelector, { OptionComponentType, OptionSelectorFeatures } from './selector/OptionSelector'
@@ -22,8 +22,7 @@ import { Err, Ok } from '../commonStructures/resultEnum'
 
 const DynamicForm = ({ formData }) => {
 const formState = new Map()
-const requiredFieldRefs = useRef([])  
-
+const alertRequired = false
 
   /**
    * Handles the input change for the form fields.
@@ -45,8 +44,8 @@ const handleSubmit = async () => {
     const requiredFields = formData.campos.filter(field => field.obligatorio)
     const emptyFields = requiredFields.some(field => !formState.get(field.salida))
     if (emptyFields) {
-        requiredFieldRefs.current.forEach(ref => ref())
-        return (new Err('Completa todos los campos obligatorios')).show()
+        alertRequired = emptyFields
+        return (new Err('Completa todos los campos obligatorios')).show()    
     }
     
 
@@ -86,18 +85,15 @@ const handleSubmit = async () => {
    * @param {number} index - The index of the field in the form.
    * @returns {JSX.Element|null} The rendered field component or null if the type is unsupported.
    */
-const renderField = (field, index) => {  
-    const requiredFieldRef = useRef(null)
+const renderField = (field, index,alertRequired) => {  
     switch (field.tipo) {
     case 'selector':
-        requiredFieldRefs.current.push(() => requiredFieldRef.current())  // Añadir la referencia al array
         return (
         <OptionSelector
             key={`selector-${index}`}  
             type={OptionComponentType.DROPDOWN}
             items={field.opciones}
             onSelect={(value) => handleInputChange(field.salida, value)}
-            requiredFieldRef={requiredFieldRef}
             optionalFeatures={OptionSelectorFeatures({
             title: field.nombre,
             defaultOption: field['opcion predeterminada'],
@@ -107,14 +103,12 @@ const renderField = (field, index) => {
         />
         )
     case 'checkbox':
-        requiredFieldRefs.current.push(() => requiredFieldRef.current())  // Añadir la referencia al array
         return (
         <OptionSelector
             key={`checkbox-${index}`}  
             type={OptionComponentType.CHECKBOX}
             items={field.opciones}
             onSelect={(value) => handleInputChange(field.salida, value)}
-            requiredFieldRef={requiredFieldRef}
             optionalFeatures={OptionSelectorFeatures({
             title: field.nombre,
             defaultOption: field['opcion predeterminada'],
@@ -125,14 +119,12 @@ const renderField = (field, index) => {
         />
         )
     case 'radio':
-        requiredFieldRefs.current.push(() => requiredFieldRef.current())  // Añadir la referencia al array
         return (
         <OptionSelector
             key={`radio-${index}`}  
             type={OptionComponentType.RADIO}
             items={field.opciones}
             onSelect={(value) => handleInputChange(field.salida, value)}
-            requiredFieldRef={requiredFieldRef}
             optionalFeatures={OptionSelectorFeatures({
             title: field.nombre,
             defaultOption: field['opcion predeterminada'],
@@ -174,13 +166,11 @@ const renderField = (field, index) => {
         />
         )
     case 'camara':
-        requiredFieldRefs.current.push(() => requiredFieldRef.current())  // Añadir la referencia al array
         return (
         <Camera
             key={`camara-${index}`} 
             title={field.nombre}
             required={field['obligatorio']}
-            requiredFieldRef={requiredFieldRef}
             cameraConfiguration={new CameraConfiguration(
             (value) => handleInputChange(field.salida, value),
             field['editable'],
@@ -189,7 +179,6 @@ const renderField = (field, index) => {
         />
         )
     case 'texto':
-        requiredFieldRefs.current.push(() => requiredFieldRef.current())  // Añadir la referencia al array
         return (
             <TextEntry 
                 key={`texto-${index}`}
@@ -197,10 +186,10 @@ const renderField = (field, index) => {
                     title: field.nombre,
                     required: field.obligatorio,
                     limitations: field.limitaciones,
-                    format: field.formato
+                    format: field.formato,
+                    fieldsAlert: alertRequired
                 })}
                 onSelect={(value) => handleInputChange(field.salida, value)}
-                requiredFieldRef={requiredFieldRef}  // Pasar la referencia al componente TextEntry
             />
         )
         
@@ -211,7 +200,7 @@ const renderField = (field, index) => {
 
 return (
     <Layout>
-    {formData.campos.map((field, index) => renderField(field, index))}
+    {formData.campos.map((field, index) => renderField(field, index,alertRequired))}
     <Button title="Enviar" onPress={handleSubmit} />
     </Layout>
 )

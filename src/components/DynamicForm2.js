@@ -1,54 +1,31 @@
-import React, {useRef} from 'react'
-import {Button, Alert} from 'react-native'
+import React, { useRef } from 'react'
+import { Button, Alert } from 'react-native'
 import { Layout } from '@ui-kitten/components'
-import  OptionSelector, { OptionComponentType, OptionSelectorFeatures } from './selector/OptionSelector'
-import TextEntry, {OptionalTextFeatures} from './TextEntry' 
+import TextEntry, { OptionalTextFeatures } from './TextEntry1'
 import DateSelector, {OptionDateFeatures} from './DateSelector' 
 import HourSelector, {OptionalTimeFeatures} from './HourSelector'
 import CameraConfiguration, {Camera} from './Camera'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { Err, Ok } from '../commonStructures/resultEnum'
-
-/**
- * A component that renders a dynamic form based on the provided form data.
- *
- * This component handles the state of the form fields, validates required fields,
- * and saves the form data to AsyncStorage when submitted.
- *
- * @param {Object} formData - The data defining the structure and fields of the form.
- * @returns {JSX.Element} The rendered DynamicForm component.
- */
-
+import  OptionSelector, { OptionComponentType, OptionSelectorFeatures } from './selector/OptionSelector'
 
 const DynamicForm = ({ formData }) => {
-const formState = new Map()
-const requiredFieldRefs = useRef([])  
+  const formState = new Map()
+  const requiredFieldRefs = useRef([])  
 
+  const handleInputChange = (field, value) => {
+    formState.set(field, value)
+  }
 
-  /**
-   * Handles the input change for the form fields.
-   *
-   * @param {string} field - The field name that is being updated.
-   * @param {string} value - The new value for the field.
-   */
-const handleInputChange = (field, value) => {
-    formState.set(field,value)
-}
-
-/**
-   * Handles the submission of the form.
-   *
-   * Validates that all required fields are filled before saving the form data
-   * to AsyncStorage. If any required fields are empty, an alert is shown.
-   */
-const handleSubmit = async () => {
+  const handleSubmit = async () => {
     const requiredFields = formData.campos.filter(field => field.obligatorio)
     const emptyFields = requiredFields.some(field => !formState.get(field.salida))
+
+    // Verificamos los obligatorios
+  
     if (emptyFields) {
-        requiredFieldRefs.current.forEach(ref => ref())
-        return (new Err('Completa todos los campos obligatorios')).show()
+      requiredFieldRefs.current.forEach(ref => ref())
+      return Alert.alert('Completa todos los campos obligatorios')
     }
-    
 
     try {
       const savedFormsString = await AsyncStorage.getItem('savedForms')
@@ -63,15 +40,14 @@ const handleSubmit = async () => {
 
       const newForm = {
         id: Date.now(), 
-        nombreFormulario: formData["nombre formulario"] || "Formulario Sin Nombre", 
-        data: formState, 
+        nombreFormulario: formData["nombre formulario"] || "Formulario Sin Nombre",
+        data: formState,
       }
 
-      
-      storedForms.push(newForm) 
+      storedForms.push(newForm)
       await AsyncStorage.setItem('savedForms', JSON.stringify(storedForms))
       console.log("Formulario guardado:", newForm)
-      
+
       formState.clear()
       Alert.alert("Formulario guardado")
     } catch (error) {
@@ -79,17 +55,11 @@ const handleSubmit = async () => {
     }
   }
 
-  /**
-   * Renders a field based on the field type.
-   *
-   * @param {Object} field - The field data containing type and options.
-   * @param {number} index - The index of the field in the form.
-   * @returns {JSX.Element|null} The rendered field component or null if the type is unsupported.
-   */
-const renderField = (field, index) => {  
-    const requiredFieldRef = useRef(null)
-    switch (field.tipo) {
-    case 'selector':
+  const renderField = (field, index) => {
+      const requiredFieldRef = useRef(null)
+      
+      switch (field.tipo) {
+      case 'selector':
         requiredFieldRefs.current.push(() => requiredFieldRef.current())  // Añadir la referencia al array
         return (
         <OptionSelector
@@ -97,7 +67,7 @@ const renderField = (field, index) => {
             type={OptionComponentType.DROPDOWN}
             items={field.opciones}
             onSelect={(value) => handleInputChange(field.salida, value)}
-            requiredFieldRef={requiredFieldRef}
+            requiredFieldRef={requiredFieldRef}  
             optionalFeatures={OptionSelectorFeatures({
             title: field.nombre,
             defaultOption: field['opcion predeterminada'],
@@ -107,7 +77,7 @@ const renderField = (field, index) => {
         />
         )
     case 'checkbox':
-        requiredFieldRefs.current.push(() => requiredFieldRef.current())  // Añadir la referencia al array
+      requiredFieldRefs.current.push(() => requiredFieldRef.current())  // Añadir la referencia al array
         return (
         <OptionSelector
             key={`checkbox-${index}`}  
@@ -125,7 +95,7 @@ const renderField = (field, index) => {
         />
         )
     case 'radio':
-        requiredFieldRefs.current.push(() => requiredFieldRef.current())  // Añadir la referencia al array
+      requiredFieldRefs.current.push(() => requiredFieldRef.current())  // Añadir la referencia al array
         return (
         <OptionSelector
             key={`radio-${index}`}  
@@ -142,7 +112,7 @@ const renderField = (field, index) => {
             })}
         />
         )
-    case 'fecha':
+        case 'fecha':
         return (
         <DateSelector
             key={`fecha-${index}`}  
@@ -174,13 +144,11 @@ const renderField = (field, index) => {
         />
         )
     case 'camara':
-        requiredFieldRefs.current.push(() => requiredFieldRef.current())  // Añadir la referencia al array
         return (
         <Camera
             key={`camara-${index}`} 
             title={field.nombre}
             required={field['obligatorio']}
-            requiredFieldRef={requiredFieldRef}
             cameraConfiguration={new CameraConfiguration(
             (value) => handleInputChange(field.salida, value),
             field['editable'],
@@ -188,33 +156,32 @@ const renderField = (field, index) => {
             )}
         />
         )
-    case 'texto':
+      case 'texto':
         requiredFieldRefs.current.push(() => requiredFieldRef.current())  // Añadir la referencia al array
         return (
-            <TextEntry 
-                key={`texto-${index}`}
-                optionalFeatures={OptionalTextFeatures({
-                    title: field.nombre,
-                    required: field.obligatorio,
-                    limitations: field.limitaciones,
-                    format: field.formato
-                })}
-                onSelect={(value) => handleInputChange(field.salida, value)}
-                requiredFieldRef={requiredFieldRef}  // Pasar la referencia al componente TextEntry
-            />
+          <TextEntry
+            key={`texto-${index}`}
+            optionalFeatures={OptionalTextFeatures({
+              title: field.nombre,
+              required: field.obligatorio,
+              limitations: field.limitaciones,
+              format: field.formato
+            })}
+            onSelect={(value) => handleInputChange(field.salida, value)}
+            requiredFieldRef={requiredFieldRef}  // Pasar la referencia al componente TextEntry
+          />
         )
-        
-    default:
+      default:
         return null
     }
-}
+  }
 
-return (
+  return (
     <Layout>
-    {formData.campos.map((field, index) => renderField(field, index))}
-    <Button title="Enviar" onPress={handleSubmit} />
+      {formData.campos.map((field, index) => renderField(field, index))}
+      <Button title="Enviar" onPress={handleSubmit} />
     </Layout>
-)
+  )
 }
 
 export default DynamicForm

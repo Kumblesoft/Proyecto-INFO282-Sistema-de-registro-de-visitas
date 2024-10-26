@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { CheckBox, Text } from '@ui-kitten/components'
 import { View, StyleSheet } from 'react-native'
 
-export default CheckboxGroup = ({ items, onSelect, value, maxChecked }) => {
+export default CheckboxGroup = ({ items, onSelect, value, maxChecked, error}) => {
   const [selectedValues] = useState(new Set()) // Usar el estado como referencia de un Set
   if (value) [value].flat().map(value => selectedValues.add(value)) // Setear los valores iniciales
 
@@ -12,7 +12,7 @@ export default CheckboxGroup = ({ items, onSelect, value, maxChecked }) => {
     
 		if (onSelect) onSelect(Array.from(selectedValues)) // Llamar al callback con los valores seleccionados
   }
-
+  
   return (
     <View style={styles.container}>
       {items.map(item => (
@@ -20,6 +20,7 @@ export default CheckboxGroup = ({ items, onSelect, value, maxChecked }) => {
           <CheckBox
             checked={selectedValues.has(item.valor)} // Verificar si el valor está seleccionado
             onChange={() => handleSelect(item.valor)}
+            status={error? 'danger':'basic'}
             style={styles.checkbox} // Estilo personalizado
           >
             <Text style={styles.checkboxText}>{item.nombre}</Text> {/* Texto más grande */}

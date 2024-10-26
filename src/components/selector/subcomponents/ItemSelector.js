@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Select, SelectItem } from '@ui-kitten/components'
 import { StyleSheet } from 'react-native'
 
-const ItemSelector = ({ items, onSelect, value, placeholder }) => {
+const ItemSelector = ({ items, onSelect, value,defaultOption, placeholder,error }) => {
   const [selectedIndex, setSelectedIndex] = useState(null) // Índice seleccionado
   const [selectedValue, setSelectedValue] = useState(null) // Valor inicial
 
@@ -24,12 +24,13 @@ const ItemSelector = ({ items, onSelect, value, placeholder }) => {
     <Select
       selectedIndex={selectedIndex}
       onSelect={handleSelect}
+      status={error? 'danger':'primary'}
       placeholder={placeholder} // Placeholder para el Select
       value={selectedValue} // Muestra el nombre seleccionado o el placeholder
       style={styles.select} // Aplica estilo para el ancho mínimo
     >
       {items.map(item => (
-        <SelectItem key={item.valor} title={item.nombre} /> // Crea las opciones del dropdown
+        <SelectItem key={item.valor} title={item.nombre} style={styles.colorItem}/> // Crea las opciones del dropdown
       ))}
     </Select>
   )
