@@ -32,10 +32,11 @@ export const OptionalTimeFeatures = options => {
  * @param {Object} OptionalTimeFeatures - options for the hour selector,
 * @returns {Layout} - The Layout that displays the whole HourSelector.
  **/
-const HourSelector = ({onChange, optionalFeatures = {}}) => {
+const HourSelector = ({onChange, optionalFeatures = {},requiredFieldRef}) => {
     const [showPicker, setShowPicker] = useState(false)
     const {title, defaultTime, disabled, required} = optionalFeatures
     const [hour,setHour] = useState(defaultTime)
+    const [isRequiredAlert, setIsRequiredAlert] = useState(null)
     onChange(defaultTime)
 
 
@@ -45,8 +46,15 @@ const HourSelector = ({onChange, optionalFeatures = {}}) => {
 
     const setNowTime = () => {
         onChange((new Date().getHours()).toString().padStart(2,"0") + ":" + (new Date().getMinutes()).toString().padStart(2,"0"))
+        setIsRequiredAlert(false)
     }
-
+    requiredFieldRef.current = () => {
+        if (required) {
+            setIsRequiredAlert(true)
+        } else {
+            setIsRequiredAlert(false)
+        }
+      }
     return (
         <Layout>
             <View style={styles.text}>
@@ -58,7 +66,7 @@ const HourSelector = ({onChange, optionalFeatures = {}}) => {
                 </Text>
             </View> 
             <Button disabled={disabled} onPress={()=>setShowPicker(true)} appearance='outline' style={styles.hour} size='large'>{hour}</Button>
-            { required ?
+            { isRequiredAlert ?
                 <Layout size='small' style={styles.alert}>
                     <Icon status='danger' fill='#FF0000' name='alert-circle'style={styles.icon}/> 
                     <Text style={styles.alert} category="p2">

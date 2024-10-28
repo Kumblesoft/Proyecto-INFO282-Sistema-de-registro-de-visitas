@@ -48,7 +48,7 @@ export const OptionDateFeatures = (options ={}) => {
  * @param {Object} optionalFeatures - Configuration options for the DateSelector.
  * @returns {JSX.Element} The rendered DateSelector component.
  */
-const DateSelector = ({value, onChange, optionalFeatures}) => {
+const DateSelector = ({value, onChange, optionalFeatures,requiredFieldRef}) => {
   const hasInitialized = useRef(false)
   const {
     title = "",
@@ -59,6 +59,7 @@ const DateSelector = ({value, onChange, optionalFeatures}) => {
   } = optionalFeatures ?? {}
 
   const [selectedDate, setSelectedDate] = useState(null)
+  const [isRequiredAlert, setIsRequiredAlert] = useState(null)
   const configuredDateService = new NativeDateService('en', {
     startDayOfWeek:1,
     format: dateFormat
@@ -68,6 +69,7 @@ const DateSelector = ({value, onChange, optionalFeatures}) => {
       setSelectedDate(defaultDate) 
       const formattedDate = configuredDateService.format(defaultDate, dateFormat)
       onChange(formattedDate)
+      setIsRequiredAlert(false)
       hasInitialized.current = true
     }
   }, [onChange, defaultDate])
@@ -81,7 +83,17 @@ const DateSelector = ({value, onChange, optionalFeatures}) => {
     setSelectedDate(nextDate)
     const formattedDate = configuredDateService.format(nextDate, dateFormat)
     onChange(formattedDate)
+    setIsRequiredAlert(false)
   }
+
+  requiredFieldRef.current = () => {
+    if (required && !selectedDate) {
+        setIsRequiredAlert(true)
+    } else {
+        setIsRequiredAlert(false)
+    }
+  }
+
 
   return (
     <View style={{ marginVertical: 10 }}>
@@ -101,7 +113,7 @@ const DateSelector = ({value, onChange, optionalFeatures}) => {
         onSelect={handleDateChange}
         disabled={disabled}
       />
-      { required ?
+      { isRequiredAlert ?
         <Layout size='small' style={styles.alert}>
           <Icon status='danger' fill='#FF0000' name='alert-circle'style={styles.icon}/> 
           <Text style={styles.alert} category="p2">

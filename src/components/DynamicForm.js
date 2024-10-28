@@ -88,9 +88,9 @@ const handleSubmit = async () => {
    */
 const renderField = (field, index) => {  
     const requiredFieldRef = useRef(null)
+    requiredFieldRefs.current.push(() => requiredFieldRef.current())  // Añadir la referencia al array
     switch (field.tipo) {
     case 'selector':
-        requiredFieldRefs.current.push(() => requiredFieldRef.current())  // Añadir la referencia al array
         return (
         <OptionSelector
             key={`selector-${index}`}  
@@ -107,7 +107,6 @@ const renderField = (field, index) => {
         />
         )
     case 'checkbox':
-        requiredFieldRefs.current.push(() => requiredFieldRef.current())  // Añadir la referencia al array
         return (
         <OptionSelector
             key={`checkbox-${index}`}  
@@ -125,7 +124,6 @@ const renderField = (field, index) => {
         />
         )
     case 'radio':
-        requiredFieldRefs.current.push(() => requiredFieldRef.current())  // Añadir la referencia al array
         return (
         <OptionSelector
             key={`radio-${index}`}  
@@ -148,6 +146,7 @@ const renderField = (field, index) => {
             key={`fecha-${index}`}  
             value={formState.get(field.salida)}
             onChange={(value) => handleInputChange(field.salida, value)}
+            requiredFieldRef={requiredFieldRef}
             optionalFeatures={OptionDateFeatures({
             title: field.nombre,
             placeholder: field['texto predeterminado'],
@@ -165,6 +164,7 @@ const renderField = (field, index) => {
             key={`hora-${index}`}  
             value={formState.get(field.salida)}
             onChange={(value) => handleInputChange(field.salida, value)}
+            requiredFieldRef={requiredFieldRef}
             optionalFeatures={OptionalTimeFeatures({
             title: field.nombre,
             defaultTime: field['hora predeterminada'] === 'actual' ? now : field['hora predeterminada'],
