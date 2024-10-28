@@ -1,6 +1,6 @@
 import React from "react"
-import { StyleSheet, View, TouchableOpacity, StatusBar } from "react-native"
-import { Text, Layout } from "@ui-kitten/components" 
+import { StyleSheet, View, TouchableOpacity, StatusBar, Button } from "react-native"
+import { Text, Layout, Icon, IconElement } from "@ui-kitten/components" 
 import { Alert } from 'react-native'
 import Svg, { Circle, Defs, Stop, LinearGradient as SvgLinearGradient } from "react-native-svg"
 import { useNavigation } from '@react-navigation/native' 
@@ -23,6 +23,7 @@ export default function Menu() {
 
   const handleSavedFormsPress = () => navigation.navigate('SavedForms') // Nueva función para navegar a SavedForms
 
+  const handleSettingsPress = () => navigation.navigate('Settings')
 
   return (
     <Layout style={{ flex: 1 }}>
@@ -37,6 +38,11 @@ export default function Menu() {
         </Defs>
         <Circle cx="50%" cy="10%" r="80%" fill="url(#grad)" />
         </Svg>
+
+        <TouchableOpacity style={styles.iconButton} onPress={handleSettingsPress}>
+            <Icon name='settings-outline' style={{ width: 50, height: 50}} fill='#fff'/>
+        </TouchableOpacity>
+
 
         <View style={styles.header}>
           <Text category="h1" style={styles.title}>Formulapp</Text>
@@ -74,6 +80,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#E8E9EB"
+  },
+  iconButton: {
+    position: 'absolute', // Permite posicionar el icono de forma absoluta
+    top: 20, // Ajusta la distancia desde el borde superior
+    right: 20, // Ajusta la distancia desde el borde derecho
+    zIndex: 1, // Asegura que el icono esté en la parte superior
   },
   svgStyle: {
     position: "absolute",
