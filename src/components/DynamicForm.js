@@ -11,8 +11,12 @@ import { Err, Ok } from '../commonStructures/resultEnum'
 import { StyleSheet } from "react-native" 
 
 const tickIcon = (props) => (
-    <Icon  name='checkmark-outline' { ...props} />
+    <Icon  name='save' {...props}/>
 );
+
+const saveText = () => {
+    <Text style={{color:'black', fontSize: '30'}}>Guardar</Text>
+}
 /**
  * A component that renders a dynamic form based on the provided form data.
  *
@@ -203,8 +207,8 @@ const renderField = (field, index) => {
 return (
     <Layout style={styles.layoutContainer}>
     {formData.campos.map((field, index) => renderField(field, index))}
-    <Button onPress={handleSubmit} style={styles.button} status='primary' accessoryRight={tickIcon}>
-        <Text style={styles.buttonText}>Guardar</Text>
+    <Button onPress={handleSubmit} style={styles.button} accessoryRight={tickIcon}>
+        <Text category='h5' style={styles.buttonText}>Guardar</Text>
     </Button>
     
     </Layout>
@@ -214,16 +218,16 @@ return (
 const styles = StyleSheet.create({
     button: {
         borderRadius: 10,
-        borderColor: "#53a75f"
+        borderColor: "#53a75f",
     },
     buttonText: {
-        color: 'white',
+        color: 'black',
         fontWeight: "bold",
-        fontSize: 30
+        
     },
     layoutContainer:{
         backgroundColor: "#ffffff"
-    }
+    },
 })
 
 export default DynamicForm

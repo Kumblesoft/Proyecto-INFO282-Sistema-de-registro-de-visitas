@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import { StyleSheet, View, Text, FlatList, Button, Alert, TouchableOpacity, Image } from 'react-native'
+import { StyleSheet, View, Text, FlatList, Alert, TouchableOpacity, Image } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { Modal, Card, TopNavigation, TopNavigationAction, Divider, Layout } from '@ui-kitten/components'
+import { Modal, Card, TopNavigation, TopNavigationAction, Divider, Layout, Button, Icon } from '@ui-kitten/components'
 import { useNavigation } from '@react-navigation/native'
 import { LinearGradient } from 'expo-linear-gradient'
+
+const deleteIcon = (props) => (
+    <Icon name='trash' {...props} />
+);
 
 const SavedForms = () => {
     const navigation = useNavigation()
@@ -63,12 +67,10 @@ const SavedForms = () => {
     );
 
     const renderItem = ({ item }) => (
-        <View style={styles.formItem}>
-            <TouchableOpacity onPress={() => openModal(item)}>
-                <Text style={styles.formTitle}>{item.nombreFormulario}</Text>
-            </TouchableOpacity>
-            <Button title="Eliminar" onPress={() => deleteForm(item.id)} />
-        </View>
+        <Layout style={styles.containerBox} onPress={() => openModal(item)}>
+            <Text style={styles.formTitle}>{item.nombreFormulario}</Text>
+            <Button style={styles.button} onPress={() => deleteForm(item.id)} accessoryLeft={deleteIcon}></Button>
+        </Layout>
     )
 
     return (
@@ -95,15 +97,15 @@ const SavedForms = () => {
                     animationType="slide"
                     onRequestClose={closeModal}
                 >
-                    <View style={styles.modalContainer}>
+                    <Layout style={styles.modalContainer}>
                         <Card style={styles.modalCard}>
                             <Text style={styles.modalTitle}>{selectedForm?.nombreFormulario}</Text>
                             {selectedForm && Object.entries(selectedForm.data).map(([key, value]) => (
                                 <Text key={key}>{`${key}: ${value}`}</Text>
                             ))}
-                            <Button title="Cerrar" onPress={closeModal} />
+                            <Button onPress={closeModal}>Cerrar</Button>
                         </Card>
-                    </View>
+                    </Layout>
                 </Modal>
             </View>
         </>
@@ -122,6 +124,13 @@ const styles = StyleSheet.create({
     listContainer: {
         paddingBottom: 100,
     },
+    button: {
+        margin: 2,
+        paddingVertical: 5,
+        paddingHorizontal: 5,
+        fontWeight: 'bold',
+        fontSize: 10,
+    },
     formItem: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -133,11 +142,27 @@ const styles = StyleSheet.create({
     formTitle: {
         fontSize: 18,
     },
+    containerBox: {
+        padding: 10,
+        marginBottom: 15,
+        borderRadius: 8,
+        backgroundColor: '#ffffff', 
+        borderWidth: 1,
+        borderColor: '#9beba5',
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.9,
+        shadowRadius: 2,
+        elevation: 3,
+        alignItems: 'flex-start',
+        justifyContent: 'space-between',
+        flexDirection: 'row'
+    },
     modalContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        backgroundColor: 'rgba(0, 0, 0, 0.9)',
     },
     modalCard: {
         width: '100%',

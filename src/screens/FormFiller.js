@@ -10,11 +10,8 @@ const FormFillerScreen = ({ route }) => {
     const { form } = route.params
     const navigation = useNavigation();
 
-    const BackIcon = () => (
-        <Image
-            source={require('../assets/arrow_back.png')}
-            style={styles.backIcon}
-        />
+    const BackIcon = (props) => (
+        <Icon name='arrow-ios-back-outline' {...props} style={styles.backIcon} fill='#fff'/>
     );
 
     const BackAction = () => (
@@ -39,7 +36,7 @@ const FormFillerScreen = ({ route }) => {
                             title={renderTitle}
                             style={styles.topNavigation}
                             accessoryLeft={BackAction}
-                            alignment='center'
+                            alignment='start'
                         />
                     </LinearGradient>
                     <Divider />
@@ -66,11 +63,12 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 25,   
         fontWeight: 'bold',
-        color: '#333',
+        color: '#fff',
     },
     backIcon: {
-        width: 25,
-        height: 25,
+        width: 40,
+        height: 40,
+        color: '#fff'
     },
     gradient: {
         paddingVertical: 10, // Ajusta el padding para dar espacio al texto
