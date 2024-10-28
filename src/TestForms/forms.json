@@ -145,7 +145,7 @@
 			  "obligatorio": true,
 			  "salida": "edad",
 			  "limitaciones": [
-				"solo enteros positivos"
+				"solo enteros positivos y cero"
 			  ],
 			  "formato": []
 			},

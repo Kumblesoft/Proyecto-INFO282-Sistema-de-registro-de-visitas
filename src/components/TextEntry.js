@@ -24,35 +24,34 @@ export const OptionalTextFeatures = (options = {}) => {
 }
 
 /**
- * Map that defines the validator functions and behaviour of each limitation
+ * Map that defines the validator functions and behaviour of each limitation 
  */
 const limitationBehaviour = new Map([
   ["solo letras", {
-    validationFunction: text => ((/^[a-zA-Z\s]*$/)).test(text),
+    regex: ((/^[a-zA-Z\s]*$/)),
     keyboardType: "default"
   }], 
   ["no numeros", {
-    validationFunction: text => !(/[0-9]/).test(text),
+    regex: !(/[0-9]/),
     keyboardType: "default"
   }],
   ["solo numeros", {
-    validationFunction: text => /^-?\d+([.,]\d+)?$/.test(text),
+    regex: /^-?\d+([.,]\d+)?$/,
     keyboardType: "numeric"
   }],
   ["solo enteros", {
-    validationFunction: text => /^-?\d+$/.test(text),
+    regex: /^-?\d+$/,
     keyboardType: "numeric"
   }],
   ["solo enteros positivos y cero", {
-    validationFunction: text => /^\d+$/.test(text),
+    regex: text => /^\d+$/,
     keyboardType: "numeric"
   }],
   ["email", {
-    validationFunction: text => /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i.test(text),
+    regex: /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i,
     keyboardType: "default"
   }]
 ])
-
 
 /**
  * Map that defines transformation functions as formatting for the fields
@@ -86,20 +85,22 @@ const TextEntry = ({ optionalFeatures, onSelect }) => {
     
     // Limitations
     if (text === '') {
-      setInvalidLimitations('')
+      setInvalidLimitations([])
       return new Ok("Empty string")
     }
 
-    const tempInvalidLimitations = []
-    limitations.map(limitation => {
-      console.log(limitation)
-      if (!limitationBehaviour.get(limitation).validationFunction(text)) {
-        const limitationName = String.fromCharCode(limitation.charCodeAt(0) - 32) + limitation.substr(1)
-        tempInvalidLimitations.push(limitationName) 
-      }
-    })
-    setInvalidLimitations(tempInvalidLimitations)
-    console.log(limitationBehaviour.get(limitations.at(0)).keyboardType)
+    console.log(limitationBehaviour.get(limitations.at(0)))
+    console.log(limitations)
+    setInvalidLimitations(
+      limitations.reduce((acc, limName) => {
+        if (!limitationBehaviour.get(limName).regex.test(limName)) {
+          const limitationName = String.fromCharCode(limName.charCodeAt(0) - 32) + limName.substr(1)
+          acc.push(limitationName) 
+        }
+        return acc
+    }, []))
+
+    console.log(invalidLimitations)
 
     if (invalidLimitations.length) return new Err("No cumple las limitaciones")
       
@@ -123,7 +124,7 @@ const TextEntry = ({ optionalFeatures, onSelect }) => {
         style={styles.input}
         value={inputValue}
         onChangeText={handleChange} 
-        keyboardType={limitations} // Solo números
+        keyboardType={limitations && limitations.map(name => (limitationBehaviour.get(name).keyboardType))} // Solo números
       />
     </View>
   )
