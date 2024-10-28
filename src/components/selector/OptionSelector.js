@@ -4,7 +4,12 @@ import CheckboxGroup from "./subcomponents/CheckboxGroup"
 import ItemSelector from "./subcomponents/ItemSelector"
 import RadioButtonGroup from "./subcomponents/RadioButtonGroup"
 
-// Definir el enum para los tipos de componentes
+/**
+ * Enum for component types.
+ *
+ * @readonly
+ * @enum {number}
+ */
 export const OptionComponentType = Object.freeze({
     DROPDOWN: 0,
     CHECKBOX: 1,

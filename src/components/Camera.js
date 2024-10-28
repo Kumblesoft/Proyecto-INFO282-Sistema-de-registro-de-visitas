@@ -48,18 +48,23 @@ class CameraConfiguration {
  * @param {Object} cameraConfiguration - Configuration object for the camera.
  * @param {function} cameraConfiguration.setImage - Function to set the selected image.
  * @param {function} cameraConfiguration.setImageSetter - Function to update the image setter function.
+ * @param {Array} requiredFieldRef - A variable to pass by reference the Camera "requiered field text" toggle method
  * 
  * @returns {JSX.Element} Rendered camera component.
  */
-export const Camera = ({title, required, cameraConfiguration,requiredFieldRef }) => {
+export const Camera = ({ title, required, cameraConfiguration, requiredFieldRef }) => {
   const [image, setImage] = useState(null)
   const [isMenuVisible, setMenuVisible] = useState(false)
   const [isRequiredAlert, setIsRequiredAlert] = useState(false)
 
   async function openMedia(cameraConfiguration, launchFunction) {
-    let { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
-
-    if (status !== 'granted') {
+    
+    let mediaPermissions = await ImagePicker.requestMediaLibraryPermissionsAsync()
+    let cameraPermissions = await ImagePicker.requestCameraPermissionsAsync()    
+    let permissionsGranted = mediaPermissions.status === 'granted' && cameraPermissions.status === 'granted'
+    
+    if (!permissionsGranted) {
+      setMenuVisible(false)
       Alert.alert(
         'Permissions Required',
         'Camera/Gallery permissions are required to proceed. Please enable them in your app settings.',
@@ -69,7 +74,11 @@ export const Camera = ({title, required, cameraConfiguration,requiredFieldRef })
         ]
       )
     }
-    if (status !== 'granted') return (new Err('Permissions not granted by user')).show()
+    setMenuVisible(true)
+    mediaPermissions = await ImagePicker.requestMediaLibraryPermissionsAsync()
+    cameraPermissions = await ImagePicker.requestCameraPermissionsAsync()    
+    permissionsGranted = mediaPermissions.status === 'granted' && cameraPermissions.status === 'granted'
+    if (!permissionsGranted) return (new Err('Permissions not granted by user')).show()
 
     const result = await launchFunction(cameraConfiguration.getSettings())
     if (result.canceled) return new Err('Operation cancelled')
@@ -88,6 +97,7 @@ export const Camera = ({title, required, cameraConfiguration,requiredFieldRef })
     cameraConfiguration.setImage(imageUri)
     setImage(imageUri) // Actualiza la imagen seleccionada
     setIsRequiredAlert(false)
+    setMenuVisible(false)
     return new Ok(imageUri)
   }
 
