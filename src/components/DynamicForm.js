@@ -94,10 +94,10 @@ const renderField = (field, index) => {
             items={field.opciones}
             onSelect={(value) => handleInputChange(field.salida, value)}
             optionalFeatures={OptionSelectorFeatures({
-            title: field.nombre,
-            defaultOption: field['opcion predeterminada'],
-            placeholder: field['texto predeterminado'],
-            required: field.obligatorio
+                title: field.nombre,
+                defaultOption: field['opcion predeterminada'],
+                placeholder: field['texto predeterminado'],
+                required: field.obligatorio
             })}
         />
         )
@@ -109,11 +109,11 @@ const renderField = (field, index) => {
             items={field.opciones}
             onSelect={(value) => handleInputChange(field.salida, value)}
             optionalFeatures={OptionSelectorFeatures({
-            title: field.nombre,
-            defaultOption: field['opcion predeterminada'],
-            placeholder: field['texto predeterminado'],
-            maxChecked: field['cantidad de elecciones'],
-            required: true
+                title: field.nombre,
+                defaultOption: field['opcion predeterminada'],
+                placeholder: field['texto predeterminado'],
+                maxChecked: field['cantidad de elecciones'],
+                required: true
             })}
         />
         )
@@ -125,11 +125,11 @@ const renderField = (field, index) => {
             items={field.opciones}
             onSelect={(value) => handleInputChange(field.salida, value)}
             optionalFeatures={OptionSelectorFeatures({
-            title: field.nombre,
-            defaultOption: field['opcion predeterminada'],
-            placeholder: field['texto predeterminado'],
-            maxChecked: field['cantidad de elecciones'],
-            required: true
+                title: field.nombre,
+                defaultOption: field['opcion predeterminada'],
+                placeholder: field['texto predeterminado'],
+                maxChecked: field['cantidad de elecciones'],
+                required: true
             })}
         />
         )
@@ -140,12 +140,12 @@ const renderField = (field, index) => {
             value={formState.get(field.salida)}
             onChange={(value) => handleInputChange(field.salida, value)}
             optionalFeatures={OptionDateFeatures({
-            title: field.nombre,
-            placeholder: field['texto predeterminado'],
-            defaultDate: field['fecha predeterminada'],
-            dateFormat: field['formato'],
-            disabled: field['limitaciones'].includes('no editable'),
-            required: field['obligatorio']
+                title: field.nombre,
+                placeholder: field['texto predeterminado'],
+                defaultDate: field['fecha predeterminada'],
+                dateFormat: field['formato'],
+                disabled: field['limitaciones'].includes('no editable'),
+                required: field['obligatorio']
             })}
         />
         )
@@ -157,10 +157,10 @@ const renderField = (field, index) => {
             value={formState.get(field.salida)}
             onChange={(value) => handleInputChange(field.salida, value)}
             optionalFeatures={OptionalTimeFeatures({
-            title: field.nombre,
-            defaultTime: field['hora predeterminada'] === 'actual' ? now : field['hora predeterminada'],
-            disabled: field['limitaciones'].includes('no editable'),
-            required: field['obligatorio']
+                title: field.nombre,
+                defaultTime: field['hora predeterminada'] === 'actual' ? now : field['hora predeterminada'],
+                disabled: field['limitaciones'].includes('no editable'),
+                required: field['obligatorio']
             })}
         />
         )
@@ -185,7 +185,8 @@ const renderField = (field, index) => {
                     title: field.nombre,
                     required: field.obligatorio,
                     limitations: field.limitaciones,
-                    format: field.formato
+                    format: field.formato,
+                    variableName:field["salida"] 
                 })}
                 onSelect={(value) => handleInputChange(field.salida, value)}
             />

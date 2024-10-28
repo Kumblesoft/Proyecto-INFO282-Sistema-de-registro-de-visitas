@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, StyleSheet } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import { Text, Input } from '@ui-kitten/components'
 import { Err, Ok } from '../commonStructures/resultEnum'
 
@@ -11,6 +11,7 @@ import { Err, Ok } from '../commonStructures/resultEnum'
  * @param {boolean} [options.required=false] - Indicates if the field is required.
  * @param {Array<string>} [options.limitations=[]] - An array of limitations for the input value.
  *        Example: ["solo letras"] to restrict input to letters only.
+ * @param {string} [options.variableName] - "Salida", used to diferentiate different fields with same title
  * @param {Array<string>} [options.format=[]] - An array of conditions to format the input value.
  * @returns {Object} An object containing the defined optional features.
  */
@@ -19,7 +20,8 @@ export const OptionalTextFeatures = (options = {}) => {
     title: options.title ?? "",
     required: options.required ?? false,
     limitations: options.limitations ?? [], 
-    format: options.format ?? []
+    format: options.format ?? [],
+    variableName: options.variableName ?? ""
   }
 }
 
@@ -32,7 +34,7 @@ const limitationBehaviour = new Map([
     keyboardType: "default"
   }], 
   ["no numeros", {
-    regex: !(/[0-9]/),
+    regex: /^[^\d]*$/,
     keyboardType: "default"
   }],
   ["solo numeros", {
@@ -44,7 +46,7 @@ const limitationBehaviour = new Map([
     keyboardType: "numeric"
   }],
   ["solo enteros positivos y cero", {
-    regex: text => /^\d+$/,
+    regex: /^\d+$/,
     keyboardType: "numeric"
   }],
   ["email", {
@@ -52,6 +54,20 @@ const limitationBehaviour = new Map([
     keyboardType: "default"
   }]
 ])
+
+/**
+ * Debug version of get method for limitationBehaviour
+ * @param {string} name 
+ * @returns 
+ */
+limitationBehaviour.dGet = function (name) {
+  const exists = this.has(name)
+  if (!exists) {
+    console.log(`No se encontro (${name}) en limitationBehaviour`)
+    return {regex:/$/, keyboardType:"default"}
+  }
+  return this.get(name)
+}
 
 /**
  * Map that defines transformation functions as formatting for the fields
@@ -89,16 +105,17 @@ const TextEntry = ({ optionalFeatures, onSelect }) => {
       return new Ok("Empty string")
     }
 
-    console.log(limitationBehaviour.get(limitations.at(0)))
-    console.log(limitations)
-    setInvalidLimitations(
-      limitations.reduce((acc, limName) => {
-        if (!limitationBehaviour.get(limName).regex.test(limName)) {
-          const limitationName = String.fromCharCode(limName.charCodeAt(0) - 32) + limName.substr(1)
-          acc.push(limitationName) 
-        }
-        return acc
-    }, []))
+    setInvalidLimitations(limitations.reduce(
+      (acc, limName) => {
+      const limitationOk = limitationBehaviour.get(limName).regex.test(text)
+      console.log(limitationOk,  limitationBehaviour.get(limName).regex, text)
+      if (!limitationOk) {
+        const limitationName = String.fromCharCode(limName.charCodeAt(0) - 32) + limName.substr(1)
+        acc.push(limitationName) 
+      }
+      
+    return acc}, []))
+  
 
     console.log(invalidLimitations)
 
@@ -112,21 +129,21 @@ const TextEntry = ({ optionalFeatures, onSelect }) => {
   }
 
   return (
-    <View style={styles.container}>
-      {title && (
-        <Text category="h6" style={styles.label}>
-          {title}
-          {required ? "*" : ""}
-        </Text>
-      )}
-      { invalidLimitations.length ? invalidLimitations.map(name => <Text style={{ color: 'red' }}> -{name} </Text>) : <></>}
-      <Input
-        style={styles.input}
-        value={inputValue}
-        onChangeText={handleChange} 
-        keyboardType={limitations && limitations.map(name => (limitationBehaviour.get(name).keyboardType))} // Solo números
-      />
-    </View>
+      <View>
+        {title && (
+          <Text category="h6" style={styles.label}>
+            {title}
+            {required ? "*" : ""}
+          </Text>
+        )}
+        { invalidLimitations.length ? invalidLimitations.map((name, i) => <Text  key={i} style={{ color: 'red' }}> -{name} </Text>) : <></>}
+        <Input
+          style={styles.input}
+          value={inputValue}
+          onChangeText={handleChange} 
+          keyboardType={limitations ? limitationBehaviour.dGet(limitations.at(0)).keyboardType : "default"} // Solo números
+        />
+      </View>
   )
 }
 

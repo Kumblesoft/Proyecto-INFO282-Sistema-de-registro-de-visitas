@@ -90,9 +90,7 @@
 				"nombre": "Comentarios adicionales",
 				"obligatorio": false,
 				"salida": "comentarios",
-				"limitaciones": [
-					"sin limitación de caracteres"
-				],
+				"limitaciones": [],
 				"formato": [
 					"texto libre"
 				]
