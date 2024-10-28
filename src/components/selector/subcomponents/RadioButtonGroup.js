@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Radio, RadioGroup, Text } from '@ui-kitten/components'
 import { StyleSheet } from 'react-native'
 
-const RadioButtonGroup = ({ items, onSelect, defaultOption }) => {
+const RadioButtonGroup = ({ items, onSelect, defaultOption,error }) => {
   const [selectedIndex, setSelectedIndex] = useState(null)
 
   // Al cargar, selecciona el valor predeterminado si se pasa
@@ -19,7 +19,7 @@ const RadioButtonGroup = ({ items, onSelect, defaultOption }) => {
   return (
     <RadioGroup selectedIndex={selectedIndex} onChange={handleSelect}>
       {items.map(item => (
-        <Radio key={item.valor} style={styles.radio}>
+        <Radio key={item.valor} style={styles.radio}status={error? 'danger':'basic'}>
           <Text>{item.nombre}</Text>
         </Radio>
       ))}

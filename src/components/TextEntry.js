@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
-import { View, StyleSheet } from 'react-native'
-
+import { View, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native'
 import { Text, Input, Button, Layout, ViewPager, Icon } from '@ui-kitten/components'
 import { Err, Ok } from '../commonStructures/resultEnum'
 
@@ -52,10 +51,10 @@ const formatMap = new Map([
  * @param {Function} props.onSelect - Callback function called when the input value changes.
  * @returns {JSX.Element} The rendered TextEntry component.
  */
-const TextEntry = ({ optionalFeatures, onSelect }) => {
+const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef}) => {
   const { title, required, limitations, format } = optionalFeatures
   const [ inputValue, setInputValue ] = useState('')
-
+  const [ isRequiredAlert, setIsRequiredAlert] = useState(false)
   const [ isValidInput, setIsValidInput ] = useState(true)
 
   /**
@@ -75,13 +74,27 @@ const TextEntry = ({ optionalFeatures, onSelect }) => {
     if (!isValidInput) return new Err("No cumple las limitaciones")
       
     // Formatting
-    formattedText = format.forEach(formattingOption => text = formatMap.get(formattingOption)(text))
+    let formattedText = text
+    format.forEach(formattingOption => {
+      const formatFunction = formatMap.get(formattingOption)
+      if (formatFunction) formattedText = formatFunction(formattedText)
+    })
     setInputValue(formattedText)
-    onSelect(formattedText)   
+    onSelect(formattedText) 
+    setIsRequiredAlert(false) 
     return new Ok("Correct input")
   }
 
- 
+
+    // Cambiar el estilo
+    requiredFieldRef.current = () => {
+      if (required && !inputValue) {
+        setIsRequiredAlert(true)
+      } else {
+        setIsRequiredAlert(false)
+      }
+    }
+
   return (
     <View style={styles.container}>
       {title && (
@@ -95,8 +108,8 @@ const TextEntry = ({ optionalFeatures, onSelect }) => {
       </View>
       )}
 
-      <Input style={styles.input} value={inputValue} onChangeText={handleChange} />
-      { required ?
+      <Input style={[styles.input, isRequiredAlert && { borderColor: '#ff0000', }]} value={inputValue} onChangeText={handleChange} />
+      { isRequiredAlert ?
         <Layout size='small' style={styles.alert}>
           <Icon status='danger' fill='#FF0000' name='alert-circle'style={styles.icon}/> 
           <Text style={styles.alert} category="p2">

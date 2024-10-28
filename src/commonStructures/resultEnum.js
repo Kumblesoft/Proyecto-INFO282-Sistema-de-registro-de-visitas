@@ -32,7 +32,7 @@ export class Result {
      * @param bindingFn a function that consumes the value and returns a Result instance value
      * @returns the result of callback or 
      */
-    then(bindingFn) { return this.isOk() ? fn(this.value) : this }
+    then(bindingFn) { return this.isOk() ? bindingFn(this.value) : this }
 }
 
 /**
