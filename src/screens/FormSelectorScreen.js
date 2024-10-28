@@ -31,9 +31,9 @@ const FormSelectorScreen = ({ route }) => {
   );
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity style={styles.item} onPress={() => handleSelectForm(item)}>
-      <Text style={styles.itemText}>{item["nombre formulario"]}</Text>
-    </TouchableOpacity>
+      <TouchableOpacity style={styles.containerBox} onPress={() => handleSelectForm(item)}>
+        <Text style={styles.itemText}>{item["nombre formulario"]}</Text>
+      </TouchableOpacity>
   )
 
   return (
@@ -54,9 +54,9 @@ const FormSelectorScreen = ({ route }) => {
             keyExtractor={(item) => item["nombre formulario"]}
             contentContainerStyle={styles.listContainer}
           />
-          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-            <Text style={styles.backButtonText}>Volver</Text>
-          </TouchableOpacity>
+            <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+              <Text style={styles.backButtonText}>Volver</Text>
+            </TouchableOpacity>
         </Layout>
     </>
   )
@@ -87,10 +87,10 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     borderWidth: 1,
     borderColor: '#ccc',
-    borderRadius: 5,
+    borderRadius: 10,
   },
   itemText: {
-    fontSize: 16,
+    fontSize: 20,
   },
   topNavigation:{
     backgroundColor: "transparent",
@@ -98,6 +98,23 @@ const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  containerBox: {
+        padding: 10,
+        marginBottom: 15,
+        borderRadius: 8,
+        backgroundColor: '#ffffff', 
+        borderWidth: 1,
+        borderColor: '#9beba5',
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.9,
+        shadowRadius: 2,
+        elevation: 3,
+        alignItems: 'flex-start',
+        justifyContent: 'space-between',
+        flexDirection: 'row',
+        height: 'auto'
   },
   title: {
     fontSize: 25,   

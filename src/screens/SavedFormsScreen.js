@@ -67,10 +67,10 @@ const SavedForms = () => {
     );
 
     const renderItem = ({ item }) => (
-        <Layout style={styles.containerBox} onPress={() => openModal(item)}>
+        <TouchableOpacity style={styles.containerBox} onPress={() => openModal(item)}>
             <Text style={styles.formTitle}>{item.nombreFormulario}</Text>
             <Button style={styles.button} onPress={() => deleteForm(item.id)} accessoryLeft={deleteIcon}></Button>
-        </Layout>
+        </TouchableOpacity>
     )
 
     return (

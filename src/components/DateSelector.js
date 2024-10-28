@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start'
   },
   datepicker: {
-    width: 360,
+    width: 'auto'
   }
 })
 

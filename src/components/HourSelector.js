@@ -149,7 +149,8 @@ const styles = StyleSheet.create({
     hour: {
         margin: 2,
         paddingVertical: 12,
-        paddingHorizontal: 120,
+        paddingHorizontal: 100,
+        marginLeft: 'auto'
     },
     button: {
         margin: 2,
@@ -157,12 +158,13 @@ const styles = StyleSheet.create({
         paddingHorizontal: 5,
         fontWeight: 'bold',
         fontSize: 10,
+        
     },
     buttonContainer: {
-        flexDirection: 'row',  // Coloca los botones uno al lado del otro
-        justifyContent: 'space-between',  // Espacio entre los botones
+        flexDirection: 'row',  
+        justifyContent: 'space-between', 
         marginBottom: 10,
-        backgroundColor: '#F5F5F5',
+        backgroundColor: '#ffffff',
     },
     icon: {
         width: 32,
