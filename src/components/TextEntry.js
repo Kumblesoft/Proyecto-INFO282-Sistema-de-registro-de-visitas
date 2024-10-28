@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { View, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native'
-
 import { Text, Input, Button, Layout, ViewPager, Icon } from '@ui-kitten/components'
 import { Err, Ok } from '../commonStructures/resultEnum'
 
@@ -86,7 +85,8 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef}) => {
     return new Ok("Correct input")
   }
 
-    // Camnbiar el estilo
+
+    // Cambiar el estilo
     requiredFieldRef.current = () => {
       if (required && !inputValue) {
         setIsRequiredAlert(true)
