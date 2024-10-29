@@ -51,8 +51,7 @@
 				"nombre": "Foto personal",
 				"obligatorio": true,
 				"salida": "foto",
-				"editable": true,
-				"relacion de aspecto": [16,9]
+				"editable": true
 			}
 		],
 		"accion personalizada": "()=>{console.log('Hacer algo')}"

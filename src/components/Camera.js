@@ -5,8 +5,17 @@ import * as ImagePicker from 'expo-image-picker'
 import * as MediaLibrary from 'expo-media-library'
 import cameraIcon from '../assets/camera.png'
 import galleryIcon from '../assets/gallery.png'
-
+/**
+ * Class representing the configuration settings for the camera.
+ */
 class CameraConfiguration {
+  /**
+   * Create a CameraConfiguration instance.
+   * @param {function} setImage - Function to set the image.
+   * @param {boolean} [allowsEditing=true] - Indicates if editing is allowed.
+   * @param {Array<number>} [aspect=[4, 3]] - The aspect ratio for the camera.
+   * @param {number} [quality=1] - The quality of the image (0 to 1).
+   */
   constructor(setImage = img => {}, allowsEditing = true, aspect = [4, 3], quality = 1) {
     this.setImage = setImage
     this.allowsEditing = allowsEditing
@@ -14,6 +23,15 @@ class CameraConfiguration {
     this.quality = quality
   }
 
+  
+
+  /**
+   * Get the camera configuration settings.
+   * @returns {Object} The camera settings.
+   * @property {boolean} allowsEditing - Indicates if editing is allowed.
+   * @property {Array<number>} aspect - The aspect ratio for the camera.
+   * @property {number} quality - The quality of the image.
+   */
   getSettings() {
     return {
       allowsEditing: this.allowsEditing,
@@ -23,14 +41,30 @@ class CameraConfiguration {
   }
 }
 
-export const Camera = ({title, required, cameraConfiguration }) => {
+
+/**
+ * Camera component for capturing images or selecting them from the gallery.
+ *
+ * @param {Object} cameraConfiguration - Configuration object for the camera.
+ * @param {function} cameraConfiguration.setImage - Function to set the selected image.
+ * @param {function} cameraConfiguration.setImageSetter - Function to update the image setter function.
+ * @param {Array} requiredFieldRef - A variable to pass by reference the Camera "requiered field text" toggle method
+ * 
+ * @returns {JSX.Element} Rendered camera component.
+ */
+export const Camera = ({ title, required, cameraConfiguration, requiredFieldRef }) => {
   const [image, setImage] = useState(null)
   const [isMenuVisible, setMenuVisible] = useState(false)
+  const [isRequiredAlert, setIsRequiredAlert] = useState(false)
 
   async function openMedia(cameraConfiguration, launchFunction) {
-    let { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
-
-    if (status !== 'granted') {
+    
+    let mediaPermissions = await ImagePicker.requestMediaLibraryPermissionsAsync()
+    let cameraPermissions = await ImagePicker.requestCameraPermissionsAsync()    
+    let permissionsGranted = mediaPermissions.status === 'granted' && cameraPermissions.status === 'granted'
+    
+    if (!permissionsGranted) {
+      setMenuVisible(false)
       Alert.alert(
         'Permissions Required',
         'Camera/Gallery permissions are required to proceed. Please enable them in your app settings.',
@@ -40,7 +74,11 @@ export const Camera = ({title, required, cameraConfiguration }) => {
         ]
       )
     }
-    if (status !== 'granted') return (new Err('Permissions not granted by user')).show()
+    setMenuVisible(true)
+    mediaPermissions = await ImagePicker.requestMediaLibraryPermissionsAsync()
+    cameraPermissions = await ImagePicker.requestCameraPermissionsAsync()    
+    permissionsGranted = mediaPermissions.status === 'granted' && cameraPermissions.status === 'granted'
+    if (!permissionsGranted) return (new Err('Permissions not granted by user')).show()
 
     const result = await launchFunction(cameraConfiguration.getSettings())
     if (result.canceled) return new Err('Operation cancelled')
@@ -58,6 +96,8 @@ export const Camera = ({title, required, cameraConfiguration }) => {
 
     cameraConfiguration.setImage(imageUri)
     setImage(imageUri) // Actualiza la imagen seleccionada
+    setIsRequiredAlert(false)
+    setMenuVisible(false)
     return new Ok(imageUri)
   }
 
@@ -78,6 +118,14 @@ export const Camera = ({title, required, cameraConfiguration }) => {
     toggleMenu()
   }
 
+  requiredFieldRef.current = () => {
+    if (required) {
+        setIsRequiredAlert(true)
+    } else {
+        setIsRequiredAlert(false)
+    }
+  }
+
   return (
     <View style={styles.container}>
       {title && (
@@ -88,13 +136,19 @@ export const Camera = ({title, required, cameraConfiguration }) => {
       )}
       
       {/* Contenedor que muestra el icono o imagen seleccionada */}
-      <TouchableOpacity onPress={toggleMenu} style={styles.imageContainer} activeOpacity={0.7}>
+      <TouchableOpacity onPress={toggleMenu} 
+      style={[
+        styles.imageContainer, 
+        isRequiredAlert && { backgroundColor: '#FFCCCC' } // Change background to red if isRequiredAlert is true
+      ]}
+      activeOpacity={0.7}>
         {image ? (
           <Image source={{ uri: image }} style={styles.selectedImage} />
         ) : (
           <Image source={cameraIcon} style={styles.cameraIcon} />
         )}
       </TouchableOpacity>
+
 
       {/* Menú emergente (modal) con las opciones de Cámara, Galería y Eliminar Imagen */}
       <Modal visible={isMenuVisible} transparent={true} animationType="fade">
