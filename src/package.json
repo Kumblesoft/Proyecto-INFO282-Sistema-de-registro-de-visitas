@@ -26,6 +26,8 @@
     "react": "18.2.0",
     "react-native": "0.74.5",
     "react-native-fs": "^2.20.0",
+    "react-native-refresh": "^2.0.17",
+    "react-native-restart": "^0.0.27",
     "react-native-svg": "^15.7.1",
     "react-native-timer-picker": "^1.10.3",
     "realm": "^12.13.1"

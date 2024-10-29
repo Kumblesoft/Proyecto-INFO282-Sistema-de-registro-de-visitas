@@ -47,7 +47,7 @@ export const OptionSelectorFeatures = options => {
  * @param {function} [requiredFieldRef] - A reference to validate if the field is required and show an error message.
  * @returns {JSX.Element} The rendered component based on the specified type.
  */
-export default function OptionSelector({ type, items, onSelect, requiredFieldRef, optionalFeatures }) {
+export default function OptionSelector({ type, items, onSelect, requiredFieldRef, optionalFeatures , refreshFieldRef}) {
     type ??= OptionComponentType.DROPDOWN
     optionalFeatures ??= {}
 
@@ -70,6 +70,9 @@ export default function OptionSelector({ type, items, onSelect, requiredFieldRef
             setIsRequiredAlert(false)
         }
       }
+    refreshFieldRef.current = () => {
+        setSelectedValue(null)
+    }
 
     // Renderizar el componente correcto basado en `type`
     const SelectedComponent = Selectors[type] // Selecciona el componente correspondiente según `type`

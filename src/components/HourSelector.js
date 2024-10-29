@@ -32,7 +32,7 @@ export const OptionalTimeFeatures = options => {
  * @param {Object} OptionalTimeFeatures - options for the hour selector,
 * @returns {Layout} - The Layout that displays the whole HourSelector.
  **/
-const HourSelector = ({onChange, optionalFeatures = {},requiredFieldRef}) => {
+const HourSelector = ({onChange, optionalFeatures = {},requiredFieldRef, refreshFieldRef}) => {
     const [showPicker, setShowPicker] = useState(false)
     const {title, defaultTime, disabled, required} = optionalFeatures
     const [hour,setHour] = useState(defaultTime)
@@ -55,6 +55,10 @@ const HourSelector = ({onChange, optionalFeatures = {},requiredFieldRef}) => {
             setIsRequiredAlert(false)
         }
       }
+    refreshFieldRef.current = () => {
+        setHour(defaultTime)
+        onChange(defaultTime)
+    }
     return (
         <Layout>
             <View style={styles.text}>
