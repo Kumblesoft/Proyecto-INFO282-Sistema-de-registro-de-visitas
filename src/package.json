@@ -22,13 +22,15 @@
     "expo-image-picker": "^15.0.7",
     "expo-linear-gradient": "^13.0.2",
     "expo-media-library": "^16.0.5",
+    "expo-secure-store": "^13.0.2",
     "expo-status-bar": "~1.12.1",
     "react": "18.2.0",
     "react-native": "0.74.5",
     "react-native-fs": "^2.20.0",
     "react-native-svg": "^15.7.1",
     "react-native-timer-picker": "^1.10.3",
-    "realm": "^12.13.1"
+    "realm": "^12.13.1",
+    "uuid": "^11.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.25.8"
