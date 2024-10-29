@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Radio, RadioGroup, Text } from '@ui-kitten/components'
+import { Radio, RadioGroup, Text, Layout, Divider } from '@ui-kitten/components'
 import { StyleSheet } from 'react-native'
 
 const RadioButtonGroup = ({ items, onSelect, defaultOption,error }) => {
@@ -20,7 +20,7 @@ const RadioButtonGroup = ({ items, onSelect, defaultOption,error }) => {
     <RadioGroup selectedIndex={selectedIndex} onChange={handleSelect}>
       {items.map(item => (
         <Radio key={item.valor} style={styles.radio}status={error? 'danger':'basic'}>
-          <Text>{item.nombre}</Text>
+          <Text style={styles.radioText}>{item.nombre}</Text>
         </Radio>
       ))}
     </RadioGroup>
@@ -29,8 +29,12 @@ const RadioButtonGroup = ({ items, onSelect, defaultOption,error }) => {
 
 const styles = StyleSheet.create({
   radio: {
-    marginVertical: 5
-  }
+    marginVertical: 5,
+    fontSize: 18,
+  },
+  radioText: {
+    fontSize: 18, 
+  },
 })
 
 export default RadioButtonGroup
