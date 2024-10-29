@@ -96,7 +96,7 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef}) => {
     }
 
   return (
-    <View style={styles.container}>
+    <Layout style={styles.containerBox}>
       {title && (
       <View style={styles.text}>
           <Text style={styles.text} category={required ? "label" :"p2"}>
@@ -119,7 +119,7 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef}) => {
         :
         <></>
       }
-    </View>
+    </Layout>
   )
 }
 
@@ -134,6 +134,8 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 10,
     color: '#333',
+    alignSelf: 'flex-start',
+    marginBottom: 12,
   },
   text: {
     marginHorizontal: '2%',
@@ -156,12 +158,29 @@ const styles = StyleSheet.create({
     height: 20,
   },
   input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 10,
+    borderWidth: 0,
+    borderBottomWidth: 2,    
+    borderBottomColor: '#000',
+    backgroundColor: 'transparent',
     borderRadius: 5,
+    borderColor: '#ccc',
     backgroundColor: '#fff',
     fontSize: 15,
+    alignSelf: 'flex-start',
+  },
+  containerBox: {
+    padding: 10,
+    marginBottom: 15,
+    borderRadius: 8,
+    backgroundColor: '#ffffff', // Color fondo suave
+    borderWidth: 1,
+    borderColor: '#9beba5',
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.9,
+    shadowRadius: 2,
+    elevation: 3,
+    alignItems: 'flex-start'
   },
 })
 

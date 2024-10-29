@@ -1,8 +1,9 @@
 import React from 'react'
-import { View, StyleSheet, FlatList, TouchableOpacity } from 'react-native'
-import { Text } from '@ui-kitten/components'
+import { View, StyleSheet, FlatList, TouchableOpacity, Image, ScrollView } from 'react-native'
+import { Text, TopNavigation, TopNavigationAction, Divider, Layout } from '@ui-kitten/components'
 import { useFormContext } from '../context/FormContext'
 import { useNavigation } from '@react-navigation/native'
+import { LinearGradient } from 'expo-linear-gradient'
 
 const FormSelectorScreen = ({ route }) => {
   const navigation = useNavigation()
@@ -13,25 +14,51 @@ const FormSelectorScreen = ({ route }) => {
     setSelectedForm(form)
     navigation.navigate('Menu')
   }
+  const BackIcon = () => (
+    <Image
+        source={require('../assets/arrow_back.png')}
+        style={styles.backIcon}
+    />
+  );
+
+  const BackAction = () => (
+      <TopNavigationAction icon={BackIcon} onPress={() => navigation.goBack()} />
+  );
+  const renderTitle = () => (
+      <View style={styles.titleContainer}>
+          <Text style={styles.title}>Selector de formularios</Text>
+      </View>
+  );
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity style={styles.item} onPress={() => handleSelectForm(item)}>
-      <Text style={styles.itemText}>{item["nombre formulario"]}</Text>
-    </TouchableOpacity>
+      <TouchableOpacity style={styles.containerBox} onPress={() => handleSelectForm(item)}>
+        <Text style={styles.itemText}>{item["nombre formulario"]}</Text>
+      </TouchableOpacity>
   )
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={forms}
-        renderItem={renderItem}
-        keyExtractor={(item) => item["nombre formulario"]}
-        contentContainerStyle={styles.listContainer}
-      />
-      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <Text style={styles.backButtonText}>Volver</Text>
-      </TouchableOpacity>
-    </View>
+    <>
+        <LinearGradient colors={['#29C9A2', '#A0ECA5']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+          <TopNavigation
+              title={renderTitle}
+              style={styles.topNavigation}
+              accessoryLeft={BackAction}
+              alignment='center'
+          />
+        </LinearGradient>
+        <Divider />
+        <Layout style={styles.container}>
+          <FlatList
+            data={forms}
+            renderItem={renderItem}
+            keyExtractor={(item) => item["nombre formulario"]}
+            contentContainerStyle={styles.listContainer}
+          />
+            <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+              <Text style={styles.backButtonText}>Volver</Text>
+            </TouchableOpacity>
+        </Layout>
+    </>
   )
 }
 
@@ -60,10 +87,43 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     borderWidth: 1,
     borderColor: '#ccc',
-    borderRadius: 5,
+    borderRadius: 10,
   },
   itemText: {
-    fontSize: 16,
+    fontSize: 20,
+  },
+  topNavigation:{
+    backgroundColor: "transparent",
+  },
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  containerBox: {
+        padding: 10,
+        marginBottom: 15,
+        borderRadius: 8,
+        backgroundColor: '#ffffff', 
+        borderWidth: 1,
+        borderColor: '#9beba5',
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.9,
+        shadowRadius: 2,
+        elevation: 3,
+        alignItems: 'flex-start',
+        justifyContent: 'space-between',
+        flexDirection: 'row',
+        height: 'auto'
+  },
+  title: {
+    fontSize: 25,   
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  backIcon: {
+    width: 25,
+    height: 25,
   },
 })
 

@@ -36,10 +36,11 @@ const styles = StyleSheet.create({
     marginVertical: 10
   },
   checkboxContainer: {
-    marginVertical: 5 // Espacio entre los checkboxes
+    marginVertical: 5, // Espacio entre los checkboxes
   },
   checkboxText: {
     fontSize: 18, // Tamaño de fuente más grande
+    
   }
 })
 

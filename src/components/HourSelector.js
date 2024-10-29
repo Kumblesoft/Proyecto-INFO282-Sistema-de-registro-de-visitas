@@ -1,9 +1,14 @@
 import React, { useState} from 'react'
-import { Button, Text, Layout, Icon } from '@ui-kitten/components'
-import { View, StyleSheet } from 'react-native'
+import { Button, Text, Layout, Icon, IconElement } from '@ui-kitten/components'
+import { StyleSheet} from 'react-native'
 import { TimerPickerModal } from "react-native-timer-picker"
 import { LinearGradient } from "expo-linear-gradient"
 import * as Haptics from "expo-haptics" // for haptic feedback
+
+const resetIcon = (props) => (
+    <Icon name='sync-outline' {...props} />
+);
+
 /**
  * The setter for the optuinal features
  *
@@ -23,6 +28,21 @@ export const OptionalTimeFeatures = options => {
         required: options.required ?? false,
     }
 }
+
+const StarIcon = (props) => (
+    <Icon
+        {...props}
+        name='reset'
+    />
+);
+
+export const IconSimpleUsageShowcase = () => (
+    <Icon
+        style={styles.icon}
+        fill='#8F9BB3'
+        name='star'
+    />
+);
 
 /**
  * The logic and layout of the hour selector 
@@ -56,25 +76,26 @@ const HourSelector = ({onChange, optionalFeatures = {},requiredFieldRef}) => {
         }
       }
     return (
-        <Layout>
+        <Layout style={styles.container}>
             <View style={styles.text}>
                 <Text style={styles.text} category={required ? "label" :"p2"}>
                     {title}
                 </Text> 
                 <Text status='danger'> 
-                    {required ? "*": " "} 
                 </Text>
-            </View> 
-            <Button disabled={disabled} onPress={()=>setShowPicker(true)} appearance='outline' style={styles.hour} size='large'>{hour}</Button>
+                    {required ? "*": " "} 
+                <Layout style={styles.buttonContainer}>
+            </View>
+            <Button disabled={disabled} status='success' onPress={()=>setShowPicker(true)} appearance='outline' style={styles.hour} size='large'>{hour}</Button>    
             { isRequiredAlert ?
                 <Layout size='small' style={styles.alert}>
                     <Icon status='danger' fill='#FF0000' name='alert-circle'style={styles.icon}/> 
                     <Text style={styles.alert} category="p2">
                         Por favor seleccione una hora
-                    </Text>
+                    </Text> 
                 </Layout>
                 :
-                <></>
+                <></>               
             }
             { disabled ? 
                 <></> : 
@@ -102,7 +123,6 @@ const HourSelector = ({onChange, optionalFeatures = {},requiredFieldRef}) => {
                 hideSeconds={true}
                 agressivelyGetLatestDuretion={true}
             />
-            
         </Layout>   
     )
 }
@@ -110,9 +130,23 @@ const HourSelector = ({onChange, optionalFeatures = {},requiredFieldRef}) => {
 // Define the styles of the different elements of the hour selector
 const styles = StyleSheet.create({
     container: {
-        padding: 20,
-        borderRadius: 10,
-        alignItems: 'center',
+        padding: 10,
+        marginBottom: 15,
+        borderRadius: 8,
+        backgroundColor: '#ffffff', // Color fondo suave
+        borderWidth: 1,
+        borderColor: '#9beba5',
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.9,
+        shadowRadius: 2,
+        elevation: 3,
+        alignItems: 'flex-start'
+    },
+    titles: {
+        fontWeight: 'bold',
+        marginBottom: 10,
+        margin: 2,
     },
     pickerContainer: {
         flexDirection: 'row',
@@ -142,12 +176,26 @@ const styles = StyleSheet.create({
     hour: {
         margin: 2,
         paddingVertical: 12,
-        paddingHorizontal: 120,
+        paddingHorizontal: 100,
+        marginLeft: 'auto'
     },
     button: {
         margin: 2,
-        paddingVertical: 12,
-        paddingHorizontal: 12,
+        paddingVertical: 5,
+        paddingHorizontal: 5,
+        fontWeight: 'bold',
+        fontSize: 10,
+        
+    },
+    buttonContainer: {
+        flexDirection: 'row',  
+        justifyContent: 'space-between', 
+        marginBottom: 10,
+        backgroundColor: '#ffffff',
+    },
+    icon: {
+        width: 32,
+        height: 32,
     },
     text: {
         marginHorizontal: '1%',
@@ -158,15 +206,11 @@ const styles = StyleSheet.create({
     alert: {
         flex: 1,
         margin: 1,
-        marginHorizontal: '1%',
         color: '#ff0000',
+        marginHorizontal: '1%',
         flexDirection: 'row',
-        flexWrap: 'wrap',
         justifyContent: 'left',
-    },
-    icon: {
-        width: 20,
-        height: 20,
+        flexWrap: 'wrap',
     },
 })
 

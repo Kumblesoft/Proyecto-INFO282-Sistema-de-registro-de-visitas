@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { Text } from '@ui-kitten/components'
+import { Layout, Text, Divider } from '@ui-kitten/components'
 import CheckboxGroup from "./subcomponents/CheckboxGroup"
 import ItemSelector from "./subcomponents/ItemSelector"
 import RadioButtonGroup from "./subcomponents/RadioButtonGroup"
+import { View, StyleSheet } from 'react-native'
 
 /**
  * Enum for component types.
@@ -76,23 +77,48 @@ export default function OptionSelector({ type, items, onSelect, requiredFieldRef
     const emptyValue = (selectedValue == null)
     return (
         <>
-            {!title ? null : (
-                <Text category="h6">
-                    {title + (required ? "*" : "") + (maxChecked != null ? ` (Seleccione ${maxChecked})` : "")}
-                </Text>
-            )}
-            <SelectedComponent
-                items={items} // Pasar los ítems
-                onSelect={handleSelect} // Función de manejo de selección
-                placeholder={placeholder || "Seleccione una opción"} // Asignar el placeholder si no se pasa uno
-                value={selectedValue} // Pasar el valor actual
-                defaultOption={defaultOption} // Opción predeterminada
-                maxChecked={maxChecked}
-                error={isRequiredAlert&&emptyValue} // Pasar el estado de error al subcomponente
-            />
+            <Layout style={styles.containerBox}>
+                {!title ? <></> : 
+                    <Text category="h6" style={styles.titles}>{ 
+                        title +
+                        (required ? "*" : "") +
+                        (maxChecked != null ? ` (Seleccione ${maxChecked})` : "")}
+                    </Text>
+                }
+                <SelectedComponent
+                    items={items} // Pasar los ítems
+                    onSelect={handleSelect} // Función de manejo de selección
+                    placeholder={placeholder || "Seleccione una opción"} // Asignar el placeholder si no se pasa uno
+                    value={selectedValue} // Pasar el valor actual
+                    defaultOption={defaultOption} // Opcion predeterminada
+                    maxChecked={maxChecked}
+                />
+            </Layout>
         </>
     )
 }
+
+const styles = StyleSheet.create({
+    containerBox: {
+        padding: 10,
+        marginBottom: 15,
+        borderRadius: 8,
+        backgroundColor: '#ffffff', // Color fondo suave
+        borderWidth: 1,
+        borderColor: '#9beba5',
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.9,
+        shadowRadius: 2,
+        elevation: 3,
+        alignItems: 'flex-start'
+    },
+    titles: {
+        fontWeight: 'bold',
+        marginBottom: 10,
+        margin: 2,
+    },
+})
 
 // Arreglo de los componentes disponibles
 const Selectors = [ItemSelector, CheckboxGroup, RadioButtonGroup]
