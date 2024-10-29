@@ -1,6 +1,6 @@
 import React, {useRef} from 'react'
-import {Button, Alert} from 'react-native'
-import {Button, Text, Layout, TouchableOpacity, Icon, IconElement } from '@ui-kitten/components'
+import {Alert} from 'react-native'
+import {Button, Text, Layout, Icon } from '@ui-kitten/components'
 import  OptionSelector, { OptionComponentType, OptionSelectorFeatures } from './selector/OptionSelector'
 import TextEntry, {OptionalTextFeatures} from './TextEntry' 
 import DateSelector, {OptionDateFeatures} from './DateSelector' 

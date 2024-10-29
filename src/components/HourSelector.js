@@ -1,5 +1,5 @@
 import React, { useState} from 'react'
-import { Button, Text, Layout, Icon, IconElement } from '@ui-kitten/components'
+import { Button, Text, Layout, Icon, IconElement, View } from '@ui-kitten/components'
 import { StyleSheet} from 'react-native'
 import { TimerPickerModal } from "react-native-timer-picker"
 import { LinearGradient } from "expo-linear-gradient"
@@ -52,7 +52,7 @@ export const IconSimpleUsageShowcase = () => (
  * @param {Object} OptionalTimeFeatures - options for the hour selector,
 * @returns {Layout} - The Layout that displays the whole HourSelector.
  **/
-const HourSelector = ({onChange, optionalFeatures = {},requiredFieldRef}) => {
+export default function HourSelector({onChange, optionalFeatures = {},requiredFieldRef}) {
     const [showPicker, setShowPicker] = useState(false)
     const {title, defaultTime, disabled, required} = optionalFeatures
     const [hour,setHour] = useState(defaultTime)
@@ -77,30 +77,30 @@ const HourSelector = ({onChange, optionalFeatures = {},requiredFieldRef}) => {
       }
     return (
         <Layout style={styles.container}>
-            <View style={styles.text}>
+            <Layout style={styles.text}>
                 <Text style={styles.text} category={required ? "label" :"p2"}>
                     {title}
                 </Text> 
-                <Text status='danger'> 
-                </Text>
+                <Text status='danger'>
                     {required ? "*": " "} 
-                <Layout style={styles.buttonContainer}>
-            </View>
-            <Button disabled={disabled} status='success' onPress={()=>setShowPicker(true)} appearance='outline' style={styles.hour} size='large'>{hour}</Button>    
-            { isRequiredAlert ?
-                <Layout size='small' style={styles.alert}>
-                    <Icon status='danger' fill='#FF0000' name='alert-circle'style={styles.icon}/> 
-                    <Text style={styles.alert} category="p2">
-                        Por favor seleccione una hora
-                    </Text> 
-                </Layout>
-                :
-                <></>               
-            }
-            { disabled ? 
-                <></> : 
-                <Button style={styles.button} onPress={()=>setNowTime()}>{"Reset time"}</Button>
-            }
+                </Text>  
+            </Layout>   
+            <Layout style={styles.buttonContainer }>
+                <Button disabled={disabled} status='success' onPress={()=>setShowPicker(true)} appearance='outline' style={disabled ? styles.disabledHour : styles.hour} size='large'>{hour}</Button>    
+                { isRequiredAlert ?
+                    <Layout size='small' style={styles.alert}>
+                        <Icon status='danger' fill='#FF0000' name='alert-circle'style={styles.icon}/> 
+                        <Text style={styles.alert} category="p2">
+                            Por favor seleccione una hora
+                        </Text> 
+                    </Layout>
+                    :
+                    <></>               
+                }
+                { disabled ? 
+                    <></> : 
+                    <Button style={styles.button} accessoryLeft={resetIcon} onPress={()=>setNowTime()}></Button>
+                }
             <TimerPickerModal
                 visible={showPicker}
                 setIsVisible={setShowPicker}
@@ -123,6 +123,7 @@ const HourSelector = ({onChange, optionalFeatures = {},requiredFieldRef}) => {
                 hideSeconds={true}
                 agressivelyGetLatestDuretion={true}
             />
+            </Layout>
         </Layout>   
     )
 }
@@ -174,23 +175,27 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     hour: {
-        margin: 2,
         paddingVertical: 12,
-        paddingHorizontal: 100,
-        marginLeft: 'auto'
+        paddingHorizontal: 'auto',
+        width: '80%'
+       
+    },
+    disabledHour:{
+        paddingVertical: 12,
+        paddingHorizontal: 'auto',
+        width: '100%'
     },
     button: {
         margin: 2,
-        paddingVertical: 5,
-        paddingHorizontal: 5,
         fontWeight: 'bold',
         fontSize: 10,
+        width:'15%'
         
     },
     buttonContainer: {
         flexDirection: 'row',  
         justifyContent: 'space-between', 
-        marginBottom: 10,
+        width: '100%',
         backgroundColor: '#ffffff',
     },
     icon: {
@@ -213,5 +218,3 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap',
     },
 })
-
-export default HourSelector

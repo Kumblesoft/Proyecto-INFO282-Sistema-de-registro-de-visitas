@@ -10,8 +10,6 @@ import FormFiller from "./screens/FormFiller"
 import SavedForms from "./screens/SavedFormsScreen"
 import Settings from "./screens/Settings"
 import { FormProvider } from './context/FormContext'
-import { Header } from "react-native/Libraries/NewAppScreen"
-import {EvaIconsPack} from "@ui-kitten/eva-icons"
 
 const myTheme = {
   ...eva.light, // Usamos el tema claro de Eva Design

@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start'
   },
   datepicker: {
-    width: 'auto'
+    width: '100%'
   }
 })
 export default DateSelector
