@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Layout, Text, Divider } from '@ui-kitten/components'
 import CheckboxGroup from "./subcomponents/CheckboxGroup"
 import ItemSelector from "./subcomponents/ItemSelector"
@@ -48,7 +48,7 @@ export const OptionSelectorFeatures = options => {
  * @param {function} [requiredFieldRef] - A reference to validate if the field is required and show an error message.
  * @returns {JSX.Element} The rendered component based on the specified type.
  */
-export default function OptionSelector({ type, items, onSelect, requiredFieldRef, optionalFeatures }) {
+export default function OptionSelector({ type, items, onSelect, requiredFieldRef, optionalFeatures , refreshFieldRef}) {
     type ??= OptionComponentType.DROPDOWN
     optionalFeatures ??= {}
 
@@ -56,6 +56,7 @@ export default function OptionSelector({ type, items, onSelect, requiredFieldRef
     const [selectedValue, setSelectedValue] = useState(defaultOption || null) // Usar la opción predeterminada como estado inicial
     const [isRequiredAlert, setIsRequiredAlert] = useState(false)
 
+    const optionRef = useRef()
     // Lógica para manejar la selección
     const handleSelect = selectedValue => {
         setSelectedValue(selectedValue) // Actualizar el estado con el valor seleccionado
@@ -71,10 +72,14 @@ export default function OptionSelector({ type, items, onSelect, requiredFieldRef
             setIsRequiredAlert(false)
         }
       }
+    
 
     // Renderizar el componente correcto basado en `type`
     const SelectedComponent = Selectors[type] // Selecciona el componente correspondiente según `type`
     const emptyValue = (selectedValue == null)
+    refreshFieldRef.current = () => {
+        optionRef.current.refreshSelector()
+    }
     return (
         <>
             <Layout style={styles.containerBox}>
@@ -92,6 +97,7 @@ export default function OptionSelector({ type, items, onSelect, requiredFieldRef
                     value={selectedValue} // Pasar el valor actual
                     defaultOption={defaultOption} // Opcion predeterminada
                     maxChecked={maxChecked}
+                    ref = {optionRef}
                 />
             </Layout>
         </>

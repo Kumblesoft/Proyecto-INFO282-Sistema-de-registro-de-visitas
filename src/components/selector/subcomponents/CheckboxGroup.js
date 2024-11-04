@@ -1,10 +1,20 @@
-import React, { useState } from 'react'
+import React, { forwardRef, useState ,useImperativeHandle } from 'react'
 import { CheckBox, Text } from '@ui-kitten/components'
 import { View, StyleSheet } from 'react-native'
 
-export default CheckboxGroup = ({ items, onSelect, value, maxChecked, error}) => {
+
+export default CheckboxGroup = forwardRef(({ items, onSelect, value, maxChecked, error},ref) => {
   const [selectedValues] = useState(new Set()) // Usar el estado como referencia de un Set
   if (value) [value].flat().map(value => selectedValues.add(value)) // Setear los valores iniciales
+
+  const refreshSelector = () =>{
+    items.map(item => (
+      selectedValues.has(item.valor) ? handleSelect(item.valor) : null
+    ))
+  }
+  useImperativeHandle(ref, () => ({
+    refreshSelector,
+  }))
 
   const handleSelect = itemValue => {
     if (selectedValues.has(itemValue)) selectedValues.delete(itemValue) // Eliminar si ya estaba seleccionado
@@ -12,7 +22,6 @@ export default CheckboxGroup = ({ items, onSelect, value, maxChecked, error}) =>
     
 		if (onSelect) onSelect(Array.from(selectedValues)) // Llamar al callback con los valores seleccionados
   }
-  
   return (
     <View style={styles.container}>
       {items.map(item => (
@@ -29,7 +38,7 @@ export default CheckboxGroup = ({ items, onSelect, value, maxChecked, error}) =>
       ))}
     </View>
   )
-}
+})
 
 const styles = StyleSheet.create({
   container: {

@@ -51,7 +51,7 @@ const formatMap = new Map([
  * @param {Function} props.onSelect - Callback function called when the input value changes.
  * @returns {JSX.Element} The rendered TextEntry component.
  */
-const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef}) => {
+const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldRef}) => {
   const { title, required, limitations, format } = optionalFeatures
   const [ inputValue, setInputValue ] = useState('')
   const [ isRequiredAlert, setIsRequiredAlert] = useState(false)
@@ -93,6 +93,9 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef}) => {
       } else {
         setIsRequiredAlert(false)
       }
+    }
+    refreshFieldRef.current = () => {
+      setInputValue('')
     }
 
   return (

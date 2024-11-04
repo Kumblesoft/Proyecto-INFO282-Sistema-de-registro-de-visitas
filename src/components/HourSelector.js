@@ -52,7 +52,7 @@ export const IconSimpleUsageShowcase = () => (
  * @param {Object} OptionalTimeFeatures - options for the hour selector,
 * @returns {Layout} - The Layout that displays the whole HourSelector.
  **/
-export default function HourSelector({onChange, optionalFeatures = {},requiredFieldRef}) {
+export default function HourSelector ({onChange, optionalFeatures = {},requiredFieldRef, refreshFieldRef}) {
     const [showPicker, setShowPicker] = useState(false)
     const {title, defaultTime, disabled, required} = optionalFeatures
     const [hour,setHour] = useState(defaultTime)
@@ -75,6 +75,10 @@ export default function HourSelector({onChange, optionalFeatures = {},requiredFi
             setIsRequiredAlert(false)
         }
       }
+    refreshFieldRef.current = () => {
+        setHour(defaultTime)
+        onChange(defaultTime)
+    }
     return (
         <Layout style={styles.container}>
             <Layout style={styles.text}>
