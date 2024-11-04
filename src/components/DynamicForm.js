@@ -1,4 +1,4 @@
-import React, {useRef} from 'react'
+import React, {forwardRef, useRef, useImperativeHandle} from 'react'
 import {Alert} from 'react-native'
 import {Button, Text, Layout, Icon } from '@ui-kitten/components'
 import  OptionSelector, { OptionComponentType, OptionSelectorFeatures } from './selector/OptionSelector'
@@ -28,10 +28,10 @@ const saveText = () => {
  */
 
 
-const DynamicForm = ({ formData }) => {
-const formState = new Map()
+const DynamicForm = forwardRef(({ formData }, ref) => {
 const requiredFieldRefs = useRef([])  
 const refreshFieldRefs = useRef([])
+const formState = useRef(new Map())
 
 
   /**
@@ -41,8 +41,12 @@ const refreshFieldRefs = useRef([])
    * @param {string} value - The new value for the field.
    */
 const handleInputChange = (field, value) => {
-    formState.set(field,value)
+    formState.current.set(field,value)
 }
+
+useImperativeHandle(ref, () => ({
+    getMap: () => formState.current,
+}))
 
 /**
    * Handles the submission of the form.
@@ -52,7 +56,7 @@ const handleInputChange = (field, value) => {
    */
 const handleSubmit = async () => {
     const requiredFields = formData.campos.filter(field => field.obligatorio)
-    const emptyFields = requiredFields.some(field => !formState.get(field.salida))
+    const emptyFields = requiredFields.some(field => !formState.current.get(field.salida))
     if (emptyFields) {
         requiredFieldRefs.current.forEach(ref => ref())
         return (new Err('Completa todos los campos obligatorios')).show()
@@ -73,14 +77,14 @@ const handleSubmit = async () => {
       const newForm = {
         id: Date.now(), 
         nombreFormulario: formData["nombre formulario"] || "Formulario Sin Nombre", 
-        data: Object.fromEntries(formState), 
+        data: Object.fromEntries(formState.current), 
       }
 
       
       storedForms.push(newForm) 
       await AsyncStorage.setItem('savedForms', JSON.stringify(storedForms))
       console.log("Formulario guardado:", newForm)
-      formState.clear()
+      formState.current.clear()
       Alert.alert("Formulario guardado")
       refreshFieldRefs.current.forEach(ref => ref())
     } catch (error) {
@@ -158,7 +162,7 @@ const renderField = (field, index) => {
         return (
         <DateSelector
             key={`fecha-${index}`}  
-            value={formState.get(field.salida)}
+            value={formState.current.get(field.salida)}
             onChange={(value) => handleInputChange(field.salida, value)}
             requiredFieldRef={requiredFieldRef}
             refreshFieldRef = {refreshFieldRef}
@@ -177,7 +181,7 @@ const renderField = (field, index) => {
         return (
         <HourSelector
             key={`hora-${index}`}  
-            value={formState.get(field.salida)}
+            value={formState.current.get(field.salida)}
             onChange={(value) => handleInputChange(field.salida, value)}
             requiredFieldRef={requiredFieldRef}
             refreshFieldRef = {refreshFieldRef}
@@ -236,7 +240,7 @@ return (
     
     </Layout>
 )
-}
+})
 
 const styles = StyleSheet.create({
     button: {

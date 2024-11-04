@@ -127,6 +127,7 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldR
     setInputValue(formattedText)
     onSelect(formattedText) 
     setIsRequiredAlert(false) 
+    console.log(formattedText)
     return new Ok("Correct input")
   }
 
