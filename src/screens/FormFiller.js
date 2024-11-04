@@ -1,8 +1,7 @@
 import React, { useState, useRef } from 'react'
-import { SafeAreaView, ScrollView, View, StyleSheet, Image, Alert } from 'react-native'
-import { Layout, Button, Text, TopNavigation, TopNavigationAction, Divider, Icon, Modal, ButtonGroup} from '@ui-kitten/components'
+import { ScrollView, View, StyleSheet} from 'react-native'
+import { Layout, Button, Text, TopNavigation, TopNavigationAction, Divider, Icon, Modal} from '@ui-kitten/components'
 import DynamicForm from '../components/DynamicForm'
-import { useRoute } from '@react-navigation/native'
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -58,11 +57,14 @@ const FormFillerScreen = ({ route }) => {
                 </ScrollView>
                 <Modal visible = {backAlert} backdropStyle={styles.backdrop}>
                     <Layout style = {styles.containerBox}>
-                    <Text> Hay progreso sin guardar, ¿Seguro que quieres volver?</Text>
-                    <ButtonGroup>
-                    <Button onPress={() => navigation.goBack()}>Si</Button>
-                    <Button onPress={() => setBackAlert(false)}>No</Button>
-                    </ButtonGroup>
+                        <Text style={{fontWeight: 'bold'}}> ¿Quieres volver?</Text>
+                        <Text> Aún hay progreso sin guardar</Text>
+                            <Layout style={{flexDirection : 'row',
+                                justifyContent:'space-between'
+                            }}>
+                            <Button style = {{flex : 1, marginRight: '10%'}} onPress={() => navigation.goBack()}>Si</Button>
+                            <Button style = {{flex : 1, marginLeft: '10%'}} onPress={() => setBackAlert(false)}>No</Button>
+                            </Layout>
                     </Layout>
                 </Modal>
             </Layout>
@@ -96,6 +98,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     containerBox: {
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
         padding: 10,
         marginBottom: 15,
         borderRadius: 8,
