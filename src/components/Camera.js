@@ -52,7 +52,7 @@ class CameraConfiguration {
  * 
  * @returns {JSX.Element} Rendered camera component.
  */
-export const Camera = ({ title, required, cameraConfiguration, requiredFieldRef }) => {
+export const Camera = ({ title, required, cameraConfiguration, requiredFieldRef , refreshFieldRef}) => {
   const [image, setImage] = useState(null)
   const [isMenuVisible, setMenuVisible] = useState(false)
   const [isRequiredAlert, setIsRequiredAlert] = useState(false)
@@ -124,6 +124,9 @@ export const Camera = ({ title, required, cameraConfiguration, requiredFieldRef 
     } else {
         setIsRequiredAlert(false)
     }
+  }
+  refreshFieldRef.current = () => {
+    setImage(null)
   }
 
   return (

@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react'
-import { Text } from '@ui-kitten/components'
+import React, { useState, useEffect, useRef } from 'react'
+import { Layout, Text, Divider, Icon } from '@ui-kitten/components'
 import CheckboxGroup from "./subcomponents/CheckboxGroup"
 import ItemSelector from "./subcomponents/ItemSelector"
 import RadioButtonGroup from "./subcomponents/RadioButtonGroup"
+import { View, StyleSheet } from 'react-native'
 
 /**
  * Enum for component types.
@@ -47,7 +48,7 @@ export const OptionSelectorFeatures = options => {
  * @param {function} [requiredFieldRef] - A reference to validate if the field is required and show an error message.
  * @returns {JSX.Element} The rendered component based on the specified type.
  */
-export default function OptionSelector({ type, items, onSelect, requiredFieldRef, optionalFeatures }) {
+export default function OptionSelector({ type, items, onSelect, requiredFieldRef, optionalFeatures , refreshFieldRef}) {
     type ??= OptionComponentType.DROPDOWN
     optionalFeatures ??= {}
 
@@ -55,6 +56,11 @@ export default function OptionSelector({ type, items, onSelect, requiredFieldRef
     const [selectedValue, setSelectedValue] = useState(defaultOption || null) // Usar la opción predeterminada como estado inicial
     const [isRequiredAlert, setIsRequiredAlert] = useState(false)
 
+
+    if (selectedValue){
+        onSelect(selectedValue)
+    }
+    const optionRef = useRef()
     // Lógica para manejar la selección
     const handleSelect = selectedValue => {
         setSelectedValue(selectedValue) // Actualizar el estado con el valor seleccionado
@@ -64,35 +70,89 @@ export default function OptionSelector({ type, items, onSelect, requiredFieldRef
 
     // Lógica para verificar si el campo es obligatorio y está vacío al enviar el formulario
     requiredFieldRef.current = () => {
-        if (required) {
+        if (required && !selectedValue) {
             setIsRequiredAlert(true)
         } else {
             setIsRequiredAlert(false)
         }
       }
+    
 
     // Renderizar el componente correcto basado en `type`
     const SelectedComponent = Selectors[type] // Selecciona el componente correspondiente según `type`
     const emptyValue = (selectedValue == null)
+    refreshFieldRef.current = () => {
+        optionRef.current.refreshSelector()
+        setSelectedValue(null)
+    }
     return (
         <>
-            {!title ? null : (
-                <Text category="h6">
-                    {title + (required ? "*" : "") + (maxChecked != null ? ` (Seleccione ${maxChecked})` : "")}
-                </Text>
-            )}
-            <SelectedComponent
-                items={items} // Pasar los ítems
-                onSelect={handleSelect} // Función de manejo de selección
-                placeholder={placeholder || "Seleccione una opción"} // Asignar el placeholder si no se pasa uno
-                value={selectedValue} // Pasar el valor actual
-                defaultOption={defaultOption} // Opción predeterminada
-                maxChecked={maxChecked}
-                error={isRequiredAlert&&emptyValue} // Pasar el estado de error al subcomponente
-            />
+            <Layout style={styles.containerBox}>
+                {!title ? <></> : 
+                    <Text category="h6" style={styles.titles}>{ 
+                        title +
+                        (required ? "*" : "") +
+                        (maxChecked != null ? ` (Seleccione ${maxChecked})` : "")}
+                    </Text>
+                }
+                <SelectedComponent
+                    items={items} // Pasar los ítems
+                    onSelect={handleSelect} // Función de manejo de selección
+                    placeholder={placeholder || "Seleccione una opción"} // Asignar el placeholder si no se pasa uno
+                    value={selectedValue} // Pasar el valor actual
+                    defaultOption={defaultOption} // Opcion predeterminada
+                    maxChecked={maxChecked}
+                    ref = {optionRef}
+                />
+                { isRequiredAlert ?
+                    <Layout size='small' style={styles.alert}>
+                        <Icon status='danger' fill='#FF0000' name='alert-circle'style={styles.icon}/> 
+                        <Text style={styles.alert} category="p2">
+                            Debe rellenar este campo.
+                        </Text>
+                    </Layout>
+                    :
+                    <></>
+                }
+            </Layout>
         </>
     )
 }
+
+const styles = StyleSheet.create({
+    containerBox: {
+        padding: 10,
+        marginBottom: 15,
+        borderRadius: 8,
+        backgroundColor: '#ffffff', // Color fondo suave
+        borderWidth: 1,
+        borderColor: '#9beba5',
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.9,
+        shadowRadius: 2,
+        elevation: 3,
+        alignItems: 'flex-start'
+    },
+    titles: {
+        fontWeight: 'bold',
+        marginBottom: 10,
+        margin: 2,
+    },
+    alert: {
+        flex: 1,
+        margin: 1,
+        marginHorizontal: '1%',
+        color: '#ff0000',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'left',
+      },
+      icon: {
+        width: 20,
+        height: 20,
+      },
+})
 
 // Arreglo de los componentes disponibles
 const Selectors = [ItemSelector, CheckboxGroup, RadioButtonGroup]

@@ -1,6 +1,6 @@
-import React, {useRef} from 'react'
-import {Button, Alert} from 'react-native'
-import { Layout } from '@ui-kitten/components'
+import React, {forwardRef, useRef, useImperativeHandle} from 'react'
+import {Alert} from 'react-native'
+import {Button, Text, Layout, Icon } from '@ui-kitten/components'
 import  OptionSelector, { OptionComponentType, OptionSelectorFeatures } from './selector/OptionSelector'
 import TextEntry, {OptionalTextFeatures} from './TextEntry' 
 import DateSelector, {OptionDateFeatures} from './DateSelector' 
@@ -8,7 +8,15 @@ import HourSelector, {OptionalTimeFeatures} from './HourSelector'
 import CameraConfiguration, {Camera} from './Camera'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Err, Ok } from '../commonStructures/resultEnum'
+import { StyleSheet } from "react-native" 
 
+const tickIcon = (props) => (
+    <Icon  name='save' {...props}/>
+);
+
+const saveText = () => {
+    <Text style={{color:'black', fontSize: '30'}}>Guardar</Text>
+}
 /**
  * A component that renders a dynamic form based on the provided form data.
  *
@@ -20,9 +28,10 @@ import { Err, Ok } from '../commonStructures/resultEnum'
  */
 
 
-const DynamicForm = ({ formData }) => {
-const formState = new Map()
+const DynamicForm = forwardRef(({ formData }, ref) => {
 const requiredFieldRefs = useRef([])  
+const refreshFieldRefs = useRef([])
+const formState = useRef(new Map())
 
 
   /**
@@ -32,8 +41,12 @@ const requiredFieldRefs = useRef([])
    * @param {string} value - The new value for the field.
    */
 const handleInputChange = (field, value) => {
-    formState.set(field,value)
+    formState.current.set(field,value)
 }
+
+useImperativeHandle(ref, () => ({
+    getMap: () => formState.current,
+}))
 
 /**
    * Handles the submission of the form.
@@ -43,7 +56,7 @@ const handleInputChange = (field, value) => {
    */
 const handleSubmit = async () => {
     const requiredFields = formData.campos.filter(field => field.obligatorio)
-    const emptyFields = requiredFields.some(field => !formState.get(field.salida))
+    const emptyFields = requiredFields.some(field => !formState.current.get(field.salida))
     if (emptyFields) {
         requiredFieldRefs.current.forEach(ref => ref())
         return (new Err('Completa todos los campos obligatorios')).show()
@@ -64,16 +77,16 @@ const handleSubmit = async () => {
       const newForm = {
         id: Date.now(), 
         nombreFormulario: formData["nombre formulario"] || "Formulario Sin Nombre", 
-        data: formState, 
+        data: Object.fromEntries(formState.current), 
       }
 
       
       storedForms.push(newForm) 
       await AsyncStorage.setItem('savedForms', JSON.stringify(storedForms))
       console.log("Formulario guardado:", newForm)
-      
-      formState.clear()
+      formState.current.clear()
       Alert.alert("Formulario guardado")
+      refreshFieldRefs.current.forEach(ref => ref())
     } catch (error) {
       console.error("Error al guardar el formulario:", error)
     }
@@ -88,6 +101,8 @@ const handleSubmit = async () => {
    */
 const renderField = (field, index) => {  
     const requiredFieldRef = useRef(null)
+    const refreshFieldRef = useRef(null)
+    refreshFieldRefs.current.push(() => refreshFieldRef.current())
     requiredFieldRefs.current.push(() => requiredFieldRef.current())  // Añadir la referencia al array
     switch (field.tipo) {
     case 'selector':
@@ -98,6 +113,7 @@ const renderField = (field, index) => {
             items={field.opciones}
             onSelect={(value) => handleInputChange(field.salida, value)}
             requiredFieldRef={requiredFieldRef}
+            refreshFieldRef = {refreshFieldRef}
             optionalFeatures={OptionSelectorFeatures({
             title: field.nombre,
             defaultOption: field['opcion predeterminada'],
@@ -114,12 +130,13 @@ const renderField = (field, index) => {
             items={field.opciones}
             onSelect={(value) => handleInputChange(field.salida, value)}
             requiredFieldRef={requiredFieldRef}
+            refreshFieldRef = {refreshFieldRef}
             optionalFeatures={OptionSelectorFeatures({
             title: field.nombre,
             defaultOption: field['opcion predeterminada'],
             placeholder: field['texto predeterminado'],
             maxChecked: field['cantidad de elecciones'],
-            required: true
+            required: field['obligatorio']
             })}
         />
         )
@@ -131,12 +148,13 @@ const renderField = (field, index) => {
             items={field.opciones}
             onSelect={(value) => handleInputChange(field.salida, value)}
             requiredFieldRef={requiredFieldRef}
+            refreshFieldRef = {refreshFieldRef}
             optionalFeatures={OptionSelectorFeatures({
             title: field.nombre,
             defaultOption: field['opcion predeterminada'],
             placeholder: field['texto predeterminado'],
             maxChecked: field['cantidad de elecciones'],
-            required: true
+            required: field['obligatorio']
             })}
         />
         )
@@ -144,9 +162,10 @@ const renderField = (field, index) => {
         return (
         <DateSelector
             key={`fecha-${index}`}  
-            value={formState.get(field.salida)}
+            value={formState.current.get(field.salida)}
             onChange={(value) => handleInputChange(field.salida, value)}
             requiredFieldRef={requiredFieldRef}
+            refreshFieldRef = {refreshFieldRef}
             optionalFeatures={OptionDateFeatures({
             title: field.nombre,
             placeholder: field['texto predeterminado'],
@@ -162,9 +181,10 @@ const renderField = (field, index) => {
         return (
         <HourSelector
             key={`hora-${index}`}  
-            value={formState.get(field.salida)}
+            value={formState.current.get(field.salida)}
             onChange={(value) => handleInputChange(field.salida, value)}
             requiredFieldRef={requiredFieldRef}
+            refreshFieldRef = {refreshFieldRef}
             optionalFeatures={OptionalTimeFeatures({
             title: field.nombre,
             defaultTime: field['hora predeterminada'] === 'actual' ? now : field['hora predeterminada'],
@@ -181,6 +201,7 @@ const renderField = (field, index) => {
             title={field.nombre}
             required={field['obligatorio']}
             requiredFieldRef={requiredFieldRef}
+            refreshFieldRef = {refreshFieldRef}
             cameraConfiguration={new CameraConfiguration(
             (value) => handleInputChange(field.salida, value),
             field['editable'],
@@ -201,6 +222,7 @@ const renderField = (field, index) => {
                 })}
                 onSelect={(value) => handleInputChange(field.salida, value)}
                 requiredFieldRef={requiredFieldRef}  // Pasar la referencia al componente TextEntry
+                refreshFieldRef = {refreshFieldRef}
             />
         )
         
@@ -210,11 +232,29 @@ const renderField = (field, index) => {
 }
 
 return (
-    <Layout>
+    <Layout style={styles.layoutContainer}>
     {formData.campos.map((field, index) => renderField(field, index))}
-    <Button title="Enviar" onPress={handleSubmit} />
+    <Button onPress={handleSubmit} style={styles.button} accessoryRight={tickIcon}>
+        <Text category='h5' style={styles.buttonText}>Guardar</Text>
+    </Button>
+    
     </Layout>
 )
-}
+})
+
+const styles = StyleSheet.create({
+    button: {
+        borderRadius: 10,
+        borderColor: "#53a75f",
+    },
+    buttonText: {
+        color: 'black',
+        fontWeight: "bold",
+        
+    },
+    layoutContainer:{
+        backgroundColor: "#ffffff"
+    },
+})
 
 export default DynamicForm
