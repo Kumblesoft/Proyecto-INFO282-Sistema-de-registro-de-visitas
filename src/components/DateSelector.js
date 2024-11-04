@@ -48,7 +48,7 @@ export const OptionDateFeatures = (options ={}) => {
  * @param {Object} optionalFeatures - Configuration options for the DateSelector.
  * @returns {JSX.Element} The rendered DateSelector component.
  */
-const DateSelector = ({value, onChange, optionalFeatures,requiredFieldRef}) => {
+const DateSelector = ({value, onChange, optionalFeatures,requiredFieldRef, refreshFieldRef}) => {
   const hasInitialized = useRef(false)
   const {
     title = "",
@@ -92,6 +92,10 @@ const DateSelector = ({value, onChange, optionalFeatures,requiredFieldRef}) => {
     } else {
         setIsRequiredAlert(false)
     }
+  }
+  refreshFieldRef.current = () => {
+    setSelectedDate(defaultDate)
+    onChange(configuredDateService.format(defaultDate, dateFormat))
   }
 
 

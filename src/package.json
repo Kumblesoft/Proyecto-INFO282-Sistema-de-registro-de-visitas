@@ -1,6 +1,6 @@
 {
-  "name": "src",
-  "version": "1.0.0",
+  "name": "sistema-de-registro-de-visitas",
+  "version": "1.0.2",
   "main": "expo/AppEntry.js",
   "scripts": {
     "start": "expo start",

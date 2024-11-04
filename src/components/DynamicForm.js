@@ -31,6 +31,7 @@ const saveText = () => {
 const DynamicForm = ({ formData }) => {
 const formState = new Map()
 const requiredFieldRefs = useRef([])  
+const refreshFieldRefs = useRef([])
 
 
   /**
@@ -72,16 +73,16 @@ const handleSubmit = async () => {
       const newForm = {
         id: Date.now(), 
         nombreFormulario: formData["nombre formulario"] || "Formulario Sin Nombre", 
-        data: JSON.stringify(Object.fromEntries(formState)), 
+        data: Object.fromEntries(formState), 
       }
 
       
       storedForms.push(newForm) 
       await AsyncStorage.setItem('savedForms', JSON.stringify(storedForms))
       console.log("Formulario guardado:", newForm)
-      
       formState.clear()
       Alert.alert("Formulario guardado")
+      refreshFieldRefs.current.forEach(ref => ref())
     } catch (error) {
       console.error("Error al guardar el formulario:", error)
     }
@@ -96,6 +97,8 @@ const handleSubmit = async () => {
    */
 const renderField = (field, index) => {  
     const requiredFieldRef = useRef(null)
+    const refreshFieldRef = useRef(null)
+    refreshFieldRefs.current.push(() => refreshFieldRef.current())
     requiredFieldRefs.current.push(() => requiredFieldRef.current())  // Añadir la referencia al array
     switch (field.tipo) {
     case 'selector':
@@ -106,6 +109,7 @@ const renderField = (field, index) => {
             items={field.opciones}
             onSelect={(value) => handleInputChange(field.salida, value)}
             requiredFieldRef={requiredFieldRef}
+            refreshFieldRef = {refreshFieldRef}
             optionalFeatures={OptionSelectorFeatures({
             title: field.nombre,
             defaultOption: field['opcion predeterminada'],
@@ -122,12 +126,13 @@ const renderField = (field, index) => {
             items={field.opciones}
             onSelect={(value) => handleInputChange(field.salida, value)}
             requiredFieldRef={requiredFieldRef}
+            refreshFieldRef = {refreshFieldRef}
             optionalFeatures={OptionSelectorFeatures({
             title: field.nombre,
             defaultOption: field['opcion predeterminada'],
             placeholder: field['texto predeterminado'],
             maxChecked: field['cantidad de elecciones'],
-            required: true
+            required: field['obligatorio']
             })}
         />
         )
@@ -139,12 +144,13 @@ const renderField = (field, index) => {
             items={field.opciones}
             onSelect={(value) => handleInputChange(field.salida, value)}
             requiredFieldRef={requiredFieldRef}
+            refreshFieldRef = {refreshFieldRef}
             optionalFeatures={OptionSelectorFeatures({
             title: field.nombre,
             defaultOption: field['opcion predeterminada'],
             placeholder: field['texto predeterminado'],
             maxChecked: field['cantidad de elecciones'],
-            required: true
+            required: field['obligatorio']
             })}
         />
         )
@@ -155,6 +161,7 @@ const renderField = (field, index) => {
             value={formState.get(field.salida)}
             onChange={(value) => handleInputChange(field.salida, value)}
             requiredFieldRef={requiredFieldRef}
+            refreshFieldRef = {refreshFieldRef}
             optionalFeatures={OptionDateFeatures({
             title: field.nombre,
             placeholder: field['texto predeterminado'],
@@ -173,6 +180,7 @@ const renderField = (field, index) => {
             value={formState.get(field.salida)}
             onChange={(value) => handleInputChange(field.salida, value)}
             requiredFieldRef={requiredFieldRef}
+            refreshFieldRef = {refreshFieldRef}
             optionalFeatures={OptionalTimeFeatures({
             title: field.nombre,
             defaultTime: field['hora predeterminada'] === 'actual' ? now : field['hora predeterminada'],
@@ -189,6 +197,7 @@ const renderField = (field, index) => {
             title={field.nombre}
             required={field['obligatorio']}
             requiredFieldRef={requiredFieldRef}
+            refreshFieldRef = {refreshFieldRef}
             cameraConfiguration={new CameraConfiguration(
             (value) => handleInputChange(field.salida, value),
             field['editable'],
@@ -209,6 +218,7 @@ const renderField = (field, index) => {
                 })}
                 onSelect={(value) => handleInputChange(field.salida, value)}
                 requiredFieldRef={requiredFieldRef}  // Pasar la referencia al componente TextEntry
+                refreshFieldRef = {refreshFieldRef}
             />
         )
         

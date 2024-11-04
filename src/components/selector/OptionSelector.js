@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import { Layout, Text, Divider } from '@ui-kitten/components'
+import React, { useState, useEffect, useRef } from 'react'
+import { Layout, Text, Divider, Icon } from '@ui-kitten/components'
 import CheckboxGroup from "./subcomponents/CheckboxGroup"
 import ItemSelector from "./subcomponents/ItemSelector"
 import RadioButtonGroup from "./subcomponents/RadioButtonGroup"
@@ -48,7 +48,7 @@ export const OptionSelectorFeatures = options => {
  * @param {function} [requiredFieldRef] - A reference to validate if the field is required and show an error message.
  * @returns {JSX.Element} The rendered component based on the specified type.
  */
-export default function OptionSelector({ type, items, onSelect, requiredFieldRef, optionalFeatures }) {
+export default function OptionSelector({ type, items, onSelect, requiredFieldRef, optionalFeatures , refreshFieldRef}) {
     type ??= OptionComponentType.DROPDOWN
     optionalFeatures ??= {}
 
@@ -56,6 +56,7 @@ export default function OptionSelector({ type, items, onSelect, requiredFieldRef
     const [selectedValue, setSelectedValue] = useState(defaultOption || null) // Usar la opción predeterminada como estado inicial
     const [isRequiredAlert, setIsRequiredAlert] = useState(false)
 
+    const optionRef = useRef()
     // Lógica para manejar la selección
     const handleSelect = selectedValue => {
         setSelectedValue(selectedValue) // Actualizar el estado con el valor seleccionado
@@ -65,16 +66,20 @@ export default function OptionSelector({ type, items, onSelect, requiredFieldRef
 
     // Lógica para verificar si el campo es obligatorio y está vacío al enviar el formulario
     requiredFieldRef.current = () => {
-        if (required) {
+        if (required && !selectedValue) {
             setIsRequiredAlert(true)
         } else {
             setIsRequiredAlert(false)
         }
       }
+    
 
     // Renderizar el componente correcto basado en `type`
     const SelectedComponent = Selectors[type] // Selecciona el componente correspondiente según `type`
     const emptyValue = (selectedValue == null)
+    refreshFieldRef.current = () => {
+        optionRef.current.refreshSelector()
+    }
     return (
         <>
             <Layout style={styles.containerBox}>
@@ -92,7 +97,18 @@ export default function OptionSelector({ type, items, onSelect, requiredFieldRef
                     value={selectedValue} // Pasar el valor actual
                     defaultOption={defaultOption} // Opcion predeterminada
                     maxChecked={maxChecked}
+                    ref = {optionRef}
                 />
+                { isRequiredAlert ?
+                    <Layout size='small' style={styles.alert}>
+                        <Icon status='danger' fill='#FF0000' name='alert-circle'style={styles.icon}/> 
+                        <Text style={styles.alert} category="p2">
+                            Debe rellenar este campo.
+                        </Text>
+                    </Layout>
+                    :
+                    <></>
+                }
             </Layout>
         </>
     )
@@ -118,6 +134,19 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         margin: 2,
     },
+    alert: {
+        flex: 1,
+        margin: 1,
+        marginHorizontal: '1%',
+        color: '#ff0000',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'left',
+      },
+      icon: {
+        width: 20,
+        height: 20,
+      },
 })
 
 // Arreglo de los componentes disponibles
