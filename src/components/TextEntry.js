@@ -101,12 +101,7 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldR
   const handleChange = text => {
     
     // Limitations
-    if (text === '') {
-      setInvalidLimitations([])
-      return new Ok("Empty string")
-    }
-
-    setInvalidLimitations(limitations.reduce(
+    setInvalidLimitations(!text.length ? [] : limitations.reduce(
       (acc, limName) => {
       const limitationOk = limitationBehaviour.get(limName).regex.test(text)
       console.log(limitationOk,  limitationBehaviour.get(limName).regex, text)
@@ -116,16 +111,14 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldR
       }
       
     return acc}, []))
-  
 
     console.log(invalidLimitations)
 
     if (invalidLimitations.length) return new Err("No cumple las limitaciones")
-      
     // Formatting
-    const formattedText = format.forEach(formattingOption => text = formatMap.get(formattingOption)(text))
-    setInputValue(formattedText)
-    onSelect(formattedText) 
+    format.forEach(formattingOption => text = formatMap.get(formattingOption)(text))
+    setInputValue(text)
+    onSelect(text) 
     setIsRequiredAlert(false) 
     return new Ok("Correct input")
   }
