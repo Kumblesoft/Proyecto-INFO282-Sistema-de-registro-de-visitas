@@ -82,6 +82,13 @@ export default function Settings () {
         />
     );
 
+    const InacapIcon = (props) => (
+        <Icon
+            {...props}
+            name='npm'
+        />
+    );
+
 
     const handleChangeID = () => (
         <></>
@@ -115,6 +122,11 @@ export default function Settings () {
                             title={renderOption("¿Santo tomas?")}
                             accessoryLeft={STIcon}
                             onPress={handlePlaySound}
+                        />
+                        <MenuItem 
+                            title={renderOption("Inacap")}
+                            accessoryLeft={InacapIcon}
+                        
                         />
                         <Divider/>
                     </Menu>

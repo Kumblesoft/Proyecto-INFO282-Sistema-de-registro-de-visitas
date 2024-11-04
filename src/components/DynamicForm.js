@@ -72,7 +72,7 @@ const handleSubmit = async () => {
       const newForm = {
         id: Date.now(), 
         nombreFormulario: formData["nombre formulario"] || "Formulario Sin Nombre", 
-        data: formState, 
+        data: JSON.stringify(Object.fromEntries(formState)), 
       }
 
       

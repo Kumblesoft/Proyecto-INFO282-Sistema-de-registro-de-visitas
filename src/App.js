@@ -12,11 +12,15 @@ import Settings from "./screens/Settings"
 import { FormProvider } from './context/FormContext'
 
 const myTheme = {
-  ...eva.light, // Usamos el tema claro de Eva Design
-  'color-primary-default': '#6ddb7c',  // Color principal (normal)
-  'color-primary-active': '#4caf50',   // Color cuando se presiona el botón
-  'color-primary-hover': '#81c784',    // Color cuando está en hover o toque
-}
+  ...eva.light, 
+  'color-primary-default': '#6ddb7c',
+  'color-primary-active': '#4caf50',
+  'color-primary-hover': '#81c784',
+  
+  'color-info-default': '#2196F3',   // Azul normal
+  'color-info-active': '#1976D2',    // Azul oscuro al presionar
+  'color-info-hover': '#64B5F6',     // Azul claro en hover
+};
 
 const Stack = createNativeStackNavigator()
 

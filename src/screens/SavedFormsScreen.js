@@ -1,54 +1,74 @@
-import React, { useEffect, useState } from 'react'
-import { StyleSheet, View, Text, FlatList, Alert, TouchableOpacity, Image } from 'react-native'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { Modal, Card, TopNavigation, TopNavigationAction, Divider, Layout, Button, Icon } from '@ui-kitten/components'
-import { useNavigation } from '@react-navigation/native'
-import { LinearGradient } from 'expo-linear-gradient'
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, View, Text, FlatList, Alert, TouchableOpacity, Image } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Modal, Card, TopNavigation, TopNavigationAction, Divider, Layout, Button, Icon } from '@ui-kitten/components';
+import { useNavigation } from '@react-navigation/native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const deleteIcon = (props) => (
     <Icon name='trash' {...props} />
 );
 
+const shareIcon = (props) => (
+    <Icon name='share' {...props}/>
+);
+
 const SavedForms = () => {
-    const navigation = useNavigation()
-    const [forms, setForms] = useState([])
-    const [modalVisible, setModalVisible] = useState(false)
-    const [selectedForm, setSelectedForm] = useState(null)
+    const navigation = useNavigation();
+    const [forms, setForms] = useState([]);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [selectedForm, setSelectedForm] = useState(null);
+    const [isSelectionMode, setIsSelectionMode] = useState(false); // Modo de selección
+    const [selectedForms, setSelectedForms] = useState([]); // Formularios seleccionados
 
     const fetchSavedForms = async () => {
         try {
-            const savedForms = JSON.parse(await AsyncStorage.getItem('savedForms')) || []
-            setForms(savedForms)
+            const savedForms = JSON.parse(await AsyncStorage.getItem('savedForms')) || [];
+            setForms(savedForms);
         } catch (error) {
-            console.error('Error :', error)
+            console.error('Error :', error);
         }
-    }
+    };
 
     const deleteForm = async (id) => {
         try {
-            const updatedForms = forms.filter(form => form.id !== id)
-            await AsyncStorage.setItem('savedForms', JSON.stringify(updatedForms))
-            setForms(updatedForms)
-            Alert.alert('Exito', 'Formulario eliminado')
+            const updatedForms = forms.filter(form => form.id !== id);
+            await AsyncStorage.setItem('savedForms', JSON.stringify(updatedForms));
+            setForms(updatedForms);
+            Alert.alert('Éxito', 'Formulario eliminado');
         } catch (error) {
-            console.error('Error :', error)
-            Alert.alert('Error', 'No se pudo eliminar el formulario')
+            console.error('Error :', error);
+            Alert.alert('Error', 'No se pudo eliminar el formulario');
         }
-    }
+    };
+
+    const deleteSelectedForms = async () => {
+        try {
+            const updatedForms = forms.filter(form => !selectedForms.includes(form.id));
+            await AsyncStorage.setItem('savedForms', JSON.stringify(updatedForms));
+            setForms(updatedForms);
+            setSelectedForms([]); // Resetear formularios seleccionados
+            setIsSelectionMode(false); // Salir del modo de selección
+            Alert.alert('Éxito', 'Formularios eliminados');
+        } catch (error) {
+            console.error('Error :', error);
+            Alert.alert('Error', 'No se pudo eliminar los formularios seleccionados');
+        }
+    };
 
     const openModal = (form) => {
-        setSelectedForm(form)
-        setModalVisible(true)
-    }
+        setSelectedForm(form);
+        setModalVisible(true);
+    };
 
     const closeModal = () => {
-        setModalVisible(false)
-        setSelectedForm(null)
-    }
+        setModalVisible(false);
+        setSelectedForm(null);
+    };
 
     useEffect(() => {
-        fetchSavedForms()
-    }, [])
+        fetchSavedForms();
+    }, []);
 
     const BackIcon = () => (
         <Image
@@ -60,6 +80,30 @@ const SavedForms = () => {
     const BackAction = () => (
         <TopNavigationAction icon={BackIcon} onPress={() => navigation.goBack()} />
     );
+
+    const SelectionIcon = (props) => (
+        <Icon name={isSelectionMode ? 'checkmark-square' : 'checkmark-square'} style={styles.backIcon} {...props} />
+    );
+
+    const SelectionAction = () => (
+        <TopNavigationAction icon={SelectionIcon} onPress={toggleSelectionMode} />
+    );
+
+    const toggleSelectionMode = () => {
+        setIsSelectionMode(!isSelectionMode);
+        setSelectedForms([]); // Resetear selección al activar/desactivar modo
+    };
+
+    const handleSelection = (id) => {
+        if (isSelectionMode) {
+            setSelectedForms(prev =>
+                prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+            );
+        } else {
+            openModal(forms.find(form => form.id === id));
+        }
+    };
+
     const renderTitle = () => (
         <View style={styles.titleContainer}>
             <Text style={styles.title}>Formularios Guardados</Text>
@@ -67,11 +111,20 @@ const SavedForms = () => {
     );
 
     const renderItem = ({ item }) => (
-        <TouchableOpacity style={styles.containerBox} onPress={() => openModal(item)}>
+        <TouchableOpacity
+            style={[
+                styles.containerBox,
+                selectedForms.includes(item.id) && styles.selectedItem
+            ]}
+            onPress={() => handleSelection(item.id)}
+            onLongPress={toggleSelectionMode}
+        >
             <Text style={styles.formTitle}>{item.nombreFormulario}</Text>
-            <Button style={styles.button} onPress={() => deleteForm(item.id)} accessoryLeft={deleteIcon}></Button>
+            {isSelectionMode ? null : (
+                <Button style={styles.button} onPress={() => deleteForm(item.id)} accessoryLeft={deleteIcon} />
+            )}
         </TouchableOpacity>
-    )
+    );
 
     return (
         <>
@@ -80,6 +133,7 @@ const SavedForms = () => {
                     title={renderTitle}
                     style={styles.topNavigation}
                     accessoryLeft={BackAction}
+                    accessoryRight={SelectionAction}
                     alignment='center'
                 />
             </LinearGradient>
@@ -91,6 +145,17 @@ const SavedForms = () => {
                     keyExtractor={(item) => item.id.toString()}
                     contentContainerStyle={styles.listContainer}
                 />
+                {isSelectionMode && (
+                    <Layout style={styles.buttonContainer}>
+                        <Button style={styles.deleteButton} onPress={deleteSelectedForms} accessoryLeft={deleteIcon}>
+                            Eliminar 
+                        </Button>
+
+                        <Button status='info' style={styles.shareButton} accessoryLeft={shareIcon}>
+                            Compartir
+                        </Button>
+                    </Layout>
+                )}
                 <Modal
                     visible={modalVisible}
                     transparent={true}
@@ -109,7 +174,7 @@ const SavedForms = () => {
                 </Modal>
             </View>
         </>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
@@ -131,14 +196,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 10,
     },
-    formItem: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: 16,
-        borderBottomWidth: 1,
-        borderBottomColor: '#ccc',
-    },
     formTitle: {
         fontSize: 18,
     },
@@ -156,31 +213,43 @@ const styles = StyleSheet.create({
         elevation: 3,
         alignItems: 'flex-start',
         justifyContent: 'space-between',
-        flexDirection: 'row'
+        flexDirection: 'row',
+    },
+    selectedItem: {
+        backgroundColor: '#f7e0e0',
+        borderColor: '#c92929',
+    },
+    deleteButton: {
+        width: '35%',
+        marginRight: '3%'
+    },
+    shareButton: {
+        width: '35%',
+        marginLeft: '3%'
     },
     modalContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.9)',
+        backgroundColor: 'rgba(0, 0, 0, 0)',
     },
     modalCard: {
-        width: '100%',
+        width: '90%',
         padding: 12,
     },
     modalTitle: {
         fontSize: 20,
         marginBottom: 16,
     },
-    topNavigation:{
-        backgroundColor: "transparent",
+    topNavigation: {
+        backgroundColor: 'transparent',
     },
     titleContainer: {
         flexDirection: 'row',
         alignItems: 'center',
     },
     title: {
-        fontSize: 25,   
+        fontSize: 25,
         fontWeight: 'bold',
         color: '#333',
     },
@@ -188,6 +257,14 @@ const styles = StyleSheet.create({
         width: 25,
         height: 25,
     },
-})
+    buttonContainer: {
+        backgroundColor: 'transparent',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignSelf: 'center',
+        
+        
+    },
+});
 
-export default SavedForms
+export default SavedForms;
