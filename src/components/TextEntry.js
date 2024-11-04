@@ -103,7 +103,7 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldR
     // Limitations
     if (text === '') {
       setInvalidLimitations([])
-      return new Ok("Empty string")
+
     }
 
     setInvalidLimitations(limitations.reduce(
@@ -121,13 +121,11 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldR
     console.log(invalidLimitations)
 
     if (invalidLimitations.length) return new Err("No cumple las limitaciones")
-      
     // Formatting
-    const formattedText = format.forEach(formattingOption => text = formatMap.get(formattingOption)(text))
-    setInputValue(formattedText)
-    onSelect(formattedText) 
+    format.forEach(formattingOption => text = formatMap.get(formattingOption)(text))
+    setInputValue(text)
+    onSelect(text) 
     setIsRequiredAlert(false) 
-    console.log(formattedText)
     return new Ok("Correct input")
   }
 
