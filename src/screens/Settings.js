@@ -133,11 +133,12 @@ export default function Settings () {
                     {mostrarFeddy && (
                     <>
                         <Image 
-                            style={{ width: 350, height: 200, alignSelf: 'center', marginTop: 20 }} 
-                            source={require('../assets/imagenSeria.gif')}
+                            style={{ alignSelf: 'center', width: "100%", height: undefined, aspectRatio: 750/1000}} 
+                            source={require('../assets/working.png')}
+                            resizeMode='contain'
                         />
-                        <Text style={{ alignSelf: 'center', fontSize: 80, fontWeight: 'bold' }}>
-                            fai nais a feddys
+                        <Text style={{ alignSelf: 'center', fontSize: 40, fontWeight: 'bold' }}>
+                            we are working
                         </Text>
                     </>
                     )}

@@ -20,6 +20,10 @@ const myTheme = {
   'color-info-default': '#2196F3',   // Azul normal
   'color-info-active': '#1976D2',    // Azul oscuro al presionar
   'color-info-hover': '#64B5F6',     // Azul claro en hover
+
+  'color-danger-default': '#f44336',    // Rojo normal
+  'color-danger-active': '#d32f2f',     // Rojo oscuro al presionar
+  'color-danger-hover': '#e57373',      // Rojo claro en hover
 };
 
 const Stack = createNativeStackNavigator()

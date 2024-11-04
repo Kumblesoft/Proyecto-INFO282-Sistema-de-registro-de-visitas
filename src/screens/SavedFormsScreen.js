@@ -163,12 +163,15 @@ const SavedForms = () => {
                     onRequestClose={closeModal}
                 >
                     <Layout style={styles.modalContainer}>
-                        <Card style={styles.modalCard}>
+                        <Card style={styles.modalCard} disabled={true} >
                             <Text style={styles.modalTitle}>{selectedForm?.nombreFormulario}</Text>
                             {selectedForm && Object.entries(selectedForm.data).map(([key, value]) => (
-                                <Text key={key}>{`${key}: ${value}`}</Text>
+                                <Layout style={styles.containerRespuestas}>
+                                    <Text style={styles.key} key={key}>{`${key}`}</Text>
+                                    <Text style={styles.value}>{`${value}`}</Text>
+                                </Layout>
                             ))}
-                            <Button onPress={closeModal}>Cerrar</Button>
+                            <Button status='danger' onPress={closeModal}>Cerrar</Button>
                         </Card>
                     </Layout>
                 </Modal>
@@ -185,6 +188,15 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 24,
         marginBottom: 16,
+    },
+    key:{
+        fontWeight: 'bold',
+        fontSize: 12,
+        color: "#9e9e9e"
+    },
+    value: {
+        fontSize: 18,
+        color: "#9e9e9e",
     },
     listContainer: {
         paddingBottom: 100,
@@ -207,7 +219,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#9beba5',
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 10 },
+        shadowOffset: { width: 0, height: "10%" },
         shadowOpacity: 0.9,
         shadowRadius: 2,
         elevation: 3,
@@ -215,9 +227,20 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         flexDirection: 'row',
     },
+    containerRespuestas: {
+        padding: 10,
+        marginBottom: 15,
+        borderRadius: 8,
+        backgroundColor: '#ffffff', 
+        borderWidth: 1,
+        borderColor: '#ccc',
+        alignItems: 'flex-start',
+        justifyContent: 'space-between',
+        flexDirection: 'column',
+    },
     selectedItem: {
-        backgroundColor: '#f7e0e0',
-        borderColor: '#c92929',
+        backgroundColor: '#BBDEFB',
+        borderColor: '#79b2fc',
     },
     deleteButton: {
         width: '35%',
@@ -228,18 +251,18 @@ const styles = StyleSheet.create({
         marginLeft: '3%'
     },
     modalContainer: {
-        flex: 1,
+        alignSelf: 'center',
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0)',
     },
     modalCard: {
-        width: '90%',
-        padding: 12,
+        borderRadius: 5,
     },
     modalTitle: {
         fontSize: 20,
         marginBottom: 16,
+        fontWeight: 'bold'
     },
     topNavigation: {
         backgroundColor: 'transparent',
