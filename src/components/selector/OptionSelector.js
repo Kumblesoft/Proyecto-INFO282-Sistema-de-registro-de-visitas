@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Layout, Text, Divider } from '@ui-kitten/components'
+import { Layout, Text, Divider, Icon } from '@ui-kitten/components'
 import CheckboxGroup from "./subcomponents/CheckboxGroup"
 import ItemSelector from "./subcomponents/ItemSelector"
 import RadioButtonGroup from "./subcomponents/RadioButtonGroup"
@@ -66,7 +66,7 @@ export default function OptionSelector({ type, items, onSelect, requiredFieldRef
 
     // Lógica para verificar si el campo es obligatorio y está vacío al enviar el formulario
     requiredFieldRef.current = () => {
-        if (required) {
+        if (required && !selectedValue) {
             setIsRequiredAlert(true)
         } else {
             setIsRequiredAlert(false)
@@ -99,6 +99,16 @@ export default function OptionSelector({ type, items, onSelect, requiredFieldRef
                     maxChecked={maxChecked}
                     ref = {optionRef}
                 />
+                { isRequiredAlert ?
+                    <Layout size='small' style={styles.alert}>
+                        <Icon status='danger' fill='#FF0000' name='alert-circle'style={styles.icon}/> 
+                        <Text style={styles.alert} category="p2">
+                            Debe rellenar este campo.
+                        </Text>
+                    </Layout>
+                    :
+                    <></>
+                }
             </Layout>
         </>
     )
@@ -124,6 +134,19 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         margin: 2,
     },
+    alert: {
+        flex: 1,
+        margin: 1,
+        marginHorizontal: '1%',
+        color: '#ff0000',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'left',
+      },
+      icon: {
+        width: 20,
+        height: 20,
+      },
 })
 
 // Arreglo de los componentes disponibles

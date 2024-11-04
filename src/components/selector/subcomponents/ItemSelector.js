@@ -15,7 +15,7 @@ const ItemSelector = forwardRef(({ items, onSelect, value,defaultOption, placeho
   }
   useImperativeHandle(ref, () => ({
     refreshSelector,
-  }));
+  }))
 
   const handleSelect = index => {
     const selectedItem = items[index.row] // Obtén el elemento seleccionado usando el índice
