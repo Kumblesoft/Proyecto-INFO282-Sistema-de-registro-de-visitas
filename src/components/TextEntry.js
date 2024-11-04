@@ -101,12 +101,7 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldR
   const handleChange = text => {
     
     // Limitations
-    if (text === '') {
-      setInvalidLimitations([])
-
-    }
-
-    setInvalidLimitations(limitations.reduce(
+    setInvalidLimitations(!text.length ? [] : limitations.reduce(
       (acc, limName) => {
       const limitationOk = limitationBehaviour.get(limName).regex.test(text)
       console.log(limitationOk,  limitationBehaviour.get(limName).regex, text)
@@ -116,7 +111,6 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldR
       }
       
     return acc}, []))
-  
 
     console.log(invalidLimitations)
 
