@@ -9,10 +9,9 @@ import * as FileSystem from 'expo-file-system'
 
 const FormSelectorScreen = ({ route }) => {
   const navigation = useNavigation()
-  const { forms } = route.params
-  const [localForms, setForms] = useState(forms)
+  const [{ forms }, setForms] = useState({})
   const { selectedForm, setSelectedForm } = useFormContext()
-  console.log(route.params)
+  if (forms == null) { setForms(route.params) }
 
   const handleSelectForm = form => {
     setSelectedForm(form)
@@ -49,9 +48,9 @@ const FormSelectorScreen = ({ route }) => {
         // Now read the file from the cache
         const content = await FileSystem.readAsStringAsync(newPath)
         // console.log("File Content:", content) // Log the content (JSON)
-        const tempo = localForms.concat(JSON.parse(content))
-        setForms(tempo)
-        console.log(localForms)
+        const temp = forms.concat(JSON.parse(content))
+        setForms(temp)
+        console.log(forms)
         //console.log(forms.filter(form => form["nombre formulario"] == "Formulario 3"))
       } else if (result.canceled) {
         console.log("Action Canceled, no file selected.")
@@ -109,7 +108,7 @@ const FormSelectorScreen = ({ route }) => {
       <Divider />
       <Layout style={styles.container}>
         <FlatList
-          data={localForms}
+          data={forms}
           renderItem={renderItem}
           keyExtractor={(item) => item["nombre formulario"]}
           contentContainerStyle={styles.listContainer}
