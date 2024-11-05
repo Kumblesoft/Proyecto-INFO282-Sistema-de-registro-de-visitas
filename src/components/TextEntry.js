@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
-import { View, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native'
+import React, { useState, useEffect } from 'react'
+import { View, StyleSheet, KeyboardAvoidingView, Platform,TouchableOpacity, Modal, SafeAreaView, StatusBar } from 'react-native'
 import { Text, Input, Button, Layout, ViewPager, Icon } from '@ui-kitten/components'
 import { Err, Ok } from '../commonStructures/resultEnum'
-
+import { useCameraPermissions } from 'expo-camera';
+import { CameraView } from "expo-camera";
 
 /**
  * Represents optional features for the TextEntry component.
@@ -13,14 +14,16 @@ import { Err, Ok } from '../commonStructures/resultEnum'
  * @param {Array<string>} [options.limitations=[]] - An array of limitations for the input value.
  *        Example: ["solo letras"] to restrict input to letters only.
  * @param {Array<string>} [options.format=[]] - An array of conditions to format the input value.
- * @returns {Object} An object containing the defined optional features.
+ * @param {boolean} [options.QRfield = false] - Indicates if the field can be filled by QR
+ *  @returns {Object} An object containing the defined optional features.
  */
 export const OptionalTextFeatures = (options = {}) => {
   return {
     title: options.title ?? "",
     required: options.required ?? false,
     limitations: options.limitations ?? [], 
-    format: options.format ?? []
+    format: options.format ?? [],
+    QRfield: options.QRfield ?? false
   }
 }
 
@@ -52,16 +55,28 @@ const formatMap = new Map([
  * @returns {JSX.Element} The rendered TextEntry component.
  */
 const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef}) => {
-  const { title, required, limitations, format } = optionalFeatures
+  const { title, required, limitations, format, QRfield} = optionalFeatures
   const [ inputValue, setInputValue ] = useState('')
   const [ isRequiredAlert, setIsRequiredAlert] = useState(false)
   const [ isValidInput, setIsValidInput ] = useState(true)
+  const [permission, requestPermission] = useCameraPermissions()
+  const [isScanning, setIsScanning] = useState(false)
+
+  const isPermissionGranted = Boolean(permission?.granted)
+
+  useEffect(() => {
+    if (QRfield && !isPermissionGranted) {
+      requestPermission()
+    }
+  }, [QRfield, isPermissionGranted])
+
 
   /**
    * Handles changes to the input field and validates the input against specified limitations.
    *
    * @param {string} text - The new input value.
    */
+
   const handleChange = text => {
     
     // Limitations
@@ -95,6 +110,11 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef}) => {
       }
     }
 
+    const handleBarCodeScanned = ({ data }) => {
+      handleChange(data);  // Llama a handleChange con el valor escaneado para validación y formato
+      setIsScanning(false); // Cierra el escáner después de escanear
+    };
+
   return (
     <View style={styles.container}>
       {title && (
@@ -107,18 +127,46 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef}) => {
           </Text>
       </View>
       )}
-
-      <Input style={[styles.input, isRequiredAlert && { borderColor: '#ff0000', }]} value={inputValue} onChangeText={handleChange} />
-      { isRequiredAlert ?
+      <View style={styles.inputContainer}>
+        <Input style={[
+          styles.input, 
+          isRequiredAlert && { borderColor: '#ff0000'},
+          QRfield && {flex :0.95},
+          ]} 
+          value={inputValue} 
+          onChangeText={handleChange} />
+        {QRfield && (
+          <TouchableOpacity style={styles.qrButton} onPress={() => setIsScanning(true)}>
+            <Icon name="camera-outline" fill="#000" style={{ width: 24, height: 24 }} />
+          </TouchableOpacity>
+        )}
+      
+      </View>
+      { isRequiredAlert && (
         <Layout size='small' style={styles.alert}>
           <Icon status='danger' fill='#FF0000' name='alert-circle'style={styles.icon}/> 
           <Text style={styles.alert} category="p2">
             Por favor rellene este campo
           </Text>
         </Layout>
-        :
-        <></>
-      }
+        )}
+      
+        {isScanning && (
+        <Modal visible={isScanning} animationType="slide">
+          <SafeAreaView style={styles.cameraContainer}>
+            {Platform.OS === "android" ? <StatusBar hidden /> : null}
+            <CameraView
+                style={StyleSheet.absoluteFillObject}
+                facing="back"
+                barcodeScannerSettings={{
+                    barcodeTypes: ['qr']
+                }}
+                onBarcodeScanned={handleBarCodeScanned} // Usa la función de escaneo aquí
+            />
+            <Button title="Cerrar Escáner" onPress={() => setIsScanning(false)} />
+          </SafeAreaView>
+        </Modal>
+      )}
     </View>
   )
 }
@@ -156,6 +204,7 @@ const styles = StyleSheet.create({
     height: 20,
   },
   input: {
+    flex: 1,
     borderWidth: 1,
     borderColor: '#ccc',
     padding: 10,
@@ -163,6 +212,23 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     fontSize: 15,
   },
+  qrButton: { 
+    marginLeft: 5, 
+    width: 40, 
+    height: 40, 
+    justifyContent: 'center', 
+    alignItems: 'center' },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  cameraContainer: {
+    flex: 1,
+    backgroundColor: '#000',
+    alignItems: 'center',
+    justifyContent: 'center',
+  }
 })
 
 export default TextEntry

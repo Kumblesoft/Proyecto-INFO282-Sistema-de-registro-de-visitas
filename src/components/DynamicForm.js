@@ -197,7 +197,8 @@ const renderField = (field, index) => {
                     title: field.nombre,
                     required: field.obligatorio,
                     limitations: field.limitaciones,
-                    format: field.formato
+                    format: field.formato,
+                    QRfield:field.rellenarQR
                 })}
                 onSelect={(value) => handleInputChange(field.salida, value)}
                 requiredFieldRef={requiredFieldRef}  // Pasar la referencia al componente TextEntry
