@@ -1,27 +1,37 @@
-import React, { useState } from 'react'
-import { SafeAreaView, ScrollView, View, StyleSheet, Image } from 'react-native'
-import { Layout, Button, Text, TopNavigation, TopNavigationAction, Divider, Icon} from '@ui-kitten/components'
+import React, { useState, useRef } from 'react'
+import { ScrollView, View, StyleSheet} from 'react-native'
+import { Layout, Button, Text, TopNavigation, TopNavigationAction, Divider, Icon, Modal} from '@ui-kitten/components'
 import DynamicForm from '../components/DynamicForm'
-import { useRoute } from '@react-navigation/native'
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 const FormFillerScreen = ({ route }) => {
     const { form } = route.params
-    const navigation = useNavigation();
+    const navigation = useNavigation()
+    const formRef = useRef()
+    const [backAlert, setBackAlert] = useState(false) 
 
     const BackIcon = (props) => (
         <Icon name='arrow-ios-back-outline' {...props} style={styles.backIcon} fill='#fff'/>
-    );
+    )
 
     const BackAction = () => (
         <TopNavigationAction icon={BackIcon} onPress={() => navigation.goBack()} />
-    );
+    )
+
+    function handleBack(){
+        const dataMap = formRef.current.getMap()
+        if (dataMap.size > 0){
+            setBackAlert(true)
+        }else{
+            navigation.goBack()
+        }
+    }
     const renderTitle = () => (
             <View style={styles.titleContainer}>
                 <Text style={styles.title}>{form["nombre formulario"]}</Text>
             </View>
-    );
+    )
 
     const renderTopNavigation = () => (
         <LinearGradient colors={['#4c669f', '#3b5998', '#192f6a']}>
@@ -31,7 +41,7 @@ const FormFillerScreen = ({ route }) => {
     return (
             <Layout style={styles.layoutContainer}>
                 <ScrollView style={styles.layoutContainer}>
-                    <LinearGradient colors={['#29C9A2', '#A0ECA5']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+                    <LinearGradient colors={['#2dafb9', '#17b2b6', '#00b4b2', '#00b7ad', '#00b9a7', '#00bba0', '#00bd98', '#00bf8f', '#00c185', '#00c27b']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
                         <TopNavigation
                             title={renderTitle}
                             style={styles.topNavigation}
@@ -42,11 +52,21 @@ const FormFillerScreen = ({ route }) => {
                     <Divider />
                     
                     <View style={{flex: 1, padding: 16, marginTop: 20 }}>
-                        <DynamicForm formData={form}/>
+                        <DynamicForm formData={form} ref={formRef}/>
                     </View>
-                    
-                    
                 </ScrollView>
+                <Modal visible = {backAlert} backdropStyle={styles.backdrop}>
+                    <Layout style = {styles.containerBox}>
+                        <Text style={{fontWeight: 'bold'}}> ¿Quieres volver?</Text>
+                        <Text> Aún hay progreso sin guardar</Text>
+                            <Layout style={{flexDirection : 'row',
+                                justifyContent:'space-between'
+                            }}>
+                            <Button style = {{flex : 1, marginRight: '10%'}} onPress={() => navigation.goBack()}>Si</Button>
+                            <Button style = {{flex : 1, marginLeft: '10%'}} onPress={() => setBackAlert(false)}>No</Button>
+                            </Layout>
+                    </Layout>
+                </Modal>
             </Layout>
 
     )
@@ -76,6 +96,24 @@ const styles = StyleSheet.create({
     layoutContainer:{
         backgroundColor: '#fff',
         flex: 1,
+    },
+    containerBox: {
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        padding: 10,
+        marginBottom: 15,
+        borderRadius: 8,
+        backgroundColor: '#ffffff', // Color fondo suave
+        borderWidth: 1,
+        borderColor: '#00b7ae',
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.9,
+        shadowRadius: 2,
+        elevation: 3,
+        alignItems: 'flex-start'
+    },
+    backdrop: {
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
 });
 
