@@ -6,17 +6,15 @@ import Svg, { Circle, Defs, Stop, LinearGradient as SvgLinearGradient } from "re
 import { useNavigation } from '@react-navigation/native' 
 import { useFormContext } from '../context/FormContext' // Importa el contexto
 
-const forms = require('../TestForms/forms.json')
-
 export default function Menu() {
   const navigation = useNavigation()
   const { selectedForm } = useFormContext() // Usa el contexto
 
-  const handleFormulariosPress = () => navigation.navigate('FormSelector', { forms }) // Solo pasar forms
+  const handleFormulariosPress = () => navigation.navigate('FormSelector') // Solo pasar forms
 
   const handleRellenarPress = () => {
     selectedForm ?
-      navigation.navigate('FormFiller', { form: selectedForm}) :
+      navigation.navigate('FormFiller') :
       //console.log("No se ha seleccionado ningún formulario")
       Alert.alert('Error', 'Seleccione un formulario primero')
   }
