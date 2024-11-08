@@ -5,12 +5,17 @@ import DynamicForm from '../components/DynamicForm'
 import { useRoute } from '@react-navigation/native'
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useFormContext } from '../context/FormContext'
 
 const FormFillerScreen = ({ route }) => {
-    const { form } = route.params
+    const context = useFormContext()
+    const disabledSave = route.params?.disabledSave ?? false
+    const form = route.params?.form ?? context.selectedForm
+    //console.log(form, route.params)
+
     const navigation = useNavigation();
 
-    const BackIcon = (props) => (
+    const BackIcon = props => (
         <Icon name='arrow-ios-back-outline' {...props} style={styles.backIcon} fill='#fff'/>
     );
 
@@ -23,26 +28,22 @@ const FormFillerScreen = ({ route }) => {
             </View>
     );
 
-    const renderTopNavigation = () => (
-        <LinearGradient colors={['#4c669f', '#3b5998', '#192f6a']}>
-        </LinearGradient>
-    );
 
     return (
             <Layout style={styles.layoutContainer}>
+                <LinearGradient colors={['#29C9A2', '#A0ECA5']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+                    <TopNavigation
+                        title={renderTitle}
+                        style={styles.topNavigation}
+                        accessoryLeft={BackAction}
+                        alignment='start'
+                    />
+                </LinearGradient>
+                <Divider />
                 <ScrollView style={styles.layoutContainer}>
-                    <LinearGradient colors={['#29C9A2', '#A0ECA5']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
-                        <TopNavigation
-                            title={renderTitle}
-                            style={styles.topNavigation}
-                            accessoryLeft={BackAction}
-                            alignment='start'
-                        />
-                    </LinearGradient>
-                    <Divider />
                     
                     <View style={{flex: 1, padding: 16, marginTop: 20 }}>
-                        <DynamicForm formData={form}/>
+                        <DynamicForm formData={form} disabledSave={disabledSave}/>
                     </View>
                     
                     
