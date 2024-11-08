@@ -3,96 +3,96 @@ import { SafeAreaView, ScrollView, View, StyleSheet, Image, ImageBackground } fr
 import { Layout, Button, Text, TopNavigation, TopNavigationAction, Divider, IconElement, Menu, MenuItem, Icon} from '@ui-kitten/components'
 import DynamicForm from '../components/DynamicForm'
 import { useRoute } from '@react-navigation/native'
-import { useNavigation } from '@react-navigation/native';
-import { LinearGradient } from 'expo-linear-gradient';
+import { useNavigation } from '@react-navigation/native'
+import { LinearGradient } from 'expo-linear-gradient'
 import { Audio } from 'expo-av'
 
 export default function Settings () {
 
-    const navigation = useNavigation();
+    const navigation = useNavigation()
 
-    const [mostrarFeddy, setMostrarFeddy] = useState(false);
-    const [sound, setSound] = useState(null);
+    const [mostrarFeddy, setMostrarFeddy] = useState(false)
+    const [sound, setSound] = useState(null)
 
     const handleFeddy = () => {
-        setMostrarFeddy(!mostrarFeddy);
-    };
+        setMostrarFeddy(!mostrarFeddy)
+    }
 
     const handlePlaySound = async () => {
         // Cargar el sonido
         const { sound } = await Audio.Sound.createAsync(
             require('../assets/ST.mp3') // Asegúrate de colocar el archivo mp3 en la ruta correcta
-        );
-        setSound(sound);
+        )
+        setSound(sound)
 
         // Reproducir el sonido
-        await sound.playAsync();
-    };
+        await sound.playAsync()
+    }
 
     // Limpia el recurso de sonido al desmontar el componente
     React.useEffect(() => {
         return () => {
             if (sound) {
-                sound.unloadAsync();
+                sound.unloadAsync()
             }
-        };
-    }, [sound]);
+        }
+    }, [sound])
 
     const BackIcon = (props) => (
         <Icon name='arrow-ios-back-outline' {...props} style={styles.backIcon} fill='#fff'/>
-    );
+    )
 
     const BackAction = () => (
         <TopNavigationAction icon={BackIcon} onPress={() => navigation.goBack()} />
-    );
+    )
     const renderTitle = () => (
             <View style={styles.titleContainer}>
                 <Text style={styles.title}>{"Settings"}</Text>
             </View>
-    );
+    )
 
     const renderOption = (option) => (
         <View style={styles.titleContainer}>
             <Text style={styles.optionTitle}>{option}</Text>
         </View>
-    );
+    )
 
     const renderTopNavigation = () => (
         <LinearGradient colors={['#4c669f', '#3b5998', '#192f6a']}>
         </LinearGradient>
-    );
+    )
 
     const IdIcon = (props) => (
         <Icon
             {...props}
             name='hash'
         />
-    );
+    )
     const StarIcon = (props) => (
         <Icon
             {...props}
             name='star'
         />
-    );
+    )
 
     const STIcon = (props) => (
         <Icon
             {...props}
             name='globe-2'
         />
-    );
+    )
 
     const InacapIcon = (props) => (
         <Icon
             {...props}
             name='npm'
         />
-    );
+    )
 
 
     const handleChangeID = () => (
         <></>
-    );
+    )
 
 
     return (
@@ -178,4 +178,4 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         flex: 1,
     },
-});
+})

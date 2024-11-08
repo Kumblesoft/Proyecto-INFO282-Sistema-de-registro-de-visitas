@@ -1,6 +1,6 @@
 import React from 'react'
 import { View, StyleSheet, FlatList, TouchableOpacity, Image, ScrollView } from 'react-native'
-import { Text, TopNavigation, TopNavigationAction, Divider, Layout } from '@ui-kitten/components'
+import { Text, TopNavigation, TopNavigationAction, Divider, Layout} from '@ui-kitten/components'
 import { useFormContext } from '../context/FormContext'
 import { useNavigation } from '@react-navigation/native'
 import { LinearGradient } from 'expo-linear-gradient'
