@@ -22,7 +22,7 @@ export const OptionalTextFeatures = (options = {}) => {
   return {
     title: options.title ?? "",
     required: options.required ?? false,
-    limitations: options.limitations ?? [], 
+    limitations: options.limitations ?? [],
     format: options.format ?? [],
     QRfield: options.QRfield ?? false,
     variableName: options.variableName ?? ""
@@ -36,7 +36,7 @@ const limitationBehaviour = new Map([
   ["solo letras", {
     regex: ((/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/)),
     keyboardType: "default"
-  }], 
+  }],
   ["no numeros", {
     regex: /^[^\d]*$/,
     keyboardType: "default"
@@ -64,11 +64,11 @@ const limitationBehaviour = new Map([
  * @param {string} name 
  * @returns 
  */
-limitationBehaviour.dGet = function (name) {
+limitationBehaviour.dGet = function(name) {
   const exists = this.has(name)
   if (!exists) {
     console.log(`No se encontro (${name}) en limitationBehaviour`)
-    return {regex:/$/, keyboardType:"default"}
+    return { regex: /$/, keyboardType: "default" }
   }
   return this.get(name)
 }
@@ -114,18 +114,19 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldR
    */
 
   const handleChange = text => {
-    
+
     // Limitations
     setInvalidLimitations(!text.length ? [] : limitations.reduce(
       (acc, limName) => {
-      const limitationOk = limitationBehaviour.get(limName).regex.test(text)
-      console.log(limitationOk,  limitationBehaviour.get(limName).regex, text)
-      if (!limitationOk) {
-        const limitationName = String.fromCharCode(limName.charCodeAt(0) - 32) + limName.substr(1)
-        acc.push(limitationName) 
-      }
-      
-    return acc}, []))
+        const limitationOk = limitationBehaviour.get(limName).regex.test(text)
+        console.log(limitationOk, limitationBehaviour.get(limName).regex, text)
+        if (!limitationOk) {
+          const limitationName = String.fromCharCode(limName.charCodeAt(0) - 32) + limName.substr(1)
+          acc.push(limitationName)
+        }
+
+        return acc
+      }, []))
 
     console.log(invalidLimitations)
 
@@ -144,17 +145,17 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldR
   }
 
 
-    // Cambiar el estilo
-    requiredFieldRef.current = () => {
-      if (required && !inputValue) {
-        setIsRequiredAlert(true)
-      } else {
-        setIsRequiredAlert(false)
-      }
+  // Cambiar el estilo
+  requiredFieldRef.current = () => {
+    if (required && !inputValue) {
+      setIsRequiredAlert(true)
+    } else {
+      setIsRequiredAlert(false)
     }
-    refreshFieldRef.current = () => {
-      setInputValue('')
-    }
+  }
+  refreshFieldRef.current = () => {
+    setInputValue('')
+  }
 
     const handleBarCodeScanned = ({ data }) => {
       handleChange(data);  // Llama a handleChange con el valor escaneado para validación y formato
@@ -164,16 +165,16 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldR
   return (
     <Layout style={styles.containerBox}>
       {title && (
-      <View style={styles.text}>
-          <Text style={styles.text} category={required ? "label" :"p2"}>
+        <View style={styles.text}>
+          <Text style={styles.text} category={required ? "label" : "p2"}>
             {title}
-          </Text> 
-          <Text status='danger'> 
-            {required ? "*": " "} 
           </Text>
-      </View>
+          <Text status='danger'>
+            {required ? "*" : " "}
+          </Text>
+        </View>
       )}
-      { invalidLimitations.length ? invalidLimitations.map((name, i) => <Text  key={i} style={{ color: 'red' }}> -{name} </Text>) : <></>}
+      {invalidLimitations.length ? invalidLimitations.map((name, i) => <Text key={i} style={{ color: 'red' }}> -{name} </Text>) : <></>}
 
       <Input 
         style={[styles.input, isRequiredAlert && { borderColor: '#ff0000' },QRfield && {flex :0.95},]} 
@@ -187,7 +188,7 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldR
         )}
       { isRequiredAlert ?
         <Layout size='small' style={styles.alert}>
-          <Icon status='danger' fill='#FF0000' name='alert-circle'style={styles.icon}/> 
+          <Icon status='danger' fill='#FF0000' name='alert-circle' style={styles.icon} />
           <Text style={styles.alert} category="p2">
             Por favor rellene este campo
           </Text>
@@ -220,7 +221,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     backgroundColor: '#ffffff',
-    flexWrap:'wrap',
+    flexWrap: 'wrap',
     justifyContent: 'left',
   },
   label: {
@@ -251,7 +252,7 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 0,
-    borderBottomWidth: 2,    
+    borderBottomWidth: 2,
     borderBottomColor: '#000',
     backgroundColor: 'transparent',
     borderRadius: 5,

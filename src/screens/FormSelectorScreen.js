@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
-import { View, StyleSheet, FlatList, TouchableOpacity, Image, ScrollView } from 'react-native'
-import { Button, Text, TopNavigation, TopNavigationAction, Divider, Layout, Modal, Card } from '@ui-kitten/components'
+import { View, StyleSheet, FlatList, TouchableOpacity, Alert, Image } from 'react-native'
+import { Button, Text, TopNavigation, TopNavigationAction, Divider, Layout, Modal, Card, Icon } from '@ui-kitten/components'
 import { useFormContext } from '../context/FormContext'
 import { useNavigation } from '@react-navigation/native'
 import { LinearGradient } from 'expo-linear-gradient'
@@ -8,30 +8,92 @@ import * as FileSystem from 'expo-file-system'
 import * as Sharing from 'expo-sharing'
 import * as Animatable from 'react-native-animatable'
 import shareTypes from '../commonStructures/shareTypes'
+import * as DocumentPicker from 'expo-document-picker'
+
+
 
 const FormSelectorScreen = () => {
   const navigation = useNavigation()
   const forms = require("../TestForms/forms.json")
+  const [localForms, setForms] = useState(forms)
   const [ isOptionModalVisible, setIsOptionModalVisible ] = useState(false)
   const [ selectedItem, setSelectedItem ] = useState({"nombre formulario": "err"})
   const { setSelectedForm } = useFormContext()
 
+  const handleSelectForm = form => {
+    setSelectedForm(form)
+    navigation.navigate('Menu')
+  }
+  //File picker function
+  const [file, setFile] = useState(null)
 
-  const BackIcon = () => (
-    <Image
-        source={require('../assets/arrow_back.png')}
-        style={styles.backIcon}
+  const pickDocument = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: "application/json",
+        copyToCacheDirectory: true, // Enable caching for easier access
+      })
+
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        const pickedFile = result.assets[0]
+        setFile(pickedFile)
+
+
+        console.log("File URI:", pickedFile.uri)
+        console.log("File Name:", pickedFile.name)
+        console.log("File Size:", pickedFile.size)
+        console.log("MIME Type:", pickedFile.mimeType)
+
+        // Copy the file to a cache directory
+        const fileUri = pickedFile.uri
+        const newPath = `${FileSystem.cacheDirectory}${pickedFile.name}`
+        await FileSystem.copyAsync({
+          from: fileUri,
+          to: newPath,
+        })
+
+        // Now read the file from the cache
+        const content = await FileSystem.readAsStringAsync(newPath)
+        // console.log("File Content:", content) // Log the content (JSON)
+        const tempo = localForms.concat(JSON.parse(content))
+        setForms(tempo)
+        console.log(localForms)
+        //console.log(forms.filter(form => form["nombre formulario"] == "Formulario 3"))
+      } else if (result.canceled) {
+        console.log("Action Canceled, no file selected.")
+      } else {
+        Alert.alert("Error", "Failed to pick a document. Please try again.")
+      }
+    } catch (err) {
+      console.log("Error picking document:", err)
+      Alert.alert("Error", "Something went wrong when picking the document.")
+    }
+  }
+
+  const backIcon = () => (
+    <Icon
+      name='arrow-ios-back-outline'
+      style={styles.topNavigationIcon}
+    />
+  )
+  const importIcon = () => (
+    <Icon
+      name='cloud-download-outline'
+      style={styles.topNavigationIcon}
     />
   )
 
   const BackAction = () => (
-      <TopNavigationAction icon={BackIcon} onPress={() => navigation.goBack()} />
+      <TopNavigationAction icon={backIcon} onPress={() => navigation.goBack()} />
+  )
+  const importAction = () => (
+    <TopNavigationAction icon={importIcon} onPress={() => pickDocument()} />
   )
   const renderTitle = () => (
       <View style={styles.titleContainer}>
           <Text style={styles.title}>Selector de formularios</Text>
       </View>
-  )
+  );
 
   const renderItem = ({ item }) => (
 
@@ -173,6 +235,7 @@ const FormSelectorScreen = () => {
           title={renderTitle}
           style={styles.topNavigation}
           accessoryLeft={BackAction}
+          accessoryRight={importAction}
           alignment='center'
         />
       </LinearGradient>
@@ -224,7 +287,7 @@ const styles = StyleSheet.create({
   itemText: {
     fontSize: 20,
   },
-  topNavigation:{
+  topNavigation: {
     backgroundColor: "transparent",
   },
   titleContainer: {
@@ -249,11 +312,11 @@ const styles = StyleSheet.create({
         height: 'auto'
   },
   title: {
-    fontSize: 25,   
+    fontSize: 25,
     fontWeight: 'bold',
     color: '#333',
   },
-  backIcon: {
+  topNavigationIcon: {
     width: 25,
     height: 25,
   },
