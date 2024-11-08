@@ -172,6 +172,14 @@ const SavedForms = () => {
         setSelectedForms([]) // Resetear selección al activar/desactivar modo
     }
 
+    const selectAll = () => {  
+        setSelectedForms(forms.map(form => form.id))
+    }
+
+    const deselectAll = () => {
+        setSelectedForms([])
+    }
+
     const handleSelection = (id) => {
         if (isSelectionMode) {
             setSelectedForms(prev =>
@@ -244,6 +252,12 @@ const SavedForms = () => {
                 </Select>
                 {index && index.row === 2  ? <Text>{'Inicio: '+ (range.startDate ? configuredDateService.format(range.startDate) : '-') + ', Final: ' + (range.endDate ? configuredDateService.format(range.endDate): '-')}</Text> : <></>}
                 {index && index.row === 3 ? <Input placeholder='¿Cuantas respuestas desea?' value={lasts} onChangeText={handleLasts} keyboardType='numeric'/> : <></>}
+                {isSelectionMode && (
+                    <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 10, paddingTop: 10}}>
+                        <Button onPress={deselectAll} accessoryLeft={deleteIcon} style ={{width: '40%', marginRight: '10%'}}>Limpiar selección</Button>
+                        <Button onPress={selectAll} accessoryLeft={SelectionIcon} style={{width: '40%', marginLeft: "10%"}}>Seleccionar todo</Button>
+                    </View>
+                )}
                 </Layout>
                 <FlatList
                     data={forms}
