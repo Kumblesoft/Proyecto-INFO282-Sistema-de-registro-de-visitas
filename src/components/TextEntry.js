@@ -180,7 +180,7 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldR
         style={[styles.input, isRequiredAlert && { borderColor: '#ff0000' },QRfield && {flex :0.95},]} 
         value={inputValue} 
         onChangeText={handleChange} 
-        keyboardType={limitations ? limitationBehaviour.dGet(limitations.at(0)).keyboardType : "default"}/>
+        keyboardType={limitations.length ? limitationBehaviour.dGet(limitations.at(0)).keyboardType : "default"}/>
         {QRfield && (
           <TouchableOpacity style={styles.qrButton} onPress={() => setIsScanning(true)}>
             <Icon name="camera-outline" fill="#000" style={{ width: 24, height: 24 }} />

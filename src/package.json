@@ -36,7 +36,7 @@
     "react-native-fs": "^2.20.0",
     "react-native-linear-gradient": "^2.8.3",
     "react-native-svg": "^15.7.1",
-    "rgb2hex": "^0.2.5"
+    "rgb2hex": "^0.2.5",
     "react-native-timer-picker": "^1.10.3"
   },
   "devDependencies": {
