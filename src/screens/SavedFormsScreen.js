@@ -155,6 +155,14 @@ const SavedForms = () => {
         />
     )
 
+    const deleteIcon = (props) => (
+        <Icon name='trash' {...props} />
+    );
+    
+    const shareIcon = (props) => (
+        <Icon name='share' {...props}/>
+    );
+
     const BackAction = () => (
         <TopNavigationAction icon={BackIcon} onPress={() => navigation.goBack()} />
     )
@@ -229,7 +237,7 @@ const SavedForms = () => {
 
     return (
         <>
-            <LinearGradient colors={['#29C9A2', '#A0ECA5']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+            <LinearGradient colors={['#2dafb9', '#17b2b6', '#00b4b2', '#00b7ad', '#00b9a7', '#00bba0', '#00bd98', '#00bf8f', '#00c185', '#00c27b']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
                 <TopNavigation
                     title={renderTitle}
                     style={styles.topNavigation}
@@ -351,7 +359,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         backgroundColor: '#ffffff', 
         borderWidth: 1,
-        borderColor: '#9beba5',
+        borderColor: '#00b7ae',
         shadowColor: "#000",
         shadowOffset: { width: 0, height: "10%" },
         shadowOpacity: 0.9,
@@ -379,15 +387,13 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
     },
     containerRespuestas: {
-        padding: 10,
-        marginBottom: 15,
-        borderRadius: 8,
-        backgroundColor: '#ffffff', 
-        borderWidth: 1,
-        borderColor: '#ccc',
         alignItems: 'flex-start',
-        justifyContent: 'space-between',
         flexDirection: 'column',
+        marginBottom: 10,
+        paddingVertical: 10,
+        paddingHorizontal: 10,
+        backgroundColor: '#f5f5f5',
+        borderRadius: 8, 
     },
     selectedItem: {
         backgroundColor: '#BBDEFB',
@@ -402,17 +408,21 @@ const styles = StyleSheet.create({
         marginLeft: '3%'
     },
     modalContainer: {
-        alignSelf: 'center',
+        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0)',
     },
     modalCard: {
-        borderRadius: 5,
+        alignSelf: 'center',
+        width: '200%', 
+        maxWidth: '250%', 
+        borderRadius: 10,
+        padding: 1, // Agrega algo de padding interno si es necesario
     },
     modalTitle: {
         fontSize: 20,
-        marginBottom: 16,
+        marginBottom: 32,
         fontWeight: 'bold'
     },
     topNavigation: {
@@ -436,8 +446,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignSelf: 'center',
-        
-        
     },
 })
 

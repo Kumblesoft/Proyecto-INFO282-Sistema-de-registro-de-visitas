@@ -9,13 +9,14 @@ import FormSelectorScreen from "./screens/FormSelectorScreen" // Importa tu pant
 import FormFiller from "./screens/FormFiller"
 import SavedForms from "./screens/SavedFormsScreen"
 import Settings from "./screens/Settings"
+
 import { FormProvider } from './context/FormContext'
 
 const myTheme = {
   ...eva.light, 
-  'color-primary-default': '#6ddb7c',
-  'color-primary-active': '#4caf50',
-  'color-primary-hover': '#81c784',
+  'color-primary-default': '#00e798',
+  'color-primary-active': '#00c17f',
+  'color-primary-hover': '#60e0b5',
   
   'color-info-default': '#2196F3',   // Azul normal
   'color-info-active': '#1976D2',    // Azul oscuro al presionar
@@ -24,6 +25,15 @@ const myTheme = {
   'color-danger-default': '#f44336',    // Rojo normal
   'color-danger-active': '#d32f2f',     // Rojo oscuro al presionar
   'color-danger-hover': '#e57373',      // Rojo claro en hover
+
+  'color-gray-default': '#9e9e9e',      // Gris normal
+  'color-gray-active': '#757575',       // Gris oscuro al presionar
+  'color-gray-hover': '#bdbdbd',        // Gris claro en hover
+
+  'color-custom-default': '#00b7ae',    // El color personalizado
+  'color-custom-active': '#009f8d',     // Color oscuro al presionar
+  'color-custom-hover': '#33bfa6',      // Color claro en hover
+
 };
 
 const Stack = createNativeStackNavigator()

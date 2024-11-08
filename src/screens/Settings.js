@@ -98,7 +98,7 @@ export default function Settings () {
     return (
         <Layout style={styles.layoutContainer}>
                 <ScrollView style={styles.layoutContainer}>
-                    <LinearGradient colors={['#29C9A2', '#A0ECA5']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+                    <LinearGradient colors={['#2dafb9', '#17b2b6', '#00b4b2', '#00b7ad', '#00b9a7', '#00bba0', '#00bd98', '#00bf8f', '#00c185', '#00c27b']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
                         <TopNavigation
                             title={renderTitle()}
                             style={styles.topNavigation}
@@ -126,7 +126,6 @@ export default function Settings () {
                         <MenuItem 
                             title={renderOption("Inacap")}
                             accessoryLeft={InacapIcon}
-                        
                         />
                         <Divider/>
                     </Menu>

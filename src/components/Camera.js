@@ -1,6 +1,7 @@
 import { Result, Err, Ok } from '../commonStructures/resultEnum'
 import React, { useState } from 'react'
-import { Button, Image, View, StyleSheet, Alert, Linking, TouchableOpacity, Modal, Text } from 'react-native'
+import { Image, View, StyleSheet, Alert, Linking, TouchableOpacity, Modal, Text } from 'react-native'
+import {Button, Layout} from '@ui-kitten/components'
 import * as ImagePicker from 'expo-image-picker'
 import * as MediaLibrary from 'expo-media-library'
 import cameraIcon from '../assets/camera.png'
@@ -169,13 +170,14 @@ export const Camera = ({ title, required, cameraConfiguration, requiredFieldRef 
             </TouchableOpacity>
 
             {/* Mostrar el botón de eliminar sólo si hay una imagen */}
-            {image && (
-              <TouchableOpacity onPress={removeImage} style={styles.menuItem}>
-                <Text style={{...styles.menuText, color: "red"}}>Eliminar Imagen</Text>
-              </TouchableOpacity>
-            )}
-
-            <Button title="Cerrar" onPress={toggleMenu} />
+            <Layout style={styles.buttonContainer}>
+              <Button onPress={removeImage} style={styles.deleteButton} status={image ? 'danger' : 'info'}>
+                {"Eliminar"}
+              </Button>
+              <Button onPress={toggleMenu} style = {styles.closeButton} status='info'>
+                {"Cerrar"}
+              </Button>
+            </Layout>
           </View>
         </View>
       </Modal>
@@ -189,7 +191,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20, // Tamaño de fuente
     fontWeight: 'bold', // Texto en negrita
-    marginBottom: 5, // Espacio debajo del título
+    marginBottom: 10, // Espacio debajo del título
     textAlign: 'left', // Alinear texto a la izquierda
     alignSelf: 'flex-start' // Alinear el componente a la izquierda dentro de su contenedor
   },
@@ -198,7 +200,7 @@ const styles = StyleSheet.create({
     alignItems: 'center' // Centra el texto y el ícono en la misma línea vertical
   },
   imageContainer: {
-    width: 300, // Ajusta el tamaño del contenedor
+    width: "100%", // Ajusta el tamaño del contenedor
     height: 150,
     backgroundColor: '#f0f0f0', // Fondo gris claro
     justifyContent: 'center',
@@ -206,6 +208,8 @@ const styles = StyleSheet.create({
     borderRadius: 10, // Bordes redondeados
     marginBottom: 20, // Espacio inferior
     shadowColor: '#000', // Sombra para dar efecto de botón
+    borderColor: '#00b7ae',
+    borderWidth: 1, 
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
@@ -246,5 +250,19 @@ const styles = StyleSheet.create({
   },
   menuText: {
     fontSize: 18
-  }
+  },
+  deleteButton: {
+    width: '40%',
+    marginRight: '3%'
+  },
+  closeButton: {
+    width: '35%',
+    marginLeft: '3%',
+  },
+  buttonContainer: {
+      backgroundColor: 'transparent',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignSelf: 'center',
+  },
 })

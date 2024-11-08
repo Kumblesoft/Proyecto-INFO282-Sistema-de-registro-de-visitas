@@ -98,17 +98,17 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         backgroundColor: '#ffffff', // Color fondo suave
         borderWidth: 1,
-        borderColor: '#9beba5',
+        borderColor: '#00b7ae',
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 10 },
         shadowOpacity: 0.9,
         shadowRadius: 2,
         elevation: 3,
         alignItems: 'flex-start'
-      },
-      backdrop: {
+    },
+    backdrop: {
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      },
-})
+    },
+});
 
 export default FormFillerScreen

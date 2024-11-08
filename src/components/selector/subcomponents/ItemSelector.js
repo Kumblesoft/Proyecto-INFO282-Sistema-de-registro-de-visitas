@@ -38,7 +38,7 @@ const ItemSelector = forwardRef(({ items, onSelect, value,defaultOption, placeho
       status={error? 'danger':'primary'}
       placeholder={placeholder} // Placeholder para el Select
       value={selectedValue} // Muestra el nombre seleccionado o el placeholder
-      style={styles.select} // Aplica estilo para el ancho mínimo
+      style={styles.select} // Aplica estilo para el ancho mínimo 
     >
       {items.map(item => (
         <SelectItem key={item.valor} title={item.nombre} style={styles.colorItem}/> // Crea las opciones del dropdown
@@ -50,6 +50,7 @@ const ItemSelector = forwardRef(({ items, onSelect, value,defaultOption, placeho
 const styles = StyleSheet.create({
   select: {
     minWidth: 300, // Establece un ancho mínimo
+    borderColor: '#fff'
   }
 })
 
