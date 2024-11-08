@@ -1,6 +1,6 @@
 import React from 'react'
 import { View, StyleSheet, FlatList, TouchableOpacity, Image, ScrollView } from 'react-native'
-import { Text, TopNavigation, TopNavigationAction, Divider, Layout } from '@ui-kitten/components'
+import { Button, Text, TopNavigation, TopNavigationAction, Divider, Layout } from '@ui-kitten/components'
 import { useFormContext } from '../context/FormContext'
 import { useNavigation } from '@react-navigation/native'
 import { LinearGradient } from 'expo-linear-gradient'
@@ -33,25 +33,17 @@ const FormSelectorScreen = ({ route }) => {
   )
 
   const renderItem = ({ item }) => (
-    <View style={styles.containerBox}>
-      <TouchableOpacity style={styles.textContainer} onPress={() => handleSelectForm(item)}>
+    <TouchableOpacity style={styles.textContainer} onPress={() => handleSelectForm(item)}>
+      <View style={styles.containerBox}>
+        
         <Text style={styles.itemText}>{item["nombre formulario"]}</Text>
-      </TouchableOpacity>
-      
-      <TouchableOpacity style={styles.shareButton} onPress={() => shareFormTemplate(item)}>
-        <Image source={require('../assets/share.png')} style={styles.shareIcon} />
-      </TouchableOpacity>
-    
-    </View>
-    /*
 
-    <TouchableOpacity style={styles.containerBox} onPress={() => handleSelectForm(item)}>
-    <Text style={styles.itemText}>{item["nombre formulario"]}</Text>
-    <TouchableOpacity style={styles.shareButton}>
-      <Text style={styles.shareButtonText}>Compartir</Text>
+        <TouchableOpacity style={styles.shareButton} onPress={() => shareFormTemplate(item)}>
+          <Image source={require('../assets/share.png')} style={styles.shareIcon} />
+        </TouchableOpacity>
+
+      </View>
     </TouchableOpacity>
-    </TouchableOpacity>}
-    */
   )
 
   const shareFormTemplate = () => {
@@ -112,11 +104,11 @@ const FormSelectorScreen = ({ route }) => {
           keyExtractor={(item) => item["nombre formulario"]}
           contentContainerStyle={styles.listContainer}
         />
-        <View style={styles.footerContainer}>
-          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-            <Text style={styles.backButtonText}>Volver</Text>
-          </TouchableOpacity>
-        </View>
+      <View style={styles.footerContainer}>
+        <Button style={styles.backButton} onPress={() => navigation.goBack()}>
+          Volver
+        </Button>
+      </View>
       </Layout>
     </>
   )
