@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { StyleSheet, View, Text, FlatList, Alert, TouchableOpacity, Image } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { Modal, Card, TopNavigation, TopNavigationAction, Divider, Layout, Button, Icon, Select, SelectItem, RangeCalendar, NativeDateService } from '@ui-kitten/components'
+import { Modal, Card, TopNavigation, TopNavigationAction, Divider, Layout, Button, Icon, Select, SelectItem, RangeCalendar, NativeDateService, Input } from '@ui-kitten/components'
 import { useNavigation } from '@react-navigation/native'
 import { LinearGradient } from 'expo-linear-gradient'
 import * as FileSystem from 'expo-file-system' 
@@ -38,6 +38,8 @@ const SavedForms = () => {
     const [index, setSelectedIndex] = useState(null)
     const [range, setRange] = useState({})
     const [isRangeMode, setIsRangeMode] = useState(false)
+    const [isLastsMode, setIsLastsMode] = useState(false)
+    const [lasts, setLasts] = useState(0)
     
     const configuredDateService = new NativeDateService('en', {
         startDayOfWeek:1,
@@ -47,11 +49,8 @@ const SavedForms = () => {
     const handleRange = () => {
         const startInt = range.startDate ? range.startDate.getTime() : null
         const endInt = range.endDate ? range.endDate.getTime() : null
-        console.log(endInt == startInt)
         if(startInt){
-            endInt ? endInt != startInt ? setForms(baseForms.filter((data) => {
-                return data.id >= startInt && data.id <= endInt
-            })): setForms(baseForms.filter((data) => {
+            endInt ? setForms(baseForms.filter((data) => {
                 return data.id >= startInt && data.id <= endInt + 86399999})) : setForms(baseForms.filter((data) => {
                 return data.id >= startInt
             }))
@@ -61,7 +60,8 @@ const SavedForms = () => {
     const filters = [
         {value:"Fecha ↓", func: () => {forms.sort((a,b) =>b.id - a.id)}},
         {value:"Fecha ↑", func: () => {forms.sort((a,b)=> a.id - b.id)}},
-        {value: "Rango" , func: () => {setIsRangeMode(true)}}
+        {value: "Rango" , func: () => {setIsRangeMode(true)}},
+        {value: "Ultimos", func: () => {setIsLastsMode(true)}}
     ]
 
     const fetchSavedForms = async () => {
@@ -190,6 +190,12 @@ const SavedForms = () => {
         selectedItem.func(newForms)
         setForms(newForms)
     }
+    const handleLasts = value => {
+        setLasts(value)
+        const newForms = baseForms
+        newForms.sort((a,b) => b.id - a.id)
+        setForms(newForms.slice(-value))
+    }
 
     const renderTitle = () => (
         <View style={styles.titleContainer}>
@@ -237,6 +243,7 @@ const SavedForms = () => {
                     ))}
                 </Select>
                 {index && index.row === 2  ? <Text>{'Inicio: '+ (range.startDate ? configuredDateService.format(range.startDate) : '-') + ', Final: ' + (range.endDate ? configuredDateService.format(range.endDate): '-')}</Text> : <></>}
+                {index && index.row === 3 ? <Input placeholder='¿Cuantas respuestas desea?' value={lasts} onChangeText={handleLasts} keyboardType='numeric'/> : <></>}
                 </Layout>
                 <FlatList
                     data={forms}
