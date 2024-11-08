@@ -76,7 +76,7 @@ const FormSelectorScreen = () => {
         )
       // Si se compartio correctamente
       ).catch(error => {
-          console.error('Error al compartir:', error);
+          console.error('Error al crear archivo:', error);
           Alert.alert('Error', 'Hubo un problema al intentar compartir el archivo')
       // Borrar el archivo temporal
       }).finally(

@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect } from "react"
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { ApplicationProvider, IconRegistry } from "@ui-kitten/components"
@@ -21,22 +21,23 @@ const myTheme = {
 const Stack = createNativeStackNavigator()
 
 export default function App() {
+
   return (
     <>
-    <IconRegistry icons={EvaIconsPack} />
-    <ApplicationProvider {...eva} theme={myTheme}>
-      <NavigationContainer>
-        <FormProvider>
-          <Stack.Navigator initialRouteName="Menu">
-            <Stack.Screen name="Menu" component={Menu} options={{headerShown:false}}/>
-            <Stack.Screen name="FormSelector" component={FormSelectorScreen} options={{headerShown:false}}/>
-            <Stack.Screen name="SavedForms" component={SavedForms} options={{headerShown:false}}/>
-            <Stack.Screen name="FormFiller" component={FormFiller} options={{headerShown:false}}/>
-            <Stack.Screen name="Settings" component={Settings} options={{headerShown:false}}/>
-          </Stack.Navigator>
-        </FormProvider>
-      </NavigationContainer>
-    </ApplicationProvider>
+      <IconRegistry icons={EvaIconsPack} />
+      <ApplicationProvider {...eva} theme={myTheme}>
+        <NavigationContainer>
+          <FormProvider>
+            <Stack.Navigator initialRouteName="Menu">
+              <Stack.Screen name="Menu" component={Menu} options={{headerShown:false}}/>
+              <Stack.Screen name="FormSelector" component={FormSelectorScreen} options={{headerShown:false}}/>
+              <Stack.Screen name="SavedForms" component={SavedForms} options={{headerShown:false}}/>
+              <Stack.Screen name="FormFiller" component={FormFiller} options={{headerShown:false}}/>
+              <Stack.Screen name="Settings" component={Settings} options={{headerShown:false}}/>
+            </Stack.Navigator>
+          </FormProvider>
+        </NavigationContainer>
+      </ApplicationProvider>
     </>
   )
 }
