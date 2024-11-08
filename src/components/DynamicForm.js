@@ -55,7 +55,7 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
      */
     const handleSubmit = async () => {
         const requiredFields = formData.campos.filter(field => field.obligatorio)
-        const emptyFields = requiredFields.some(field => !formState.get(field.salida))
+        const emptyFields = requiredFields.some(field => !formState.current.get(field.salida))
         if (emptyFields) {
             requiredFieldRefs.current.forEach(ref => ref())
             return (new Err('Completa todos los campos obligatorios')).show()
@@ -232,11 +232,10 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
     return (
         <Layout style={styles.layoutContainer}>
         {formData.campos.map((field, index) => renderField(field, index))}
-        {
-            disabledSave ?? 
-                <Button onPress={handleSubmit} style={styles.button} accessoryRight={tickIcon}>
+        {!disabledSave &&
+                (<Button onPress={handleSubmit} style={styles.button} accessoryRight={tickIcon}>
                     <Text category='h5' style={styles.buttonText}>Guardar</Text>
-                </Button>
+                </Button>)
         }
         </Layout>
     )

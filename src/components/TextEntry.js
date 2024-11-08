@@ -177,7 +177,7 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldR
       {invalidLimitations.length ? invalidLimitations.map((name, i) => <Text key={i} style={{ color: 'red' }}> -{name} </Text>) : <></>}
 
       <Input 
-        style={[styles.input, isRequiredAlert && { borderColor: '#ff0000' },QRfield && {flex :0.95},]} 
+        style={[styles.input, isRequiredAlert && { borderColor: '#ff0000' },QRfield && {flex :0.75},]} 
         value={inputValue} 
         onChangeText={handleChange} 
         keyboardType={limitations.length ? limitationBehaviour.dGet(limitations.at(0)).keyboardType : "default"}/>
@@ -208,7 +208,9 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldR
                 }}
                 onBarcodeScanned={handleBarCodeScanned} // Usa la función de escaneo aquí
             />
-            <Button title="Cerrar Escáner" onPress={() => setIsScanning(false)} />
+            <Button title="Cerrar Escáner" onPress={() => setIsScanning(false)}  style={styles.closeButton}>
+              <Text category='h5' style={styles.buttonText}>Cerrar Cámara</Text>
+            </Button>
           </SafeAreaView>
         </Modal>
       )}
@@ -251,6 +253,7 @@ const styles = StyleSheet.create({
     height: 20,
   },
   input: {
+    flex: 1,
     borderWidth: 0,
     borderBottomWidth: 2,
     borderBottomColor: '#000',
@@ -275,12 +278,17 @@ const styles = StyleSheet.create({
     elevation: 3,
     alignItems: 'flex-start'
   },
-  qrButton: { 
-    marginLeft: 5, 
-    width: 40, 
-    height: 40, 
-    justifyContent: 'center', 
-    alignItems: 'center' },
+  qrButton: {
+    position: 'absolute',  // Posición absoluta para colocarlo en una esquina
+    top: 0,                // Arriba en el contenedor
+    right: 0,              // A la derecha del contenedor
+    marginRight: 10,       // Margen opcional a la derecha
+    marginTop: 30,         // Margen opcional arriba
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+},
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -291,7 +299,23 @@ const styles = StyleSheet.create({
     backgroundColor: '#000',
     alignItems: 'center',
     justifyContent: 'center',
-  }
+  },
+  closeButton: {
+    position: 'absolute',   // Posiciona el botón de forma absoluta
+    bottom: 20,             // A 20 píxeles del borde inferior
+    left: 20,               // Alineación en el borde izquierdo con un margen
+    right: 20,              // Alineación en el borde derecho con un margen
+    backgroundColor: '#5a6bf7',  // Color de fondo opcional para el botón
+    paddingVertical: 10,    // Relleno vertical para aumentar la altura del botón
+    paddingHorizontal: 20,  // Relleno horizontal para hacer el botón más ancho
+    borderRadius: 10,       // Bordes redondeados
+    alignItems: 'center',   // Centrar el contenido del botón
+  },
+  buttonText: {
+    color: 'black',
+    fontWeight: "bold",
+    
+},
 })
 
 export default TextEntry
