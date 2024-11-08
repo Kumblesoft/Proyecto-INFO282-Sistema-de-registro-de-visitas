@@ -31,7 +31,7 @@ export const OptionalTextFeatures = (options = {}) => {
  */
 const limitationBehaviour = new Map([
   ["solo letras", {
-    regex: ((/^[a-zA-Z\s]*$/)),
+    regex: ((/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/)),
     keyboardType: "default"
   }], 
   ["no numeros", {
@@ -114,11 +114,16 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldR
 
     console.log(invalidLimitations)
 
-    if (invalidLimitations.length) return new Err("No cumple las limitaciones")
+    if (invalidLimitations.length) {
+      setInputValue(text)
+      setIsRequiredAlert(false)
+      if (onSelect) onSelect('') 
+      return new Err("No cumple las limitaciones")
+    }
     // Formatting
     format.forEach(formattingOption => text = formatMap.get(formattingOption)(text))
+    if (onSelect) onSelect(text) 
     setInputValue(text)
-    onSelect(text) 
     setIsRequiredAlert(false) 
     return new Ok("Correct input")
   }

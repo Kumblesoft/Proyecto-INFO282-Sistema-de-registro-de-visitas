@@ -220,6 +220,7 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
                             limitations: field.limitaciones,
                             format: field.formato
                         })}
+                        onSelect={(value) => handleInputChange(field.salida, value)}
                     />
                 )
             default:
