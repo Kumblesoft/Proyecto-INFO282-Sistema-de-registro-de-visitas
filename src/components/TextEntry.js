@@ -159,12 +159,7 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldR
     const handleBarCodeScanned = ({ data }) => {
       handleChange(data);  // Llama a handleChange con el valor escaneado para validación y formato
       setIsScanning(false); // Cierra el escáner después de escanear
-    };
-
-    const handleBarCodeScanned = ({ data }) => {
-      handleChange(data);  // Llama a handleChange con el valor escaneado para validación y formato
-      setIsScanning(false); // Cierra el escáner después de escanear
-    };
+    }
 
   return (
     <Layout style={styles.containerBox}>
