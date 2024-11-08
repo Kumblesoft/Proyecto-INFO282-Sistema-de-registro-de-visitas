@@ -7,6 +7,7 @@ import { LinearGradient } from 'expo-linear-gradient'
 import * as FileSystem from 'expo-file-system'
 import * as Sharing from 'expo-sharing'
 import * as Animatable from 'react-native-animatable'
+import shareTypes from '../commonStructures/shareTypes'
 
 const FormSelectorScreen = () => {
   const navigation = useNavigation()
@@ -57,17 +58,22 @@ const FormSelectorScreen = () => {
   )
 
   const shareFormTemplate = form => {
-      const objectStringified = JSON.stringify(form)
       const filePath = `${FileSystem.cacheDirectory}plantillaFormulario.json`
+      const objectStringified = JSON.stringify({ 
+        share_content_type: shareTypes.SINGLE_FORM,
+        content           : form 
+      })
+      
 
       // Intentar compartir usando un archivo temporal
       FileSystem.writeAsStringAsync(filePath, objectStringified).then( 
         () => Sharing.shareAsync(filePath, 
           {
-            dialogTitle: 'Compartir JSON como archivo',
-            mimeType: 'application/json',
-            UTI: 'public.json'
-          })
+            dialogTitle : 'Compartir JSON como archivo',
+            mimeType    : 'application/json',
+            UTI         : 'public.json'
+          }
+        )
       // Si se compartio correctamente
       ).catch(error => {
           console.error('Error al compartir:', error);
