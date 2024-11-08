@@ -181,8 +181,7 @@ const styles = StyleSheet.create({
     hour: {
         paddingVertical: 12,
         paddingHorizontal: 'auto',
-        width: '80%'
-       
+        width: '80%' 
     },
     disabledHour:{
         paddingVertical: 12,

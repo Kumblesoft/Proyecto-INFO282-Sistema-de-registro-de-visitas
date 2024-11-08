@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import { ScrollView, View, StyleSheet, FlatList, TouchableOpacity, Image } from 'react-native'
+import { View, StyleSheet, FlatList, TouchableOpacity, Image, ScrollView } from 'react-native'
 import { Button, Text, TopNavigation, TopNavigationAction, Divider, Layout, Modal, Card } from '@ui-kitten/components'
 import { useFormContext } from '../context/FormContext'
 import { useNavigation } from '@react-navigation/native'
