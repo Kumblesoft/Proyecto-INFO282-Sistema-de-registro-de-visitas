@@ -219,6 +219,7 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
                             required: field.obligatorio,
                             limitations: field.limitaciones,
                             format: field.formato
+                            QRfield:field.rellenarQR
                         })}
                         onSelect={(value) => handleInputChange(field.salida, value)}
                     />

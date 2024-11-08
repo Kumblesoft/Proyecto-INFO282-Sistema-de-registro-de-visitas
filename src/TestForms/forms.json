@@ -27,6 +27,7 @@
 				"tipo": "texto",
 				"nombre": "Ingrese un mensaje",
 				"obligatorio": true,
+				"rellenarQR":true,
 				"salida": "mensaje",
 				"limitaciones": [
 					"solo letras"
