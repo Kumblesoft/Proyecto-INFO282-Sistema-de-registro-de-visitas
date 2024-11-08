@@ -4,18 +4,14 @@ import { Text, Layout, Icon, IconElement } from "@ui-kitten/components"
 import Svg, { Circle, Defs, Stop, LinearGradient as SvgLinearGradient } from "react-native-svg"
 import { useNavigation } from '@react-navigation/native' 
 import { useFormContext } from '../context/FormContext' // Importa el contexto
-import { IdentifierContext } from '../context/IdentifierContext'
+
 
 const forms = require('../TestForms/forms.json');
 
 export default function Menu() {
   const navigation = useNavigation();
   const { selectedForm } = useFormContext();
-  const { identifier } = useContext(IdentifierContext); // Obtiene el identificador del contexto
-
-  useEffect(() => {
-    console.log("Identifier from context:", identifier); // Para verificar en consola
-  }, [identifier]);
+  
 
   const handleFormulariosPress = () => navigation.navigate('FormSelector', { forms });
 

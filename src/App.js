@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { ApplicationProvider, IconRegistry } from "@ui-kitten/components"
 import * as eva from "@eva-design/eva"
-import { EvaIconsPack } from '@ui-kitten/eva-icons';
+import { EvaIconsPack } from '@ui-kitten/eva-icons'
 import Menu from "./screens/Menu"
 import FormSelectorScreen from "./screens/FormSelectorScreen" // Importa tu pantalla de selección de formularios
 import FormFiller from "./screens/FormFiller"

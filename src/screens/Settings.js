@@ -1,142 +1,78 @@
-import React, { useState } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import { SafeAreaView, ScrollView, View, StyleSheet, Image, ImageBackground } from 'react-native'
-import { Layout, Button, Text, TopNavigation, TopNavigationAction, Divider, IconElement, Menu, MenuItem, Icon} from '@ui-kitten/components'
+import { Layout, Button, Text, TopNavigation, TopNavigationAction, Divider, IconElement, Menu, MenuItem, Icon } from '@ui-kitten/components'
 import DynamicForm from '../components/DynamicForm'
 import { useRoute } from '@react-navigation/native'
-import { useNavigation } from '@react-navigation/native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { Audio } from 'expo-av'
+import { useNavigation } from '@react-navigation/native'
+import { LinearGradient } from 'expo-linear-gradient'
+import { IdentifierContext } from '../context/IdentifierContext'
+import { IDInputComponent } from '../widgets/EditId'
 
-export default function Settings () {
+export default function Settings() {
 
-    const navigation = useNavigation();
+    const navigation = useNavigation()
 
-    const [mostrarFeddy, setMostrarFeddy] = useState(false);
-    const [sound, setSound] = useState(null);
+    const { identifier } = useContext(IdentifierContext) // Obtiene el identificador del contexto
 
-    const handleFeddy = () => {
-        setMostrarFeddy(!mostrarFeddy);
-    };
-
-    const handlePlaySound = async () => {
-        // Cargar el sonido
-        const { sound } = await Audio.Sound.createAsync(
-            require('../assets/ST.mp3') // Asegúrate de colocar el archivo mp3 en la ruta correcta
-        );
-        setSound(sound);
-
-        // Reproducir el sonido
-        await sound.playAsync();
-    };
-
-    // Limpia el recurso de sonido al desmontar el componente
-    React.useEffect(() => {
-        return () => {
-            if (sound) {
-                sound.unloadAsync();
-            }
-        };
-    }, [sound]);
+    useEffect(() => {
+        console.log("Identifier from context:", identifier) // Para verificar en consola
+    }, [identifier])
 
     const BackIcon = (props) => (
-        <Icon name='arrow-ios-back-outline' {...props} style={styles.backIcon} fill='#fff'/>
-    );
+        <Icon name='arrow-ios-back-outline' {...props} style={styles.backIcon} fill='#fff' />
+    )
 
     const BackAction = () => (
         <TopNavigationAction icon={BackIcon} onPress={() => navigation.goBack()} />
-    );
+    )
+
     const renderTitle = () => (
-            <View style={styles.titleContainer}>
-                <Text style={styles.title}>{"Settings"}</Text>
-            </View>
-    );
+        <View style={styles.titleContainer}>
+            <Text style={styles.title}>{"Settings"}</Text>
+        </View>
+    )
 
     const renderOption = (option) => (
         <View style={styles.titleContainer}>
             <Text style={styles.optionTitle}>{option}</Text>
         </View>
-    );
+    )
 
     const renderTopNavigation = () => (
         <LinearGradient colors={['#4c669f', '#3b5998', '#192f6a']}>
         </LinearGradient>
-    );
+    )
 
     const IdIcon = (props) => (
         <Icon
             {...props}
             name='hash'
         />
-    );
-    const StarIcon = (props) => (
-        <Icon
-            {...props}
-            name='star'
-        />
-    );
-
-    const STIcon = (props) => (
-        <Icon
-            {...props}
-            name='globe-2'
-        />
-    );
-
+    )
 
     const handleChangeID = () => (
         <></>
-    );
-
+    )
 
     return (
         <Layout style={styles.layoutContainer}>
-                <ScrollView style={styles.layoutContainer}>
-                    <LinearGradient colors={['#29C9A2', '#A0ECA5']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
-                        <TopNavigation
-                            title={renderTitle()}
-                            style={styles.topNavigation}
-                            accessoryLeft={BackAction}
-                            alignment='start'
-                        />
-                    </LinearGradient>
-                    <Divider />
-                    <Menu>
-                        <MenuItem 
-                            title={renderOption("Cambiar ID")}
-                            accessoryLeft={IdIcon}
-                            onPress={handleChangeID}
-                        />
-                        <MenuItem 
-                            title={renderOption("Feddy?")}
-                            accessoryLeft={StarIcon}
-                            onPress={handleFeddy}
-                        />
-                        <MenuItem 
-                            title={renderOption("¿Santo tomas?")}
-                            accessoryLeft={STIcon}
-                            onPress={handlePlaySound}
-                        />
-                        <Divider/>
-                    </Menu>
-                    {mostrarFeddy && (
-                    <>
-                        <Image 
-                            style={{ width: 350, height: 200, alignSelf: 'center', marginTop: 20 }} 
-                            source={require('../assets/imagenSeria.gif')}
-                        />
-                        <Text style={{ alignSelf: 'center', fontSize: 80, fontWeight: 'bold' }}>
-                            fai nais a feddys
-                        </Text>
-                    </>
-                    )}
-                </ScrollView>
-            </Layout>
+            <ScrollView style={styles.layoutContainer}>
+                <LinearGradient colors={['#29C9A2', '#A0ECA5']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+                    <TopNavigation
+                        title={renderTitle()}
+                        style={styles.topNavigation}
+                        accessoryLeft={BackAction}
+                        alignment='start'
+                    />
+                </LinearGradient>
+                <IDInputComponent />
+            </ScrollView>
+        </Layout>
     )
 }
 
-
 const styles = StyleSheet.create({
-    topNavigation:{
+    topNavigation: {
         backgroundColor: 'transparent'
     },
     titleContainer: {
@@ -144,7 +80,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     title: {
-        fontSize: 25,   
+        fontSize: 25,
         fontWeight: 'bold',
         color: '#fff',
     },
@@ -161,8 +97,8 @@ const styles = StyleSheet.create({
     gradient: {
         paddingVertical: 10, // Ajusta el padding para dar espacio al texto
     },
-    layoutContainer:{
+    layoutContainer: {
         backgroundColor: '#fff',
         flex: 1,
     },
-});
+})
