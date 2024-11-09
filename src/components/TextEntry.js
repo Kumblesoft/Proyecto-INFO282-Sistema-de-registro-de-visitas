@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { View, StyleSheet, KeyboardAvoidingView, Platform,TouchableOpacity, Modal, SafeAreaView, StatusBar } from 'react-native'
+import { View, StyleSheet, KeyboardAvoidingView, Platform,TouchableOpacity, Modal, SafeAreaView, StatusBar, Alert } from 'react-native'
 import { Text, Input, Button, Layout, ViewPager, Icon } from '@ui-kitten/components'
 import { Err, Ok } from '../commonStructures/resultEnum'
 import { useCameraPermissions } from 'expo-camera';
@@ -160,6 +160,7 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldR
     const handleBarCodeScanned = ({ data }) => {
       handleChange(data);  // Llama a handleChange con el valor escaneado para validación y formato
       setIsScanning(false); // Cierra el escáner después de escanear
+      Alert.alert("Se ha escaneado exitosamente")
     }
 
   return (
