@@ -8,7 +8,10 @@ import HourSelector, {OptionalTimeFeatures} from './HourSelector'
 import CameraConfiguration, {Camera} from './Camera'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Err, Ok } from '../commonStructures/resultEnum'
+import { useIdentifierContext } from '../context/IdentifierContext'
 import { StyleSheet } from "react-native" 
+
+
 
 const tickIcon = (props) => (
     <Icon  name='save' {...props}/>
@@ -32,6 +35,8 @@ const DynamicForm = forwardRef(({ formData }, ref) => {
 const requiredFieldRefs = useRef([])  
 const refreshFieldRefs = useRef([])
 const formState = useRef(new Map())
+
+const { identifier} = useIdentifierContext() // Identifier
 
 
   /**
@@ -57,6 +62,9 @@ useImperativeHandle(ref, () => ({
 const handleSubmit = async () => {
     const requiredFields = formData.campos.filter(field => field.obligatorio)
     const emptyFields = requiredFields.some(field => !formState.current.get(field.salida))
+
+
+
     if (emptyFields) {
         requiredFieldRefs.current.forEach(ref => ref())
         return (new Err('Completa todos los campos obligatorios')).show()
@@ -78,6 +86,7 @@ const handleSubmit = async () => {
         id: Date.now(), 
         nombreFormulario: formData["nombre formulario"] || "Formulario Sin Nombre", 
         data: Object.fromEntries(formState.current), 
+        idDispositivo: identifier
       }
 
       
