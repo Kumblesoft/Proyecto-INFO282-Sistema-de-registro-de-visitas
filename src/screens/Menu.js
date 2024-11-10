@@ -6,20 +6,18 @@ import { useNavigation } from '@react-navigation/native'
 import { useFormContext } from '../context/FormContext' // Importa el contexto
 
 
-const forms = require('../TestForms/forms.json');
-
 export default function Menu() {
   const navigation = useNavigation()
   const { selectedForm } = useFormContext()
   
 
-  const handleFormulariosPress = () => navigation.navigate('FormSelector', { forms })
+  const handleFormulariosPress = () => navigation.navigate('FormSelector') // Solo pasar forms
 
   const handleRellenarPress = () => {
     selectedForm ?
-      navigation.navigate('FormFiller', { form: selectedForm }) :
+      navigation.navigate('FormFiller') :
       Alert.alert('Error', 'Seleccione un formulario primero')
-  };
+  }
 
   const handleSavedFormsPress = () => navigation.navigate('SavedForms') // Nueva función para navegar a SavedForms
 
@@ -32,8 +30,16 @@ export default function Menu() {
         <Svg height="70%" width="100%" style={styles.svgStyle}>
         <Defs>
           <SvgLinearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <Stop offset="0%" stopColor="#01a29d" stopOpacity="1" />
-            <Stop offset="100%" stopColor="#9dfbad" stopOpacity="1" />
+          <Stop offset="10%" stopColor="#2dafb9" stopOpacity="1" />
+            <Stop offset="20%" stopColor="#17b2b6" stopOpacity="1" />
+            <Stop offset="30%" stopColor="#00b4b2" stopOpacity="1" />
+            <Stop offset="40%" stopColor="#00b7ad" stopOpacity="1" />
+            <Stop offset="50%" stopColor="#00b9a7" stopOpacity="1" />
+            <Stop offset="60%" stopColor="#00bba0" stopOpacity="1" />
+            <Stop offset="70%" stopColor="#00bd98" stopOpacity="1" />
+            <Stop offset="80%" stopColor="#00bf8f" stopOpacity="1" />
+            <Stop offset="90%" stopColor="#00c185" stopOpacity="1" />
+            <Stop offset="100%" stopColor="#00c27b" stopOpacity="1" />
           </SvgLinearGradient>
         </Defs>
         <Circle cx="50%" cy="10%" r="80%" fill="url(#grad)" />
@@ -46,10 +52,7 @@ export default function Menu() {
 
         <View style={styles.header}>
           <Text category="h1" style={styles.title}>Formulapp</Text>
-          <Text category="s1" style={styles.subtitle}>
-            {selectedForm ? selectedForm["nombre formulario"] : "Seleccione un formulario"}
-          </Text>
-          
+          <Text category="h5" style={styles.subtitle}>{ selectedForm?.["nombre formulario"] ?? "Seleccione un formulario" }</Text>
         </View>
 
         <View style={styles.center}>

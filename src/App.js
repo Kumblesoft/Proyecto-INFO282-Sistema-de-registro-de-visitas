@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect } from "react"
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { ApplicationProvider, IconRegistry } from "@ui-kitten/components"
@@ -9,19 +9,38 @@ import FormSelectorScreen from "./screens/FormSelectorScreen" // Importa tu pant
 import FormFiller from "./screens/FormFiller"
 import SavedForms from "./screens/SavedFormsScreen"
 import Settings from "./screens/Settings"
+
 import { FormProvider } from './context/FormContext'
 import { IdentifierProvider } from './context/IdentifierContext'
 
 const myTheme = {
-  ...eva.light, // Usamos el tema claro de Eva Design
-  'color-primary-default': '#6ddb7c',  // Color principal (normal)
-  'color-primary-active': '#4caf50',   // Color cuando se presiona el botón
-  'color-primary-hover': '#81c784',    // Color cuando está en hover o toque
-}
+  ...eva.light, 
+  'color-primary-default': '#00e798',
+  'color-primary-active': '#00c17f',
+  'color-primary-hover': '#60e0b5',
+  
+  'color-info-default': '#2196F3',   // Azul normal
+  'color-info-active': '#1976D2',    // Azul oscuro al presionar
+  'color-info-hover': '#64B5F6',     // Azul claro en hover
+
+  'color-danger-default': '#f44336',    // Rojo normal
+  'color-danger-active': '#d32f2f',     // Rojo oscuro al presionar
+  'color-danger-hover': '#e57373',      // Rojo claro en hover
+
+  'color-gray-default': '#9e9e9e',      // Gris normal
+  'color-gray-active': '#757575',       // Gris oscuro al presionar
+  'color-gray-hover': '#bdbdbd',        // Gris claro en hover
+
+  'color-custom-default': '#00b7ae',    // El color personalizado
+  'color-custom-active': '#009f8d',     // Color oscuro al presionar
+  'color-custom-hover': '#33bfa6',      // Color claro en hover
+
+};
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+
   return (
     <>
     <IconRegistry icons={EvaIconsPack} />
