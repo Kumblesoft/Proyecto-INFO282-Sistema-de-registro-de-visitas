@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { View, StyleSheet, KeyboardAvoidingView, Platform,TouchableOpacity, Modal, SafeAreaView, StatusBar } from 'react-native'
+import { View, StyleSheet, KeyboardAvoidingView, Platform,TouchableOpacity, Modal, SafeAreaView, StatusBar, Alert, Image } from 'react-native'
 import { Text, Input, Button, Layout, ViewPager, Icon } from '@ui-kitten/components'
 import { Err, Ok } from '../commonStructures/resultEnum'
 import { useCameraPermissions } from 'expo-camera';
@@ -78,7 +78,7 @@ limitationBehaviour.dGet = function(name) {
  */
 const formatMap = new Map([
   ["solo mayusculas", input => input.toUpperCase()],
-  ["solo minusculas", input => input.toUpperCase()]
+  ["solo minusculas", input => input.toLowerCase()]
 ])
 
 
@@ -158,8 +158,9 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldR
   }
 
     const handleBarCodeScanned = ({ data }) => {
-      handleChange(data);  // Llama a handleChange con el valor escaneado para validación y formato
-      setIsScanning(false); // Cierra el escáner después de escanear
+      handleChange(data);  
+      setIsScanning(false); 
+      Alert.alert("Se ha escaneado exitosamente")
     }
 
   return (
@@ -177,13 +178,13 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldR
       {invalidLimitations.length ? invalidLimitations.map((name, i) => <Text key={i} style={{ color: 'red' }}> -{name} </Text>) : <></>}
 
       <Input 
-        style={[styles.input, isRequiredAlert && { borderColor: '#ff0000' },QRfield && {flex :0.95},]} 
+        style={[styles.input, isRequiredAlert && { borderColor: '#ff0000' },QRfield && {flex :0.75},]} 
         value={inputValue} 
         onChangeText={handleChange} 
         keyboardType={limitations.length ? limitationBehaviour.dGet(limitations.at(0)).keyboardType : "default"}/>
         {QRfield && (
           <TouchableOpacity style={styles.qrButton} onPress={() => setIsScanning(true)}>
-            <Icon name="camera-outline" fill="#000" style={{ width: 24, height: 24 }} />
+          <Image source={require('../assets/qr-code.png')} style={{ width: 40, height: 40 }} />
           </TouchableOpacity>
         )}
       { isRequiredAlert ?
@@ -206,9 +207,11 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldR
                 barcodeScannerSettings={{
                     barcodeTypes: ['qr']
                 }}
-                onBarcodeScanned={handleBarCodeScanned} // Usa la función de escaneo aquí
+                onBarcodeScanned={handleBarCodeScanned} 
             />
-            <Button title="Cerrar Escáner" onPress={() => setIsScanning(false)} />
+            <Button title="Cerrar Escáner" onPress={() => setIsScanning(false)}  style={styles.closeButton}>
+              <Text category='h5' style={styles.buttonText}>Cerrar Cámara</Text>
+            </Button>
           </SafeAreaView>
         </Modal>
       )}
@@ -251,6 +254,7 @@ const styles = StyleSheet.create({
     height: 20,
   },
   input: {
+    flex: 1,
     borderWidth: 0,
     borderBottomWidth: 2,
     borderBottomColor: '#000',
@@ -275,12 +279,17 @@ const styles = StyleSheet.create({
     elevation: 3,
     alignItems: 'flex-start'
   },
-  qrButton: { 
-    marginLeft: 5, 
-    width: 40, 
-    height: 40, 
-    justifyContent: 'center', 
-    alignItems: 'center' },
+  qrButton: {
+    position: 'absolute',  
+    top: 0,                
+    right: 0,              
+    marginRight: 10,       
+    marginTop: 30,         
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+},
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -291,7 +300,23 @@ const styles = StyleSheet.create({
     backgroundColor: '#000',
     alignItems: 'center',
     justifyContent: 'center',
-  }
+  },
+  closeButton: {
+    position: 'absolute',   // Posiciona el botón de forma absoluta
+    bottom: 20,             // A 20 píxeles del borde inferior
+    left: 20,               // Alineación en el borde izquierdo con un margen
+    right: 20,              // Alineación en el borde derecho con un margen
+    backgroundColor: '#5a6bf7',  // Color de fondo opcional para el botón
+    paddingVertical: 10,    // Relleno vertical para aumentar la altura del botón
+    paddingHorizontal: 20,  // Relleno horizontal para hacer el botón más ancho
+    borderRadius: 10,       // Bordes redondeados
+    alignItems: 'center',   // Centrar el contenido del botón
+  },
+  buttonText: {
+    color: 'black',
+    fontWeight: "bold",
+    
+},
 })
 
 export default TextEntry
