@@ -12,15 +12,14 @@ const FormSelectorScreen = ({ route }) => {
   const { forms } = route.params
   const [localForms, setForms] = useState(forms)
   const { selectedForm, setSelectedForm } = useFormContext()
-  console.log(route.params)
 
   const handleSelectForm = form => {
     setSelectedForm(form)
     navigation.navigate('Menu')
   }
-  //File picker function
   const [file, setFile] = useState(null)
 
+  //File picker function
   const pickDocument = async () => {
     try {
       const result = await DocumentPicker.getDocumentAsync({
@@ -31,7 +30,6 @@ const FormSelectorScreen = ({ route }) => {
       if (!result.canceled && result.assets && result.assets.length > 0) {
         const pickedFile = result.assets[0]
         setFile(pickedFile)
-
 
         console.log("File URI:", pickedFile.uri)
         console.log("File Name:", pickedFile.name)
@@ -48,11 +46,17 @@ const FormSelectorScreen = ({ route }) => {
 
         // Now read the file from the cache
         const content = await FileSystem.readAsStringAsync(newPath)
-        // console.log("File Content:", content) // Log the content (JSON)
-        const tempo = localForms.concat(JSON.parse(content))
-        setForms(tempo)
-        console.log(localForms)
-        //console.log(forms.filter(form => form["nombre formulario"] == "Formulario 3"))
+        const new_forms = localForms.concat(JSON.parse(content))
+        setForms(new_forms)
+
+        // Write the forms.json with thw new forms
+        fs.writeFile('../TestForms/forms.json', new_forms, 'utf8', (err) => {
+          if (err) {
+            console.error("Error writing to file:", err)
+          }
+          console.log("File content overwritten successfully!")
+        })
+
       } else if (result.canceled) {
         console.log("Action Canceled, no file selected.")
       } else {
