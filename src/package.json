@@ -41,7 +41,7 @@
     "react-native-linear-gradient": "^2.8.3",
     "react-native-svg": "^15.7.1",
     "react-native-timer-picker": "^1.10.3",
-    "uuid": "^11.0.2"
+    "uuid": "^11.0.2",
     "rgb2hex": "^0.2.5"
   },
   "devDependencies": {

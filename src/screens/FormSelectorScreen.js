@@ -1,6 +1,6 @@
-import React, {useState, useEffect} from 'react'
-import { View, StyleSheet, FlatList, TouchableOpacity, Alert, Image, ScrollView } from 'react-native'
-import { Button, Text, TopNavigation, TopNavigationAction, Divider, Layout, Modal, Card, Icon, IconElement } from '@ui-kitten/components'
+import React, { useState } from 'react'
+import { View, StyleSheet, FlatList, TouchableOpacity, Alert, Image } from 'react-native'
+import { Button, Text, TopNavigation, TopNavigationAction, Divider, Layout, Modal, Card, Icon } from '@ui-kitten/components'
 import { useFormContext } from '../context/FormContext'
 import { useNavigation } from '@react-navigation/native'
 import { LinearGradient } from 'expo-linear-gradient'
@@ -9,7 +9,7 @@ import * as Sharing from 'expo-sharing'
 import * as Animatable from 'react-native-animatable'
 import shareTypes from '../commonStructures/shareTypes'
 import * as DocumentPicker from 'expo-document-picker'
-
+import { Ok } from '../commonStructures/resultEnum'
 
 
 const FormSelectorScreen = () => {
@@ -19,27 +19,28 @@ const FormSelectorScreen = () => {
   const [ isOptionModalVisible, setIsOptionModalVisible ] = useState(false)
   const [ selectedItem, setSelectedItem ] = useState({"nombre formulario": "err"})
   const { setSelectedForm } = useFormContext()
-  const [isSelectionMode, setIsSelectionMode] = useState(false); // Modo de selección
-  const [selectedForms, setSelectedForms] = useState([]); // Formularios seleccionados
+  const [isSelectionMode, setIsSelectionMode] = useState(false) // Modo de selección
+  const [selectedForms, setSelectedForms] = useState([]) // Formularios seleccionados
+  const [file, setFile] = useState(null) // File picker function
 
-  const handleSelectForm = form => {
-    setSelectedForm(form)
-    navigation.navigate('Menu')
-  }
-  //File picker function
-  const [file, setFile] = useState(null)
+  const backIcon = () => <Icon name='arrow-ios-back-outline' style={styles.topNavigationIcon}/>
+  const importIcon = () => <Icon name='cloud-download-outline' style={styles.topNavigationIcon}/>
+  const deleteIcon = props => <Icon name='trash' {...props} />
+  const shareIcon = props => <Icon name='share' {...props}/>
+  const BackAction = () => <TopNavigationAction icon={backIcon} onPress={() => navigation.goBack()} />
+  const importAction = () => <TopNavigationAction icon={importIcon} onPress={() => pickDocument()} />
+  
 
   const pickDocument = async () => {
     try {
       const result = await DocumentPicker.getDocumentAsync({
         type: "application/json",
-        copyToCacheDirectory: true, // Enable caching for easier access
+        copyToCacheDirectory: true // Enable caching for easier access
       })
 
       if (!result.canceled && result.assets && result.assets.length > 0) {
         const pickedFile = result.assets[0]
         setFile(pickedFile)
-
 
         console.log("File URI:", pickedFile.uri)
         console.log("File Name:", pickedFile.name)
@@ -54,133 +55,72 @@ const FormSelectorScreen = () => {
           to: newPath,
         })
 
-        // Now read the file from the cache
-        const content = await FileSystem.readAsStringAsync(newPath)
+        const content = await FileSystem.readAsStringAsync(newPath) // Now read the file from the cache
         // console.log("File Content:", content) // Log the content (JSON)
         const tempo = localForms.concat(JSON.parse(content))
         setForms(tempo)
         console.log(localForms)
-        //console.log(forms.filter(form => form["nombre formulario"] == "Formulario 3"))
-      } else if (result.canceled) {
-        console.log("Action Canceled, no file selected.")
-      } else {
-        Alert.alert("Error", "Failed to pick a document. Please try again.")
-      }
+      } 
+      else if (result.canceled) { console.log("Action Canceled, no file selected.") }
+      else { Alert.alert("Error", "Failed to pick a document. Please try again.") }
     } catch (err) {
       console.log("Error picking document:", err)
       Alert.alert("Error", "Something went wrong when picking the document.")
     }
   }
 
-  const backIcon = () => (
-    <Icon
-      name='arrow-ios-back-outline'
-      style={styles.topNavigationIcon}
-    />
-  )
-  const importIcon = () => (
-    <Icon
-      name='cloud-download-outline'
-      style={styles.topNavigationIcon}
-    />
-  )
-
-  const deleteIcon = (props) => (
-    <Icon name='trash' {...props} />
-  )
-
-  const shareIcon = (props) => (
-      <Icon name='share' {...props}/>
-  )
-
-  const SelectionIcon = (props) => (
-    <Icon name={isSelectionMode ? 'checkmark-square' : 'checkmark-square'} style={styles.backIcon} fill='#fff' {...props} />
-  )
-
-  const SelectionAction = () => (
-      <TopNavigationAction icon={SelectionIcon} onPress={toggleSelectionMode} />
-  )
-
-  //##########################################################################
-  //Delete Forms
-
-
   const deleteSelectedForms = async () => {
-
-    const updatedForms = forms.filter(
-        (form) => !selectedForms.includes(form["nombre formulario"])
-    );
-
-    
-    setForms(updatedForms);
-
-    setSelectedForms([]);
-    setIsSelectionMode(false);
-    console.log("Formularios restantes después de la eliminación:", updatedForms);
-  };
-
-  //##########################################################################
+    const updatedForms = forms.filter(form => !selectedForms.includes(form["nombre formulario"]))
+    setForms(updatedForms)
+    setSelectedForms([])
+    setIsSelectionMode(false)
+    console.log("Formularios restantes después de la eliminación:", updatedForms)
+  }
 
   const toggleSelectionMode = () => {
-      setIsSelectionMode(!isSelectionMode);
-      setSelectedForms([]); // Resetear selección al activar/desactivar modo
+    setIsSelectionMode(!isSelectionMode)
+    setSelectedForms([]) // Resetear selección al activar/desactivar modo
   }
 
-  const handleSelection = (item) => {
-    if (isSelectionMode) {
-      setSelectedForms((prev) =>
-          prev.includes(item["nombre formulario"]) 
-              ? prev.filter((id) => id !== item["nombre formulario"]) 
-              : [...prev, item["nombre formulario"]]
-      );
-    } 
-  };
-
-  const handlePress = (form) => {
-    if (isSelectionMode) {
-      handleSelection(form)
-    } 
-    else {
-      setSelectedForm(form)
-      navigation.navigate('Menu')
-    }
+  const handleSelection = item => {
+    if (!isSelectionMode) return Ok()
+    setSelectedForms(prev =>
+        prev.includes(item["nombre formulario"]) ?
+            prev.filter((id) => id !== item["nombre formulario"]) :
+            [...prev, item["nombre formulario"]]
+    )
   }
 
-
-  const BackAction = () => (
-      <TopNavigationAction icon={backIcon} onPress={() => navigation.goBack()} />
-  )
-  const importAction = () => (
-    <TopNavigationAction icon={importIcon} onPress={() => pickDocument()} />
-  )
   const renderTitle = () => (
-      <View style={styles.titleContainer}>
-          <Text style={styles.title}>Selector de formularios</Text>
-      </View>
+    <View style={styles.titleContainer}>
+      <Text style={styles.title}>Selector de formularios</Text>
+    </View>
   )
 
   const renderItem = ({ item }) => (
 
-    <TouchableOpacity style={styles.textContainer} onPress={() => {
-      if(isSelectionMode)
-        return handleSelection(item)
-      setSelectedForm(item)
-      navigation.goBack()
-    }} 
-    onLongPress={toggleSelectionMode}>
+    <TouchableOpacity 
+      style={styles.textContainer} 
+      onPress={() => {
+        if (isSelectionMode) return handleSelection(item)
+        setSelectedForm(item)
+        navigation.goBack()
+      }} 
+      onLongPress={toggleSelectionMode}
+    >
       <View style={styles.containerBox}>
         <Text style={styles.itemText}>{item["nombre formulario"]}</Text>
         <Button
-        accessoryLeft={() => (
-          <Image source={require('../assets/options.png')} style={styles.shareIcon} />
-        )}
-        onPress={() => {
-          setSelectedItem(item)
-          setIsOptionModalVisible(true)
-        }}
+          accessoryLeft={() => (
+            <Image source={require('../assets/options.png')} style={styles.shareIcon} />
+          )}
+          onPress={() => {
+            setSelectedItem(item)
+            setIsOptionModalVisible(true)
+          }}
           appearance="ghost"
-        style={styles.shareButton}
-      />
+          style={styles.shareButton}
+        />
       </View>
       
     </TouchableOpacity>
@@ -193,7 +133,6 @@ const FormSelectorScreen = () => {
         content           : form 
       })
       
-
       // Intentar compartir usando un archivo temporal
       FileSystem.writeAsStringAsync(filePath, objectStringified).then( 
         () => Sharing.shareAsync(filePath, 
@@ -205,7 +144,7 @@ const FormSelectorScreen = () => {
         )
       // Si se compartio correctamente
       ).catch(error => {
-          console.error('Error al crear archivo:', error);
+          console.error('Error al crear archivo:', error)
           Alert.alert('Error', 'Hubo un problema al intentar compartir el archivo')
       // Borrar el archivo temporal
       }).finally(
@@ -222,29 +161,28 @@ const FormSelectorScreen = () => {
 
   const OptionsModal = () => {
 
-    const onView = () => {
-      setIsOptionModalVisible(false)
-      navigation.navigate('FormFiller', { form: selectedItem, disabledSave: true })
-    }
     const onShare = shareFormTemplate
     const onEdit = () => console.log("Editar")
     const onSelect = item => {
       setSelectedForm(item)
       navigation.goBack()
     }
+    const onView = () => {
+      setIsOptionModalVisible(false)
+      navigation.navigate('FormFiller', { form: selectedItem, disabledSave: true })
+    }
 
     return (
-      
       <Modal
         visible={isOptionModalVisible}
         backdropStyle={newModalStyles.backdrop}
         onBackdropPress={() => setIsOptionModalVisible(false)}
       >
         
-         <Animatable.View
-          animation="fadeIn"
-          duration={300}
-          >
+        <Animatable.View
+        animation="fadeIn"
+        duration={300}
+        >
           <Card disabled={true} style={newModalStyles.container}>
             <Text style={newModalStyles.title}>{selectedItem["nombre formulario"]}</Text>
             
@@ -288,52 +226,52 @@ const FormSelectorScreen = () => {
             </Button>
           </Card>
         </Animatable.View>
-      
       </Modal>
   )}
-
-
 
   return (
     <>
       {OptionsModal()}
         <LinearGradient colors={['#2dafb9', '#17b2b6', '#00b4b2', '#00b7ad', '#00b9a7', '#00bba0', '#00bd98', '#00bf8f', '#00c185', '#00c27b']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
           <TopNavigation
-              title={renderTitle}
-              style={styles.topNavigation}
-              accessoryLeft={BackAction}
-          accessoryRight={importAction}
-              alignment='center'
+            title={renderTitle}
+            style={styles.topNavigation}
+            accessoryLeft={BackAction}
+            accessoryRight={importAction}
+            alignment='center'
           />
         </LinearGradient>
         <Divider />
         <Layout style={styles.container}>
-        <FlatList
-          data={forms}
-          renderItem={renderItem}
-          keyExtractor={item => item["nombre formulario"]}
-          contentContainerStyle={styles.listContainer}
-        />
-          {isSelectionMode && (
-              <Layout style={styles.buttonContainer}>
-                  <Button
-                      style={styles.deleteButton}
-                      onPress={() => deleteSelectedForms()} // Pasamos los datos al botón
-                      accessoryLeft={deleteIcon}
-                  >
-                      Eliminar 
-                  </Button>
+          <FlatList
+            data={forms}
+            renderItem={renderItem}
+            keyExtractor={item => item["nombre formulario"]}
+            contentContainerStyle={styles.listContainer}
+          />
+            { 
+              isSelectionMode && 
+              (
+                <Layout style={styles.buttonContainer}>
+                    <Button
+                        style={styles.deleteButton}
+                        onPress={() => deleteSelectedForms()} // Pasamos los datos al botón
+                        accessoryLeft={deleteIcon}
+                    >
+                        Eliminar 
+                    </Button>
 
-                  <Button status='info' style={styles.shareButton} accessoryLeft={shareIcon}>
-                      Compartir
-                  </Button>
-              </Layout>
-          )}
-      <View style={styles.footerContainer}>
-        <Button style={styles.backButton} onPress={() => navigation.goBack()}>
-          Volver
-        </Button>
-      </View>
+                    <Button status='info' style={styles.shareButton} accessoryLeft={shareIcon}>
+                        Compartir
+                    </Button>
+                </Layout>
+              )
+            }
+        <View style={styles.footerContainer}>
+          <Button style={styles.backButton} onPress={() => navigation.goBack()}>
+            Volver
+          </Button>
+        </View>
       </Layout>
     </>
   )
