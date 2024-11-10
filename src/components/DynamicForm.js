@@ -8,11 +8,11 @@ import HourSelector, {OptionalTimeFeatures} from './HourSelector'
 import CameraConfiguration, {Camera} from './Camera'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Err, Ok } from '../commonStructures/resultEnum'
+import { useIdentifierContext } from '../context/IdentifierContext'
 import { StyleSheet } from "react-native" 
 import { useFormContext } from '../context/FormContext'
 
 const tickIcon = (props) => <Icon name='save' {...props}/>
-
 
 /**
  * A component that renders a dynamic form based on the provided form data.
@@ -24,14 +24,19 @@ const tickIcon = (props) => <Icon name='save' {...props}/>
  * @returns {JSX.Element} The rendered DynamicForm component.
  */
 
-
 const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
     const requiredFieldRefs = useRef([])  
     const refreshFieldRefs = useRef([])
     const formState = useRef(new Map())
     const { selectedForm } = useFormContext()
+    
+    const { identifier } = useIdentifierContext() // Identifier
 
     formData ??= selectedForm
+
+    useImperativeHandle(ref, () => ({
+        getMap: () => formState.current,
+    }))
 
     /**
      * Handles the input change for the form fields.
@@ -62,32 +67,38 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
         }
         
 
-        try {
-            const savedFormsString = await AsyncStorage.getItem('savedForms')
-            let storedForms = []
-
-            if (savedFormsString) {
-                storedForms = JSON.parse(savedFormsString)
-                if (!Array.isArray(storedForms)) 
-                    storedForms = []
-            }
-
-            const newForm = {
-                id: Date.now(), 
-                nombreFormulario: formData["nombre formulario"] || "Formulario Sin Nombre", 
-                data: Object.fromEntries(formState.current), 
-            }
-
-            
-            storedForms.push(newForm) 
-            await AsyncStorage.setItem('savedForms', JSON.stringify(storedForms))
-            console.log("Formulario guardado:", newForm)
-            formState.current.clear()
-            Alert.alert("Formulario guardado")
-            refreshFieldRefs.current.forEach(ref => ref())
-        } catch (error) {
-            console.error("Error al guardar el formulario:", error)
+        const newForm = {
+          id: Date.now(), 
+          nombreFormulario: formData["nombre formulario"] || "Formulario Sin Nombre", 
+          data: Object.fromEntries(formState.current), 
+          idDispositivo: identifier
         }
+          try {
+              const savedFormsString = await AsyncStorage.getItem('savedForms')
+              let storedForms = []
+
+              if (savedFormsString) {
+                  storedForms = JSON.parse(savedFormsString)
+                  if (!Array.isArray(storedForms)) 
+                      storedForms = []
+              }
+
+              const newForm = {
+                  id: Date.now(), 
+                  nombreFormulario: formData["nombre formulario"] || "Formulario Sin Nombre", 
+                  data: Object.fromEntries(formState.current), 
+              }
+
+
+              storedForms.push(newForm) 
+              await AsyncStorage.setItem('savedForms', JSON.stringify(storedForms))
+              console.log("Formulario guardado:", newForm)
+              formState.current.clear()
+              Alert.alert("Formulario guardado")
+              refreshFieldRefs.current.forEach(ref => ref())
+          } catch (error) {
+              console.error("Error al guardar el formulario:", error)
+          }
     }
     /**
      * Renders a field based on the field type.

@@ -1,21 +1,21 @@
-import React from "react"
-import { StyleSheet, View, TouchableOpacity, StatusBar, Button } from "react-native"
+import React, { useContext, useEffect } from "react"
+import { StyleSheet, View, TouchableOpacity, StatusBar, Button, Alert } from "react-native"
 import { Text, Layout, Icon, IconElement } from "@ui-kitten/components" 
-import { Alert } from 'react-native'
 import Svg, { Circle, Defs, Stop, LinearGradient as SvgLinearGradient } from "react-native-svg"
 import { useNavigation } from '@react-navigation/native' 
 import { useFormContext } from '../context/FormContext' // Importa el contexto
 
+
 export default function Menu() {
   const navigation = useNavigation()
-  const { selectedForm } = useFormContext() // Usa el contexto
+  const { selectedForm } = useFormContext()
+  
 
   const handleFormulariosPress = () => navigation.navigate('FormSelector') // Solo pasar forms
 
   const handleRellenarPress = () => {
     selectedForm ?
       navigation.navigate('FormFiller') :
-      //console.log("No se ha seleccionado ningún formulario")
       Alert.alert('Error', 'Seleccione un formulario primero')
   }
 
@@ -52,7 +52,7 @@ export default function Menu() {
 
         <View style={styles.header}>
           <Text category="h1" style={styles.title}>Formulapp</Text>
-          <Text category="h5" style={styles.subtitle}>{ selectedForm ? selectedForm["nombre formulario"] : "Seleccione un formulario"}</Text>
+          <Text category="h5" style={styles.subtitle}>{ selectedForm?.["nombre formulario"] ?? "Seleccione un formulario" }</Text>
         </View>
 
         <View style={styles.center}>
@@ -72,16 +72,13 @@ export default function Menu() {
 
         <View style={styles.footer}>
           <TouchableOpacity style={styles.buttonFormularios} onPress={handleSavedFormsPress}>
-            <Text style={styles.buttonText}>Formularios Guardados</Text> 
+            <Text style={styles.buttonText}>Formularios Guardados</Text>
           </TouchableOpacity>
         </View>
-        
       </View>
     </Layout>
   )
 }
-
-// Mantén los estilos como estaban...
 const styles = StyleSheet.create({
   container: {
     flex: 1,
