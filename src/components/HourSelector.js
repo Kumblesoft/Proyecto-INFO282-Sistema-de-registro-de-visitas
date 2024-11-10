@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         backgroundColor: '#ffffff', // Color fondo suave
         borderWidth: 1,
-        borderColor: '#9beba5',
+        borderColor: '#00b7ae',
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 10 },
         shadowOpacity: 0.9,
@@ -181,8 +181,7 @@ const styles = StyleSheet.create({
     hour: {
         paddingVertical: 12,
         paddingHorizontal: 'auto',
-        width: '80%'
-       
+        width: '80%' 
     },
     disabledHour:{
         paddingVertical: 12,
