@@ -236,7 +236,7 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
             disabledSave ||
                 <Button onPress={handleSubmit} style={styles.button} accessoryRight={tickIcon}>
                     <Text category='h5' style={styles.buttonText}>Guardar</Text>
-                </Button>)
+                </Button>
         }
         </Layout>
     )
