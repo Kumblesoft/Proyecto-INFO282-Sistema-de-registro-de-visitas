@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { View, StyleSheet, KeyboardAvoidingView, Platform,TouchableOpacity, Modal, SafeAreaView, StatusBar, Alert } from 'react-native'
+import { View, StyleSheet, KeyboardAvoidingView, Platform,TouchableOpacity, Modal, SafeAreaView, StatusBar, Alert, Image } from 'react-native'
 import { Text, Input, Button, Layout, ViewPager, Icon } from '@ui-kitten/components'
 import { Err, Ok } from '../commonStructures/resultEnum'
 import { useCameraPermissions } from 'expo-camera';
@@ -78,7 +78,7 @@ limitationBehaviour.dGet = function(name) {
  */
 const formatMap = new Map([
   ["solo mayusculas", input => input.toUpperCase()],
-  ["solo minusculas", input => input.toUpperCase()]
+  ["solo minusculas", input => input.toLowerCase()]
 ])
 
 
@@ -158,8 +158,8 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldR
   }
 
     const handleBarCodeScanned = ({ data }) => {
-      handleChange(data);  // Llama a handleChange con el valor escaneado para validación y formato
-      setIsScanning(false); // Cierra el escáner después de escanear
+      handleChange(data);  
+      setIsScanning(false); 
       Alert.alert("Se ha escaneado exitosamente")
     }
 
@@ -184,7 +184,7 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldR
         keyboardType={limitations.length ? limitationBehaviour.dGet(limitations.at(0)).keyboardType : "default"}/>
         {QRfield && (
           <TouchableOpacity style={styles.qrButton} onPress={() => setIsScanning(true)}>
-            <Icon name="camera-outline" fill="#000" style={{ width: 24, height: 24 }} />
+          <Image source={require('../assets/qr-code.png')} style={{ width: 40, height: 40 }} />
           </TouchableOpacity>
         )}
       { isRequiredAlert ?
@@ -207,7 +207,7 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldR
                 barcodeScannerSettings={{
                     barcodeTypes: ['qr']
                 }}
-                onBarcodeScanned={handleBarCodeScanned} // Usa la función de escaneo aquí
+                onBarcodeScanned={handleBarCodeScanned} 
             />
             <Button title="Cerrar Escáner" onPress={() => setIsScanning(false)}  style={styles.closeButton}>
               <Text category='h5' style={styles.buttonText}>Cerrar Cámara</Text>
@@ -280,11 +280,11 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start'
   },
   qrButton: {
-    position: 'absolute',  // Posición absoluta para colocarlo en una esquina
-    top: 0,                // Arriba en el contenedor
-    right: 0,              // A la derecha del contenedor
-    marginRight: 10,       // Margen opcional a la derecha
-    marginTop: 30,         // Margen opcional arriba
+    position: 'absolute',  
+    top: 0,                
+    right: 0,              
+    marginRight: 10,       
+    marginTop: 30,         
     width: 40,
     height: 40,
     justifyContent: 'center',
