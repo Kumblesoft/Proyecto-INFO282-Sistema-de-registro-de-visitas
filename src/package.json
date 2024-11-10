@@ -20,8 +20,9 @@
     "date-fns": "^4.1.0",
     "expo": "~51.0.37",
     "expo-av": "^14.0.7",
-    "expo-file-system": "^17.0.1",
+    "expo-camera": "^15.0.16",
     "expo-document-picker": "^12.0.2",
+    "expo-file-system": "^17.0.1",
     "expo-haptics": "^13.0.1",
     "expo-image-picker": "^15.0.7",
     "expo-linear-gradient": "^13.0.2",
@@ -36,8 +37,8 @@
     "react-native-fs": "^2.20.0",
     "react-native-linear-gradient": "^2.8.3",
     "react-native-svg": "^15.7.1",
-    "rgb2hex": "^0.2.5",
-    "react-native-timer-picker": "^1.10.3"
+    "react-native-timer-picker": "^1.10.3",
+    "rgb2hex": "^0.2.5"
   },
   "devDependencies": {
     "@babel/core": "^7.25.8"

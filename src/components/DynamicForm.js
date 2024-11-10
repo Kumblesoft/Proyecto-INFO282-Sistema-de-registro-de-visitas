@@ -228,12 +228,12 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
                 return null
         }
     }
-
+    
     return (
         <Layout style={styles.layoutContainer}>
         {formData.campos.map((field, index) => renderField(field, index))}
         {
-            disabledSave ?? 
+            disabledSave ||
                 <Button onPress={handleSubmit} style={styles.button} accessoryRight={tickIcon}>
                     <Text category='h5' style={styles.buttonText}>Guardar</Text>
                 </Button>
