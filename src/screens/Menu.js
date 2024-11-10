@@ -9,16 +9,16 @@ import { useFormContext } from '../context/FormContext' // Importa el contexto
 const forms = require('../TestForms/forms.json');
 
 export default function Menu() {
-  const navigation = useNavigation();
-  const { selectedForm } = useFormContext();
+  const navigation = useNavigation()
+  const { selectedForm } = useFormContext()
   
 
-  const handleFormulariosPress = () => navigation.navigate('FormSelector', { forms });
+  const handleFormulariosPress = () => navigation.navigate('FormSelector', { forms })
 
   const handleRellenarPress = () => {
     selectedForm ?
       navigation.navigate('FormFiller', { form: selectedForm }) :
-      Alert.alert('Error', 'Seleccione un formulario primero');
+      Alert.alert('Error', 'Seleccione un formulario primero')
   };
 
   const handleSavedFormsPress = () => navigation.navigate('SavedForms') // Nueva función para navegar a SavedForms
@@ -74,7 +74,7 @@ export default function Menu() {
         </View>
       </View>
     </Layout>
-  );
+  )
 }
 const styles = StyleSheet.create({
   container: {
@@ -150,4 +150,4 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 20
   }
-});
+})
