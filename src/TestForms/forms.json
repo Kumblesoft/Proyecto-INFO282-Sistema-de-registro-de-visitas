@@ -30,10 +30,8 @@
 				"rellenarQR":true,
 				"salida": "mensaje",
 				"limitaciones": [
-					"solo letras"
 				],
 				"formato": [
-					"solo mayusculas"
 				]
 			},
 			{
