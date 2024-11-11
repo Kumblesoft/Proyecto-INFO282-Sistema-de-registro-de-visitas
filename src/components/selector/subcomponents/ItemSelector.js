@@ -1,10 +1,21 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react'
 import { Select, SelectItem } from '@ui-kitten/components'
 import { StyleSheet } from 'react-native'
 
-const ItemSelector = ({ items, onSelect, value, placeholder }) => {
+
+
+const ItemSelector = forwardRef(({ items, onSelect, value,defaultOption, placeholder,error }, ref) => {
   const [selectedIndex, setSelectedIndex] = useState(null) // Índice seleccionado
   const [selectedValue, setSelectedValue] = useState(null) // Valor inicial
+
+
+  function refreshSelector(){
+    setSelectedIndex(null)
+    setSelectedValue(null)
+  }
+  useImperativeHandle(ref, () => ({
+    refreshSelector,
+  }))
 
   const handleSelect = index => {
     const selectedItem = items[index.row] // Obtén el elemento seleccionado usando el índice
@@ -24,20 +35,22 @@ const ItemSelector = ({ items, onSelect, value, placeholder }) => {
     <Select
       selectedIndex={selectedIndex}
       onSelect={handleSelect}
+      status={error? 'danger':'primary'}
       placeholder={placeholder} // Placeholder para el Select
       value={selectedValue} // Muestra el nombre seleccionado o el placeholder
-      style={styles.select} // Aplica estilo para el ancho mínimo
+      style={styles.select} // Aplica estilo para el ancho mínimo 
     >
       {items.map(item => (
-        <SelectItem key={item.valor} title={item.nombre} /> // Crea las opciones del dropdown
+        <SelectItem key={item.valor} title={item.nombre} style={styles.colorItem}/> // Crea las opciones del dropdown
       ))}
     </Select>
   )
-}
+})
 
 const styles = StyleSheet.create({
   select: {
     minWidth: 300, // Establece un ancho mínimo
+    borderColor: '#fff'
   }
 })
 

@@ -26,6 +26,13 @@ export class Result {
      * @returns {boolean} True if the result is Err, otherwise false.
      */
     isErr() { return this instanceof Err }
+
+    /**
+     * Callback to Ok value, else returns the first error.
+     * @param bindingFn a function that consumes the value and returns a Result instance value
+     * @returns the result of callback or 
+     */
+    then(bindingFn) { return this.isOk() ? bindingFn(this.value) : this }
 }
 
 /**

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { View } from 'react-native'
-import { Text, Datepicker, NativeDateService } from '@ui-kitten/components'
-
+import { View, StyleSheet } from 'react-native'
+import { Text, Layout, Icon, Datepicker, NativeDateService } from '@ui-kitten/components'
 /**
  * Converts a custom date format to a format compatible with date-fns.
  *
@@ -49,7 +48,7 @@ export const OptionDateFeatures = (options ={}) => {
  * @param {Object} optionalFeatures - Configuration options for the DateSelector.
  * @returns {JSX.Element} The rendered DateSelector component.
  */
-const DateSelector = ({value, onChange, optionalFeatures}) => {
+const DateSelector = ({value, onChange, optionalFeatures,requiredFieldRef, refreshFieldRef}) => {
   const hasInitialized = useRef(false)
   const {
     title = "",
@@ -60,6 +59,7 @@ const DateSelector = ({value, onChange, optionalFeatures}) => {
   } = optionalFeatures ?? {}
 
   const [selectedDate, setSelectedDate] = useState(null)
+  const [isRequiredAlert, setIsRequiredAlert] = useState(null)
   const configuredDateService = new NativeDateService('en', {
     startDayOfWeek:1,
     format: dateFormat
@@ -69,6 +69,7 @@ const DateSelector = ({value, onChange, optionalFeatures}) => {
       setSelectedDate(defaultDate) 
       const formattedDate = configuredDateService.format(defaultDate, dateFormat)
       onChange(formattedDate)
+      setIsRequiredAlert(false)
       hasInitialized.current = true
     }
   }, [onChange, defaultDate])
@@ -82,24 +83,96 @@ const DateSelector = ({value, onChange, optionalFeatures}) => {
     setSelectedDate(nextDate)
     const formattedDate = configuredDateService.format(nextDate, dateFormat)
     onChange(formattedDate)
+    setIsRequiredAlert(false)
   }
 
+  requiredFieldRef.current = () => {
+    if (required && !selectedDate) {
+        setIsRequiredAlert(true)
+    } else {
+        setIsRequiredAlert(false)
+    }
+  }
+  refreshFieldRef.current = () => {
+    setSelectedDate(defaultDate)
+    onChange(configuredDateService.format(defaultDate, dateFormat))
+  }
+
+
   return (
-    <View style={{ marginVertical: 10 }}>
+    <Layout style={styles.containerBox}>
       {title && (
-        <Text category="h6">
-          {title}
-          {required ? "*" : ""}
-        </Text>
+        <View style={styles.text}>
+          <Text style={styles.text} category={required ? "label" :"p2"}>
+            {title}
+          </Text> 
+          <Text status='danger'> 
+            {required ? "*": " "} 
+          </Text>
+        </View>
       )}
       <Datepicker
         date={selectedDate}
         dateService={configuredDateService}
         onSelect={handleDateChange}
         disabled={disabled}
+        style={styles.datepicker}
       />
-    </View>
+      { isRequiredAlert ?
+        <Layout size='small' style={styles.alert}>
+          <Icon status='danger' fill='#FF0000' name='alert-circle'style={styles.icon}/> 
+          <Text style={styles.alert} category="p2">
+            Por favor seleccione una fecha
+          </Text>
+        </Layout>
+        :
+        <></>
+      }
+    </Layout>
   )
 }
 
+const styles = StyleSheet.create({
+  text: {
+    marginHorizontal: '1%',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'left',
+  },
+  alert: {
+    flex: 1,
+    margin: 1,
+    marginHorizontal: '1%',
+    color: '#ff0000',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'left',
+  },
+  icon: {
+    width: 20,
+    height: 20,
+  },
+  titles: {
+        fontWeight: 'bold',
+        marginBottom: 10,
+        margin: 2,
+  },
+  containerBox: {
+    padding: 10,
+    marginBottom: 15,
+    borderRadius: 8,
+    backgroundColor: '#ffffff', // Color fondo suave
+    borderWidth: 1,
+    borderColor: '#00b7ae',
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.9,
+    shadowRadius: 2,
+    elevation: 3,
+    alignItems: 'flex-start'
+  },
+  datepicker: {
+    width: '100%'
+  }
+})
 export default DateSelector
