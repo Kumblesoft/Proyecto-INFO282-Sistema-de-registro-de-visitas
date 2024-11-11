@@ -67,38 +67,33 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
         }
         
 
-        const newForm = {
-          id: Date.now(), 
-          nombreFormulario: formData["nombre formulario"] || "Formulario Sin Nombre", 
-          data: Object.fromEntries(formState.current), 
-          idDispositivo: identifier
+        try {
+            const savedFormsString = await AsyncStorage.getItem('savedForms')
+            let storedForms = []
+
+            if (savedFormsString) {
+                storedForms = JSON.parse(savedFormsString)
+                if (!Array.isArray(storedForms)) 
+                    storedForms = []
+            }
+
+            const newForm = {
+                id: Date.now(), 
+                nombreFormulario: formData["nombre formulario"] || "Formulario Sin Nombre", 
+                data: Object.fromEntries(formState.current), 
+                idDispositivo: identifier
+            }
+
+
+            storedForms.push(newForm) 
+            await AsyncStorage.setItem('savedForms', JSON.stringify(storedForms))
+            console.log("Formulario guardado:", newForm)
+            formState.current.clear()
+            Alert.alert("Formulario guardado")
+            refreshFieldRefs.current.forEach(ref => ref())
+        } catch (error) {
+            console.error("Error al guardar el formulario:", error)
         }
-          try {
-              const savedFormsString = await AsyncStorage.getItem('savedForms')
-              let storedForms = []
-
-              if (savedFormsString) {
-                  storedForms = JSON.parse(savedFormsString)
-                  if (!Array.isArray(storedForms)) 
-                      storedForms = []
-              }
-
-              const newForm = {
-                  id: Date.now(), 
-                  nombreFormulario: formData["nombre formulario"] || "Formulario Sin Nombre", 
-                  data: Object.fromEntries(formState.current), 
-              }
-
-
-              storedForms.push(newForm) 
-              await AsyncStorage.setItem('savedForms', JSON.stringify(storedForms))
-              console.log("Formulario guardado:", newForm)
-              formState.current.clear()
-              Alert.alert("Formulario guardado")
-              refreshFieldRefs.current.forEach(ref => ref())
-          } catch (error) {
-              console.error("Error al guardar el formulario:", error)
-          }
     }
     /**
      * Renders a field based on the field type.
