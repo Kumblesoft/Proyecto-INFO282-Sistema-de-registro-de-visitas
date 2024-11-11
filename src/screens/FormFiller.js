@@ -39,36 +39,33 @@ const FormFillerScreen = ({ route }) => {
     );
 
     return (
-            <Layout style={styles.layoutContainer}>
-                <ScrollView style={styles.layoutContainer}>
-                    <LinearGradient colors={['#2dafb9', '#17b2b6', '#00b4b2', '#00b7ad', '#00b9a7', '#00bba0', '#00bd98', '#00bf8f', '#00c185', '#00c27b']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
-                        <TopNavigation
-                            title={renderTitle}
-                            style={styles.topNavigation}
-                            accessoryLeft={BackAction}
-                            alignment='start'
-                        />
-                    </LinearGradient>
-                    <Divider />
-                    
-                    <View style={{flex: 1, padding: 16, marginTop: 20 }}>
-                        <DynamicForm formData={form} ref={formRef}/>
-                    </View>
-                </ScrollView>
-                <Modal visible = {backAlert} backdropStyle={styles.backdrop}>
-                    <Layout style = {styles.containerBox}>
-                        <Text style={{fontWeight: 'bold'}}> ¿Quieres volver?</Text>
-                        <Text> Aún hay progreso sin guardar</Text>
-                            <Layout style={{flexDirection : 'row',
-                                justifyContent:'space-between'
-                            }}>
-                            <Button style = {{flex : 1, marginRight: '10%'}} onPress={() => navigation.goBack()}>Si</Button>
-                            <Button style = {{flex : 1, marginLeft: '10%'}} onPress={() => setBackAlert(false)}>No</Button>
-                            </Layout>
-                    </Layout>
-                </Modal>
-            </Layout>
-
+        <Layout style={styles.layoutContainer}>
+            <LinearGradient colors={['#2dafb9', '#17b2b6', '#00b4b2', '#00b7ad', '#00b9a7', '#00bba0', '#00bd98', '#00bf8f', '#00c185', '#00c27b']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+                <TopNavigation
+                    title={renderTitle}
+                    style={styles.topNavigation}
+                    accessoryLeft={BackAction}
+                    alignment='start'
+                />
+            </LinearGradient>
+            <Divider />
+            <ScrollView style={styles.layoutContainer}>
+                
+                <View style={{flex: 1, padding: 16, marginTop: 20 }}>
+                    <DynamicForm formData={form} disabledSave={disabledSave} ref={formRef}/>
+                </View>
+            </ScrollView>
+            <Modal visible = {backAlert} backdropStyle={styles.backdrop}>
+                <Layout style = {styles.containerBox}>
+                    <Text style={styles.modalTitle}> ¿Quieres volver?</Text>
+                    <Text style={{fontSize: 18, marginBottom: 15}}> Aún hay progreso sin guardar</Text>
+                        <Layout style={styles.buttonContainer}>
+                            <Button style = {{flex : 1, marginRight: '10%'}} status='info' onPress={() => navigation.goBack()}>Si</Button>
+                            <Button style = {{flex : 1, marginLeft: '10%'}} status='danger' onPress={() => setBackAlert(false)}>No</Button>
+                        </Layout>
+                </Layout>
+            </Modal>
+        </Layout>
     )
 }
 
@@ -114,6 +111,18 @@ const styles = StyleSheet.create({
     },
     backdrop: {
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    buttonContainer: {
+        backgroundColor: 'transparent',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignSelf: 'center',
+    },
+    modalTitle: {
+        fontSize: 22,
+        marginBottom: 10,
+        fontWeight: 'bold',
+        alignSelf: 'center'
     },
 });
 

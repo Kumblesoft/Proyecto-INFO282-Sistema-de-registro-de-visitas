@@ -66,10 +66,12 @@ const SavedForms = () => {
         fetchSavedForms();
     }, []);
 
-    const BackIcon = () => (
-        <Image
-            source={require('../assets/arrow_back.png')}
+    const BackIcon = (props) => (
+        <Icon
+            name='arrow-ios-back-outline'
             style={styles.backIcon}
+            fill='#fff'
+            {...props}
         />
     );
 
@@ -82,12 +84,12 @@ const SavedForms = () => {
     );
 
     const BackAction = () => (
-        <TopNavigationAction icon={BackIcon} onPress={() => navigation.goBack()} />
-    );
+        <TopNavigationAction icon={BackIcon} onPress={() => navigation.goBack()}/>
+    )
 
     const SelectionIcon = (props) => (
-        <Icon name={isSelectionMode ? 'checkmark-square' : 'checkmark-square'} {...props} />
-    );
+        <Icon name={isSelectionMode ? 'checkmark-square' : 'checkmark-square'} fill='#fff' style={styles.backIcon} {...props} />
+    )
 
     const SelectionAction = () => (
         <TopNavigationAction icon={SelectionIcon} onPress={toggleSelectionMode} />
@@ -110,7 +112,7 @@ const SavedForms = () => {
 
     const renderTitle = () => (
         <View style={styles.titleContainer}>
-            <Text style={styles.title}>Formularios Guardados</Text>
+            <Text style={styles.topNavigationText}>Formularios Guardados</Text>
         </View>
     );
 
@@ -165,17 +167,19 @@ const SavedForms = () => {
                     transparent={true}
                     animationType="slide"
                     onRequestClose={closeModal}
+                    backdropStyle={styles.backdrop}
                 >
                     <Layout style={styles.modalContainer}>
-                        <Card style={styles.modalCard} disabled={true}>
-                        <Text style={styles.modalTitle}>{selectedForm?.nombreFormulario}</Text>
-                        {selectedForm && Object.entries(selectedForm.data).map(([key, value]) => (
-                            <Layout style={styles.containerRespuestas} key={key}>
-                                <Text style={styles.key}>{`${key}`}</Text>
-                                <Text style={styles.value}>{`${value}`}</Text>
-                            </Layout>
-                        ))}
-                        <Button style={styles.closeButton} status='info' onPress={closeModal}>Cerrar</Button>
+                        <Card style={styles.modalCard} disabled={true} >
+                            <Text style={styles.modalTitle}>{selectedForm?.nombreFormulario}</Text>
+                            {selectedForm && Object.entries(selectedForm.data).map(([key, value]) => (
+                                <Layout style={styles.containerRespuestas}>
+                                    <Text style={styles.key} key={key}>{`${key}`}</Text>
+                                    <Text style={styles.value}>{`${value}`}</Text>
+                                </Layout>
+                            ))}
+                                <Button status='info' accessoryLeft={shareIcon} onPress={() => exportForm(selectedForm)}></Button>
+                                <Button status='danger' onPress={closeModal}>Cerrar</Button>
                         </Card>
                     </Layout>
                 </Modal>
@@ -192,6 +196,12 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 24,
         marginBottom: 16,
+    },
+    topNavigationText:{
+        marginRight: 60,
+        fontSize: 24,   
+        fontWeight: 'bold',
+        color: '#fff',
     },
     key:{
         fontWeight: 'bold',
@@ -214,6 +224,9 @@ const styles = StyleSheet.create({
     },
     formTitle: {
         fontSize: 18,
+    },
+    backdrop: {
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     containerBox: {
         padding: 10,
@@ -248,6 +261,10 @@ const styles = StyleSheet.create({
         width: '35%',
         marginRight: '3%'
     },
+    closeButton: {
+        width: '18%',
+        marginLeft: '3%'
+    },
     shareButton: {
         width: '35%',
         marginLeft: '3%'
@@ -263,7 +280,7 @@ const styles = StyleSheet.create({
         width: '200%', 
         maxWidth: '250%', 
         borderRadius: 10,
-        padding: 1, // Agrega algo de padding interno si es necesario
+        
     },
     modalTitle: {
         fontSize: 20,
