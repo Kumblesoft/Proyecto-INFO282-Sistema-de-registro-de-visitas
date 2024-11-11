@@ -148,10 +148,12 @@ const SavedForms = () => {
         fetchSavedForms()
     }, [])
 
-    const BackIcon = () => (
-        <Image
-            source={require('../assets/arrow_back.png')}
+    const BackIcon = (props) => (
+        <Icon
+            name='arrow-ios-back-outline'
             style={styles.backIcon}
+            fill='#fff'
+            {...props}
         />
     )
 
@@ -168,7 +170,7 @@ const SavedForms = () => {
     )
 
     const SelectionIcon = (props) => (
-        <Icon name={isSelectionMode ? 'checkmark-square' : 'checkmark-square'} style={styles.backIcon} {...props} />
+        <Icon fill='#fff' name={isSelectionMode ? 'checkmark-square' : 'checkmark-square'} style={styles.backIcon} {...props} />
     )
 
     const SelectionAction = () => (
@@ -215,7 +217,7 @@ const SavedForms = () => {
 
     const renderTitle = () => (
         <View style={styles.titleContainer}>
-            <Text style={styles.title}>Formularios Guardados</Text>
+            <Text style={styles.topNavigationText}>Formularios Guardados</Text>
         </View>
     )
 
@@ -299,8 +301,9 @@ const SavedForms = () => {
                 <Modal
                     visible={modalVisible}
                     transparent={true}
-                    animationType="slide"
+                    animationType="fade"
                     onRequestClose={closeModal}
+                    backdropStyle={styles.backdrop}
                 >
                     <Layout style={styles.modalContainer}>
                         <Card style={styles.modalCard} disabled={true} >
@@ -331,6 +334,15 @@ const styles = StyleSheet.create({
         fontSize: 24,
         marginBottom: 16,
     },
+    topNavigationText:{
+        marginRight: 60,
+        fontSize: 24,   
+        fontWeight: 'bold',
+        color: '#fff',
+    },
+    backdrop: {
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
     key:{
         fontWeight: 'bold',
         fontSize: 12,
@@ -352,6 +364,9 @@ const styles = StyleSheet.create({
     },
     formTitle: {
         fontSize: 18,
+    },
+    backdrop: {
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     containerBox: {
         padding: 10,
@@ -403,6 +418,10 @@ const styles = StyleSheet.create({
         width: '35%',
         marginRight: '3%'
     },
+    closeButton: {
+        width: '18%',
+        marginLeft: '3%'
+    },
     shareButton: {
         width: '35%',
         marginLeft: '3%'
@@ -418,7 +437,7 @@ const styles = StyleSheet.create({
         width: '200%', 
         maxWidth: '250%', 
         borderRadius: 10,
-        padding: 1, // Agrega algo de padding interno si es necesario
+        
     },
     modalTitle: {
         fontSize: 20,

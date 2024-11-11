@@ -52,13 +52,11 @@ const FormFillerScreen = ({ route }) => {
             </ScrollView>
             <Modal visible = {backAlert} backdropStyle={styles.backdrop}>
                 <Layout style = {styles.containerBox}>
-                    <Text style={{fontWeight: 'bold'}}> ¿Quieres volver?</Text>
-                    <Text> Aún hay progreso sin guardar</Text>
-                        <Layout style={{flexDirection : 'row',
-                            justifyContent:'space-between'
-                        }}>
-                        <Button style = {{flex : 1, marginRight: '10%'}} onPress={() => navigation.goBack()}>Si</Button>
-                        <Button style = {{flex : 1, marginLeft: '10%'}} onPress={() => setBackAlert(false)}>No</Button>
+                    <Text style={styles.modalTitle}> ¿Quieres volver?</Text>
+                    <Text style={{fontSize: 18, marginBottom: 15}}> Aún hay progreso sin guardar</Text>
+                        <Layout style={styles.buttonContainer}>
+                            <Button style = {{flex : 1, marginRight: '10%'}} status='info' onPress={() => navigation.goBack()}>Si</Button>
+                            <Button style = {{flex : 1, marginLeft: '10%'}} status='danger' onPress={() => setBackAlert(false)}>No</Button>
                         </Layout>
                 </Layout>
             </Modal>
@@ -108,6 +106,18 @@ const styles = StyleSheet.create({
     },
     backdrop: {
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    buttonContainer: {
+        backgroundColor: 'transparent',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignSelf: 'center',
+    },
+    modalTitle: {
+        fontSize: 22,
+        marginBottom: 10,
+        fontWeight: 'bold',
+        alignSelf: 'center'
     },
 });
 
