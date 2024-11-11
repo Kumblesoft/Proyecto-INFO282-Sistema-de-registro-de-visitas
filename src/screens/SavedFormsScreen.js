@@ -170,7 +170,7 @@ const SavedForms = () => {
     )
 
     const SelectionIcon = (props) => (
-        <Icon name={isSelectionMode ? 'checkmark-square' : 'checkmark-square'} style={styles.backIcon} {...props} />
+        <Icon fill='#fff' name={isSelectionMode ? 'checkmark-square' : 'checkmark-square'} style={styles.backIcon} {...props} />
     )
 
     const SelectionAction = () => (
@@ -301,7 +301,7 @@ const SavedForms = () => {
                 <Modal
                     visible={modalVisible}
                     transparent={true}
-                    animationType="slide"
+                    animationType="fade"
                     onRequestClose={closeModal}
                     backdropStyle={styles.backdrop}
                 >
@@ -339,6 +339,9 @@ const styles = StyleSheet.create({
         fontSize: 24,   
         fontWeight: 'bold',
         color: '#fff',
+    },
+    backdrop: {
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     key:{
         fontWeight: 'bold',
