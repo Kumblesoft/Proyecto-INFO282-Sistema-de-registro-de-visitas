@@ -286,7 +286,7 @@ const FormSelectorScreen = () => {
         <Divider />
         <Layout style={styles.container}>
           <FlatList
-            data={localForms.filter((form) => form !== null)}
+            data={forms.filter((form) => form !== null)}
             renderItem={renderItem}
             keyExtractor={(item) => item["nombre formulario"]}
             contentContainerStyle={styles.listContainer}
