@@ -27,12 +27,11 @@
 				"tipo": "texto",
 				"nombre": "Ingrese un mensaje",
 				"obligatorio": true,
+				"rellenarQR":true,
 				"salida": "mensaje",
 				"limitaciones": [
-					"solo letras"
 				],
 				"formato": [
-					"solo mayusculas"
 				]
 			},
 			{
@@ -91,10 +90,8 @@
 				"obligatorio": false,
 				"salida": "comentarios",
 				"limitaciones": [
-					"sin limitación de caracteres"
 				],
 				"formato": [
-					"texto libre"
 				]
 			},
 			{
@@ -186,8 +183,7 @@
 			  "obligatorio": true,
 			  "salida": "codigo",
 			  "limitaciones": [
-				"solo letras",
-				"solo numeros"
+				"solo letras"
 			  ],
 			  "formato": [
 				"solo mayusculas"

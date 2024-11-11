@@ -4,43 +4,38 @@ import { Layout, Button, Text, TopNavigation, TopNavigationAction, Divider, Icon
 import DynamicForm from '../components/DynamicForm'
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useFormContext } from '../context/FormContext'
 
 const FormFillerScreen = ({ route }) => {
-    const { form } = route.params
-    const navigation = useNavigation()
-    const formRef = useRef()
     const [backAlert, setBackAlert] = useState(false) 
+    const context = useFormContext()
+    const disabledSave = route.params?.disabledSave ?? false
+    const form = route.params?.form ?? context.selectedForm
+    const formRef = useRef()
+    const navigation = useNavigation()
 
-    const BackIcon = (props) => (
+    const BackIcon = props => (
         <Icon name='arrow-ios-back-outline' {...props} style={styles.backIcon} fill='#fff'/>
     )
 
     const BackAction = () => (
-        <TopNavigationAction icon={BackIcon} onPress={() => navigation.goBack()} />
+        <TopNavigationAction icon={BackIcon} onPress={() => handleBack()} />
     )
 
     function handleBack(){
         const dataMap = formRef.current.getMap()
-        if (dataMap.size > 0){
-            setBackAlert(true)
-        }else{
-            navigation.goBack()
-        }
+        if (dataMap.size > 0) setBackAlert(true)
+        else navigation.goBack()
     }
     const renderTitle = () => (
-            <View style={styles.titleContainer}>
-                <Text style={styles.title}>{form["nombre formulario"]}</Text>
-            </View>
+        <View style={styles.titleContainer}>
+            <Text style={styles.title}>{form["nombre formulario"]}</Text>
+        </View>
     )
-
-    const renderTopNavigation = () => (
-        <LinearGradient colors={['#4c669f', '#3b5998', '#192f6a']}>
-        </LinearGradient>
-    );
 
     return (
         <Layout style={styles.layoutContainer}>
-            <LinearGradient colors={['#2dafb9', '#17b2b6', '#00b4b2', '#00b7ad', '#00b9a7', '#00bba0', '#00bd98', '#00bf8f', '#00c185', '#00c27b']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+            <LinearGradient colors={['#29C9A2', '#A0ECA5']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
                 <TopNavigation
                     title={renderTitle}
                     style={styles.topNavigation}
@@ -57,11 +52,13 @@ const FormFillerScreen = ({ route }) => {
             </ScrollView>
             <Modal visible = {backAlert} backdropStyle={styles.backdrop}>
                 <Layout style = {styles.containerBox}>
-                    <Text style={styles.modalTitle}> ¿Quieres volver?</Text>
-                    <Text style={{fontSize: 18, marginBottom: 15}}> Aún hay progreso sin guardar</Text>
-                        <Layout style={styles.buttonContainer}>
-                            <Button style = {{flex : 1, marginRight: '10%'}} status='info' onPress={() => navigation.goBack()}>Si</Button>
-                            <Button style = {{flex : 1, marginLeft: '10%'}} status='danger' onPress={() => setBackAlert(false)}>No</Button>
+                    <Text style={{fontWeight: 'bold'}}> ¿Quieres volver?</Text>
+                    <Text> Aún hay progreso sin guardar</Text>
+                        <Layout style={{flexDirection : 'row',
+                            justifyContent:'space-between'
+                        }}>
+                        <Button style = {{flex : 1, marginRight: '10%'}} onPress={() => navigation.goBack()}>Si</Button>
+                        <Button style = {{flex : 1, marginLeft: '10%'}} onPress={() => setBackAlert(false)}>No</Button>
                         </Layout>
                 </Layout>
             </Modal>

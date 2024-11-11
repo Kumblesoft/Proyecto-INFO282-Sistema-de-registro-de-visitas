@@ -56,6 +56,10 @@ export default function OptionSelector({ type, items, onSelect, requiredFieldRef
     const [selectedValue, setSelectedValue] = useState(defaultOption || null) // Usar la opción predeterminada como estado inicial
     const [isRequiredAlert, setIsRequiredAlert] = useState(false)
 
+
+    if (selectedValue){
+        onSelect(selectedValue)
+    }
     const optionRef = useRef()
     // Lógica para manejar la selección
     const handleSelect = selectedValue => {
@@ -79,6 +83,7 @@ export default function OptionSelector({ type, items, onSelect, requiredFieldRef
     const emptyValue = (selectedValue == null)
     refreshFieldRef.current = () => {
         optionRef.current.refreshSelector()
+        setSelectedValue(null)
     }
     return (
         <>
