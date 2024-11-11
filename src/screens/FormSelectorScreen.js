@@ -25,25 +25,8 @@ const FormSelectorScreen = ({ route }) => {
     </Layout>
   )
 
-  const deleteIcon = (props) => (
-    <Icon name='trash' {...props} />
-  )
-
-  const shareIcon = (props) => (
-      <Icon name='share' {...props}/>
-  )
-
-  const SelectionIcon = (props) => (
-    <Icon name={isSelectionMode ? 'checkmark-square' : 'checkmark-square'} style={styles.backIcon} fill='#fff' {...props} />
-  )
-
-  const SelectionAction = () => (
-      <TopNavigationAction icon={SelectionIcon} onPress={toggleSelectionMode} />
-  )
-
   //##########################################################################
   //Delete Forms
-
 
   const deleteSelectedForms = async () => {
     try {
@@ -104,11 +87,6 @@ const FormSelectorScreen = ({ route }) => {
       navigation.navigate('Menu')
     }
   }
-
-
-  const BackAction = () => (
-      <TopNavigationAction icon={BackIcon} onPress={() => navigation.goBack()} />
-  )
   const renderTitle = () => (
     <View style={styles.titleContainer}>
       <Text style={styles.topNavigationText}>Selector de formularios</Text>
@@ -332,7 +310,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 10,
   },
-  topNavigation: {
+  topNavigation:{
     backgroundColor: "transparent",
   },
   titleContainer: {
@@ -371,7 +349,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#fff',
   },
-  topNavigationIcon: {
+  backIcon: {
     width: 25,
     height: 25,
   },
@@ -400,6 +378,17 @@ const styles = StyleSheet.create({
     width: '35%',
     marginLeft: '3%'
   },  
+  shareIcon: {
+    width: 20,
+    height: 20,
+  },
+  footerContainer: {
+    padding: 10,
+    backgroundColor: '#fff', // Color de fondo del pie de página
+    alignItems: 'center', // Centrar el botón
+    borderTopWidth: 1, // Línea superior (opcional)
+    borderTopColor: '#ccc', // Color de la línea
+  }
 })
 
 const newModalStyles = StyleSheet.create({
