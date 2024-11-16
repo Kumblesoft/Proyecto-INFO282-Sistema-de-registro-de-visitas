@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { View, StyleSheet, FlatList, TouchableOpacity, Alert, Image } from 'react-native'
 import { Button, Text, TopNavigation, TopNavigationAction, Divider, Layout, Modal, Card, Icon } from '@ui-kitten/components'
-import { useFormContext } from '../context/FormContext'
+import { useFormContext } from '../context/SelectedFormContext'
 import { useNavigation } from '@react-navigation/native'
 import { LinearGradient } from 'expo-linear-gradient'
 import * as FileSystem from 'expo-file-system'
@@ -16,20 +16,20 @@ const FormSelectorScreen = () => {
   const navigation = useNavigation()
   const forms = require("../TestForms/forms.json")
   const [localForms, setForms] = useState(forms)
-  const [ isOptionModalVisible, setIsOptionModalVisible ] = useState(false)
-  const [ selectedItem, setSelectedItem ] = useState({"nombre formulario": "err"})
+  const [isOptionModalVisible, setIsOptionModalVisible] = useState(false)
+  const [selectedItem, setSelectedItem] = useState({ "nombre formulario": "err" })
   const { setSelectedForm } = useFormContext()
   const [isSelectionMode, setIsSelectionMode] = useState(false) // Modo de selección
   const [selectedForms, setSelectedForms] = useState([]) // Formularios seleccionados
   const [file, setFile] = useState(null) // File picker function
 
-  const backIcon = () => <Icon name='arrow-ios-back-outline' style={styles.topNavigationIcon}/>
-  const importIcon = () => <Icon name='cloud-download-outline' style={styles.topNavigationIcon}/>
+  const backIcon = () => <Icon name='arrow-ios-back-outline' style={styles.topNavigationIcon} />
+  const importIcon = () => <Icon name='cloud-download-outline' style={styles.topNavigationIcon} />
   const deleteIcon = props => <Icon name='trash' {...props} />
-  const shareIcon = props => <Icon name='share' {...props}/>
+  const shareIcon = props => <Icon name='share' {...props} />
   const BackAction = () => <TopNavigationAction icon={backIcon} onPress={() => navigation.goBack()} />
   const importAction = () => <TopNavigationAction icon={importIcon} onPress={() => pickDocument()} />
-  
+
 
   //File picker function
   const pickDocument = async () => {
@@ -60,8 +60,20 @@ const FormSelectorScreen = () => {
         // console.log("File Content:", content) // Log the content (JSON)
         const tempo = localForms.concat(JSON.parse(content))
         setForms(tempo)
+
+        console.log(tempo, '\n')
+
+        try {
+          // Write new content to the file (overwrites existing content)
+          await FileSystem.writeAsStringAsync(`${FileSystem.documentDirectory}forms.json`, JSON.stringify(tempo))
+          Alert.alert("Success", "File content has been overwritten!")
+        } catch (err) {
+          console.error("Error writing to file:", err)
+          Alert.alert("Error", "Failed to overwrite the file.")
+        }
+
         console.log(localForms)
-      } 
+      }
       else if (result.canceled) { console.log("Action Canceled, no file selected.") }
       else { Alert.alert("Error", "Failed to pick a document. Please try again.") }
     } catch (err) {
@@ -86,9 +98,9 @@ const FormSelectorScreen = () => {
   const handleSelection = item => {
     if (!isSelectionMode) return Ok()
     setSelectedForms(prev =>
-        prev.includes(item["nombre formulario"]) ?
-            prev.filter((id) => id !== item["nombre formulario"]) :
-            [...prev, item["nombre formulario"]]
+      prev.includes(item["nombre formulario"]) ?
+        prev.filter((id) => id !== item["nombre formulario"]) :
+        [...prev, item["nombre formulario"]]
     )
   }
 
@@ -100,13 +112,13 @@ const FormSelectorScreen = () => {
 
   const renderItem = ({ item }) => (
 
-    <TouchableOpacity 
-      style={styles.textContainer} 
+    <TouchableOpacity
+      style={styles.textContainer}
       onPress={() => {
         if (isSelectionMode) return handleSelection(item)
         setSelectedForm(item)
         navigation.goBack()
-      }} 
+      }}
       onLongPress={toggleSelectionMode}
     >
       <View style={styles.containerBox}>
@@ -123,41 +135,41 @@ const FormSelectorScreen = () => {
           style={styles.shareButton}
         />
       </View>
-      
+
     </TouchableOpacity>
   )
 
   const shareFormTemplate = form => {
-      const filePath = `${FileSystem.cacheDirectory}plantillaFormulario.json`
-      const objectStringified = JSON.stringify({ 
-        share_content_type: shareTypes.SINGLE_FORM,
-        content           : form 
-      })
-      
-      // Intentar compartir usando un archivo temporal
-      FileSystem.writeAsStringAsync(filePath, objectStringified).then( 
-        () => Sharing.shareAsync(filePath, 
-          {
-            dialogTitle : 'Compartir JSON como archivo',
-            mimeType    : 'application/json',
-            UTI         : 'public.json'
-          }
-        )
-      // Si se compartio correctamente
-      ).catch(error => {
-          console.error('Error al crear archivo:', error)
-          Alert.alert('Error', 'Hubo un problema al intentar compartir el archivo')
-      // Borrar el archivo temporal
-      }).finally(
-        async () => {
-          try {
-            const fileInfo = await FileSystem.getInfoAsync(filePath)
-            if (fileInfo.exists) await FileSystem.deleteAsync(filePath)
-          } catch (deleteError) {
-            console.error('Error al eliminar el archivo:', deleteError)
-          }
+    const filePath = `${FileSystem.cacheDirectory}plantillaFormulario.json`
+    const objectStringified = JSON.stringify({
+      share_content_type: shareTypes.SINGLE_FORM,
+      content: form
+    })
+
+    // Intentar compartir usando un archivo temporal
+    FileSystem.writeAsStringAsync(filePath, objectStringified).then(
+      () => Sharing.shareAsync(filePath,
+        {
+          dialogTitle: 'Compartir JSON como archivo',
+          mimeType: 'application/json',
+          UTI: 'public.json'
         }
       )
+      // Si se compartio correctamente
+    ).catch(error => {
+      console.error('Error al crear archivo:', error)
+      Alert.alert('Error', 'Hubo un problema al intentar compartir el archivo')
+      // Borrar el archivo temporal
+    }).finally(
+      async () => {
+        try {
+          const fileInfo = await FileSystem.getInfoAsync(filePath)
+          if (fileInfo.exists) await FileSystem.deleteAsync(filePath)
+        } catch (deleteError) {
+          console.error('Error al eliminar el archivo:', deleteError)
+        }
+      }
+    )
   }
 
   const OptionsModal = () => {
@@ -179,14 +191,14 @@ const FormSelectorScreen = () => {
         backdropStyle={newModalStyles.backdrop}
         onBackdropPress={() => setIsOptionModalVisible(false)}
       >
-        
+
         <Animatable.View
-        animation="fadeIn"
-        duration={300}
+          animation="fadeIn"
+          duration={300}
         >
           <Card disabled={true} style={newModalStyles.container}>
             <Text style={newModalStyles.title}>{selectedItem["nombre formulario"]}</Text>
-            
+
             <View style={newModalStyles.buttonGroup}>
               <Button
                 accessoryLeft={() => (
@@ -209,7 +221,7 @@ const FormSelectorScreen = () => {
                 onPress={() => onEdit(selectedItem)}
                 style={newModalStyles.actionButton}
               />
-            </View>        
+            </View>
 
             <Button
               onPress={() => onSelect(selectedItem)}
@@ -228,46 +240,47 @@ const FormSelectorScreen = () => {
           </Card>
         </Animatable.View>
       </Modal>
-  )}
+    )
+  }
 
   return (
     <>
       {OptionsModal()}
-        <LinearGradient colors={['#2dafb9', '#17b2b6', '#00b4b2', '#00b7ad', '#00b9a7', '#00bba0', '#00bd98', '#00bf8f', '#00c185', '#00c27b']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
-          <TopNavigation
-            title={renderTitle}
-            style={styles.topNavigation}
-            accessoryLeft={BackAction}
-            accessoryRight={importAction}
-            alignment='center'
-          />
-        </LinearGradient>
-        <Divider />
-        <Layout style={styles.container}>
-          <FlatList
-            data={forms}
-            renderItem={renderItem}
-            keyExtractor={item => item["nombre formulario"]}
-            contentContainerStyle={styles.listContainer}
-          />
-            { 
-              isSelectionMode && 
-              (
-                <Layout style={styles.buttonContainer}>
-                    <Button
-                        style={styles.deleteButton}
-                        onPress={() => deleteSelectedForms()} // Pasamos los datos al botón
-                        accessoryLeft={deleteIcon}
-                    >
-                        Eliminar 
-                    </Button>
+      <LinearGradient colors={['#2dafb9', '#17b2b6', '#00b4b2', '#00b7ad', '#00b9a7', '#00bba0', '#00bd98', '#00bf8f', '#00c185', '#00c27b']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+        <TopNavigation
+          title={renderTitle}
+          style={styles.topNavigation}
+          accessoryLeft={BackAction}
+          accessoryRight={importAction}
+          alignment='center'
+        />
+      </LinearGradient>
+      <Divider />
+      <Layout style={styles.container}>
+        <FlatList
+          data={forms}
+          renderItem={renderItem}
+          keyExtractor={item => item["nombre formulario"]}
+          contentContainerStyle={styles.listContainer}
+        />
+        {
+          isSelectionMode &&
+          (
+            <Layout style={styles.buttonContainer}>
+              <Button
+                style={styles.deleteButton}
+                onPress={() => deleteSelectedForms()} // Pasamos los datos al botón
+                accessoryLeft={deleteIcon}
+              >
+                Eliminar
+              </Button>
 
-                    <Button status='info' style={styles.shareButton} accessoryLeft={shareIcon}>
-                        Compartir
-                    </Button>
-                </Layout>
-              )
-            }
+              <Button status='info' style={styles.shareButton} accessoryLeft={shareIcon}>
+                Compartir
+              </Button>
+            </Layout>
+          )
+        }
         <View style={styles.footerContainer}>
           <Button style={styles.backButton} onPress={() => navigation.goBack()}>
             Volver
@@ -324,7 +337,7 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 15,
     borderRadius: 8,
-    backgroundColor: '#ffffff', 
+    backgroundColor: '#ffffff',
     borderWidth: 1,
     borderColor: '#00b7ae',
     shadowColor: "#000",
@@ -338,10 +351,10 @@ const styles = StyleSheet.create({
     height: 'auto'
   },
   title: {
-    fontSize: 22,   
+    fontSize: 22,
     fontWeight: 'bold',
     color: '#fff',
-    
+
   },
   topNavigationIcon: {
     width: 25,
@@ -360,7 +373,7 @@ const styles = StyleSheet.create({
   shareButton: {
     width: '35%',
     marginLeft: '3%'
-  },  
+  },
   shareIcon: {
     width: 20,
     height: 20,

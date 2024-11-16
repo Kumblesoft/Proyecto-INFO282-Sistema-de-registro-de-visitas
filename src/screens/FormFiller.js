@@ -1,13 +1,13 @@
 import React, { useState, useRef } from 'react'
-import { ScrollView, View, StyleSheet} from 'react-native'
-import { Layout, Button, Text, TopNavigation, TopNavigationAction, Divider, Icon, Modal} from '@ui-kitten/components'
+import { ScrollView, View, StyleSheet } from 'react-native'
+import { Layout, Button, Text, TopNavigation, TopNavigationAction, Divider, Icon, Modal } from '@ui-kitten/components'
 import DynamicForm from '../components/DynamicForm'
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useFormContext } from '../context/FormContext'
+import { useFormContext } from '../context/SelectedFormContext'
 
 const FormFillerScreen = ({ route }) => {
-    const [backAlert, setBackAlert] = useState(false) 
+    const [backAlert, setBackAlert] = useState(false)
     const context = useFormContext()
     const disabledSave = route.params?.disabledSave ?? false
     const form = route.params?.form ?? context.selectedForm
@@ -15,14 +15,14 @@ const FormFillerScreen = ({ route }) => {
     const navigation = useNavigation()
 
     const BackIcon = props => (
-        <Icon name='arrow-ios-back-outline' {...props} style={styles.backIcon} fill='#fff'/>
+        <Icon name='arrow-ios-back-outline' {...props} style={styles.backIcon} fill='#fff' />
     )
 
     const BackAction = () => (
         <TopNavigationAction icon={BackIcon} onPress={() => handleBack()} />
     )
 
-    function handleBack(){
+    function handleBack() {
         const dataMap = formRef.current.getMap()
         if (dataMap.size > 0) setBackAlert(true)
         else navigation.goBack()
@@ -45,21 +45,22 @@ const FormFillerScreen = ({ route }) => {
             </LinearGradient>
             <Divider />
             <ScrollView style={styles.layoutContainer}>
-                
-                <View style={{flex: 1, padding: 16, marginTop: 20 }}>
-                    <DynamicForm formData={form} disabledSave={disabledSave} ref={formRef}/>
+
+                <View style={{ flex: 1, padding: 16, marginTop: 20 }}>
+                    <DynamicForm formData={form} disabledSave={disabledSave} ref={formRef} />
                 </View>
             </ScrollView>
-            <Modal visible = {backAlert} backdropStyle={styles.backdrop}>
-                <Layout style = {styles.containerBox}>
-                    <Text style={{fontWeight: 'bold'}}> ¿Quieres volver?</Text>
+            <Modal visible={backAlert} backdropStyle={styles.backdrop}>
+                <Layout style={styles.containerBox}>
+                    <Text style={{ fontWeight: 'bold' }}> ¿Quieres volver?</Text>
                     <Text> Aún hay progreso sin guardar</Text>
-                        <Layout style={{flexDirection : 'row',
-                            justifyContent:'space-between'
-                        }}>
-                        <Button style = {{flex : 1, marginRight: '10%'}} onPress={() => navigation.goBack()}>Si</Button>
-                        <Button style = {{flex : 1, marginLeft: '10%'}} onPress={() => setBackAlert(false)}>No</Button>
-                        </Layout>
+                    <Layout style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-between'
+                    }}>
+                        <Button style={{ flex: 1, marginRight: '10%' }} onPress={() => navigation.goBack()}>Si</Button>
+                        <Button style={{ flex: 1, marginLeft: '10%' }} onPress={() => setBackAlert(false)}>No</Button>
+                    </Layout>
                 </Layout>
             </Modal>
         </Layout>
@@ -67,7 +68,7 @@ const FormFillerScreen = ({ route }) => {
 }
 
 const styles = StyleSheet.create({
-    topNavigation:{
+    topNavigation: {
         backgroundColor: 'transparent'
     },
     titleContainer: {
@@ -75,7 +76,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     title: {
-        fontSize: 25,   
+        fontSize: 25,
         fontWeight: 'bold',
         color: '#fff',
     },
@@ -87,7 +88,7 @@ const styles = StyleSheet.create({
     gradient: {
         paddingVertical: 10, // Ajusta el padding para dar espacio al texto
     },
-    layoutContainer:{
+    layoutContainer: {
         backgroundColor: '#fff',
         flex: 1,
     },
