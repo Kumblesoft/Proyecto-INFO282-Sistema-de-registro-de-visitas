@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { View, StyleSheet, KeyboardAvoidingView, Platform,TouchableOpacity, Modal, SafeAreaView, StatusBar, Alert, Image } from 'react-native'
 import { Text, Input, Button, Layout, ViewPager, Icon } from '@ui-kitten/components'
 import { Err, Ok } from '../commonStructures/resultEnum'
-import { useCameraPermissions } from 'expo-camera';
-import { CameraView } from "expo-camera";
+import { useCameraPermissions } from 'expo-camera'
+import { CameraView } from "expo-camera"
 
 /**
  * Represents optional features for the TextEntry component.
@@ -54,7 +54,7 @@ const limitationBehaviour = new Map([
     keyboardType: "numeric"
   }],
   ["email", {
-    regex: /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i,
+    regex: /^(([^<>()[\]\.,:\s@\"]+(\.[^<>()[\]\.,:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,:\s@\"]+\.)+[^<>()[\]\.,:\s@\"]{2,})$/i,
     keyboardType: "default"
   }]
 ])
@@ -158,8 +158,8 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldR
   }
 
     const handleBarCodeScanned = ({ data }) => {
-      handleChange(data);  
-      setIsScanning(false); 
+      handleChange(data)  
+      setIsScanning(false) 
       Alert.alert("Se ha escaneado exitosamente")
     }
 
