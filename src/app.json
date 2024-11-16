@@ -30,6 +30,9 @@
         "projectId": "a4615643-abed-4b90-8fe4-d01caffb6be2"
       }
     },
-    "owner": "sblader"
+    "owner": "sblader",
+    "plugins": [
+      "expo-secure-store"
+    ]
   }
 }
