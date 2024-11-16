@@ -7,7 +7,7 @@ import * as Haptics from "expo-haptics" // for haptic feedback
 
 const resetIcon = (props) => (
     <Icon name='sync-outline' {...props} />
-);
+)
 
 /**
  * The setter for the optuinal features
@@ -34,7 +34,7 @@ const StarIcon = (props) => (
         {...props}
         name='reset'
     />
-);
+)
 
 export const IconSimpleUsageShowcase = () => (
     <Icon
@@ -42,7 +42,7 @@ export const IconSimpleUsageShowcase = () => (
         fill='#8F9BB3'
         name='star'
     />
-);
+)
 
 /**
  * The logic and layout of the hour selector 
