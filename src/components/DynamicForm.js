@@ -66,31 +66,25 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
             return (new Err('Completa todos los campos obligatorios')).show()
         }
 
-
-        const newForm = {
-            id: Date.now(),
-            nombreFormulario: formData["nombre formulario"] || "Formulario Sin Nombre",
-            data: Object.fromEntries(formState.current),
-            idDispositivo: identifier
-        }
         try {
             const savedFormsString = await AsyncStorage.getItem('savedForms')
             let storedForms = []
 
             if (savedFormsString) {
                 storedForms = JSON.parse(savedFormsString)
-                if (!Array.isArray(storedForms))
+                if (!Array.isArray(storedForms)) 
                     storedForms = []
             }
 
             const newForm = {
-                id: Date.now(),
-                nombreFormulario: formData["nombre formulario"] || "Formulario Sin Nombre",
-                data: Object.fromEntries(formState.current),
+                id: Date.now(), 
+                nombreFormulario: formData["nombre formulario"] || "Formulario Sin Nombre", 
+                data: Object.fromEntries(formState.current), 
+                idDispositivo: identifier
             }
 
 
-            storedForms.push(newForm)
+            storedForms.push(newForm) 
             await AsyncStorage.setItem('savedForms', JSON.stringify(storedForms))
             console.log("Formulario guardado:", newForm)
             formState.current.clear()

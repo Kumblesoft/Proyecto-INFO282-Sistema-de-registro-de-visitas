@@ -23,12 +23,18 @@ const FormSelectorScreen = () => {
   const [selectedForms, setSelectedForms] = useState([]) // Formularios seleccionados
   const [file, setFile] = useState(null) // File picker function
 
-  const backIcon = () => <Icon name='arrow-ios-back-outline' style={styles.topNavigationIcon} />
-  const importIcon = () => <Icon name='cloud-download-outline' style={styles.topNavigationIcon} />
+  const backIcon = () => <Icon name='arrow-ios-back-outline' fill='#fff' style={styles.topNavigationIcon}/>
+  const importIcon = () => <Icon name='cloud-download-outline' fill='#fff' style={styles.topNavigationIcon}/>
   const deleteIcon = props => <Icon name='trash' {...props} />
   const shareIcon = props => <Icon name='share' {...props} />
   const BackAction = () => <TopNavigationAction icon={backIcon} onPress={() => navigation.goBack()} />
   const importAction = () => <TopNavigationAction icon={importIcon} onPress={() => pickDocument()} />
+  const optionBar = () => (
+    <Layout style={styles.iconContainer}>
+      <TopNavigationAction icon={SelectionIcon} onPress={toggleSelectionMode} />
+      <TopNavigationAction icon={importIcon} onPress={() => pickDocument()} />
+    </Layout>
+  )
 
 
   //File picker function
@@ -83,59 +89,92 @@ const FormSelectorScreen = () => {
   }
 
   const deleteSelectedForms = async () => {
-    const updatedForms = forms.filter(form => !selectedForms.includes(form["nombre formulario"]))
-    setForms(updatedForms)
-    setSelectedForms([])
-    setIsSelectionMode(false)
-    console.log("Formularios restantes después de la eliminación:", updatedForms)
+    try {
+        const updatedForms = localForms.filter(form => !selectedForms.includes(form["nombre formulario"]))
+        
+
+        const filePath = `${FileSystem.cacheDirectory}forms.json`
+        const updatedFormsString = JSON.stringify(updatedForms)
+
+        await FileSystem.writeAsStringAsync(filePath, updatedFormsString)
+      
+
+        const newContent = await FileSystem.readAsStringAsync(filePath)
+        const loc = localForms.pop(JSON.parse(newContent))
+
+        setForms(loc)
+        setSelectedForms([]) 
+        setIsSelectionMode(false)
+        console.log(localForms)
+        console.log("Formularios restantes después de la eliminación:", updatedForms)
+        console.log("Archivo actualizado guardado en:", filePath)
+
+    } catch (error) {
+        console.error("Error al eliminar formularios seleccionados:", error)
+        Alert.alert("Error", "Hubo un problema al eliminar los formularios seleccionados")
+    }
   }
+
+  const SelectionIcon = (props) => (
+    <Icon name={isSelectionMode ? 'checkmark-square' : 'checkmark-square'} style={styles.backIcon} fill='#fff' {...props} />
+  )
+
+  const SelectionAction = () => (
+      <TopNavigationAction icon={SelectionIcon} onPress={toggleSelectionMode} />
+  )
 
   const toggleSelectionMode = () => {
     setIsSelectionMode(!isSelectionMode)
     setSelectedForms([]) // Resetear selección al activar/desactivar modo
   }
 
-  const handleSelection = item => {
-    if (!isSelectionMode) return Ok()
-    setSelectedForms(prev =>
-      prev.includes(item["nombre formulario"]) ?
-        prev.filter((id) => id !== item["nombre formulario"]) :
-        [...prev, item["nombre formulario"]]
-    )
+  const handleSelection = (item) => {
+    if (isSelectionMode) {
+      setSelectedForms((prev) =>
+          prev.includes(item["nombre formulario"]) 
+              ? prev.filter((id) => id !== item["nombre formulario"]) 
+              : [...prev, item["nombre formulario"]]
+      )
+    } 
+  }
+
+  const handlePress = (form) => {
+    if (isSelectionMode) {
+      handleSelection(form)
+    } 
+    else {
+      setSelectedForm(form)
+      navigation.navigate('Menu')
+    }
   }
 
   const renderTitle = () => (
     <View style={styles.titleContainer}>
-      <Text style={styles.title}>Selector de formularios</Text>
+      <Text style={styles.topNavigationText}>Selector de formularios</Text>
     </View>
   )
 
+
+
   const renderItem = ({ item }) => (
 
-    <TouchableOpacity
-      style={styles.textContainer}
-      onPress={() => {
-        if (isSelectionMode) return handleSelection(item)
-        setSelectedForm(item)
-        navigation.goBack()
-      }}
+    <TouchableOpacity 
+      style={[styles.containerBox, selectedForms.includes(item["nombre formulario"]) && styles.selectedItem]}
+      onPress={() => handlePress(item)} 
       onLongPress={toggleSelectionMode}
-    >
-      <View style={styles.containerBox}>
-        <Text style={styles.itemText}>{item["nombre formulario"]}</Text>
-        <Button
-          accessoryLeft={() => (
-            <Image source={require('../assets/options.png')} style={styles.shareIcon} />
-          )}
-          onPress={() => {
-            setSelectedItem(item)
-            setIsOptionModalVisible(true)
-          }}
-          appearance="ghost"
-          style={styles.shareButton}
-        />
-      </View>
-
+    > 
+      <Text style={styles.itemText}>{item["nombre formulario"]}</Text>
+      <Button
+        accessoryLeft={
+          <Icon name='menu-outline' style={{width:25, height:25}} fill='#000'/>
+        }
+        onPress={() => {
+          setSelectedItem(item)
+          setIsOptionModalVisible(true)
+        }}
+        appearance="ghost"
+        style={styles.optionsButton}
+      />
     </TouchableOpacity>
   )
 
@@ -227,6 +266,7 @@ const FormSelectorScreen = () => {
               onPress={() => onSelect(selectedItem)}
               style={newModalStyles.selectButton}
               textStyle={newModalStyles.buttonText}
+              status='info'
             >
               {"Seleccionar"}
             </Button>
@@ -234,6 +274,7 @@ const FormSelectorScreen = () => {
               onPress={() => setIsOptionModalVisible(false)}
               style={newModalStyles.closeButton}
               textStyle={newModalStyles.buttonText}
+              status='danger'
             >
               {"Cerrar"}
             </Button>
@@ -246,34 +287,34 @@ const FormSelectorScreen = () => {
   return (
     <>
       {OptionsModal()}
-      <LinearGradient colors={['#2dafb9', '#17b2b6', '#00b4b2', '#00b7ad', '#00b9a7', '#00bba0', '#00bd98', '#00bf8f', '#00c185', '#00c27b']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
-        <TopNavigation
-          title={renderTitle}
-          style={styles.topNavigation}
-          accessoryLeft={BackAction}
-          accessoryRight={importAction}
-          alignment='center'
-        />
-      </LinearGradient>
-      <Divider />
-      <Layout style={styles.container}>
-        <FlatList
-          data={forms}
-          renderItem={renderItem}
-          keyExtractor={item => item["nombre formulario"]}
-          contentContainerStyle={styles.listContainer}
-        />
-        {
-          isSelectionMode &&
-          (
-            <Layout style={styles.buttonContainer}>
-              <Button
-                style={styles.deleteButton}
-                onPress={() => deleteSelectedForms()} // Pasamos los datos al botón
-                accessoryLeft={deleteIcon}
-              >
-                Eliminar
-              </Button>
+      <Layout style={styles.layoutContainer}>
+        <LinearGradient colors={['#2dafb9', '#17b2b6', '#00b4b2', '#00b7ad', '#00b9a7', '#00bba0', '#00bd98', '#00bf8f', '#00c185', '#00c27b']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+          <TopNavigation
+            title={renderTitle}
+            style={styles.topNavigation}
+            accessoryLeft={BackAction}
+            accessoryRight={optionBar}
+            alignment='center'
+          />
+        </LinearGradient>
+        
+        <Divider />
+        <Layout style={styles.container}>
+          <FlatList
+            data={forms.filter((form) => form !== null)}
+            renderItem={renderItem}
+            keyExtractor={(item) => item["nombre formulario"]}
+            contentContainerStyle={styles.listContainer}
+          />
+          {isSelectionMode && (
+              <Layout style={styles.buttonContainer}>
+                  <Button
+                      style={styles.deleteButton}
+                      onPress={() => deleteSelectedForms()} // Pasamos los datos al botón
+                      accessoryLeft={deleteIcon}
+                  >
+                      Eliminar 
+                  </Button>
 
               <Button status='info' style={styles.shareButton} accessoryLeft={shareIcon}>
                 Compartir
@@ -282,10 +323,11 @@ const FormSelectorScreen = () => {
           )
         }
         <View style={styles.footerContainer}>
-          <Button style={styles.backButton} onPress={() => navigation.goBack()}>
+          <Button status='info' style={styles.volverButton} onPress={() => navigation.goBack()}>
             Volver
           </Button>
         </View>
+      </Layout>
       </Layout>
     </>
   )
@@ -301,9 +343,15 @@ const styles = StyleSheet.create({
   listContainer: {
     paddingBottom: 60, // Espacio para el botón en la parte inferior
   },
+
   backButton: {
     padding: 10,
     backgroundColor: '#007BFF',
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  volverButton: {
+    padding: 10,
     borderRadius: 5,
     alignItems: 'center',
   },
@@ -320,7 +368,14 @@ const styles = StyleSheet.create({
   },
   itemText: {
     fontSize: 20,
-
+    fontWeight: 'bold',
+  },
+  optionsButton: {
+    margin: 2,
+    paddingVertical: 5,
+    paddingHorizontal: 5,
+    fontWeight: 'bold',
+    fontSize: 10,
   },
   topNavigation: {
     backgroundColor: "transparent",
@@ -354,13 +409,29 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: 'bold',
     color: '#fff',
-
+  },
+  topNavigationText:{
+    marginRight: 70,
+    fontSize: 24,   
+    fontWeight: 'bold',
+    color: '#fff',
   },
   topNavigationIcon: {
     width: 25,
     height: 25,
   },
   buttonContainer: {
+    backgroundColor: 'transparent',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignSelf: 'center',
+    marginBottom: 10,
+  },
+  layoutContainer:{
+    backgroundColor: '#fff',
+    flex: 1,
+  },
+  iconContainer: {
     backgroundColor: 'transparent',
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -435,16 +506,14 @@ const newModalStyles = StyleSheet.create({
     tintColor: '#6E6E6E', // Color sutil y moderno para iconos
   },
   selectButton: {
-    backgroundColor: '#4CAF50',
-    borderRadius: 30,
+    borderRadius: 5,
     paddingVertical: 12,
     alignSelf: 'center',
     justifyContent: 'center', // Centrado vertical en el contenedor del botón
     marginVertical: 8,
   },
   closeButton: {
-    backgroundColor: '#E57373',
-    borderRadius: 30,
+    borderRadius: 5,
     paddingVertical: 12,
     alignSelf: 'center',
     justifyContent: 'center',
