@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "src",
-    "slug": "src",
-    "version": "1.0.0",
+    "name": "sistema-de-registro-de-visitas",
+    "slug": "sistema-de-registro-de-visitas",
+    "version": "1.7.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -12,17 +12,24 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.kumble.registrovisitas"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.anonymous.src"
+      "package": "com.kumble.registrovisitas"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+    },
+    "owner": "sblader",
+    "plugins": [
+      "expo-secure-store"
+    ]
   }
 }

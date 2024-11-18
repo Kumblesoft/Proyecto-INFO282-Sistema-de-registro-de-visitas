@@ -2,8 +2,8 @@ import React, { useState, useRef } from 'react'
 import { ScrollView, View, StyleSheet } from 'react-native'
 import { Layout, Button, Text, TopNavigation, TopNavigationAction, Divider, Icon, Modal } from '@ui-kitten/components'
 import DynamicForm from '../components/DynamicForm'
-import { useNavigation } from '@react-navigation/native';
-import { LinearGradient } from 'expo-linear-gradient';
+import { useNavigation } from '@react-navigation/native'
+import { LinearGradient } from 'expo-linear-gradient'
 import { useFormContext } from '../context/SelectedFormContext'
 
 const FormFillerScreen = ({ route }) => {
@@ -119,6 +119,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         alignSelf: 'center'
     },
-});
+})
 
 export default FormFillerScreen

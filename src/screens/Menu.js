@@ -1,10 +1,9 @@
-import React, { useContext, useEffect } from "react"
-import { StyleSheet, View, TouchableOpacity, StatusBar, Button, Alert } from "react-native"
-import { Text, Layout, Icon, IconElement } from "@ui-kitten/components"
+import React from "react"
+import { StyleSheet, View, TouchableOpacity, StatusBar, Alert } from "react-native"
+import { Text, Layout, Icon } from "@ui-kitten/components" 
 import Svg, { Circle, Defs, Stop, LinearGradient as SvgLinearGradient } from "react-native-svg"
 import { useNavigation } from '@react-navigation/native'
 import { useFormContext } from '../context/SelectedFormContext' // Importa el contexto
-
 
 export default function Menu() {
   const navigation = useNavigation()
