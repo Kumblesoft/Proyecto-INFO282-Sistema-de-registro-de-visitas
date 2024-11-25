@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { View, StyleSheet } from 'react-native'
+import { Platform, View, StyleSheet } from 'react-native'
 import { Text, Layout, Icon, Datepicker, NativeDateService } from '@ui-kitten/components'
 /**
  * Converts a custom date format to a format compatible with date-fns.
@@ -165,9 +165,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#00b7ae',
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.9,
-    shadowRadius: 2,
+    shadowOffset: { width: 0, height: Platform.OS == "ios" ? 1 : 10 },
+    shadowOpacity: Platform.OS == "ios" ? 0.3 : 0.9,
+    shadowRadius: Platform.OS == "ios" ? 3 : 2,
     elevation: 3,
     alignItems: 'flex-start'
   },

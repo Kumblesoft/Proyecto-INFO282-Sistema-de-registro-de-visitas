@@ -6,6 +6,7 @@ import { useNavigation } from '@react-navigation/native'
 import { LinearGradient } from 'expo-linear-gradient'
 import * as FileSystem from 'expo-file-system' 
 import * as Sharing from 'expo-sharing'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const deleteIcon = (props) => (
     <Icon name='trash' {...props} />
@@ -239,15 +240,17 @@ const SavedForms = () => {
 
     return (
         <>
-            <LinearGradient colors={['#2dafb9', '#17b2b6', '#00b4b2', '#00b7ad', '#00b9a7', '#00bba0', '#00bd98', '#00bf8f', '#00c185', '#00c27b']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
-                <TopNavigation
-                    title={renderTitle}
-                    style={styles.topNavigation}
-                    accessoryLeft={BackAction}
-                    accessoryRight={SelectionAction}
-                    alignment='center'
-                />
-            </LinearGradient>
+            <SafeAreaView style={styles.safeArea}>
+                <LinearGradient colors={['#2dafb9', '#17b2b6', '#00b4b2', '#00b7ad', '#00b9a7', '#00bba0', '#00bd98', '#00bf8f', '#00c185', '#00c27b']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+                    <TopNavigation
+                        title={renderTitle}
+                        style={styles.topNavigation}
+                        accessoryLeft={BackAction}
+                        accessoryRight={SelectionAction}
+                        alignment='center'
+                    />
+                </LinearGradient>
+            </SafeAreaView>
             <Divider />
             <View style={styles.container}>
                 <Layout style = {{alignItems : 'flex-end', backgroundColor : '#f2f2f2'}}>
@@ -326,6 +329,9 @@ const SavedForms = () => {
 
 
 const styles = StyleSheet.create({
+    safeArea: {
+        backgroundColor: '#00baa4'
+    },
     container: {
         flex: 1,
         padding: 16,

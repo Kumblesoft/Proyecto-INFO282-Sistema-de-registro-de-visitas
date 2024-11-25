@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
-import { View, StyleSheet, FlatList, TouchableOpacity, Alert, Image } from 'react-native'
+import { Platform, View, StyleSheet, FlatList, TouchableOpacity, Alert, Image } from 'react-native'
 import { Button, Text, TopNavigation, TopNavigationAction, Divider, Layout, Modal, Card, Icon } from '@ui-kitten/components'
 import { useFormContext } from '../context/FormContext'
 import { useNavigation } from '@react-navigation/native'
 import { LinearGradient } from 'expo-linear-gradient'
+import { SafeAreaView } from 'react-native-safe-area-context';
 import * as FileSystem from 'expo-file-system'
 import * as Sharing from 'expo-sharing'
 import * as Animatable from 'react-native-animatable'
@@ -273,16 +274,17 @@ const FormSelectorScreen = () => {
     <>
       {OptionsModal()}
       <Layout style={styles.layoutContainer}>
-        <LinearGradient colors={['#2dafb9', '#17b2b6', '#00b4b2', '#00b7ad', '#00b9a7', '#00bba0', '#00bd98', '#00bf8f', '#00c185', '#00c27b']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
-          <TopNavigation
-            title={renderTitle}
-            style={styles.topNavigation}
-            accessoryLeft={BackAction}
-            accessoryRight={optionBar}
-            alignment='center'
-          />
-        </LinearGradient>
-        
+        <SafeAreaView style={styles.safeArea}>
+          <LinearGradient colors={['#2dafb9', '#17b2b6', '#00b4b2', '#00b7ad', '#00b9a7', '#00bba0', '#00bd98', '#00bf8f', '#00c185', '#00c27b']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+            <TopNavigation
+              title={renderTitle}
+              style={styles.topNavigation}
+              accessoryLeft={BackAction}
+              accessoryRight={optionBar}
+              alignment='center'
+            />
+          </LinearGradient>
+        </SafeAreaView>
         <Divider />
         <Layout style={styles.container}>
           <FlatList
@@ -319,6 +321,9 @@ const FormSelectorScreen = () => {
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    backgroundColor: '#00baa4'
+  },
   container: {
     flex: 1,
     backgroundColor: '#fff',
@@ -381,9 +386,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#00b7ae',
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.9,
-    shadowRadius: 2,
+    shadowOffset: { width: 0, height: Platform.OS == "ios" ? 1 : 10 },
+    shadowOpacity: Platform.OS == "ios" ? 0.3 : 0.9,
+    shadowRadius: Platform.OS == "ios" ? 3 : 2,
     elevation: 3,
     alignItems: 'flex-start',
     justifyContent: 'space-between',
@@ -396,8 +401,8 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   topNavigationText:{
-    marginRight: 70,
-    fontSize: 24,   
+    marginRight: Platform.OS == "ios" ? 50 : 70,
+    fontSize: Platform.OS == "ios" ? 22: 24,   
     fontWeight: 'bold',
     color: '#fff',
   },
