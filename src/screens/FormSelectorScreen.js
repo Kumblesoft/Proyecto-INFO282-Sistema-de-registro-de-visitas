@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { View, StyleSheet, FlatList, TouchableOpacity, Alert, Image } from 'react-native'
-import { Button, Text, TopNavigation, TopNavigationAction, Divider, Layout, Modal, Card, Icon } from '@ui-kitten/components'
+import { Button, ButtonGroup, Text, TopNavigation, TopNavigationAction, Divider, Layout, Modal, Card, Icon } from '@ui-kitten/components'
 import { useFormContext } from '../context/FormContext'
 import { useNavigation } from '@react-navigation/native'
 import { LinearGradient } from 'expo-linear-gradient'
@@ -9,7 +9,6 @@ import * as Sharing from 'expo-sharing'
 import * as Animatable from 'react-native-animatable'
 import shareTypes from '../commonStructures/shareTypes'
 import * as DocumentPicker from 'expo-document-picker'
-import { Ok } from '../commonStructures/resultEnum'
 
 
 const FormSelectorScreen = () => {
@@ -308,9 +307,10 @@ const FormSelectorScreen = () => {
               )
             }
         <View style={styles.footerContainer}>
-          <Button status='info' style={styles.volverButton} onPress={() => navigation.goBack()}>
-            Volver
-          </Button>
+          <ButtonGroup style={styles.footerContainer} status='info'>
+            <Button onPress={() => navigation.goBack()}>Volver</Button>
+            <Button onPress={() => navigation.navigate('CreateTemplate')}>Crear</Button>
+          </ButtonGroup>
         </View>
       </Layout>
       </Layout>
