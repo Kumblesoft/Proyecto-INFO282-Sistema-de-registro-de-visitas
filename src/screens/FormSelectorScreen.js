@@ -15,13 +15,13 @@ import * as DocumentPicker from 'expo-document-picker'
 const FormSelectorScreen = () => {
   const navigation = useNavigation()
   const forms = require("../TestForms/forms.json")
-  const [localForms, setForms] = useState(forms)
+  const [ localForms, setForms ] = useState(forms)
   const [ isOptionModalVisible, setIsOptionModalVisible ] = useState(false)
   const [ selectedItem, setSelectedItem ] = useState({"nombre formulario": "err"})
   const { setSelectedForm } = useFormContext()
-  const [isSelectionMode, setIsSelectionMode] = useState(false) // Modo de selección
-  const [selectedForms, setSelectedForms] = useState([]) // Formularios seleccionados
-  const [file, setFile] = useState(null) // File picker function
+  const [ isSelectionMode, setIsSelectionMode ] = useState(false) // Modo de selección
+  const [ selectedForms, setSelectedForms ] = useState([]) // Formularios seleccionados
+  const [ file, setFile ] = useState(null) // File picker function
 
   const backIcon = () => <Icon name='arrow-ios-back-outline' fill='#fff' style={styles.topNavigationIcon}/>
   const importIcon = () => <Icon name='cloud-download-outline' fill='#fff' style={styles.topNavigationIcon}/>
@@ -78,12 +78,10 @@ const FormSelectorScreen = () => {
     try {
         const updatedForms = localForms.filter(form => !selectedForms.includes(form["nombre formulario"]))
         
-
         const filePath = `${FileSystem.cacheDirectory}forms.json`
         const updatedFormsString = JSON.stringify(updatedForms)
 
         await FileSystem.writeAsStringAsync(filePath, updatedFormsString)
-      
 
         const newContent = await FileSystem.readAsStringAsync(filePath)
         const loc = localForms.pop(JSON.parse(newContent))
@@ -101,20 +99,15 @@ const FormSelectorScreen = () => {
     }
   }
 
-  const SelectionIcon = (props) => (
-    <Icon name={isSelectionMode ? 'checkmark-square' : 'checkmark-square'} style={styles.backIcon} fill='#fff' {...props} />
-  )
-
-  const SelectionAction = () => (
-      <TopNavigationAction icon={SelectionIcon} onPress={toggleSelectionMode} />
-  )
+  const SelectionIcon = props => <Icon name={isSelectionMode ? 'checkmark-square' : 'checkmark-square'} style={styles.backIcon} fill='#fff' {...props} />
+  
 
   const toggleSelectionMode = () => {
     setIsSelectionMode(!isSelectionMode)
     setSelectedForms([]) // Resetear selección al activar/desactivar modo
   }
 
-  const handleSelection = (item) => {
+  const handleSelection = item => {
     if (isSelectionMode) {
       setSelectedForms((prev) =>
           prev.includes(item["nombre formulario"]) 
@@ -124,10 +117,9 @@ const FormSelectorScreen = () => {
     } 
   }
 
-  const handlePress = (form) => {
-    if (isSelectionMode) {
+  const handlePress = form => {
+    if (isSelectionMode) 
       handleSelection(form)
-    } 
     else {
       setSelectedForm(form)
       navigation.navigate('Menu')
