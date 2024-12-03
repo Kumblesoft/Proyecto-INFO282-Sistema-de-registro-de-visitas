@@ -40,6 +40,7 @@ const SavedForms = () => {
     const [isRangeMode, setIsRangeMode] = useState(false)
     const [isLastsMode, setIsLastsMode] = useState(false)
     const [lasts, setLasts] = useState(0)
+    const [confirmDelete, setConfirmDelete] = useState(false)
     
     const configuredDateService = new NativeDateService('en', {
         startDayOfWeek:1,
@@ -134,21 +135,6 @@ const SavedForms = () => {
             Alert.alert('Error', 'No se pudo eliminar los formularios seleccionados')
         }
     }
-    const confirmDelete = (deleteFunction, id) => {
-        
-        Alert.alert(
-          'Confirmación',
-          '¿Está seguro de que desea eliminar este formulario?',
-          [
-            { text: 'Cancelar', style: 'cancel' },
-            { 
-              text: 'Eliminar', 
-              onPress: () => deleteFunction(id) 
-            },
-          ],
-          { cancelable: false }
-        )
-      }
 
     const openModal = (form) => {
         setSelectedForm(form)
@@ -198,6 +184,7 @@ const SavedForms = () => {
                 prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
             )
         } else {
+            setSelectedForms([id])
             openModal(forms.find(form => form.id === id))
         }
     }
@@ -289,12 +276,22 @@ const SavedForms = () => {
                             </View>
                     </Layout>
                 </Modal>
+                <Modal visible ={confirmDelete[0]}>
+                    <Layout style = {styles.container}>
+                        <Text>¿Está seguro que desea eliminar el/los formulario?</Text>
+                        <Button style={styles.deleteButton} onPress={() => {deleteForm(selectedForm.id)
+                                                                            if (confirmDelete[1]){
+                                                                                setConfirmDelete([false,false])
+                                                                                
+                                                                            }
+                                                                            }}>Eliminar</Button>
+                    </Layout>
+                </Modal>
                 {isSelectionMode && (
                     <Layout style={styles.buttonContainer}>
-                        <Button style={styles.deleteButton} onPress={() => confirmDelete(deleteSelectedForms)} accessoryLeft={deleteIcon}>
+                        <Button style={styles.deleteButton} onPress={() => setConfirmDelete([true,false])} accessoryLeft={deleteIcon}>
                             Eliminar 
                         </Button>
-
                         <Button status='info' style={styles.shareButton} accessoryLeft={shareIcon} onPress={() => exportForm(
                             forms.filter(form => selectedForms.includes(form.id)))}>
                             Compartir
@@ -317,7 +314,7 @@ const SavedForms = () => {
                                     <Text style={styles.value}>{`${value}`}</Text>
                                 </Layout>
                             ))}
-                            <Button onPress={() => confirmDelete(deleteForm, selectedForm.id)}>Eliminar</Button>
+                            <Button onPress={() => setConfirmDelete([true, true])}>Eliminar</Button>
                             <Button onPress={() => exportForm(selectedForm)}>Compartir</Button>
                             <Button status='danger' onPress={closeModal}>Cerrar</Button>
                         </Card>
