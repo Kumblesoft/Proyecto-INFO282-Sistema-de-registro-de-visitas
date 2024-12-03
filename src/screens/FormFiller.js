@@ -52,8 +52,8 @@ const FormFillerScreen = ({ route }) => {
             </ScrollView>
             <Modal visible = {backAlert} backdropStyle={styles.backdrop}>
                 <Layout style = {styles.containerBox}>
-                    <Text style={styles.modalTitle}> ¿Quieres volver?</Text>
-                    <Text style={{fontSize: 18, marginBottom: 15}}> Aún hay progreso sin guardar</Text>
+                    <Text style={styles.modalTitle}> ¿Seguro que quiere salir?</Text>
+                    {disabledSave ||(<Text style={{fontSize: 18, marginBottom: 15}}> Se perderán los datos sin guardar</Text>)}
                         <Layout style={styles.buttonContainer}>
                             <Button style = {{flex : 1, marginRight: '10%'}} status='info' onPress={() => navigation.goBack()}>Si</Button>
                             <Button style = {{flex : 1, marginLeft: '10%'}} status='danger' onPress={() => setBackAlert(false)}>No</Button>

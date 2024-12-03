@@ -135,7 +135,7 @@ export const Camera = ({ title, required, cameraConfiguration, requiredFieldRef 
       {title && (
         <Text style={styles.title}>
           {title}
-          {required ? "*" : ""}
+          {required ? <Text style={{ color: 'red' }}>*</Text> : ""}
         </Text>
       )}
       

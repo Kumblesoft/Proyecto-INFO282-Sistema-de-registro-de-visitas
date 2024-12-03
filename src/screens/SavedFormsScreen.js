@@ -127,12 +127,28 @@ const SavedForms = () => {
             setForms(updatedForms)
             setSelectedForms([]) // Resetear formularios seleccionados
             setIsSelectionMode(false) // Salir del modo de selección
+
             Alert.alert('Éxito', 'Formularios eliminados')
         } catch (error) {
             console.error('Error :', error)
             Alert.alert('Error', 'No se pudo eliminar los formularios seleccionados')
         }
     }
+    const confirmDelete = (deleteFunction, id) => {
+        
+        Alert.alert(
+          'Confirmación',
+          '¿Está seguro de que desea eliminar este formulario?',
+          [
+            { text: 'Cancelar', style: 'cancel' },
+            { 
+              text: 'Eliminar', 
+              onPress: () => deleteFunction(id) 
+            },
+          ],
+          { cancelable: false }
+        )
+      }
 
     const openModal = (form) => {
         setSelectedForm(form)
@@ -157,38 +173,24 @@ const SavedForms = () => {
         />
     )
 
-    const deleteIcon = (props) => (
-        <Icon name='trash' {...props} />
-    );
+    const deleteIcon = (props) => (<Icon name='trash' {...props} />)
     
-    const shareIcon = (props) => (
-        <Icon name='share' {...props}/>
-    );
+    const shareIcon = (props) => (<Icon name='share' {...props}/>)
 
-    const BackAction = () => (
-        <TopNavigationAction icon={BackIcon} onPress={() => navigation.goBack()} />
-    )
+    const BackAction = () => (<TopNavigationAction icon={BackIcon} onPress={() => navigation.goBack()} />)
 
-    const SelectionIcon = (props) => (
-        <Icon fill='#fff' name={isSelectionMode ? 'checkmark-square' : 'checkmark-square'} style={styles.backIcon} {...props} />
-    )
+    const SelectionIcon = (props) => (<Icon fill='#fff' name={isSelectionMode ? 'checkmark-square' : 'checkmark-square'} style={styles.backIcon} {...props} />)
 
-    const SelectionAction = () => (
-        <TopNavigationAction icon={SelectionIcon} onPress={toggleSelectionMode} />
-    )
+    const SelectionAction = () => (<TopNavigationAction icon={SelectionIcon} onPress={toggleSelectionMode} />)
 
     const toggleSelectionMode = () => {
         setIsSelectionMode(!isSelectionMode)
         setSelectedForms([]) // Resetear selección al activar/desactivar modo
     }
 
-    const selectAll = () => {  
-        setSelectedForms(forms.map(form => form.id))
-    }
+    const selectAll = () => {  setSelectedForms(forms.map(form => form.id))}
 
-    const deselectAll = () => {
-        setSelectedForms([])
-    }
+    const deselectAll = () => {setSelectedForms([])}
 
     const handleSelection = (id) => {
         if (isSelectionMode) {
@@ -232,8 +234,9 @@ const SavedForms = () => {
         >
             <Text style={styles.formTitle}>{item.nombreFormulario}</Text>
             {isSelectionMode ? null : (
-                <Button style={styles.button} onPress={() => deleteForm(item.id)} accessoryLeft={deleteIcon} />
+                <Button style={styles.button} onPress={() => exportForm(item)} accessoryLeft={shareIcon} />
             )}
+
         </TouchableOpacity>
     )
 
@@ -288,7 +291,7 @@ const SavedForms = () => {
                 </Modal>
                 {isSelectionMode && (
                     <Layout style={styles.buttonContainer}>
-                        <Button style={styles.deleteButton} onPress={deleteSelectedForms} accessoryLeft={deleteIcon}>
+                        <Button style={styles.deleteButton} onPress={() => confirmDelete(deleteSelectedForms)} accessoryLeft={deleteIcon}>
                             Eliminar 
                         </Button>
 
@@ -314,6 +317,7 @@ const SavedForms = () => {
                                     <Text style={styles.value}>{`${value}`}</Text>
                                 </Layout>
                             ))}
+                            <Button onPress={() => confirmDelete(deleteForm, selectedForm.id)}>Eliminar</Button>
                             <Button onPress={() => exportForm(selectedForm)}>Compartir</Button>
                             <Button status='danger' onPress={closeModal}>Cerrar</Button>
                         </Card>
@@ -437,6 +441,7 @@ const styles = StyleSheet.create({
         width: '200%', 
         maxWidth: '250%', 
         borderRadius: 10,
+        
         
     },
     modalTitle: {
