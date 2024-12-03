@@ -1,28 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { StyleSheet, View, Text, FlatList, Alert, TouchableOpacity, Image } from 'react-native'
+import { StyleSheet, View, Text, FlatList, Alert, TouchableOpacity } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Modal, Card, TopNavigation, TopNavigationAction, Divider, Layout, Button, Icon, Select, SelectItem, RangeCalendar, NativeDateService, Input } from '@ui-kitten/components'
 import { useNavigation } from '@react-navigation/native'
 import { LinearGradient } from 'expo-linear-gradient'
 import * as FileSystem from 'expo-file-system' 
 import * as Sharing from 'expo-sharing'
-
-const deleteIcon = (props) => (
-    <Icon name='trash' {...props} />
-)
-
-const shareIcon = (props) => (
-    <Icon name='share' {...props}/>
-)
-
-const downwardArrow = (props) => (
-    <Icon name='arrow-downward-outline' {...props}/>
-)
-
-const upwardArrow = (props) => (
-    <Icon name='arrow-upward-outline' {...props}/>
-)
-
 
 
 
@@ -42,26 +25,27 @@ const SavedForms = () => {
     const [lasts, setLasts] = useState(0)
     
     const configuredDateService = new NativeDateService('en', {
-        startDayOfWeek:1,
-        format: 'DD/MM/YYYY'
-      })
+        startDayOfWeek  : 1,
+        format          :'DD/MM/YYYY'
+    })
 
     const handleRange = () => {
         const startInt = range.startDate ? range.startDate.getTime() : null
         const endInt = range.endDate ? range.endDate.getTime() : null
-        if(startInt){
-            endInt ? setForms(baseForms.filter((data) => {
-                return data.id >= startInt && data.id <= endInt + 86399999})) : setForms(baseForms.filter((data) => {
-                return data.id >= startInt
-            }))
-         }
+        if (startInt) {
+            setForms(
+                baseForms.filter(data =>
+                    data.id >= startInt && (!endInt || data.id <= endInt + 86399999)
+                )
+            )
+        }
     }
     
     const filters = [
-        {value:"Fecha ↓", func: () => {forms.sort((a,b) =>b.id - a.id)}},
-        {value:"Fecha ↑", func: () => {forms.sort((a,b)=> a.id - b.id)}},
-        {value: "Rango" , func: () => {setIsRangeMode(true)}},
-        {value: "Ultimos", func: () => {setIsLastsMode(true)}}
+        {value:"Fecha ↓",   func: () => forms.sort((a,b) =>b.id - a.id)},
+        {value:"Fecha ↑",   func: () => forms.sort((a,b)=> a.id - b.id)},
+        {value: "Rango" ,   func: () => setIsRangeMode(true)},
+        {value: "Ultimos",  func: () => setIsLastsMode(true)}
     ]
 
     const fetchSavedForms = async () => {
@@ -74,7 +58,7 @@ const SavedForms = () => {
         }
     }
 
-    const deleteForm = async (id) => {
+    const deleteForm = async id => {
         try {
             const updatedForms = forms.filter(form => form.id !== id)
             await AsyncStorage.setItem('savedForms', JSON.stringify(updatedForms))
@@ -93,29 +77,29 @@ const SavedForms = () => {
         // Intentar compartir usando un archivo temporal
         FileSystem.writeAsStringAsync(filePath, objectStringified).then( 
             () => Sharing.shareAsync(filePath, {
-            dialogTitle: 'Compartir JSON como archivo',
-            mimeType: 'application/json',
-            UTI: 'public.json'
+                dialogTitle : 'Compartir JSON como archivo',
+                mimeType    : 'application/json',
+                UTI         : 'public.json'
             })
         // Si se compartio correctamente
         ).then( 
             response => {
-            if (response === Sharing.sharedAction) 
-                Alert.alert('¡Compartido!', 'El archivo JSON se compartió correctamente')
+                if (response === Sharing.sharedAction) 
+                    Alert.alert('¡Compartido!', 'El archivo JSON se compartió correctamente')
             }
         // Si no se pudo compartir 
         ).catch(error => {
-            console.error('Error al compartir:', error);
+            console.error('Error al compartir:', error)
             Alert.alert('Error', 'Hubo un problema al intentar compartir el archivo')
         // Borrar el archivo temporal
         }).finally(
             async () => {
-            try {
-                const fileInfo = await FileSystem.getInfoAsync(filePath)
-                if (fileInfo.exists) await FileSystem.deleteAsync(filePath)
-            } catch (deleteError) {
-                console.error('Error al eliminar el archivo:', deleteError)
-            }
+                try {
+                    const fileInfo = await FileSystem.getInfoAsync(filePath)
+                    if (fileInfo.exists) await FileSystem.deleteAsync(filePath)
+                } catch (deleteError) {
+                    console.error('Error al eliminar el archivo:', deleteError)
+                }
             }
         )
     }
@@ -134,7 +118,7 @@ const SavedForms = () => {
         }
     }
 
-    const openModal = (form) => {
+    const openModal = form => {
         setSelectedForm(form)
         setModalVisible(true)
     }
@@ -144,11 +128,7 @@ const SavedForms = () => {
         setSelectedForm(null)
     }
 
-    useEffect(() => {
-        fetchSavedForms()
-    }, [])
-
-    const BackIcon = (props) => (
+    const BackIcon = props => (
         <Icon
             name='arrow-ios-back-outline'
             style={styles.backIcon}
@@ -157,63 +137,11 @@ const SavedForms = () => {
         />
     )
 
-    const deleteIcon = (props) => (
-        <Icon name='trash' {...props} />
-    );
-    
-    const shareIcon = (props) => (
-        <Icon name='share' {...props}/>
-    );
-
-    const BackAction = () => (
-        <TopNavigationAction icon={BackIcon} onPress={() => navigation.goBack()} />
-    )
-
-    const SelectionIcon = (props) => (
-        <Icon fill='#fff' name={isSelectionMode ? 'checkmark-square' : 'checkmark-square'} style={styles.backIcon} {...props} />
-    )
-
-    const SelectionAction = () => (
-        <TopNavigationAction icon={SelectionIcon} onPress={toggleSelectionMode} />
-    )
-
-    const toggleSelectionMode = () => {
-        setIsSelectionMode(!isSelectionMode)
-        setSelectedForms([]) // Resetear selección al activar/desactivar modo
-    }
-
-    const selectAll = () => {  
-        setSelectedForms(forms.map(form => form.id))
-    }
-
-    const deselectAll = () => {
-        setSelectedForms([])
-    }
-
-    const handleSelection = (id) => {
-        if (isSelectionMode) {
-            setSelectedForms(prev =>
-                prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
-            )
-        } else {
-            openModal(forms.find(form => form.id === id))
-        }
-    }
-
-    const handleFilter = index => {
-        const selectedItem = filters[index.row]
-        setSelectedIndex(index)
-        selectedFilter(selectedItem.value)
-        const newForms = baseForms
-        selectedItem.func(newForms)
-        setForms(newForms)
-    }
-    const handleLasts = value => {
-        setLasts(value)
-        const newForms = baseForms
-        newForms.sort((a,b) => a.id - b.id)
-        setForms((newForms.slice(-value)).reverse())
-    }
+    const deleteIcon    = props => <Icon name='trash' {...props} />
+    const shareIcon     = props => <Icon name='share' {...props}/>
+    const SelectionIcon = props => <Icon fill='#fff' name={isSelectionMode ? 'checkmark-square' : 'checkmark-square'} style={styles.backIcon} {...props} />
+    const BackAction    = () => <TopNavigationAction icon={BackIcon} onPress={() => navigation.goBack()} />
+    const SelectionAction = () => <TopNavigationAction icon={SelectionIcon} onPress={toggleSelectionMode} />
 
     const renderTitle = () => (
         <View style={styles.titleContainer}>
@@ -231,11 +159,51 @@ const SavedForms = () => {
             onLongPress={toggleSelectionMode}
         >
             <Text style={styles.formTitle}>{item.nombreFormulario}</Text>
-            {isSelectionMode ? null : (
+            {isSelectionMode ? 
+                null :
                 <Button style={styles.button} onPress={() => deleteForm(item.id)} accessoryLeft={deleteIcon} />
-            )}
+            }
         </TouchableOpacity>
     )
+    
+
+    const toggleSelectionMode = () => {
+        setIsSelectionMode(!isSelectionMode)
+        setSelectedForms([]) // Resetear selección al activar/desactivar modo
+    }
+
+    const selectAll = () => setSelectedForms(forms.map(form => form.id))
+    const deselectAll = () => setSelectedForms([])
+
+    const handleSelection = id => {
+        if (isSelectionMode) 
+            setSelectedForms(prev =>
+                prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id] )
+        else 
+            openModal(forms.find(form => form.id === id))
+    }
+
+    const handleFilter = index => {
+        const filterObject = filters[index.row]
+        setSelectedIndex(index)
+        selectedFilter(filterObject.value)
+        const newForms = baseForms
+        filterObject.func(newForms)
+        setForms(newForms)
+    }
+    const handleLasts = value => {
+        setLasts(value)
+        const newForms = baseForms
+        newForms.sort((a,b) => b.id - a.id)
+        setForms(newForms.slice(newForms.length - value))
+    }
+    const showDateRange = () => {
+        if (index?.row !== 2) return <></>
+        const formatDate = date => !date ? '-' : configuredDateService.format(date)
+        return <Text>{`Inicio: ${formatDate(range.startDate)}, Final ${formatDate(range.endDate)}`}</Text>
+    } 
+
+    useEffect(() => {fetchSavedForms()}, [])
 
     return (
         <>
@@ -256,12 +224,10 @@ const SavedForms = () => {
                         style = {{width : '40%'}}
                         onSelect={handleFilter}
                         value={filter}>
-                    {filters.map(item => (
-                        <SelectItem key={item.value} title={item.value}/>
-                    ))}
+                    {filters.map(item => <SelectItem key={item.value} title={item.value}/>)}
                 </Select>
-                {index && index.row === 2  ? <Text>{'Inicio: '+ (range.startDate ? configuredDateService.format(range.startDate) : '-') + ', Final: ' + (range.endDate ? configuredDateService.format(range.endDate): '-')}</Text> : <></>}
-                {index && index.row === 3 ? <Input placeholder='¿Cuantas respuestas desea?' value={lasts} onChangeText={handleLasts} keyboardType='numeric'/> : <></>}
+                {showDateRange()}
+                {index?.row !== 3 ? <></> : <Input placeholder='¿Cuantas respuestas desea?' value={lasts} onChangeText={handleLasts} keyboardType='numeric'/> }
                 {isSelectionMode && (
                     <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 10, paddingTop: 10}}>
                         <Button onPress={deselectAll} accessoryLeft={deleteIcon} style ={{width: '40%', marginRight: '10%'}}>Limpiar selección</Button>
@@ -272,7 +238,7 @@ const SavedForms = () => {
                 <FlatList
                     data={forms}
                     renderItem={renderItem}
-                    keyExtractor={(item) => item.id.toString()}
+                    keyExtractor={item => item.id.toString()}
                     contentContainerStyle={styles.listContainer}
                 />
                 <Modal visible ={isRangeMode}>
@@ -280,8 +246,9 @@ const SavedForms = () => {
                         <RangeCalendar range={range} onSelect={nextrange => setRange(nextrange)}/>
                             <View style={{alignContent : 'row'}}>
                                 <Button onPress={() => setIsRangeMode(false)}>Volver</Button>
-                                <Button onPress={() => {setIsRangeMode(false)
-                                                        handleRange()
+                                <Button onPress={() => {
+                                    setIsRangeMode(false)
+                                    handleRange()
                                 }}>Confirmar</Button>        
                             </View>
                     </Layout>
