@@ -410,7 +410,8 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0)',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        zIndex : 10
     },
     modalCard: {
         alignSelf: 'center',
