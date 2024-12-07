@@ -55,8 +55,8 @@ const FormFillerScreen = ({ route }) => {
                     <Text style={styles.modalTitle}> ¿Seguro que quiere salir?</Text>
                     {disabledSave ||(<Text style={{fontSize: 18, marginBottom: 15}}> Se perderán los datos sin guardar</Text>)}
                         <Layout style={styles.buttonContainer}>
-                            <Button style = {{flex : 1, marginRight: '10%'}} status='info' onPress={() => navigation.goBack()}>Si</Button>
-                            <Button style = {{flex : 1, marginLeft: '10%'}} status='danger' onPress={() => setBackAlert(false)}>No</Button>
+                            <Button style = {{flex : 1, marginRight: '10%'}} status='danger' onPress={() => navigation.goBack()}>Si</Button>
+                            <Button style = {{flex : 1, marginLeft: '10%'}}  onPress={() => setBackAlert(false)}>No</Button>
                         </Layout>
                 </Layout>
             </Modal>

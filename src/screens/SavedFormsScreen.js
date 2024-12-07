@@ -7,23 +7,6 @@ import { LinearGradient } from 'expo-linear-gradient'
 import * as FileSystem from 'expo-file-system' 
 import * as Sharing from 'expo-sharing'
 
-const deleteIcon = (props) => (
-    <Icon name='trash' {...props} />
-)
-
-const shareIcon = (props) => (
-    <Icon name='share' {...props}/>
-)
-
-const downwardArrow = (props) => (
-    <Icon name='arrow-downward-outline' {...props}/>
-)
-
-const upwardArrow = (props) => (
-    <Icon name='arrow-upward-outline' {...props}/>
-)
-
-
 
 
 const SavedForms = () => {
@@ -74,19 +57,6 @@ const SavedForms = () => {
             console.error('Error :', error)
         }
     }
-
-    const deleteForm = async (id) => {
-        try {
-            const updatedForms = forms.filter(form => form.id !== id)
-            await AsyncStorage.setItem('savedForms', JSON.stringify(updatedForms))
-            setForms(updatedForms)
-            Alert.alert('Éxito', 'Formulario eliminado')
-        } catch (error) {
-            console.error('Error :', error)
-            Alert.alert('Error', 'No se pudo eliminar el formulario')
-        }
-    }
-
     const exportForm = form => {
         const objectStringified = JSON.stringify(form)
         const filePath = `${FileSystem.cacheDirectory}response.json`
@@ -144,6 +114,7 @@ const SavedForms = () => {
     const closeModal = () => {
         setModalVisible(false)
         setSelectedForm(null)
+        setSelectedForms([])
     }
 
     useEffect(() => {
@@ -265,7 +236,7 @@ const SavedForms = () => {
                     keyExtractor={(item) => item.id.toString()}
                     contentContainerStyle={styles.listContainer}
                 />
-                <Modal visible ={isRangeMode}>
+                <Modal visible={isRangeMode}>
                     <Layout style = {styles.containerCalendar}>
                         <RangeCalendar range={range} onSelect={nextrange => setRange(nextrange)}/>
                             <View style={{alignContent : 'row'}}>
@@ -279,17 +250,21 @@ const SavedForms = () => {
                 <Modal visible ={confirmDelete[0]}>
                     <Layout style = {styles.container}>
                         <Text>¿Está seguro que desea eliminar el/los formulario?</Text>
-                        <Button style={styles.deleteButton} onPress={() => {deleteForm(selectedForm.id)
-                                                                            if (confirmDelete[1]){
-                                                                                setConfirmDelete([false,false])
-                                                                                
-                                                                            }
+                        <Layout style={styles.buttonContainer}>
+                        <Button accessoryLeft={deleteIcon} status='danger' style={styles.deleteButton} onPress={() => {deleteSelectedForms()
+                                                                            setConfirmDelete([false,false])
                                                                             }}>Eliminar</Button>
+                        <Button accessoryLeft={BackIcon}style={styles.deleteButton} onPress={() => confirmDelete[1] ? (setConfirmDelete([false,false]), setModalVisible(true))
+                                                                                            : 
+                                                                                                setConfirmDelete([false,false])
+                                                                            }>Cancelar</Button>
+                        </Layout>
                     </Layout>
                 </Modal>
+                
                 {isSelectionMode && (
                     <Layout style={styles.buttonContainer}>
-                        <Button style={styles.deleteButton} onPress={() => setConfirmDelete([true,false])} accessoryLeft={deleteIcon}>
+                        <Button status='danger' style={styles.deleteButton} onPress={() => setConfirmDelete([true,false])} accessoryLeft={deleteIcon}>
                             Eliminar 
                         </Button>
                         <Button status='info' style={styles.shareButton} accessoryLeft={shareIcon} onPress={() => exportForm(
@@ -298,6 +273,7 @@ const SavedForms = () => {
                         </Button>
                     </Layout>
                 )}
+            
                 <Modal
                     visible={modalVisible}
                     transparent={true}
@@ -314,9 +290,12 @@ const SavedForms = () => {
                                     <Text style={styles.value}>{`${value}`}</Text>
                                 </Layout>
                             ))}
-                            <Button onPress={() => setConfirmDelete([true, true])}>Eliminar</Button>
-                            <Button onPress={() => exportForm(selectedForm)}>Compartir</Button>
-                            <Button status='danger' onPress={closeModal}>Cerrar</Button>
+                            
+                            <Button accessoryLeft={deleteIcon} status='danger' onPress={() => {setConfirmDelete([true, true])
+                                                    setModalVisible(false)}
+                                                }>Eliminar</Button>
+                            <Button accessoryLeft={shareIcon} status='info' onPress={() => exportForm(selectedForm)}>Compartir</Button>
+                            <Button  onPress={closeModal}>Cerrar</Button>
                         </Card>
                     </Layout>
                 </Modal>
