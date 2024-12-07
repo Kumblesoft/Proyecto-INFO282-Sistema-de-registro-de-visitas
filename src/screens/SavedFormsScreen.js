@@ -287,7 +287,7 @@ const SavedForms = () => {
                             {selectedForm && Object.entries(selectedForm.data).map(([key, value]) => (
                                 <Layout style={styles.containerRespuestas}>
                                     <Text style={styles.key} key={key}>{`${key}`}</Text>
-                                    <Text style={styles.value}>{`${value}`}</Text>
+                                    <Text style={styles.value}>{`${value.substring(0,25)}`}</Text>
                                 </Layout>
                             ))}
                             
@@ -386,7 +386,7 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         marginBottom: 10,
         paddingVertical: 10,
-        paddingHorizontal: 10,
+        paddingHorizontal: '1%',
         backgroundColor: '#f5f5f5',
         borderRadius: 8, 
     },
@@ -410,6 +410,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        width: '150',
         backgroundColor: 'rgba(0, 0, 0, 0)',
     },
     modalCard: {
