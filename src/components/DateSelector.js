@@ -103,12 +103,14 @@ const DateSelector = ({value, onChange, optionalFeatures,requiredFieldRef, refre
     <Layout style={styles.containerBox}>
       {title && (
         <View style={styles.text}>
-          <Text style={styles.text} category={required ? "label" :"p2"}>
+          <Text style={styles.text} category={"p2"}>
             {title}
           </Text> 
+          {/*
           <Text status='danger'> 
             {required ? "*": " "} 
           </Text>
+          */}
         </View>
       )}
       <Datepicker
@@ -116,7 +118,9 @@ const DateSelector = ({value, onChange, optionalFeatures,requiredFieldRef, refre
         dateService={configuredDateService}
         onSelect={handleDateChange}
         disabled={disabled}
-        style={styles.datepicker}
+        min ={new Date(1900, 0, 1)}
+        max = {new Date(2100,0,1)}
+        style={disabled? styles.disabledDate: styles.datepicker}
       />
       { isRequiredAlert ?
         <Layout size='small' style={styles.alert}>
@@ -173,6 +177,12 @@ const styles = StyleSheet.create({
   },
   datepicker: {
     width: '100%'
-  }
+  },
+  disabledDate:
+  {
+    width: '100%',
+    color: '#d3d3d3', // Color gris claro
+    textDecorationLine: 'line-through', // Línea tachada
+  },
 })
 export default DateSelector

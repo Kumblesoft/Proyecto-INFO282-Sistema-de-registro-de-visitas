@@ -7,23 +7,6 @@ import { LinearGradient } from 'expo-linear-gradient'
 import * as FileSystem from 'expo-file-system' 
 import * as Sharing from 'expo-sharing'
 
-const deleteIcon = (props) => (
-    <Icon name='trash' {...props} />
-)
-
-const shareIcon = (props) => (
-    <Icon name='share' {...props}/>
-)
-
-const downwardArrow = (props) => (
-    <Icon name='arrow-downward-outline' {...props}/>
-)
-
-const upwardArrow = (props) => (
-    <Icon name='arrow-upward-outline' {...props}/>
-)
-
-
 
 
 const SavedForms = () => {
@@ -40,6 +23,7 @@ const SavedForms = () => {
     const [isRangeMode, setIsRangeMode] = useState(false)
     const [isLastsMode, setIsLastsMode] = useState(false)
     const [lasts, setLasts] = useState(0)
+    const [confirmDelete, setConfirmDelete] = useState(false)
     
     const configuredDateService = new NativeDateService('en', {
         startDayOfWeek:1,
@@ -73,19 +57,6 @@ const SavedForms = () => {
             console.error('Error :', error)
         }
     }
-
-    const deleteForm = async (id) => {
-        try {
-            const updatedForms = forms.filter(form => form.id !== id)
-            await AsyncStorage.setItem('savedForms', JSON.stringify(updatedForms))
-            setForms(updatedForms)
-            Alert.alert('Éxito', 'Formulario eliminado')
-        } catch (error) {
-            console.error('Error :', error)
-            Alert.alert('Error', 'No se pudo eliminar el formulario')
-        }
-    }
-
     const exportForm = form => {
         const objectStringified = JSON.stringify(form)
         const filePath = `${FileSystem.cacheDirectory}response.json`
@@ -127,6 +98,7 @@ const SavedForms = () => {
             setForms(updatedForms)
             setSelectedForms([]) // Resetear formularios seleccionados
             setIsSelectionMode(false) // Salir del modo de selección
+
             Alert.alert('Éxito', 'Formularios eliminados')
         } catch (error) {
             console.error('Error :', error)
@@ -142,6 +114,7 @@ const SavedForms = () => {
     const closeModal = () => {
         setModalVisible(false)
         setSelectedForm(null)
+        setSelectedForms([])
     }
 
     useEffect(() => {
@@ -157,38 +130,24 @@ const SavedForms = () => {
         />
     )
 
-    const deleteIcon = (props) => (
-        <Icon name='trash' {...props} />
-    );
+    const deleteIcon = (props) => (<Icon name='trash' {...props} />)
     
-    const shareIcon = (props) => (
-        <Icon name='share' {...props}/>
-    );
+    const shareIcon = (props) => (<Icon name='share' {...props}/>)
 
-    const BackAction = () => (
-        <TopNavigationAction icon={BackIcon} onPress={() => navigation.goBack()} />
-    )
+    const BackAction = () => (<TopNavigationAction icon={BackIcon} onPress={() => navigation.goBack()} />)
 
-    const SelectionIcon = (props) => (
-        <Icon fill='#fff' name={isSelectionMode ? 'checkmark-square' : 'checkmark-square'} style={styles.backIcon} {...props} />
-    )
+    const SelectionIcon = (props) => (<Icon fill='#fff' name={isSelectionMode ? 'checkmark-square' : 'checkmark-square'} style={styles.backIcon} {...props} />)
 
-    const SelectionAction = () => (
-        <TopNavigationAction icon={SelectionIcon} onPress={toggleSelectionMode} />
-    )
+    const SelectionAction = () => (<TopNavigationAction icon={SelectionIcon} onPress={toggleSelectionMode} />)
 
     const toggleSelectionMode = () => {
         setIsSelectionMode(!isSelectionMode)
         setSelectedForms([]) // Resetear selección al activar/desactivar modo
     }
 
-    const selectAll = () => {  
-        setSelectedForms(forms.map(form => form.id))
-    }
+    const selectAll = () => {  setSelectedForms(forms.map(form => form.id))}
 
-    const deselectAll = () => {
-        setSelectedForms([])
-    }
+    const deselectAll = () => {setSelectedForms([])}
 
     const handleSelection = (id) => {
         if (isSelectionMode) {
@@ -196,6 +155,7 @@ const SavedForms = () => {
                 prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
             )
         } else {
+            setSelectedForms([id])
             openModal(forms.find(form => form.id === id))
         }
     }
@@ -232,8 +192,9 @@ const SavedForms = () => {
         >
             <Text style={styles.formTitle}>{item.nombreFormulario}</Text>
             {isSelectionMode ? null : (
-                <Button style={styles.button} onPress={() => deleteForm(item.id)} accessoryLeft={deleteIcon} />
+                <Button style={styles.button} onPress={() => exportForm(item)} accessoryLeft={shareIcon} />
             )}
+
         </TouchableOpacity>
     )
 
@@ -275,7 +236,7 @@ const SavedForms = () => {
                     keyExtractor={(item) => item.id.toString()}
                     contentContainerStyle={styles.listContainer}
                 />
-                <Modal visible ={isRangeMode}>
+                <Modal visible={isRangeMode}>
                     <Layout style = {styles.containerCalendar}>
                         <RangeCalendar range={range} onSelect={nextrange => setRange(nextrange)}/>
                             <View style={{alignContent : 'row'}}>
@@ -286,18 +247,33 @@ const SavedForms = () => {
                             </View>
                     </Layout>
                 </Modal>
+                <Modal visible ={confirmDelete[0]}>
+                    <Layout style = {styles.container}>
+                        <Text>¿Está seguro que desea eliminar el/los formulario?</Text>
+                        <Layout style={styles.buttonContainer}>
+                        <Button accessoryLeft={deleteIcon} status='danger' style={styles.deleteButton} onPress={() => {deleteSelectedForms()
+                                                                            setConfirmDelete([false,false])
+                                                                            }}>Eliminar</Button>
+                        <Button accessoryLeft={BackIcon}style={styles.deleteButton} onPress={() => confirmDelete[1] ? (setConfirmDelete([false,false]), setModalVisible(true))
+                                                                                            : 
+                                                                                                setConfirmDelete([false,false])
+                                                                            }>Cancelar</Button>
+                        </Layout>
+                    </Layout>
+                </Modal>
+                
                 {isSelectionMode && (
                     <Layout style={styles.buttonContainer}>
-                        <Button style={styles.deleteButton} onPress={deleteSelectedForms} accessoryLeft={deleteIcon}>
+                        <Button status='danger' style={styles.deleteButton} onPress={() => setConfirmDelete([true,false])} accessoryLeft={deleteIcon}>
                             Eliminar 
                         </Button>
-
                         <Button status='info' style={styles.shareButton} accessoryLeft={shareIcon} onPress={() => exportForm(
                             forms.filter(form => selectedForms.includes(form.id)))}>
                             Compartir
                         </Button>
                     </Layout>
                 )}
+            
                 <Modal
                     visible={modalVisible}
                     transparent={true}
@@ -314,8 +290,12 @@ const SavedForms = () => {
                                     <Text style={styles.value}>{`${value}`}</Text>
                                 </Layout>
                             ))}
-                            <Button onPress={() => exportForm(selectedForm)}>Compartir</Button>
-                            <Button status='danger' onPress={closeModal}>Cerrar</Button>
+                            
+                            <Button accessoryLeft={deleteIcon} status='danger' onPress={() => {setConfirmDelete([true, true])
+                                                    setModalVisible(false)}
+                                                }>Eliminar</Button>
+                            <Button accessoryLeft={shareIcon} status='info' onPress={() => exportForm(selectedForm)}>Compartir</Button>
+                            <Button  onPress={closeModal}>Cerrar</Button>
                         </Card>
                     </Layout>
                 </Modal>
@@ -437,6 +417,7 @@ const styles = StyleSheet.create({
         width: '200%', 
         maxWidth: '250%', 
         borderRadius: 10,
+        
         
     },
     modalTitle: {
