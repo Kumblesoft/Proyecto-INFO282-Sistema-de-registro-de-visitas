@@ -5,9 +5,8 @@ import { TimerPickerModal } from "react-native-timer-picker"
 import { LinearGradient } from "expo-linear-gradient"
 import * as Haptics from "expo-haptics" // for haptic feedback
 
-const resetIcon = (props) => (
-    <Icon name='sync-outline' {...props} />
-)
+const resetIcon = props => <Icon name='sync-outline' {...props} />
+
 
 /**
  * The setter for the optuinal features

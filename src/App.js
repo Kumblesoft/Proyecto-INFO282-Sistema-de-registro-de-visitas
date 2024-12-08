@@ -14,6 +14,8 @@ import { initializeDataBase } from './commonStructures/dataBase'
 
 import { FormProvider } from './context/SelectedFormContext'
 import { IdentifierProvider } from './context/IdentifierContext'
+import FormEditor from './components/FormEditor'
+
 
 const myTheme = {
   ...eva.light,
