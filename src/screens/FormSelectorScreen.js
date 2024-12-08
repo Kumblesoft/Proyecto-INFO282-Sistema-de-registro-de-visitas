@@ -10,9 +10,11 @@ import * as Animatable from 'react-native-animatable'
 import shareTypes from '../commonStructures/shareTypes'
 import * as DocumentPicker from 'expo-document-picker'
 import { Ok } from '../commonStructures/resultEnum'
+import dataBase from '../commonStructures/dataBase'
 
 
 const FormSelectorScreen = () => {
+  const db = dataBase()
   const navigation = useNavigation()
   const forms = require("../TestForms/forms.json")
   const [localForms, setForms] = useState(forms)
@@ -23,8 +25,8 @@ const FormSelectorScreen = () => {
   const [selectedForms, setSelectedForms] = useState([]) // Formularios seleccionados
   const [file, setFile] = useState(null) // File picker function
 
-  const backIcon = () => <Icon name='arrow-ios-back-outline' fill='#fff' style={styles.topNavigationIcon}/>
-  const importIcon = () => <Icon name='cloud-download-outline' fill='#fff' style={styles.topNavigationIcon}/>
+  const backIcon = () => <Icon name='arrow-ios-back-outline' fill='#fff' style={styles.topNavigationIcon} />
+  const importIcon = () => <Icon name='cloud-download-outline' fill='#fff' style={styles.topNavigationIcon} />
   const deleteIcon = props => <Icon name='trash' {...props} />
   const shareIcon = props => <Icon name='share' {...props} />
   const BackAction = () => <TopNavigationAction icon={backIcon} onPress={() => navigation.goBack()} />
@@ -90,28 +92,28 @@ const FormSelectorScreen = () => {
 
   const deleteSelectedForms = async () => {
     try {
-        const updatedForms = localForms.filter(form => !selectedForms.includes(form["nombre formulario"]))
-        
+      const updatedForms = localForms.filter(form => !selectedForms.includes(form["nombre formulario"]))
 
-        const filePath = `${FileSystem.cacheDirectory}forms.json`
-        const updatedFormsString = JSON.stringify(updatedForms)
 
-        await FileSystem.writeAsStringAsync(filePath, updatedFormsString)
-      
+      const filePath = `${FileSystem.cacheDirectory}forms.json`
+      const updatedFormsString = JSON.stringify(updatedForms)
 
-        const newContent = await FileSystem.readAsStringAsync(filePath)
-        const loc = localForms.pop(JSON.parse(newContent))
+      await FileSystem.writeAsStringAsync(filePath, updatedFormsString)
 
-        setForms(loc)
-        setSelectedForms([]) 
-        setIsSelectionMode(false)
-        console.log(localForms)
-        console.log("Formularios restantes después de la eliminación:", updatedForms)
-        console.log("Archivo actualizado guardado en:", filePath)
+
+      const newContent = await FileSystem.readAsStringAsync(filePath)
+      const loc = localForms.pop(JSON.parse(newContent))
+
+      setForms(loc)
+      setSelectedForms([])
+      setIsSelectionMode(false)
+      console.log(localForms)
+      console.log("Formularios restantes después de la eliminación:", updatedForms)
+      console.log("Archivo actualizado guardado en:", filePath)
 
     } catch (error) {
-        console.error("Error al eliminar formularios seleccionados:", error)
-        Alert.alert("Error", "Hubo un problema al eliminar los formularios seleccionados")
+      console.error("Error al eliminar formularios seleccionados:", error)
+      Alert.alert("Error", "Hubo un problema al eliminar los formularios seleccionados")
     }
   }
 
@@ -120,7 +122,7 @@ const FormSelectorScreen = () => {
   )
 
   const SelectionAction = () => (
-      <TopNavigationAction icon={SelectionIcon} onPress={toggleSelectionMode} />
+    <TopNavigationAction icon={SelectionIcon} onPress={toggleSelectionMode} />
   )
 
   const toggleSelectionMode = () => {
@@ -131,17 +133,17 @@ const FormSelectorScreen = () => {
   const handleSelection = (item) => {
     if (isSelectionMode) {
       setSelectedForms((prev) =>
-          prev.includes(item["nombre formulario"]) 
-              ? prev.filter((id) => id !== item["nombre formulario"]) 
-              : [...prev, item["nombre formulario"]]
+        prev.includes(item["nombre formulario"])
+          ? prev.filter((id) => id !== item["nombre formulario"])
+          : [...prev, item["nombre formulario"]]
       )
-    } 
+    }
   }
 
   const handlePress = (form) => {
     if (isSelectionMode) {
       handleSelection(form)
-    } 
+    }
     else {
       setSelectedForm(form)
       navigation.navigate('Menu')
@@ -158,15 +160,15 @@ const FormSelectorScreen = () => {
 
   const renderItem = ({ item }) => (
 
-    <TouchableOpacity 
+    <TouchableOpacity
       style={[styles.containerBox, selectedForms.includes(item["nombre formulario"]) && styles.selectedItem]}
-      onPress={() => handlePress(item)} 
+      onPress={() => handlePress(item)}
       onLongPress={toggleSelectionMode}
-    > 
+    >
       <Text style={styles.itemText}>{item["nombre formulario"]}</Text>
       <Button
         accessoryLeft={
-          <Icon name='menu-outline' style={{width:25, height:25}} fill='#000'/>
+          <Icon name='menu-outline' style={{ width: 25, height: 25 }} fill='#000' />
         }
         onPress={() => {
           setSelectedItem(item)
@@ -297,7 +299,7 @@ const FormSelectorScreen = () => {
             alignment='center'
           />
         </LinearGradient>
-        
+
         <Divider />
         <Layout style={styles.container}>
           <FlatList
@@ -307,27 +309,27 @@ const FormSelectorScreen = () => {
             contentContainerStyle={styles.listContainer}
           />
           {isSelectionMode && (
-              <Layout style={styles.buttonContainer}>
-                  <Button
-                      style={styles.deleteButton}
-                      onPress={() => deleteSelectedForms()} // Pasamos los datos al botón
-                      accessoryLeft={deleteIcon}
-                  >
-                      Eliminar 
-                  </Button>
+            <Layout style={styles.buttonContainer}>
+              <Button
+                style={styles.deleteButton}
+                onPress={() => deleteSelectedForms()} // Pasamos los datos al botón
+                accessoryLeft={deleteIcon}
+              >
+                Eliminar
+              </Button>
 
               <Button status='info' style={styles.shareButton} accessoryLeft={shareIcon}>
                 Compartir
               </Button>
             </Layout>
           )
-        }
-        <View style={styles.footerContainer}>
-          <Button status='info' style={styles.volverButton} onPress={() => navigation.goBack()}>
-            Volver
-          </Button>
-        </View>
-      </Layout>
+          }
+          <View style={styles.footerContainer}>
+            <Button status='info' style={styles.volverButton} onPress={() => navigation.goBack()}>
+              Volver
+            </Button>
+          </View>
+        </Layout>
       </Layout>
     </>
   )
@@ -410,9 +412,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#fff',
   },
-  topNavigationText:{
+  topNavigationText: {
     marginRight: 70,
-    fontSize: 24,   
+    fontSize: 24,
     fontWeight: 'bold',
     color: '#fff',
   },
@@ -427,7 +429,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginBottom: 10,
   },
-  layoutContainer:{
+  layoutContainer: {
     backgroundColor: '#fff',
     flex: 1,
   },

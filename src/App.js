@@ -9,6 +9,8 @@ import FormSelectorScreen from "./screens/FormSelectorScreen" // Importa tu pant
 import FormFiller from "./screens/FormFiller"
 import SavedForms from "./screens/SavedFormsScreen"
 import Settings from "./screens/Settings"
+import { SQLiteProvider, useSQLiteContext, type SQLiteDatabase } from 'expo-sqlite'
+import { initializeDataBase } from './commonStructures/dataBase'
 
 import { FormProvider } from './context/SelectedFormContext'
 import { IdentifierProvider } from './context/IdentifierContext'
@@ -44,21 +46,23 @@ export default function App() {
   return (
     <>
       <IconRegistry icons={EvaIconsPack} />
-      <ApplicationProvider {...eva} theme={myTheme}>
-        <NavigationContainer>
-          <FormProvider>
-            <IdentifierProvider>
-              <Stack.Navigator initialRouteName="Menu">
-                <Stack.Screen name="Menu" component={Menu} options={{ headerShown: false }} />
-                <Stack.Screen name="FormSelector" component={FormSelectorScreen} options={{ headerShown: false }} />
-                <Stack.Screen name="SavedForms" component={SavedForms} options={{ headerShown: false }} />
-                <Stack.Screen name="FormFiller" component={FormFiller} options={{ headerShown: false }} />
-                <Stack.Screen name="Settings" component={Settings} options={{ headerShown: false }} />
-              </Stack.Navigator>
-            </IdentifierProvider>
-          </FormProvider>
-        </NavigationContainer>
-      </ApplicationProvider>
+      <SQLiteProvider databaseName="forms.db" onInit={initializeDataBase}>
+        <ApplicationProvider {...eva} theme={myTheme}>
+          <NavigationContainer>
+            <FormProvider>
+              <IdentifierProvider>
+                <Stack.Navigator initialRouteName="Menu">
+                  <Stack.Screen name="Menu" component={Menu} options={{ headerShown: false }} />
+                  <Stack.Screen name="FormSelector" component={FormSelectorScreen} options={{ headerShown: false }} />
+                  <Stack.Screen name="SavedForms" component={SavedForms} options={{ headerShown: false }} />
+                  <Stack.Screen name="FormFiller" component={FormFiller} options={{ headerShown: false }} />
+                  <Stack.Screen name="Settings" component={Settings} options={{ headerShown: false }} />
+                </Stack.Navigator>
+              </IdentifierProvider>
+            </FormProvider>
+          </NavigationContainer>
+        </ApplicationProvider>
+      </SQLiteProvider>
     </>
   )
 }
