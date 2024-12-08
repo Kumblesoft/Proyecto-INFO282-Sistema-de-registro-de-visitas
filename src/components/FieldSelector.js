@@ -53,82 +53,117 @@ const FieldSelector = () => {
     
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Selecciona el tipo de campo</Text>
+        {/* Mostrar los campos agregados */}
+        {fieldsToDisplay.map((field, index) => (
+            <View key={index} style={styles.fieldContainer}>
+                {/* Mostrar el campo según su tipo */}
+                {field.tipo === 'radio' && (
+                    <RadioSelectorConstructor field={field} onSave={() => {}} />
+                )}
+                {field.tipo === 'texto' && (
+                    <TextoConstructor field={field} onSave={() => {}} />
+                )}
+                {field.tipo === 'selector' && (
+                    <SelectorConstructor field={field} onSave={() => {}} />
+                )}
+                {field.tipo === 'hora' && (
+                    <HourConstructor field={field} onSave={() => {}} />
+                )}
+                {field.tipo === 'fecha' && (
+                    <DateConstructor field={field} onSave={() => {}} />
+                )}
+                {field.tipo === 'checkbox' && (
+                    <CheckBoxConstructor field={field} onSave={() => {}} />
+                )}
+                {field.tipo === 'camara' && (
+                    <CameraConstructor field={field} onSave={() => {}} />
+                )}
+                {!['radio', 'texto', 'selector', 'hora', 'fecha', 'checkbox', 'camara'].includes(field.tipo) && (
+                    <Text>Campo no reconocido</Text>
+                )}
+    
+                {/* Botón para eliminar este campo */}
+                <Button
+                    title="Eliminar Campo"
+                    status="danger"
+                    onPress={() => handleDeleteField(index)}
+                >
+                    Eliminar Campo
+                </Button>
+            </View>
+        ))}
+    
+        {/* Sección destacada */}
+        <View style={styles.selectionContainer}>
+            <Text style={styles.selectionTitle}>Selecciona el tipo de campo</Text>
             <Select
                 selectedIndex={selectedIndex}
                 value={selectedField}
-                onSelect={(itemValue) => {setSelectedIndex(itemValue)
-                    setSelectedField(fieldTypes[itemValue-1])
+                onSelect={(itemValue) => {
+                    setSelectedIndex(itemValue)
+                    setSelectedField(fieldTypes[itemValue - 1])
                 }}
-                placeholder={'Seleccione un tipo de campo'}
+                placeholder="Seleccione un tipo de campo"
             >
                 {fieldTypes.map((fieldType) => (
-                    <SelectItem title={fieldType} />
+                    <SelectItem title={fieldType} key={fieldType} />
                 ))}
             </Select>
-
+    
             <Button
                 title="Agregar nuevo campo"
                 onPress={handleNavigation}
                 disabled={!selectedIndex}
-            >Agregar nuevo campo</Button>
-
-            {/* Mostrar los campos agregados */}
-            {fieldsToDisplay.map((field, index) => (
-                <View key={index} style={styles.fieldContainer}>
-                    {/* Mostrar el campo según su tipo */}
-                    {field.tipo === 'radio' && (
-                        <RadioSelectorConstructor field={field} onSave={() => {}} />
-                    )}
-                    {field.tipo === 'texto' && (
-                        <TextoConstructor field={field} onSave={() => {}} />
-                    )}
-                    {field.tipo === 'selector' && (
-                        <SelectorConstructor field={field} onSave={() => {}} />
-                    )}
-                    {field.tipo === 'hora' && (
-                        <HourConstructor field={field} onSave={() => {}} />
-                    )}
-                    {field.tipo === 'fecha' && (
-                        <DateConstructor field={field} onSave={() => {}} />
-                    )}
-                    {field.tipo === 'checkbox' && (
-                        <CheckBoxConstructor field={field} onSave={() => {}} />
-                    )}
-                    {field.tipo === 'camara' && (
-                        <CameraConstructor field={field} onSave={() => {}} />
-                    )}
-                    {!['radio', 'texto', 'selector', 'hora', 'fecha', 'checkbox', 'camara'].includes(field.tipo) && (
-                        <Text>Campo no reconocido</Text>
-                    )}
-
-                    {/* Botón para eliminar este campo */}
-                    <Button
-                        title="Eliminar Campo"
-                        status='danger'
-                        onPress={() => handleDeleteField(index)}
-                    >Eliminar Campo</Button>
-                </View>
-            ))}
+                style={styles.addButton}
+            >
+                Agregar nuevo campo
+            </Button>
         </View>
+    </View>
+    
     )
 }
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 16,
-    },
-    title: {
-        fontSize: 18,
-        marginBottom: 8,
+        backgroundColor: '#f5f5f5'
     },
     fieldContainer: {
-        marginTop: 16,
-        borderBottomWidth: 1,
-        borderBottomColor: '#ccc',
-        paddingBottom: 8,
+        marginBottom: 16,
+        padding: 12,
+        borderWidth: 1,
+        borderColor: '#ddd',
+        borderRadius: 8,
+        backgroundColor: '#fff'
     },
+    selectionContainer: {
+        marginTop: 20,
+        padding: 16,
+        borderWidth: 2,
+        borderColor: '#6200ea',
+        borderRadius: 12,
+        backgroundColor: '#e8eaf6',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        elevation: 5
+    },
+    selectionTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#6200ea',
+        marginBottom: 12,
+        textAlign: 'center'
+    },
+    addButton: {
+        marginTop: 16,
+        backgroundColor: '#6200ea',
+        borderRadius: 8,
+        paddingVertical: 10
+    }
 })
+
 
 export default FieldSelector

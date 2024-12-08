@@ -55,8 +55,9 @@ const SelectorConstructor = ({ field, onSave }) => {
                 style={styles.input}
                 placeholder="Nombre del campo Selector"
                 value={fieldName}
-                onChange={setFieldName}
+                onChangeText={setFieldName}
             />
+
 
             <Text style={styles.subtitle}>Opciones:</Text>
             <FlatList

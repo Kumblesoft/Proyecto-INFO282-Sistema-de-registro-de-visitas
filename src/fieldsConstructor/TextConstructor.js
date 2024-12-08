@@ -17,6 +17,14 @@ const TextoConstructor = ({ onSave }) => {
         "solo minusculas": 1,
     }
 
+    const compatibilidadesLimitaciones = [
+        [1, 0, 0, 0, 0, 0],
+        [0, 1, 1, 1, 0, 0],
+        [0, 1, 1, 0, 0, 0],
+        [0, 1, 0, 1, 0, 0],
+        [0, 0, 0, 0, 1, 0],
+        [0, 0, 0, 0, 0, 1],
+    ]
     
 
     const compatibilidadFormato = [
@@ -136,7 +144,7 @@ const TextoConstructor = ({ onSave }) => {
                 style={styles.input}
                 placeholder="Nombre del campo Texto"
                 value={fieldName}
-                OnChange={setFieldName}
+                onChangeText={setFieldName}
             />
 
             <Text style={styles.subtitle}>Limitaciones:</Text>

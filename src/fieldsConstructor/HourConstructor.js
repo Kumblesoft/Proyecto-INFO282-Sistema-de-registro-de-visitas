@@ -1,45 +1,60 @@
-import React, { useState } from 'react'
-import { View, TextInput, Switch, StyleSheet, Alert } from 'react-native'
-import {Text, Input, Button, Toggle, Icon, Layout, ButtonGroup} from '@ui-kitten/components'
+import React, { useState, useEffect } from 'react'
+import { View, Alert, StyleSheet } from 'react-native'
+import { Text, Input, Button, Toggle, Layout } from '@ui-kitten/components'
 import { TimerPickerModal } from 'react-native-timer-picker'
-import * as Haptics from "expo-haptics" // for haptic feedback
-import { LinearGradient } from "expo-linear-gradient"
+import * as Haptics from 'expo-haptics'
+import { LinearGradient } from 'expo-linear-gradient'
 
 const HourConstructor = ({ field = {}, onSave }) => {
-    const [fieldName, setFieldName] = useState(field.nombre || '')
-    const [defaultHour, setDefaultHour] = useState(field.hora_predeterminada || '00:00')
-    const [isEditable, setIsEditable] = useState(field.isEditable || false) // Valor predeterminado corregido
-    const [showPicker, setShowPicker] = useState(false)
-    const [isActual, setIsActual] = useState(true)
+    // Obtener hora actual en formato hh:mm
+    const getCurrentTime = () => {
+        const now = new Date()
+        return `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`
+    }
 
-    const formatTime = ({hours, minutes}) => `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`
+    // Estados
+    const [fieldName, setFieldName] = useState(typeof field.nombre === 'string' ? field.nombre : '')
+    const [defaultHour, setDefaultHour] = useState(field.hora_predeterminada || getCurrentTime())
+    const [isEditable, setIsEditable] = useState(field.isEditable || false)
+    const [showPicker, setShowPicker] = useState(false)
+    const [isActual, setIsActual] = useState(field.hora_predeterminada === 'actual' || !field.hora_predeterminada)
+
+    // Actualizar la hora actual dinámicamente
+    useEffect(() => {
+        if (isActual) {
+            const interval = setInterval(() => {
+                setDefaultHour(getCurrentTime())
+            }, 60000) // Actualizar cada minuto
+            return () => clearInterval(interval) // Limpiar el intervalo al desmontar o cambiar de estado
+        }
+    }, [isActual])
+
+    const formatTime = ({ hours, minutes }) =>
+        `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
+
     const handleSave = () => {
-        // Validar valores antes de guardar
-        if (!fieldName.trim()) {
-            Alert.alert("Error", "El nombre del campo no puede estar vacío.")
+        if (!fieldName || typeof fieldName !== 'string' || !fieldName.trim()) {
+            Alert.alert('Error', 'El nombre del campo no puede estar vacío.')
             return
         }
 
-        if (defaultHour !== "actual" && !/^\d{2}:\d{2}$/.test(defaultHour)) {
-            Alert.alert(
-                "Error",
-                "La hora predeterminada debe ser 'actual' o estar en formato hh:mm."
-            )
+        if (defaultHour !== 'actual' && !/^\d{2}:\d{2}$/.test(defaultHour)) {
+            Alert.alert('Error', "La hora predeterminada debe ser 'actual' o estar en formato hh:mm.")
             return
         }
 
         const field = {
             nombre: fieldName,
-            "hora predeterminada": defaultHour,
+            'hora predeterminada': defaultHour,
             salida: fieldName.toLowerCase().replace(/ /g, '_'),
             limitaciones: {
-                tipo: "ArregloFecha",
+                tipo: 'ArregloFecha',
                 compatibilidadLimitaciones: [
                     [1, 0],
                     [0, 1]
                 ],
-                enumLimitaciones: isEditable ? "editable" : "no editable"
-            } 
+                enumLimitaciones: isEditable ? 'editable' : 'no editable'
+            }
         }
 
         if (onSave) {
@@ -55,77 +70,95 @@ const HourConstructor = ({ field = {}, onSave }) => {
             {/* Nombre del Campo */}
             <View style={styles.field}>
                 <Text style={styles.label}>Nombre del Campo</Text>
-                <TextInput
+                <Input
                     value={fieldName}
-                    OnChange={setFieldName}
-                    placeholder="Nombre del campo"
+                    onChangeText={setFieldName}
+                    placeholder="Nombre del campo Hora"
                     style={styles.input}
                 />
             </View>
 
             {/* Hora Predeterminada */}
             <View style={styles.field}>
-            <Text style={styles.label}>Hora Predeterminada</Text>
-            <Layout style={{flexDirection: 'row', alignItems: 'center'}}>
-                <Button status={isActual ? 'primary' : 'basic'} 
-                    onPress={() => {setIsActual(true)
-                    setDefaultHour('actual')
-                    }}>Actual</Button>
-                <Button status={!isActual ? 'primary' : 'basic'}
-                    onPress={() => {setIsActual(false)
-                    setDefaultHour('00:00')
-                    }}
-                    >Personalizada</Button>
-            </Layout>
-            {!isActual ? (
-                <Button
-                status='success' 
-                onPress={()=>setShowPicker(true)} 
-                appearance='outline' 
-                size='large'>{defaultHour}
-                </Button>
-            ): <></>}
-            
-            <TimerPickerModal
-                visible={showPicker}
-                setIsVisible={setShowPicker}
-                onConfirm={(pickedDuration) => {
-                    setDefaultHour(formatTime(pickedDuration))
-                    setShowPicker(false)
-                }}
-                modalTitle="Selecciona una hora"
-                onCancel={() => setShowPicker(false)}
-                closeOnOverlayPress
-                LinearGradient={LinearGradient}
-                Haptics={Haptics}
-                styles={{
-                    theme: "light",
-                }}
-                modalProps={{
-                    overlayOpacity: 0.2,
-                }}
-                hideSeconds={true}
-                agressivelyGetLatestDuretion={true}
-            />
+                <Text style={styles.label}>Hora Predeterminada</Text>
+                <Layout style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    {/* Botón Actual */}
+                    <Button
+                        status={isActual ? 'primary' : 'basic'}
+                        onPress={() => {
+                            setIsActual(true)
+                            setDefaultHour(getCurrentTime())
+                        }}
+                    >
+                        Actual
+                    </Button>
 
+                    {/* Botón Personalizada */}
+                    <Button
+                        status={!isActual ? 'primary' : 'basic'}
+                        onPress={() => {
+                            setIsActual(false)
+                            setDefaultHour('00:00')
+                        }}
+                    >
+                        Personalizada
+                    </Button>
+                </Layout>
+
+                {/* Selector de hora personalizada */}
+                {!isActual ? (
+                    <Button
+                        status="success"
+                        onPress={() => setShowPicker(true)}
+                        appearance="outline"
+                        size="large"
+                    >
+                        {defaultHour}
+                    </Button>
+                ) : (
+                    <Text>{defaultHour}</Text>
+                )}
+
+                <TimerPickerModal
+                    visible={showPicker}
+                    setIsVisible={setShowPicker}
+                    onConfirm={(pickedDuration) => {
+                        setDefaultHour(formatTime(pickedDuration))
+                        setShowPicker(false)
+                    }}
+                    modalTitle="Selecciona una hora"
+                    onCancel={() => setShowPicker(false)}
+                    closeOnOverlayPress
+                    LinearGradient={LinearGradient}
+                    Haptics={Haptics}
+                    styles={{
+                        theme: 'light'
+                    }}
+                    modalProps={{
+                        overlayOpacity: 0.2
+                    }}
+                    hideSeconds={true}
+                    agressivelyGetLatestDuretion={true}
+                />
             </View>
 
             {/* Editable */}
             <View style={styles.field}>
                 <Text style={styles.label}>¿Editable?</Text>
-                <Toggle
-                    checked={isEditable}
-                    onChange={setIsEditable}
-                />
+                <Toggle checked={isEditable} onChange={setIsEditable} />
             </View>
 
             {/* Botón Guardar */}
             <View style={styles.saveButtonContainer}>
-                <Button title="Guardar Campo" onPress={handleSave} > Guardar Campo </Button>
+                <Button title="Guardar Campo" onPress={handleSave}>
+                    Guardar Campo
+                </Button>
             </View>
         </View>
     )
 }
+
+
 
 const styles = StyleSheet.create({
     container: {

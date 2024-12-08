@@ -43,7 +43,7 @@ const CameraConstructor = ({ onSave, field = {} }) => {
                 <Text>Nombre del Campo</Text>
                 <Input
                     value={fieldName}
-                    onChange={setFieldName}
+                    onChangeText={setFieldName}
                     placeholder="Nombre del campo"
                     style={styles.input}
                 />

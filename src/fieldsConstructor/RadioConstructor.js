@@ -55,7 +55,7 @@ const RadioConstructor = ({ field, onSave }) => {
                 style={styles.input}
                 placeholder="Nombre del campo Radio"
                 value={fieldName}
-                onChange={setFieldName}
+                onChangeText={setFieldName}
             />
 
             <Text style={styles.subtitle}>Opciones:</Text>
