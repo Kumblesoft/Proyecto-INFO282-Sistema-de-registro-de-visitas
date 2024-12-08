@@ -89,7 +89,7 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
             await AsyncStorage.setItem('savedForms', JSON.stringify(storedForms))
             console.log("Formulario guardado:", newForm)
             formState.current.clear()
-            Alert.alert("Formulario guardado")
+            //Alert.alert("Formulario guardado")
             refreshFieldRefs.current.forEach(ref => ref())
         } catch (error) {
             console.error("Error al guardar el formulario:", error)

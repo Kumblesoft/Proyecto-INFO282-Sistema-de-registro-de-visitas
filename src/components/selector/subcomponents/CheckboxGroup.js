@@ -3,7 +3,7 @@ import { CheckBox, Text } from '@ui-kitten/components'
 import { View, StyleSheet } from 'react-native'
 
 
-export default CheckboxGroup = forwardRef(({ items, onSelect, value, maxChecked, error, disabled},ref) => {
+export default CheckboxGroup = forwardRef(({ items, onSelect, value, maxChecked, error, disabled, defaultOption},ref) => {
   const [selectedValues] = useState(new Set()) // Usar el estado como referencia de un Set
   if (value) [value].flat().map(value => selectedValues.add(value)) // Setear los valores iniciales
 
@@ -11,6 +11,8 @@ export default CheckboxGroup = forwardRef(({ items, onSelect, value, maxChecked,
     items.map(item => (
       selectedValues.has(item.valor) ? handleSelect(item.valor) : null
     ))
+    selectedValues.clear()
+    if (defaultOption != null ) onSelect(Array.from(defaultOption))
   }
   useImperativeHandle(ref, () => ({
     refreshSelector,

@@ -136,7 +136,7 @@ const SavedForms = () => {
     }
     const confirmDelete = (deleteFunction, id) => {
         
-        Alert.alert(
+        {/*Alert.alert(
           'Confirmación',
           '¿Está seguro de que desea eliminar este formulario?',
           [
@@ -147,7 +147,8 @@ const SavedForms = () => {
             },
           ],
           { cancelable: false }
-        )
+        )*/}
+        deleteFunction(id)
       }
 
     const openModal = (form) => {

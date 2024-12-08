@@ -312,7 +312,7 @@
 				{ "nombre": "19 años", "valor": "19" },
 				{ "nombre": "20 años", "valor": "20" }
 			  ],
-			  "opcion predeterminada": "18",
+			  "opcion predeterminada": null,
 			  "texto predeterminado": "Selecciona tu edad",
 			  "obligatorio": true,
 			  "salida": "edadSeleccionada"
@@ -325,7 +325,7 @@
 				{ "nombre": "Diseño", "valor": "diseno" },
 				{ "nombre": "Marketing", "valor": "marketing" }
 			  ],
-			  "opcion predeterminada": null,
+			  "opcion predeterminada": null,	
 			  "texto predeterminado": "Selecciona tus habilidades",
 			  "cantidad de elecciones": 2,
 			  "obligatorio": true,

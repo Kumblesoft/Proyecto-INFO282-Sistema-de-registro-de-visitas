@@ -82,7 +82,6 @@ export default function OptionSelector({ type, items, onSelect, requiredFieldRef
 
     // Renderizar el componente correcto basado en `type`
     const SelectedComponent = Selectors[type] // Selecciona el componente correspondiente según `type`
-    const emptyValue = (selectedValue == null)
     refreshFieldRef.current = () => {
         optionRef.current.refreshSelector()
         setSelectedValue(defaultOption)
