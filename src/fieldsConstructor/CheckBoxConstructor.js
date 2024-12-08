@@ -13,6 +13,7 @@ import {
     Input,
     Button,
     Toggle,
+    Icon,
 } from '@ui-kitten/components'
 
 const CheckBoxConstructor = ({ onSave, field = {} }) => {
@@ -121,8 +122,7 @@ const CheckBoxConstructor = ({ onSave, field = {} }) => {
                     keyExtractor={(_, index) => index.toString()}
                     scrollEnabled={false}
                     ListFooterComponent={() => (
-                        <Button onPress={handleAddOption} style={styles.addButton}>
-                            Agregar Opción
+                        <Button onPress={handleAddOption} style={styles.addButton} accessoryRight={<Icon name={'plus-outline'}/>}>
                         </Button>
                     )}
                 />

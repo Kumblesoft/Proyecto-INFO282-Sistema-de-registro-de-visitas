@@ -1,7 +1,8 @@
 import React, { useState } from "react"
-import { ScrollView, View, Text, TextInput, Button, StyleSheet } from "react-native"
+import { ScrollView, View, StyleSheet } from "react-native"
+import { Text, Input, Button, Layout } from "@ui-kitten/components"
 import formTemplate from "../fieldsConstructor/fields.json" // Importar el JSON con los campos
-import FieldSelector from "../screens/fieldsSelectorScreen" 
+import FieldSelector from "../components/FieldSelector" 
 
 export default function FormEditor() {
   const [formFields, setFormFields] = useState(formTemplate)
@@ -19,10 +20,10 @@ export default function FormEditor() {
 
   const renderField = (fieldKey, field) => {
     return (
-      <View key={fieldKey} style={styles.fieldContainer}>
+      <Layout key={fieldKey} style={styles.fieldContainer}>
         <Text style={styles.label}>{field.nombre}</Text>
         {field.tipo === "texto" && (
-          <TextInput
+          <Input
             style={styles.input}
             value={field.valor}
             onChangeText={(text) => handleFieldChange(fieldKey, "valor", text)} // Cambiar el valor
@@ -39,7 +40,7 @@ export default function FormEditor() {
             ))}
           </View>
         )}
-      </View>
+      </Layout>
     )
   }
 

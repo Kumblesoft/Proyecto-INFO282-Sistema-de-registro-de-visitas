@@ -1,11 +1,18 @@
 import React, { useState } from 'react'
-import { View, Text, TextInput, Button, Switch, StyleSheet, Alert } from 'react-native'
+import { View, TextInput, Switch, StyleSheet, Alert } from 'react-native'
+import {Text, Input, Button, Toggle, Icon, Layout, ButtonGroup} from '@ui-kitten/components'
+import { TimerPickerModal } from 'react-native-timer-picker'
+import * as Haptics from "expo-haptics" // for haptic feedback
+import { LinearGradient } from "expo-linear-gradient"
 
 const HourConstructor = ({ field = {}, onSave }) => {
     const [fieldName, setFieldName] = useState(field.nombre || '')
-    const [defaultHour, setDefaultHour] = useState(field.hora_predeterminada || '')
+    const [defaultHour, setDefaultHour] = useState(field.hora_predeterminada || '00:00')
     const [isEditable, setIsEditable] = useState(field.isEditable || false) // Valor predeterminado corregido
+    const [showPicker, setShowPicker] = useState(false)
+    const [isActual, setIsActual] = useState(true)
 
+    const formatTime = ({hours, minutes}) => `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`
     const handleSave = () => {
         // Validar valores antes de guardar
         if (!fieldName.trim()) {
@@ -58,27 +65,63 @@ const HourConstructor = ({ field = {}, onSave }) => {
 
             {/* Hora Predeterminada */}
             <View style={styles.field}>
-                <Text style={styles.label}>Hora Predeterminada</Text>
-                <TextInput
-                    value={defaultHour}
-                    onChangeText={setDefaultHour}
-                    placeholder="actual o formato hh:mm"
-                    style={styles.input}
-                />
+            <Text style={styles.label}>Hora Predeterminada</Text>
+            <Layout style={{flexDirection: 'row', alignItems: 'center'}}>
+                <Button status={isActual ? 'primary' : 'basic'} 
+                    onPress={() => {setIsActual(true)
+                    setDefaultHour('actual')
+                    }}>Actual</Button>
+                <Button status={!isActual ? 'primary' : 'basic'}
+                    onPress={() => {setIsActual(false)
+                    setDefaultHour('00:00')
+                    }}
+                    >Personalizada</Button>
+            </Layout>
+            {!isActual ? (
+                <Button
+                status='success' 
+                onPress={()=>setShowPicker(true)} 
+                appearance='outline' 
+                size='large'>{defaultHour}
+                </Button>
+            ): <></>}
+            
+            <TimerPickerModal
+                visible={showPicker}
+                setIsVisible={setShowPicker}
+                onConfirm={(pickedDuration) => {
+                    setDefaultHour(formatTime(pickedDuration))
+                    setShowPicker(false)
+                }}
+                modalTitle="Selecciona una hora"
+                onCancel={() => setShowPicker(false)}
+                closeOnOverlayPress
+                LinearGradient={LinearGradient}
+                Haptics={Haptics}
+                styles={{
+                    theme: "light",
+                }}
+                modalProps={{
+                    overlayOpacity: 0.2,
+                }}
+                hideSeconds={true}
+                agressivelyGetLatestDuretion={true}
+            />
+
             </View>
 
             {/* Editable */}
             <View style={styles.field}>
                 <Text style={styles.label}>¿Editable?</Text>
-                <Switch
-                    value={isEditable}
-                    onValueChange={setIsEditable}
+                <Toggle
+                    checked={isEditable}
+                    onChange={setIsEditable}
                 />
             </View>
 
             {/* Botón Guardar */}
             <View style={styles.saveButtonContainer}>
-                <Button title="Guardar Campo" onPress={handleSave} />
+                <Button title="Guardar Campo" onPress={handleSave} > Guardar Campo </Button>
             </View>
         </View>
     )

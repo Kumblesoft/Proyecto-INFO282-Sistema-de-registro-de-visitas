@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import { View, Text, Button, StyleSheet, Alert } from 'react-native'
-import { Picker } from '@react-native-picker/picker'
+import { View, StyleSheet, Alert } from 'react-native'
+import {Text, Select, SelectItem, Button} from '@ui-kitten/components'
 import fields from '../fieldsConstructor/fields' // Ajusta la ruta correctamente
 import SelectorConstructor from '../fieldsConstructor/SelectorConstructor'
 import RadioSelectorConstructor from '../fieldsConstructor/RadioConstructor'
@@ -10,8 +10,9 @@ import DateConstructor from '../fieldsConstructor/DateConstructor'
 import CheckBoxConstructor from '../fieldsConstructor/CheckBoxConstructor'
 import CameraConstructor from '../fieldsConstructor/CameraConstructor'
 
-const FieldSelectorScreen = ({ navigation }) => {
+const FieldSelector = () => {
     const [selectedField, setSelectedField] = useState('')
+    const [selectedIndex, setSelectedIndex] = useState(null)
     const [fieldsToDisplay, setFieldsToDisplay] = useState([]) // Almacena los campos agregados
 
     // Obtiene los tipos de campos del JSON (keys del objeto)
@@ -53,21 +54,24 @@ const FieldSelectorScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Selecciona el tipo de campo</Text>
-            <Picker
-                selectedValue={selectedField}
-                onValueChange={(itemValue) => setSelectedField(itemValue)}
+            <Select
+                selectedIndex={selectedIndex}
+                value={selectedField}
+                onSelect={(itemValue) => {setSelectedIndex(itemValue)
+                    setSelectedField(fieldTypes[itemValue-1])
+                }}
+                placeholder={'Seleccione un tipo de campo'}
             >
-                <Picker.Item label="Seleccione un tipo de campo" value="" />
                 {fieldTypes.map((fieldType) => (
-                    <Picker.Item key={fieldType} label={fieldType} value={fieldType} />
+                    <SelectItem title={fieldType} />
                 ))}
-            </Picker>
+            </Select>
 
             <Button
                 title="Agregar nuevo campo"
                 onPress={handleNavigation}
-                disabled={!selectedField}
-            />
+                disabled={!selectedIndex}
+            >Agregar nuevo campo</Button>
 
             {/* Mostrar los campos agregados */}
             {fieldsToDisplay.map((field, index) => (
@@ -101,9 +105,9 @@ const FieldSelectorScreen = ({ navigation }) => {
                     {/* Botón para eliminar este campo */}
                     <Button
                         title="Eliminar Campo"
-                        color="red"
+                        status='danger'
                         onPress={() => handleDeleteField(index)}
-                    />
+                    >Eliminar Campo</Button>
                 </View>
             ))}
         </View>
@@ -127,4 +131,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export default FieldSelectorScreen
+export default FieldSelector

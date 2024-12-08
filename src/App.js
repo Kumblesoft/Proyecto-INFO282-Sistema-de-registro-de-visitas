@@ -12,7 +12,7 @@ import Settings from "./screens/Settings"
 
 import { FormProvider } from './context/FormContext'
 import { IdentifierProvider } from './context/IdentifierContext'
-import FormEditor from './components/FormEditor'
+import FormEditor from './screens/FormEditor'
 
 
 const myTheme = {
