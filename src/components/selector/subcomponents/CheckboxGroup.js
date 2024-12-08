@@ -3,7 +3,7 @@ import { CheckBox, Text } from '@ui-kitten/components'
 import { View, StyleSheet } from 'react-native'
 
 
-export default CheckboxGroup = forwardRef(({ items, onSelect, value, maxChecked, error},ref) => {
+export default CheckboxGroup = forwardRef(({ items, onSelect, value, maxChecked, error, disabled},ref) => {
   const [selectedValues] = useState(new Set()) // Usar el estado como referencia de un Set
   if (value) [value].flat().map(value => selectedValues.add(value)) // Setear los valores iniciales
 
@@ -30,6 +30,7 @@ export default CheckboxGroup = forwardRef(({ items, onSelect, value, maxChecked,
             checked={selectedValues.has(item.valor)} // Verificar si el valor está seleccionado
             onChange={() => handleSelect(item.valor)}
             status={error? 'danger':'basic'}
+            disabled={disabled}
             style={styles.checkbox} // Estilo personalizado
           >
             <Text style={styles.checkboxText}>{item.nombre}</Text> {/* Texto más grande */}
