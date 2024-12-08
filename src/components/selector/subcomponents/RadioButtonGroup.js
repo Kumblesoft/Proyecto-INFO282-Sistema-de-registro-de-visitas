@@ -8,14 +8,15 @@ const RadioButtonGroup = forwardRef(({ items, onSelect, defaultOption,error }, r
   const [selectedIndex, setSelectedIndex] = useState(null)
 
   function refreshSelector(){
-    setSelectedIndex(null)
+    const index = items.findIndex(item => item.valor === defaultOption);
+    setSelectedIndex(index !== -1 ? index : null);
   }
 
   useImperativeHandle(ref, () => ({
     refreshSelector,
   }))
   useEffect(() => {
-    const index = items.findIndex(item => item.value === defaultOption) 
+    const index = items.findIndex(item => item.valor === defaultOption) 
     setSelectedIndex(index !== -1 ? index : null)
   }, [defaultOption])
 

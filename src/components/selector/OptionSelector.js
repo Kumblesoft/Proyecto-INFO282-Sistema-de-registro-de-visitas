@@ -83,7 +83,7 @@ export default function OptionSelector({ type, items, onSelect, requiredFieldRef
     const emptyValue = (selectedValue == null)
     refreshFieldRef.current = () => {
         optionRef.current.refreshSelector()
-        setSelectedValue(null)
+        setSelectedValue(defaultOption)
     }
     return (
         <>

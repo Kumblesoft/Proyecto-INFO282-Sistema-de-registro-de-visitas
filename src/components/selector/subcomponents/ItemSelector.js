@@ -10,8 +10,9 @@ const ItemSelector = forwardRef(({ items, onSelect, value,defaultOption, placeho
 
 
   function refreshSelector(){
-    setSelectedIndex(null)
-    setSelectedValue(null)
+    const selectedItem = items.find(item => item.valor === defaultOption) // Encuentra el elemento por el valor
+    setSelectedIndex(selectedItem ? items.indexOf(selectedItem) : null) // Actualiza el índice seleccionado
+    setSelectedValue(selectedItem ? selectedItem.nombre : null) // Muestra el nombre si se encuentra, o null
   }
   useImperativeHandle(ref, () => ({
     refreshSelector,
