@@ -12,6 +12,8 @@ import Settings from "./screens/Settings"
 
 import { FormProvider } from './context/FormContext'
 import { IdentifierProvider } from './context/IdentifierContext'
+import FormEditor from './components/FormEditor'
+
 
 const myTheme = {
   ...eva.light, 
@@ -54,6 +56,7 @@ export default function App() {
               <Stack.Screen name="SavedForms" component={SavedForms} options={{headerShown:false}}/>
               <Stack.Screen name="FormFiller" component={FormFiller} options={{headerShown:false}}/>
               <Stack.Screen name="Settings" component={Settings} options={{headerShown:false}}/>
+              <Stack.Screen name="FormEditor" component={FormEditor} options={{headerShown: true, title: "Editor de Formularios"}}/>
             </Stack.Navigator>
           </IdentifierProvider>
         </FormProvider>

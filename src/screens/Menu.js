@@ -74,6 +74,13 @@ export default function Menu() {
             <Text style={styles.buttonText}>Formularios Guardados</Text>
           </TouchableOpacity>
         </View>
+
+        <View style={styles.footer}>
+        <TouchableOpacity style={styles.buttonFormularios} onPress={() => navigation.navigate('FormEditor')}>
+          <Text style={styles.buttonText}>Creador de formularios</Text>
+        </TouchableOpacity>
+      </View>
+
       </View>
     </Layout>
   )
