@@ -89,7 +89,7 @@ const CheckBoxConstructor = ({ onSave, field = {} }) => {
                     label="Nombre del Campo"
                     placeholder="Nombre del campo"
                     value={fieldName}
-                    onChangeText={setFieldName}
+                    OnChange={setFieldName}
                     style={styles.input}
                 />
 
@@ -103,7 +103,7 @@ const CheckBoxConstructor = ({ onSave, field = {} }) => {
                         <Layout style={styles.optionRow}>
                             <Input
                                 value={item.nombre}
-                                onChangeText={(text) => {
+                                OnChange={(text) => {
                                     const updatedOptions = [...options]
                                     updatedOptions[index].nombre = text
                                     setOptions(updatedOptions)
@@ -132,7 +132,7 @@ const CheckBoxConstructor = ({ onSave, field = {} }) => {
                     label="Cantidad de Elecciones"
                     placeholder="Número de elecciones"
                     value={String(maxSelections)}
-                    onChangeText={(text) => {
+                    OnChange={(text) => {
                         const value = Number(text)
                         if (!isNaN(value) && value >= 0) {
                             setMaxSelections(value)

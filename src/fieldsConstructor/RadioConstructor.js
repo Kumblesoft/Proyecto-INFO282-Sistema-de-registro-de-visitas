@@ -1,53 +1,33 @@
 import React, { useState } from 'react'
-import { View, Text, StyleSheet } from 'react-native'
-import { Input, Button, List, ListItem } from '@ui-kitten/components'
+import { View, Text, StyleSheet,FlatList } from 'react-native'
+import { Input, Button, List, ListItem, Icon, Layout} from '@ui-kitten/components'
 
 const RadioConstructor = ({ field, onSave }) => {
-    const [fieldName, setFieldName] = useState(field.nombre || '') // Estado para el nombre del campo
-    const [options, setOptions] = useState(field.opciones || []) // Estado para las opciones del radio
-    const [newOptionName, setNewOptionName] = useState('') // Para el nombre de nueva opción
-    const [maxSelections, setMaxSelections] = useState(field['cantidad de elecciones'] || 1) // Cantidad de elecciones
-    const [error, setError] = useState('') // Estado para manejar mensajes de error
+    const [options, setOptions] = useState(field.opciones || [])
+    const [newOptionName, setNewOptionName] = useState('')
+    const [fieldName, setFieldName] = useState(field.nombre || '')
 
-    const addOption = () => {
-        if (newOptionName.trim()) {
-            const newOption = { nombre: newOptionName, valor: newOptionName.toLowerCase().replace(/ /g, '_') }
-            setOptions([...options, newOption])
-            setNewOptionName('') // Limpiar el input después de agregar
-        }
+    const handleAddOption = () => {
+        setOptions((prevOptions) => [
+            ...prevOptions,
+            { nombre: `Nueva opción ${prevOptions.length + 1}`, valor: `opcion${prevOptions.length + 1}` }
+        ])
     }
+
 
     const removeOption = (index) => {
         setOptions(options.filter((_, i) => i !== index))
     }
 
-    const editOption = (index, newName) => {
-        const updatedOptions = options.map((option, i) =>
-            i === index ? { ...option, nombre: newName, valor: newName.toLowerCase().replace(/ /g, '_') } : option
-        )
-        setOptions(updatedOptions)
-    }
-
     const handleSave = () => {
-        // Validación: la cantidad de elecciones no puede ser 0 o mayor al número de opciones
-        if (maxSelections <= 0 || maxSelections > options.length) {
-            setError(
-                maxSelections <= 0
-                    ? 'La cantidad de elecciones no puede ser 0.'
-                    : 'La cantidad de elecciones no puede ser mayor al número de opciones.'
-            )
-            return
-        }
-
-        // Si no hay errores, proceder a guardar
-        setError('') // Limpiar el mensaje de error si todo está correcto
+        // Crear el objeto `field` con los datos
         const field = {
             nombre: fieldName,
-            salida: fieldName.toLowerCase().replace(/ /g, '_'),
-            "texto predeterminado": fieldName,
-            "opcion predeterminada": null,
+            salida : fieldName.toLowerCase().replace(/ /g, '_'),
+            "opcion predeterminada" : null,  // no se que es
+            "texto predeterminado" :  fieldName, // no se que es  
+            tipo: 'radio',
             opciones: options,
-            'cantidad de elecciones': maxSelections,
         }
 
         if (onSave) {
@@ -68,47 +48,49 @@ const RadioConstructor = ({ field, onSave }) => {
     )
 
     return (
-        <View style={styles.container}>
+        <Layout style={styles.container}>
             <Text style={styles.title}>Nombre del Campo Radio</Text>
 
-            {/* Campo para ingresar el nombre del campo */}
             <Input
                 style={styles.input}
                 placeholder="Nombre del campo Radio"
                 value={fieldName}
-                onChangeText={setFieldName}
+                onChange={setFieldName}
             />
 
             <Text style={styles.subtitle}>Opciones:</Text>
-            <List
-                data={options}
-                renderItem={renderOption}
-            />
-
-            <View style={styles.addOptionContainer}>
-                <Input
-                    style={styles.input}
-                    placeholder="Nueva opción"
-                    value={newOptionName}
-                    onChangeText={setNewOptionName}
+            <FlatList
+                    data={options}
+                    renderItem={({ item, index }) => (
+                        <Layout style={styles.optionRow}>
+                            <Input
+                                value={item.nombre}
+                                onChange={(text) => {
+                                    const updatedOptions = [...options]
+                                    updatedOptions[index].nombre = text
+                                    setOptions(updatedOptions)
+                                }}
+                                style={styles.optionInput}
+                            />
+                            <Button
+                                size="small"
+                                status="danger"
+                                onPress={() => removeOption(index)}
+                            >
+                                Eliminar
+                            </Button>
+                        </Layout>
+                    )}
+                    keyExtractor={(_, index) => index.toString()}
+                    scrollEnabled={false}
+                    ListFooterComponent={() => (
+                        <Button onPress={handleAddOption} style={styles.addButton} accessoryRight={<Icon name={'plus-outline'}/>}>
+                        </Button>
+                    )}
                 />
-                <Button onPress={addOption}>Agregar</Button>
-            </View>
 
-            <Text style={styles.subtitle}>Cantidad de elecciones:</Text>
-            <Input
-                style={styles.input}
-                keyboardType="numeric"
-                value={String(maxSelections)}
-                onChangeText={(text) => setMaxSelections(Number(text))}
-            />
-
-            {/* Mensaje de error */}
-            {error ? <Text style={styles.errorText}>{error}</Text> : null}
-
-            {/* Botón para guardar y salir */}
-            <Button onPress={handleSave}>Guardar y Salir</Button>
-        </View>
+            <Button onPress={handleSave} >Guardar campo</Button>
+        </Layout>
     )
 }
 
@@ -116,6 +98,14 @@ const styles = StyleSheet.create({
     container: {
         padding: 16,
         backgroundColor: '#fff',
+    },
+    addButton: {
+        marginTop: 8,
+        marginBottom: 8,
+    },
+    optionInput: {
+        flex: 1,
+        marginRight: 8,
     },
     title: {
         fontSize: 18,
@@ -130,13 +120,13 @@ const styles = StyleSheet.create({
         marginBottom: 8,
     },
     addOptionContainer: {
-        flexDirection: 'row',
+        flexDirection: 'column',
         alignItems: 'center',
         marginTop: 16,
     },
-    errorText: {
-        color: 'red',
-        marginTop: 8,
+    optionRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
         marginBottom: 8,
     },
 })

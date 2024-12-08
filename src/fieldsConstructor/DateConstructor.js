@@ -101,7 +101,7 @@ const DateConstructor = ({ field = {}, onSave }) => {
                 <Text style={styles.label}>Nombre del Campo</Text>
                 <Input
                     value={fieldName}
-                    onChangeText={setFieldName}
+                    onChange={setFieldName}
                     placeholder="Nombre del campo"
                     style={styles.input}
                 />

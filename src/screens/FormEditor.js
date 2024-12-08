@@ -26,7 +26,7 @@ export default function FormEditor() {
           <Input
             style={styles.input}
             value={field.valor}
-            onChangeText={(text) => handleFieldChange(fieldKey, "valor", text)} // Cambiar el valor
+            OnChange={(text) => handleFieldChange(fieldKey, "valor", text)} // Cambiar el valor
             placeholder={`Ingrese ${field.nombre}`}
           />
         )}

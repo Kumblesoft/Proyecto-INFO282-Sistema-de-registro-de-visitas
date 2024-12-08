@@ -1,13 +1,13 @@
 import React, { useState } from 'react'
 import {
     View,
-    Text,
     TextInput,
-    Button,
     StyleSheet,
     Switch,
     Alert
 } from 'react-native'
+
+import { Text, Input, Button, Layout, Toggle } from '@ui-kitten/components'
 
 const CameraConstructor = ({ onSave, field = {} }) => {
     const [fieldName, setFieldName] = useState(field.nombre || '')
@@ -41,9 +41,9 @@ const CameraConstructor = ({ onSave, field = {} }) => {
             {/* Nombre del Campo */}
             <View style={styles.field}>
                 <Text>Nombre del Campo</Text>
-                <TextInput
+                <Input
                     value={fieldName}
-                    onChangeText={setFieldName}
+                    onChange={setFieldName}
                     placeholder="Nombre del campo"
                     style={styles.input}
                 />
@@ -52,12 +52,12 @@ const CameraConstructor = ({ onSave, field = {} }) => {
             {/* Editable */}
             <View style={styles.field}>
                 <Text>¿Es Editable?</Text>
-                <Switch value={isEditable} onValueChange={setIsEditable} />
+                <Toggle checked={isEditable} onChange={setIsEditable} />
             </View>
 
 
             {/* Botón Guardar */}
-            <Button title="Guardar Campo" onPress={handleSave} />
+            <Button title="Guardar Campo" onPress={handleSave} >Guardar Campo</Button>
         </View>
     )
 }

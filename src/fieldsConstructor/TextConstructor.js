@@ -136,7 +136,7 @@ const TextoConstructor = ({ onSave }) => {
                 style={styles.input}
                 placeholder="Nombre del campo Texto"
                 value={fieldName}
-                onChangeText={setFieldName}
+                OnChange={setFieldName}
             />
 
             <Text style={styles.subtitle}>Limitaciones:</Text>

@@ -55,7 +55,7 @@ const SelectorConstructor = ({ field, onSave }) => {
                 style={styles.input}
                 placeholder="Nombre del campo Selector"
                 value={fieldName}
-                onChangeText={setFieldName}
+                onChange={setFieldName}
             />
 
             <Text style={styles.subtitle}>Opciones:</Text>
@@ -65,7 +65,7 @@ const SelectorConstructor = ({ field, onSave }) => {
                         <Layout style={styles.optionRow}>
                             <Input
                                 value={item.nombre}
-                                onChangeText={(text) => {
+                                OnChange={(text) => {
                                     const updatedOptions = [...options]
                                     updatedOptions[index].nombre = text
                                     setOptions(updatedOptions)
