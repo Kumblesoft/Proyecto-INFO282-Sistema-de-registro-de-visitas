@@ -65,7 +65,7 @@ const RadioConstructor = ({ field, onSave }) => {
                         <Layout style={styles.optionRow}>
                             <Input
                                 value={item.nombre}
-                                onChange={(text) => {
+                                onChangeText={(text) => {
                                     const updatedOptions = [...options]
                                     updatedOptions[index].nombre = text
                                     setOptions(updatedOptions)

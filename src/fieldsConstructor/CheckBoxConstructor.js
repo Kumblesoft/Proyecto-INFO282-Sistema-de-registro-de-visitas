@@ -103,7 +103,7 @@ const CheckBoxConstructor = ({ onSave, field = {} }) => {
                         <Layout style={styles.optionRow}>
                             <Input
                                 value={item.nombre}
-                                OnChange={(text) => {
+                                onChangeText={(text) => {
                                     const updatedOptions = [...options]
                                     updatedOptions[index].nombre = text
                                     setOptions(updatedOptions)
