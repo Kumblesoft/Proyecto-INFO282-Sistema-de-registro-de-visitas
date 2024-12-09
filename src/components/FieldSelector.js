@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, StyleSheet, Alert } from 'react-native'
+import { View, StyleSheet, Alert, TouchableOpacity } from 'react-native'
 import {Text, Select, SelectItem, Button} from '@ui-kitten/components'
 import fields from '../fieldsConstructor/fields' // Ajusta la ruta correctamente
 import SelectorConstructor from '../fieldsConstructor/SelectorConstructor'
@@ -9,19 +9,84 @@ import HourConstructor from '../fieldsConstructor/HourConstructor'
 import DateConstructor from '../fieldsConstructor/DateConstructor'
 import CheckBoxConstructor from '../fieldsConstructor/CheckBoxConstructor'
 import CameraConstructor from '../fieldsConstructor/CameraConstructor'
+import DragList from 'react-native-draglist'
+
+
+
 
 const FieldSelector = () => {
     const [selectedField, setSelectedField] = useState('')
     const [selectedIndex, setSelectedIndex] = useState(null)
     const [fieldsToDisplay, setFieldsToDisplay] = useState([]) // Almacena los campos agregados
+    const [form, setForm] = useState({})
 
     // Obtiene los tipos de campos del JSON (keys del objeto)
     const fieldTypes = Object.keys(fields)
 
+    function keyExtractor(str, _index) {
+        return str;
+    }
+
+    const handleFieldSave = (field) => {
+        fieldsToDisplay[fieldsToDisplay.indexOf(field)] = field
+    }
+
+    function renderItem(info) {
+        const {item, onDragStart, onDragEnd, isActive} = info;
+        const field = item;
+        console.log(field)
+        return (
+        <TouchableOpacity 
+            key={item.tipo}
+            onPressIn={onDragStart} 
+            onPressOut={onDragEnd}>
+            <View style={styles.fieldContainer}>
+            {field.tipo === 'radio' && (
+                <RadioSelectorConstructor field={field} onSave={() => {}} />
+                )}
+                {field.tipo === 'texto' && (
+                    <TextoConstructor field={field} onSave={() => {}} />
+                )}
+                {field.tipo === 'selector' && (
+                    <SelectorConstructor field={field} onSave={() => {}} />
+                )}
+                {field.tipo === 'hora' && (
+                    <HourConstructor field={field} onSave={() => {}} />
+                )}
+                {field.tipo === 'fecha' && (
+                    <DateConstructor field={field} onSave={() => {}} />
+                )}
+                {field.tipo === 'checkbox' && (
+                    <CheckBoxConstructor field={field} onSave={() => {}} />
+                )}
+                {field.tipo === 'camara' && (
+                    <CameraConstructor field={field} onSave={() => {}} />
+                )}
+                <Button
+                    title="Eliminar Campo"
+                    status="danger"
+                    onPress={() => handleDeleteField(fieldsToDisplay.indexOf(item))}
+                >
+                    Eliminar Campo
+                </Button>
+            </View>
+        </TouchableOpacity>
+        )
+    }
+
+    async function onReordered(fromIndex, toIndex) {
+        const copy = [...fieldsToDisplay]; // Don't modify react data in-place
+        const removed = copy.splice(fromIndex, 1);
+
+        copy.splice(toIndex, 0, removed[0]); // Now insert at the new pos
+        setFieldsToDisplay(copy);
+    }
+
     // Agregar un nuevo campo
-    const handleNavigation = () => {
+    const handleNewField = () => {
         if (fields[selectedField]) {
-            setFieldsToDisplay([...fieldsToDisplay, { ...fields[selectedField], tipo: selectedField }])
+            fieldsToDisplay.push({ ...fields[selectedField], tipo: selectedField })
+            setFieldsToDisplay([...fieldsToDisplay])
         } else {
             console.log('Tipo de campo no implementado:', selectedField)
         }
@@ -50,48 +115,21 @@ const FieldSelector = () => {
             { cancelable: true } // Permite cerrar el diálogo tocando fuera de él
         )
     }
+
+    const handleSave = () => {
+        setForm(fieldsToDisplay)
+        console.log(form)
+    }
     
     return (
         <View style={styles.container}>
-        {/* Mostrar los campos agregados */}
-        {fieldsToDisplay.map((field, index) => (
-            <View key={index} style={styles.fieldContainer}>
-                {/* Mostrar el campo según su tipo */}
-                {field.tipo === 'radio' && (
-                    <RadioSelectorConstructor field={field} onSave={() => {}} />
-                )}
-                {field.tipo === 'texto' && (
-                    <TextoConstructor field={field} onSave={() => {}} />
-                )}
-                {field.tipo === 'selector' && (
-                    <SelectorConstructor field={field} onSave={() => {}} />
-                )}
-                {field.tipo === 'hora' && (
-                    <HourConstructor field={field} onSave={() => {}} />
-                )}
-                {field.tipo === 'fecha' && (
-                    <DateConstructor field={field} onSave={() => {}} />
-                )}
-                {field.tipo === 'checkbox' && (
-                    <CheckBoxConstructor field={field} onSave={() => {}} />
-                )}
-                {field.tipo === 'camara' && (
-                    <CameraConstructor field={field} onSave={() => {}} />
-                )}
-                {!['radio', 'texto', 'selector', 'hora', 'fecha', 'checkbox', 'camara'].includes(field.tipo) && (
-                    <Text>Campo no reconocido</Text>
-                )}
-    
-                {/* Botón para eliminar este campo */}
-                <Button
-                    title="Eliminar Campo"
-                    status="danger"
-                    onPress={() => handleDeleteField(index)}
-                >
-                    Eliminar Campo
-                </Button>
-            </View>
-        ))}
+        <DragList
+            data={fieldsToDisplay}
+            keyExtractor={keyExtractor}
+            onReordered={onReordered}
+            renderItem={renderItem} 
+        />
+        
     
         {/* Sección destacada */}
         <View style={styles.selectionContainer}>
@@ -112,13 +150,14 @@ const FieldSelector = () => {
     
             <Button
                 title="Agregar nuevo campo"
-                onPress={handleNavigation}
+                onPress={handleNewField}
                 disabled={!selectedIndex}
                 style={styles.addButton}
             >
                 Agregar nuevo campo
             </Button>
         </View>
+        <Button title="Guardar Cambios" onPress={handleSave} > Guardar Cambios </Button>
     </View>
     
     )

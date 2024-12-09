@@ -14,20 +14,10 @@ const HourConstructor = ({ field = {}, onSave }) => {
 
     // Estados
     const [fieldName, setFieldName] = useState(typeof field.nombre === 'string' ? field.nombre : '')
-    const [defaultHour, setDefaultHour] = useState(field.hora_predeterminada || getCurrentTime())
+    const [defaultHour, setDefaultHour] = useState(field.hora_predeterminada || 'actual')
     const [isEditable, setIsEditable] = useState(field.isEditable || false)
     const [showPicker, setShowPicker] = useState(false)
-    const [isActual, setIsActual] = useState(field.hora_predeterminada === 'actual' || !field.hora_predeterminada)
-
-    // Actualizar la hora actual dinámicamente
-    useEffect(() => {
-        if (isActual) {
-            const interval = setInterval(() => {
-                setDefaultHour(getCurrentTime())
-            }, 60000) // Actualizar cada minuto
-            return () => clearInterval(interval) // Limpiar el intervalo al desmontar o cambiar de estado
-        }
-    }, [isActual])
+    const [isActual, setIsActual] = useState(defaultHour === 'actual' || !field.hora_predeterminada)
 
     const formatTime = ({ hours, minutes }) =>
         `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
@@ -87,7 +77,7 @@ const HourConstructor = ({ field = {}, onSave }) => {
                         status={isActual ? 'primary' : 'basic'}
                         onPress={() => {
                             setIsActual(true)
-                            setDefaultHour(getCurrentTime())
+                            setDefaultHour('actual')
                         }}
                     >
                         Actual

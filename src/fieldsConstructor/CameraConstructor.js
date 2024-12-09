@@ -19,9 +19,6 @@ const CameraConstructor = ({ onSave, field = {} }) => {
             Alert.alert("Error", "El nombre del campo no puede estar vacío.")
             return
         }
-
-    
-
         const field = {
             nombre: fieldName,
             salida: fieldName.toLowerCase().replace(/ /g, '_'),

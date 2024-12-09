@@ -7,6 +7,11 @@ import FieldSelector from "../components/FieldSelector"
 export default function FormEditor() {
   const [formFields, setFormFields] = useState(formTemplate)
   const [selectedField, setSelectedField] = useState("") // Estado para el FieldSelector
+  const createdFields = []
+
+  const handleFieldPos = (field) => {
+    createdFields.push(field)
+  }
 
   const handleFieldChange = (fieldKey, fieldProperty, value) => {
     setFormFields(prevFields => ({
@@ -46,6 +51,8 @@ export default function FormEditor() {
 
   return (
     <ScrollView style={styles.container}>
+      <Text style={styles.label}>Nombre del Formulario</Text>
+      <Input placeholder="Nombre del Formulario" style={styles.input} />
       {/* Campo Selector */}
       <FieldSelector
         selectedValue={selectedField}
@@ -56,7 +63,6 @@ export default function FormEditor() {
       {selectedField && renderField(selectedField, formFields[selectedField])}
 
       {/* Botón para guardar cambios */}
-      <Button title="Guardar Cambios" onPress={() => console.log("JSON actualizado:", formFields)} />
     </ScrollView>
   )
 }
