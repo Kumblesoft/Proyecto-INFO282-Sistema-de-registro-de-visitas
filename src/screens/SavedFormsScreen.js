@@ -40,6 +40,7 @@ const SavedForms = () => {
     const [isRangeMode, setIsRangeMode] = useState(false)
     const [isLastsMode, setIsLastsMode] = useState(false)
     const [lasts, setLasts] = useState(0)
+    const [expandedTypes, setExpandedTypes] = useState({});
     
     const configuredDateService = new NativeDateService('en', {
         startDayOfWeek:1,
@@ -223,8 +224,15 @@ const SavedForms = () => {
             <Text style={styles.topNavigationText}>Formularios Guardados</Text>
         </View>
     )
-
-    const renderItem = ({ item }) => (
+    const groupedForms = forms.reduce((acc, form) => {
+        if (!acc[form.nombreFormulario]) {
+            acc[form.nombreFormulario] = []
+        }
+        acc[form.nombreFormulario].push(form)
+        return acc
+    }, {})
+    
+    const renderFormItem = ({ item }) => (
         <TouchableOpacity
             style={[
                 styles.containerBox,
@@ -233,12 +241,33 @@ const SavedForms = () => {
             onPress={() => handleSelection(item.id)}
             onLongPress={toggleSelectionMode}
         >
-            <Text style={styles.formTitle}>{item.nombreFormulario}</Text>
+            <Text style={styles.formTitle}>{item.id}</Text> {/* Esto hay que cambiarlo por el nombre que tendrán */}
             {isSelectionMode ? null : (
                 <Button style={styles.button} onPress={() => exportForm(item)} accessoryLeft={shareIcon} />
             )}
-
         </TouchableOpacity>
+    )
+
+    const toggleExpand = (type) => {
+        setExpandedTypes(prevState => ({
+            ...prevState,
+            [type]: !prevState[type]
+        }))
+    }
+
+    const renderTypeItem = ({ item }) => (
+        <View>
+            <TouchableOpacity onPress={() => toggleExpand(item)} >
+                <Text style={styles.formType}>{item}</Text> {/* Mostrar el tipo de formulario */}
+            </TouchableOpacity>
+            {expandedTypes[item] && (
+                <FlatList
+                    data={groupedForms[item]}
+                    renderItem={renderFormItem}
+                    keyExtractor={(form) => form.id.toString()}
+                />
+            )}
+        </View>
     )
 
     return (
@@ -274,10 +303,10 @@ const SavedForms = () => {
                 )}
                 </Layout>
                 <FlatList
-                    data={forms}
-                    renderItem={renderItem}
-                    keyExtractor={(item) => item.id.toString()}
-                    contentContainerStyle={styles.listContainer}
+                    data={Object.keys(groupedForms)}
+                    renderItem={renderTypeItem}
+                    keyExtractor={(item) => item}
+                    contentContainerStyke={styles.listContainer}
                 />
                 <Modal visible ={isRangeMode}>
                     <Layout style = {styles.containerCalendar}>
@@ -471,6 +500,14 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignSelf: 'center',
+    },
+    formType: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginVertical: 10,
+        paddingHorizontal: 10,
+        backgroundColor: '#e0e0e0',
+        borderRadius: 5,
     },
 })
 
