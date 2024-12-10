@@ -40,6 +40,7 @@ const TextoConstructor = ({ field, onSave }) => {
     const [selectedLimitaciones, setSelectedLimitaciones] = useState([])
     const [selectedFormato, setSelectedFormato] = useState(null)
     const [isRequired, setIsRequired] = useState(field.isRequired ?? true)
+    const [isRequiredQR, setIsRequiredQR] = useState(field.isRequiredQR ?? false)
 
     const toggleLimitacion = (index) => {
         if (selectedLimitaciones.includes(index)) {
@@ -102,6 +103,7 @@ const TextoConstructor = ({ field, onSave }) => {
             limitaciones,
             formato,
             obligatorio: isRequired,
+            rellenarQR: isRequiredQR,
         }
 
         if (onSave) {
@@ -161,11 +163,17 @@ const TextoConstructor = ({ field, onSave }) => {
                 renderItem={renderFormatoItem}
             />
 
+            {/* Respuesta por QR */}
+            <View style={styles.field}>
+                    <Text>¿Aceptar Respuesta por QR?</Text>
+                    <Toggle checked={isRequiredQR} onChange={setIsRequiredQR} />
+            </View>
+
             {/* Obligatorio */}
             <View style={styles.field}>
                     <Text>¿Es Obligatorio?</Text>
                     <Toggle checked={isRequired} onChange={setIsRequired} />
-                </View>
+            </View>
 
              {/* Guardar */}
              <Button onPress={handleSave} style={styles.saveButton}>
