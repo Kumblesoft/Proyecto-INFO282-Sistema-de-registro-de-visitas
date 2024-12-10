@@ -195,10 +195,10 @@ const SavedForms = () => {
         </View>
     )
     const groupedForms = forms.reduce((acc, form) => {
-        if (!acc[form.nombreFormulario]) {
-            acc[form.nombreFormulario] = []
+        if (!acc[form.plantilla]) {
+            acc[form.plantilla] = []
         }
-        acc[form.nombreFormulario].push(form)
+        acc[form.plantilla].push(form)
         return acc
     }, {})
     
@@ -211,7 +211,7 @@ const SavedForms = () => {
             onPress={() => handleSelection(item.id)}
             onLongPress={toggleSelectionMode}
         >
-            <Text style={styles.formTitle}>{`${item.plantilla}`}</Text>
+            <Text style={styles.formTitle}>{item.id}</Text>
             {isSelectionMode ? null : (
                 <Button style={styles.button} onPress={() => exportForm([item])} accessoryLeft={shareIcon} />
             )}
@@ -228,7 +228,7 @@ const SavedForms = () => {
     const renderTypeItem = ({ item }) => (
         <View>
             <TouchableOpacity onPress={() => toggleExpand(item)} >
-                <Text style={styles.formType}>{`${item.plantilla}`}</Text> {/* Mostrar el tipo de formulario */}
+                <Text style={styles.formType}>{item}</Text> {/* Mostrar el tipo de formulario */}
             </TouchableOpacity>
             {expandedTypes[item] && (
                 <FlatList
@@ -273,9 +273,9 @@ const SavedForms = () => {
                 )}
                 </Layout>
                 <FlatList
-                    data={forms}
+                    data={Object.keys(groupedForms)}
                     renderItem={renderTypeItem}
-                    keyExtractor={item => item.id.toString()}
+                    keyExtractor={item => item}
                     contentContainerStyle={styles.listContainer}
                 />
                 <Modal visible={isRangeMode}>
