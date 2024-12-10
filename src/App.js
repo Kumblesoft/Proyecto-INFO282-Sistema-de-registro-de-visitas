@@ -9,18 +9,20 @@ import FormSelectorScreen from "./screens/FormSelectorScreen" // Importa tu pant
 import FormFiller from "./screens/FormFiller"
 import SavedForms from "./screens/SavedFormsScreen"
 import Settings from "./screens/Settings"
+import { SQLiteProvider, useSQLiteContext, type SQLiteDatabase } from 'expo-sqlite'
+import { initializeDataBase } from './database/database'
 
-import { FormProvider } from './context/FormContext'
+import { FormProvider } from './context/SelectedFormContext'
 import { IdentifierProvider } from './context/IdentifierContext'
 import FormEditor from './screens/FormEditor'
 
 
 const myTheme = {
-  ...eva.light, 
+  ...eva.light,
   'color-primary-default': '#00e798',
   'color-primary-active': '#00c17f',
   'color-primary-hover': '#60e0b5',
-  
+
   'color-info-default': '#2196F3',   // Azul normal
   'color-info-active': '#1976D2',    // Azul oscuro al presionar
   'color-info-hover': '#64B5F6',     // Azul claro en hover
@@ -45,23 +47,24 @@ export default function App() {
 
   return (
     <>
-    <IconRegistry icons={EvaIconsPack} />
-    <ApplicationProvider {...eva} theme={myTheme}>
-      <NavigationContainer>
-        <FormProvider>
-          <IdentifierProvider>
-            <Stack.Navigator initialRouteName="Menu">
-              <Stack.Screen name="Menu" component={Menu} options={{headerShown:false}}/>
-              <Stack.Screen name="FormSelector" component={FormSelectorScreen} options={{headerShown:false}}/>
-              <Stack.Screen name="SavedForms" component={SavedForms} options={{headerShown:false}}/>
-              <Stack.Screen name="FormFiller" component={FormFiller} options={{headerShown:false}}/>
-              <Stack.Screen name="Settings" component={Settings} options={{headerShown:false}}/>
-              <Stack.Screen name="FormEditor" component={FormEditor} options={{headerShown: false}}/>
-            </Stack.Navigator>
-          </IdentifierProvider>
-        </FormProvider>
-      </NavigationContainer>
-    </ApplicationProvider>
+      <IconRegistry icons={EvaIconsPack} />
+      <SQLiteProvider databaseName="forms.db" onInit={initializeDataBase}>
+        <ApplicationProvider {...eva} theme={myTheme}>
+          <NavigationContainer>
+            <FormProvider>
+              <IdentifierProvider>
+                <Stack.Navigator initialRouteName="Menu">
+                  <Stack.Screen name="Menu" component={Menu} options={{ headerShown: false }} />
+                  <Stack.Screen name="FormSelector" component={FormSelectorScreen} options={{ headerShown: false }} />
+                  <Stack.Screen name="SavedForms" component={SavedForms} options={{ headerShown: false }} />
+                  <Stack.Screen name="FormFiller" component={FormFiller} options={{ headerShown: false }} />
+                  <Stack.Screen name="Settings" component={Settings} options={{ headerShown: false }} />
+                </Stack.Navigator>
+              </IdentifierProvider>
+            </FormProvider>
+          </NavigationContainer>
+        </ApplicationProvider>
+      </SQLiteProvider>
     </>
   )
 }

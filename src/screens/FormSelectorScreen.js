@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { View, StyleSheet, FlatList, TouchableOpacity, Alert, Image } from 'react-native'
 import { Button, Text, TopNavigation, TopNavigationAction, Divider, Layout, Modal, Card, Icon } from '@ui-kitten/components'
-import { useFormContext } from '../context/FormContext'
+import { useFormContext } from '../context/SelectedFormContext'
 import { useNavigation } from '@react-navigation/native'
 import { LinearGradient } from 'expo-linear-gradient'
 import * as FileSystem from 'expo-file-system'
@@ -9,22 +9,32 @@ import * as Sharing from 'expo-sharing'
 import * as Animatable from 'react-native-animatable'
 import shareTypes from '../commonStructures/shareTypes'
 import * as DocumentPicker from 'expo-document-picker'
+import { useSQLiteContext } from 'expo-sqlite'
+import Database from '../database/database'
+
+
+const dbFormTest = require('../TestForms/dbFormTest.json')
+
 
 const FormSelectorScreen = () => {
+  const database = useSQLiteContext()
+  const db = new Database(database)
+  console.log(dbFormTest)
+  db.addForm(dbFormTest)
   const navigation = useNavigation()
   const forms = require("../TestForms/forms.json")
-  const [ localForms, setForms ] = useState(forms)
-  const [ isOptionModalVisible, setIsOptionModalVisible ] = useState(false)
-  const [ selectedItem, setSelectedItem ] = useState({"nombre formulario": "err"})
+  const [localForms, setForms] = useState(forms)
+  const [isOptionModalVisible, setIsOptionModalVisible] = useState(false)
+  const [selectedItem, setSelectedItem] = useState({ "nombre formulario": "err" })
   const { setSelectedForm } = useFormContext()
-  const [ isSelectionMode, setIsSelectionMode ] = useState(false) // Modo de selección
-  const [ selectedForms, setSelectedForms ] = useState([]) // Formularios seleccionados
-  const [ file, setFile ] = useState(null) // File picker function
+  const [isSelectionMode, setIsSelectionMode] = useState(false) // Modo de selección
+  const [selectedForms, setSelectedForms] = useState([]) // Formularios seleccionados
+  const [file, setFile] = useState(null) // File picker function
 
-  const backIcon = () => <Icon name='arrow-ios-back-outline' fill='#fff' style={styles.topNavigationIcon}/>
-  const importIcon = () => <Icon name='cloud-download-outline' fill='#fff' style={styles.topNavigationIcon}/>
+  const backIcon = () => <Icon name='arrow-ios-back-outline' fill='#fff' style={styles.topNavigationIcon} />
+  const importIcon = () => <Icon name='cloud-download-outline' fill='#fff' style={styles.topNavigationIcon} />
   const deleteIcon = props => <Icon name='trash' {...props} />
-  const shareIcon = props => <Icon name='share' {...props}/>
+  const shareIcon = props => <Icon name='share' {...props} />
   const BackAction = () => <TopNavigationAction icon={backIcon} onPress={() => navigation.goBack()} />
   const importAction = () => <TopNavigationAction icon={importIcon} onPress={() => pickDocument()} />
   const optionBar = () => (
@@ -34,6 +44,8 @@ const FormSelectorScreen = () => {
     </Layout>
   )
 
+
+  //File picker function
   const pickDocument = async () => {
     try {
       const result = await DocumentPicker.getDocumentAsync({
@@ -62,8 +74,20 @@ const FormSelectorScreen = () => {
         // console.log("File Content:", content) // Log the content (JSON)
         const tempo = localForms.concat(JSON.parse(content))
         setForms(tempo)
+
+        console.log(tempo, '\n')
+
+        try {
+          // Write new content to the file (overwrites existing content)
+          await FileSystem.writeAsStringAsync(`${FileSystem.documentDirectory}forms.json`, JSON.stringify(tempo))
+          Alert.alert("Success", "File content has been overwritten!")
+        } catch (err) {
+          console.error("Error writing to file:", err)
+          Alert.alert("Error", "Failed to overwrite the file.")
+        }
+
         console.log(localForms)
-      } 
+      }
       else if (result.canceled) { console.log("Action Canceled, no file selected.") }
       else { Alert.alert("Error", "Failed to pick a document. Please try again.") }
     } catch (err) {
@@ -74,26 +98,28 @@ const FormSelectorScreen = () => {
 
   const deleteSelectedForms = async () => {
     try {
-        const updatedForms = localForms.filter(form => !selectedForms.includes(form["nombre formulario"]))
-        
-        const filePath = `${FileSystem.cacheDirectory}forms.json`
-        const updatedFormsString = JSON.stringify(updatedForms)
+      const updatedForms = localForms.filter(form => !selectedForms.includes(form["nombre formulario"]))
 
-        await FileSystem.writeAsStringAsync(filePath, updatedFormsString)
-      
-        const newContent = await FileSystem.readAsStringAsync(filePath)
-        const loc = localForms.pop(JSON.parse(newContent))
+      const filePath = `${FileSystem.cacheDirectory}forms.json`
+      const updatedFormsString = JSON.stringify(updatedForms)
 
-        setForms(loc)
-        setSelectedForms([]) 
-        setIsSelectionMode(false)
-        console.log(localForms)
-        console.log("Formularios restantes después de la eliminación:", updatedForms)
-        console.log("Archivo actualizado guardado en:", filePath)
+      await FileSystem.writeAsStringAsync(filePath, updatedFormsString)
+
+
+
+      const newContent = await FileSystem.readAsStringAsync(filePath)
+      const loc = localForms.pop(JSON.parse(newContent))
+
+      setForms(loc)
+      setSelectedForms([])
+      setIsSelectionMode(false)
+      console.log(localForms)
+      console.log("Formularios restantes después de la eliminación:", updatedForms)
+      console.log("Archivo actualizado guardado en:", filePath)
 
     } catch (error) {
-        console.error("Error al eliminar formularios seleccionados:", error)
-        Alert.alert("Error", "Hubo un problema al eliminar los formularios seleccionados")
+      console.error("Error al eliminar formularios seleccionados:", error)
+      Alert.alert("Error", "Hubo un problema al eliminar los formularios seleccionados")
     }
   }
 
@@ -102,7 +128,7 @@ const FormSelectorScreen = () => {
   )
 
   const SelectionAction = () => (
-      <TopNavigationAction icon={SelectionIcon} onPress={toggleSelectionMode} />
+    <TopNavigationAction icon={SelectionIcon} onPress={toggleSelectionMode} />
   )
 
   const toggleSelectionMode = () => {
@@ -113,17 +139,17 @@ const FormSelectorScreen = () => {
   const handleSelection = (item) => {
     if (isSelectionMode) {
       setSelectedForms((prev) =>
-          prev.includes(item["nombre formulario"]) 
-              ? prev.filter((id) => id !== item["nombre formulario"]) 
-              : [...prev, item["nombre formulario"]]
+        prev.includes(item["nombre formulario"])
+          ? prev.filter((id) => id !== item["nombre formulario"])
+          : [...prev, item["nombre formulario"]]
       )
-    } 
+    }
   }
 
   const handlePress = (form) => {
     if (isSelectionMode) {
       handleSelection(form)
-    } 
+    }
     else {
       setSelectedForm(form)
       navigation.navigate('Menu')
@@ -140,15 +166,15 @@ const FormSelectorScreen = () => {
 
   const renderItem = ({ item }) => (
 
-    <TouchableOpacity 
+    <TouchableOpacity
       style={[styles.containerBox, selectedForms.includes(item["nombre formulario"]) && styles.selectedItem]}
-      onPress={() => handlePress(item)} 
+      onPress={() => handlePress(item)}
       onLongPress={toggleSelectionMode}
-    > 
+    >
       <Text style={styles.itemText}>{item["nombre formulario"]}</Text>
       <Button
         accessoryLeft={
-          <Icon name='menu-outline' style={{width:25, height:25}} fill='#000'/>
+          <Icon name='menu-outline' style={{ width: 25, height: 25 }} fill='#000' />
         }
         onPress={() => {
           setSelectedItem(item)
@@ -161,41 +187,41 @@ const FormSelectorScreen = () => {
   )
 
   const shareFormTemplate = formItems => {
-      if (!formItems) return Alert.alert('Error', 'No se ha seleccionado un formulario')
-      if (formItems.constructor === Array) {
-        const formItemsSet = new Set(formItems)
-        formItems = forms.filter(form => formItemsSet.has(form["nombre formulario"]))
-      }
+    if (!formItems) return Alert.alert('Error', 'No se ha seleccionado un formulario')
+    if (formItems.constructor === Array) {
+      const formItemsSet = new Set(formItems)
+      formItems = forms.filter(form => formItemsSet.has(form["nombre formulario"]))
+    }
 
-      const typeOfMedia = formItems.constructor === Array ? shareTypes.MULTIPLE_FORMS : shareTypes.SINGLE_FORM
-      
-      const objectStringified = JSON.stringify({ 
-        share_content_type: typeOfMedia,          
-        content           : formItems
+    const typeOfMedia = formItems.constructor === Array ? shareTypes.MULTIPLE_FORMS : shareTypes.SINGLE_FORM
+
+    const objectStringified = JSON.stringify({
+      share_content_type: typeOfMedia,
+      content: formItems
+    })
+    // Intentar compartir usando un archivo temporal
+    const filePath = `${FileSystem.cacheDirectory}plantillaFormulario.json`
+    FileSystem.writeAsStringAsync(filePath, objectStringified).then(
+      () => Sharing.shareAsync(filePath, {
+        dialogTitle: 'Compartir JSON como archivo',
+        mimeType: 'application/json',
+        UTI: 'public.json'
       })
-      // Intentar compartir usando un archivo temporal
-      const filePath = `${FileSystem.cacheDirectory}plantillaFormulario.json`
-      FileSystem.writeAsStringAsync(filePath, objectStringified).then(
-        () => Sharing.shareAsync(filePath, {
-            dialogTitle : 'Compartir JSON como archivo',
-            mimeType    : 'application/json',
-            UTI         : 'public.json'
-          })
       // Si se compartio correctamente
-      ).catch(error => {
-        console.error('Error al crear archivo:', error)
-        Alert.alert('Error', 'Hubo un problema al intentar compartir el archivo')
+    ).catch(error => {
+      console.error('Error al crear archivo:', error)
+      Alert.alert('Error', 'Hubo un problema al intentar compartir el archivo')
       // Borrar el archivo temporal
-      }).finally(
-        async () => {
-          try {
-            const fileInfo = await FileSystem.getInfoAsync(filePath)
-            if (fileInfo.exists) await FileSystem.deleteAsync(filePath)
-          } catch (deleteError) {
-            console.error('Error al eliminar el archivo:', deleteError)
-          }
+    }).finally(
+      async () => {
+        try {
+          const fileInfo = await FileSystem.getInfoAsync(filePath)
+          if (fileInfo.exists) await FileSystem.deleteAsync(filePath)
+        } catch (deleteError) {
+          console.error('Error al eliminar el archivo:', deleteError)
         }
-      )
+      }
+    )
   }
 
   const OptionsModal = () => {
@@ -217,14 +243,14 @@ const FormSelectorScreen = () => {
         backdropStyle={newModalStyles.backdrop}
         onBackdropPress={() => setIsOptionModalVisible(false)}
       >
-        
+
         <Animatable.View
-        animation="fadeIn"
-        duration={300}
+          animation="fadeIn"
+          duration={300}
         >
           <Card disabled={true} style={newModalStyles.container}>
             <Text style={newModalStyles.title}>{selectedItem["nombre formulario"]}</Text>
-            
+
             <View style={newModalStyles.buttonGroup}>
               <Button
                 accessoryLeft={() => (
@@ -247,7 +273,7 @@ const FormSelectorScreen = () => {
                 onPress={() => onEdit(selectedItem)}
                 style={newModalStyles.actionButton}
               />
-            </View>        
+            </View>
 
             <Button
               onPress={() => onSelect(selectedItem)}
@@ -268,7 +294,8 @@ const FormSelectorScreen = () => {
           </Card>
         </Animatable.View>
       </Modal>
-  )}
+    )
+  }
 
   return (
     <>
@@ -283,7 +310,7 @@ const FormSelectorScreen = () => {
             alignment='center'
           />
         </LinearGradient>
-        
+
         <Divider />
         <Layout style={styles.container}>
           <FlatList
@@ -293,27 +320,27 @@ const FormSelectorScreen = () => {
             contentContainerStyle={styles.listContainer}
           />
           {isSelectionMode && (
-              <Layout style={styles.buttonContainer}>
-                  <Button
-                      style={styles.deleteButton}
-                      onPress={() => deleteSelectedForms()} // Pasamos los datos al botón
-                      accessoryLeft={deleteIcon}
-                  >
-                      Eliminar 
-                  </Button>
+            <Layout style={styles.buttonContainer}>
+              <Button
+                style={styles.deleteButton}
+                onPress={() => deleteSelectedForms()} // Pasamos los datos al botón
+                accessoryLeft={deleteIcon}
+              >
+                Eliminar
+              </Button>
 
-                    <Button status='info' style={styles.shareButton} accessoryLeft={shareIcon} onPress={() => shareFormTemplate(selectedForms)}>
-                        Compartir
-                    </Button>
-                </Layout>
-              )
-            }
-            <View style={styles.footer}>
-        <Button style={styles.buttonFormularios} onPress={() => navigation.navigate('FormEditor')}>
-          <Text style={styles.buttonText}>Creador de formularios</Text>
-        </Button>
-      </View>
-      </Layout>
+              <Button status='info' style={styles.shareButton} accessoryLeft={shareIcon} onPress={() => shareFormTemplate(selectedForms)}>
+                Compartir
+              </Button>
+            </Layout>
+          )
+          }
+          <View style={styles.footer}>
+            <Button style={styles.buttonFormularios} onPress={() => navigation.navigate('FormEditor')}>
+              <Text style={styles.buttonText}>Creador de formularios</Text>
+            </Button>
+          </View>
+        </Layout>
       </Layout>
     </>
   )
@@ -378,7 +405,7 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 15,
     borderRadius: 8,
-    backgroundColor: '#ffffff', 
+    backgroundColor: '#ffffff',
     borderWidth: 1,
     borderColor: '#00b7ae',
     shadowColor: "#000",
@@ -392,13 +419,13 @@ const styles = StyleSheet.create({
     height: 'auto'
   },
   title: {
-    fontSize: 22,   
+    fontSize: 22,
     fontWeight: 'bold',
     color: '#fff',
   },
-  topNavigationText:{
+  topNavigationText: {
     marginRight: 50,
-    fontSize: 22,   
+    fontSize: 22,
     fontWeight: 'bold',
     color: '#fff',
   },
@@ -413,7 +440,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginBottom: 10,
   },
-  layoutContainer:{
+  layoutContainer: {
     backgroundColor: '#fff',
     flex: 1,
   },
@@ -430,7 +457,7 @@ const styles = StyleSheet.create({
   shareButton: {
     width: '35%',
     marginLeft: '3%'
-  },  
+  },
   shareIcon: {
     width: 20,
     height: 20,
