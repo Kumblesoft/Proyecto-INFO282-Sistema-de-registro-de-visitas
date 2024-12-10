@@ -36,7 +36,7 @@ const FieldSelector = () => {
     const fieldTypes = Object.keys(fields)
 
     const handleFieldSave = (field, index) => {
-        if (fieldNames.has(field.nombre)) {
+        if (fieldNames.has(field.nombre) && field.nombre !== miniFields[index]) {
             Alert.alert('Error', `El campo "${field.nombre}" ya existe en el formulario`)
             return
         }
