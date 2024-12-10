@@ -37,7 +37,7 @@ const FormSelectorScreen = () => {
   const importIcon = () => <Icon name='cloud-download-outline' fill='#fff' style={styles.topNavigationIcon}/>
   const deleteIcon = props => <Icon name='trash-outline' {...props} fill="#fff" animationConfig={{ cycles: Infinity }} animation='zoom' style={[props.style, { width: 30, height: 30 }]}/>
   const shareIcon = props => <Icon name='share-outline' {...props} fill="#fff" animationConfig={{ cycles: Infinity }} animation='zoom' style={[props.style, { width: 30, height: 30 }]}/>
-  const plusIcon = props => <Icon name='plus-outline' {...props} fill="#fff" animationConfig={{ cycles: Infinity }} animation='zoom' style={[props.style, { width: 30, height: 30 }]}/>
+  const plusIcon = props => <Icon name='plus-outline' {...props} fill="#fff" animationConfig={{ cycles: Infinity }} animation='zoom' style={[props.style, { width: 40, height: 40 }]}/>
   const BackAction = () => <TopNavigationAction icon={backIcon} onPress={() => navigation.goBack()} />
   const importAction = () => <TopNavigationAction icon={importIcon} onPress={() => pickDocument()} />
   const optionBar = () => (
@@ -323,35 +323,14 @@ const FormSelectorScreen = () => {
             renderItem={renderItem}
             keyExtractor={(item) => item["nombre formulario"]}
             contentContainerStyle={styles.listContainer}
-          />
-          {isSelectionMode && (
-            <Layout style={styles.buttonContainer}>
-              <Button
-                style={styles.deleteButton}
-                onPress={() => deleteSelectedForms()} // Pasamos los datos al botón
-                accessoryLeft={deleteIcon}
-              >
-                Eliminar
-              </Button>
-
-              <Button status='info' style={styles.shareButton} accessoryLeft={shareIcon} onPress={() => shareFormTemplate(selectedForms)}>
-                Compartir
-              </Button>
-            </Layout>
-          )
-          }
-          <View style={styles.footer}>
-            <Button style={styles.buttonFormularios} onPress={() => navigation.navigate('FormEditor')}>
-              <Text style={styles.buttonText}>Creador de formularios</Text>
-            </Button>
-          </View>
+          />    
         </Layout>
       </Layout>
         <View style={styles.containerMenuBar}>
 
           <Button style={styles.iconButton2} appearance="ghost" onPress={() => deleteSelectedForms()} accessoryLeft={deleteIcon} />
 
-          <Button style={styles.centerButton} onPress={() => navigation.navigate('CreateTemplate')} accessoryLeft={plusIcon} />
+          <Button style={styles.centerButton} onPress={() => navigation.navigate('Menu')} accessoryLeft={plusIcon} />
           
           <Button style={styles.iconButton2} appearance="ghost" accessoryLeft={shareIcon} />
         </View>
@@ -504,17 +483,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'flex-end',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5, 
   },
   containerMenuBar: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#00ffa7', 
+    backgroundColor: '#00baa2', 
     paddingHorizontal: 10,
     paddingVertical: 0,
     borderTopLeftRadius: 20,
@@ -537,17 +511,13 @@ const styles = StyleSheet.create({
     marginTop: width * 0.9 
   },
   centerButton: {
-    top: -20,
-    width: 80,
-    height: 80,
+    top: -25,
+    width: 75,
+    height: 75,
     borderRadius: 40,
-    backgroundColor: '#00e593', 
-    borderColor: '#00ffa7', 
-    borderWidth: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
+    backgroundColor: '#00e895', 
+    borderColor: '#fff', 
+    borderWidth: 6,
   },
 })
 
