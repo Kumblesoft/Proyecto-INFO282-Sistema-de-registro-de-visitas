@@ -4,8 +4,10 @@ import { Image, View, StyleSheet, Alert, Linking, TouchableOpacity, Modal, Text 
 import {Button, Layout} from '@ui-kitten/components'
 import * as ImagePicker from 'expo-image-picker'
 import * as MediaLibrary from 'expo-media-library'
+import * as FileSystem from 'expo-file-system'
 import cameraIcon from '../assets/camera.png'
 import galleryIcon from '../assets/gallery.png'
+
 /**
  * Class representing the configuration settings for the camera.
  */
@@ -83,9 +85,9 @@ export const Camera = ({ title, required, cameraConfiguration, requiredFieldRef 
 
     const result = await launchFunction(cameraConfiguration.getSettings())
     if (result.canceled) return new Err('Operation cancelled')
-
+    
     const imageUri = result.assets[0].uri
-
+    const base64 = await FileSystem.readAsStringAsync(imageUri, { encoding: FileSystem.EncodingType.Base64 })
     if (launchFunction === ImagePicker.launchCameraAsync) {
       try {
         const asset = await MediaLibrary.createAssetAsync(imageUri)
@@ -95,7 +97,7 @@ export const Camera = ({ title, required, cameraConfiguration, requiredFieldRef 
       }
     }
 
-    cameraConfiguration.setImage(imageUri)
+    cameraConfiguration.setImage(base64)
     setImage(imageUri) // Actualiza la imagen seleccionada
     setIsRequiredAlert(false)
     setMenuVisible(false)

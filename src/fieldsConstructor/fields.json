@@ -98,7 +98,7 @@
         "opcion predeterminada": null,
         "texto predeterminado": "",
         "cantidad de elecciones": 1,
-        "obligatorio": true,
+        "obligatorio": false,
         "salida": ""
       },
 
@@ -109,11 +109,11 @@
         "opcion predeterminada": null,
         "texto predeterminado": "",
         "cantidad de elecciones": 1,
+        "obligatorio": false,	
         "salida": ""
       },
       "camara": {
         "nombre": "",
-        "salida": "",
-        "editable": true
+        "salida": ""
     }
 }

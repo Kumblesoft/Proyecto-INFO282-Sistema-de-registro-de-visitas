@@ -60,15 +60,14 @@ const SavedForms = () => {
     }
     const exportForm = form => {
         const filePath = `${FileSystem.cacheDirectory}respuestasFormularios.json`
+        const copy = form.map(({id, ...form}) => form)
 
-
-        
         const objectStringified = form.lenght === 1 ? JSON.stringify({ 
             share_content_type: shareTypes.SINGLE_ANSWER,
-            content           : form 
+            content           : copy 
           }) : JSON.stringify({
             share_content_type: shareTypes.MULTIPLE_ANSWERS,
-            content           : form
+            content           : copy
         })
         
     
@@ -178,6 +177,16 @@ const SavedForms = () => {
         newForms.sort((a,b) => b.id - a.id)
         setForms(newForms.slice(newForms.length - value))
     }
+    function isBase64(str) {
+        if (!str || typeof str !== 'string') {
+          return false;
+        }
+      
+        const base64Regex = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
+        
+        // Check if string length is a multiple of 4 and matches the Base64 pattern
+        return str.length % 4 === 0 && base64Regex.test(str);
+    }
 
     const renderTitle = () => (
         <View style={styles.titleContainer}>
@@ -194,9 +203,9 @@ const SavedForms = () => {
             onPress={() => handleSelection(item.id)}
             onLongPress={toggleSelectionMode}
         >
-            <Text style={styles.formTitle}>{item.nombreFormulario}</Text>
+            <Text style={styles.formTitle}>{item.plantilla}</Text>
             {isSelectionMode ? null : (
-                <Button style={styles.button} onPress={() => exportForm(item)} accessoryLeft={shareIcon} />
+                <Button style={styles.button} onPress={() => exportForm([item])} accessoryLeft={shareIcon} />
             )}
 
         </TouchableOpacity>
@@ -237,7 +246,7 @@ const SavedForms = () => {
                 <FlatList
                     data={forms}
                     renderItem={renderItem}
-                    keyExtractor={(item) => item.id.toString()}
+                    keyExtractor={item => item.id.toString()}
                     contentContainerStyle={styles.listContainer}
                 />
                 <Modal visible={isRangeMode}>
@@ -286,13 +295,15 @@ const SavedForms = () => {
                 >
                     <Layout style={styles.modalContainer}>
                         <Card style={styles.modalCard} disabled={true} >
-                            <Text style={styles.modalTitle}>{selectedForm?.nombreFormulario}</Text>
+                            <Text style={styles.modalTitle}>{selectedForm?.plantilla}</Text>
                             {selectedForm && Object.entries(selectedForm.data).map(([key, value]) => (
                                 <Layout style={styles.containerRespuestas}>
                                     <Text style={styles.key} key={key}>{`${key}`}</Text>
-                                    {console.log(value)}
-                                    <ScrollView style = {{maxHeight: 30}}>
-                                        <Text style={styles.value}>{`${value}`}</Text>
+                                    <ScrollView style = {{maxHeight: 200}}>
+                                        {console.log(isBase64(value))}
+                        
+                                        {
+                                        isBase64(value) ? <Image source={{uri: `data:image/jpeg;base64,${value}`}} style={{width: 300, height: 300 }} resizeMode='center'/> : <Text style={styles.value}>{`${value}`}</Text>}
                                     </ScrollView>
                                 </Layout>
                             ))}
@@ -300,7 +311,7 @@ const SavedForms = () => {
                             <Button accessoryLeft={deleteIcon} status='danger' onPress={() => {setConfirmDelete([true, true])
                                                     setModalVisible(false)}
                                                 }>Eliminar</Button>
-                            <Button accessoryLeft={shareIcon} status='info' onPress={() => exportForm(selectedForm)}>Compartir</Button>
+                            <Button accessoryLeft={shareIcon} status='info' onPress={() => exportForm([selectedForm])}>Compartir</Button>
                             <Button  onPress={closeModal}>Cerrar</Button>
                         </Card>
                     </Layout>

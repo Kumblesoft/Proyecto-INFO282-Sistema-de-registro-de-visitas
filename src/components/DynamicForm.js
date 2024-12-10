@@ -78,6 +78,7 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
             }
 
             const newForm = {
+                id : new Date().getTime(),
                 plantilla: formData["nombre formulario"], 
                 umplantilla: formData["ultima modificacion"],
                 data: Object.fromEntries(formState.current), 
