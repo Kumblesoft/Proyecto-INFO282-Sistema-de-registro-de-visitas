@@ -150,7 +150,7 @@ const FormSelectorScreen = () => {
   }
 
   const handlePress = form => {
-    if (isSelectionMode) 
+    if (isSelectionMode) {
       handleSelection(form)
     }
     else {
