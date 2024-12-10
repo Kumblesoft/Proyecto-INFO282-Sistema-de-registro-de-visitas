@@ -202,7 +202,11 @@ const SavedForms = () => {
         return acc
     }, {})
     
-    const renderFormItem = ({ item }) => (
+    const renderFormItem = ({ item }) => {
+        const dateString = `${new Date(item.id)}`	
+        const lenght = dateString.length
+
+        return(
         <TouchableOpacity
             style={[
                 styles.containerBox,
@@ -211,12 +215,12 @@ const SavedForms = () => {
             onPress={() => handleSelection(item.id)}
             onLongPress={toggleSelectionMode}
         >
-            <Text style={styles.formTitle}>{item.id}</Text>
+            <Text style={styles.formTitle}>{dateString.substring(0, lenght-8 )}</Text>
             {isSelectionMode ? null : (
                 <Button style={styles.button} onPress={() => exportForm([item])} accessoryLeft={shareIcon} />
             )}
         </TouchableOpacity>
-    )
+    )}
 
     const toggleExpand = (type) => {
         setExpandedTypes(prevState => ({
