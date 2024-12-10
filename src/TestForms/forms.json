@@ -53,8 +53,7 @@
 				"editable": true,
 				"relacion de aspecto": [16,9]
 			}
-		],
-		"accion personalizada": "()=>{console.log('Hacer algo')}"
+		]
 	},
 	{
 		"nombre formulario": "Formulario 2",
@@ -105,8 +104,7 @@
 				"formato": "dd/mm/aaaa",
 				"fecha predeterminada": "2024-10-01"
 			}
-		],
-		"accion personalizada": "()=>{console.log('Formulario 2 enviado')}"
+		]
 	},
 	{
 		"nombre formulario": "Prueba texto",
@@ -189,8 +187,7 @@
 				"solo mayusculas"
 			  ]
 			}
-		  ],
-		"accion personalizada": "()=>{console.log('Prueba texto enviado')}"
+		  ]
 	},
 	{
 		"nombre formulario": "Prueba fechas",
