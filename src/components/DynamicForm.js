@@ -90,7 +90,7 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
             await AsyncStorage.setItem('savedForms', JSON.stringify(storedForms))
             console.log("Formulario guardado:", newForm)
             formState.current.clear()
-            Alert.alert("Formulario guardado")
+            //Alert.alert("Formulario guardado")
             refreshFieldRefs.current.forEach(ref => ref())
         } catch (error) {
             console.error("Error al guardar el formulario:", error)
@@ -122,7 +122,8 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
                         title: field.nombre,
                         defaultOption: field['opcion predeterminada'],
                         placeholder: field['texto predeterminado'],
-                        required: field.obligatorio
+                        required: field.obligatorio,
+                        disabled: disabledSave
                         })}
                     />
                 )
@@ -140,7 +141,8 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
                         defaultOption: field['opcion predeterminada'],
                         placeholder: field['texto predeterminado'],
                         maxChecked: field['cantidad de elecciones'],
-                        required: field['obligatorio']
+                        required: field['obligatorio'],
+                        disabled: disabledSave
                         })}
                     />
                 )
@@ -158,7 +160,8 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
                         defaultOption: field['opcion predeterminada'],
                         placeholder: field['texto predeterminado'],
                         maxChecked: field['cantidad de elecciones'],
-                        required: field['obligatorio']
+                        required: field['obligatorio'],
+                        disabled: disabledSave
                         })}
                     />
                 )
@@ -175,7 +178,7 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
                         placeholder: field['texto predeterminado'],
                         defaultDate: field['fecha predeterminada'],
                         dateFormat: field['formato'],
-                        disabled: field['limitaciones'].includes('no editable'),
+                        disabled: field['limitaciones'].includes('no editable') || disabledSave,
                         required: field['obligatorio']
                         })}
                     />
@@ -192,7 +195,7 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
                         optionalFeatures={OptionalTimeFeatures({
                         title: field.nombre,
                         defaultTime: field['hora predeterminada'] === 'actual' ? now : field['hora predeterminada'],
-                        disabled: field['limitaciones'].includes('no editable'),
+                        disabled: field['limitaciones'].includes('no editable') || disabledSave,
                         required: field['obligatorio']
                         })}
                     />
@@ -207,6 +210,7 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
                         required={field['obligatorio']}
                         requiredFieldRef={requiredFieldRef}
                         refreshFieldRef = {refreshFieldRef}
+                        disabled={disabledSave}
                         cameraConfiguration={new CameraConfiguration(
                         (value) => handleInputChange(field.salida, value),
                         field['editable'],
@@ -226,7 +230,8 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
                             required: field.obligatorio,
                             limitations: field.limitaciones,
                             format: field.formato,
-                            QRfield:field.rellenarQR
+                            QRfield:field.rellenarQR,
+                            disabled:disabledSave
                         })}
                         onSelect={(value) => handleInputChange(field.salida, value)}
                     />

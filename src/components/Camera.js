@@ -55,13 +55,13 @@ class CameraConfiguration {
  * 
  * @returns {JSX.Element} Rendered camera component.
  */
-export const Camera = ({ title, required, cameraConfiguration, requiredFieldRef , refreshFieldRef}) => {
+export const Camera = ({ title, required, cameraConfiguration, requiredFieldRef , refreshFieldRef, disabled}) => {
   const [image, setImage] = useState(null)
   const [isMenuVisible, setMenuVisible] = useState(false)
   const [isRequiredAlert, setIsRequiredAlert] = useState(false)
 
   async function openMedia(cameraConfiguration, launchFunction) {
-    
+    if (disabled) return new Err('Camera is disabled').show();
     let mediaPermissions = await ImagePicker.requestMediaLibraryPermissionsAsync()
     let cameraPermissions = await ImagePicker.requestCameraPermissionsAsync()    
     let permissionsGranted = mediaPermissions.status === 'granted' && cameraPermissions.status === 'granted'
@@ -143,6 +143,7 @@ export const Camera = ({ title, required, cameraConfiguration, requiredFieldRef 
       
       {/* Contenedor que muestra el icono o imagen seleccionada */}
       <TouchableOpacity onPress={toggleMenu} 
+      disabled= {disabled}
       style={[
         styles.imageContainer, 
         isRequiredAlert && { backgroundColor: '#FFCCCC' } // Change background to red if isRequiredAlert is true

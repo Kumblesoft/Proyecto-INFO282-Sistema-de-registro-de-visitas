@@ -26,7 +26,8 @@ export const OptionComponentType = Object.freeze({
  * @param {string} [options.defaultOption] - The value of the option displayed initially (for Select).
  * @param {boolean} [options.required=false] - Indicates whether the field is required.
  * @param {number} [options.maxChecked] - Max options to check in checkbox group.
- * @returns {OptionSelectorFeatures} - The optional features of OptionSelector.
+ * @param {boolean} [options.disabled] - Indicates whether the field is disabled.
+* @returns {OptionSelectorFeatures} - The optional features of OptionSelector.
  */
 export const OptionSelectorFeatures = options => {
     return {
@@ -34,7 +35,8 @@ export const OptionSelectorFeatures = options => {
         placeholder: options.placeholder,
         defaultOption: options.defaultOption,
         required: options.required ?? false, // Usa false como valor por defecto
-        maxChecked: options.maxChecked
+        maxChecked: options.maxChecked,
+        disabled: options.disabled
     }
 }
 
@@ -52,7 +54,7 @@ export default function OptionSelector({ type, items, onSelect, requiredFieldRef
     type ??= OptionComponentType.DROPDOWN
     optionalFeatures ??= {}
 
-    const { title, placeholder, defaultOption, required, maxChecked } = optionalFeatures
+    const { title, placeholder, defaultOption, required, maxChecked, disabled} = optionalFeatures
     const [selectedValue, setSelectedValue] = useState(defaultOption || null) // Usar la opción predeterminada como estado inicial
     const [isRequiredAlert, setIsRequiredAlert] = useState(false)
 
@@ -80,10 +82,9 @@ export default function OptionSelector({ type, items, onSelect, requiredFieldRef
 
     // Renderizar el componente correcto basado en `type`
     const SelectedComponent = Selectors[type] // Selecciona el componente correspondiente según `type`
-    const emptyValue = (selectedValue == null)
     refreshFieldRef.current = () => {
         optionRef.current.refreshSelector()
-        setSelectedValue(null)
+        setSelectedValue(defaultOption)
     }
     return (
         <>
@@ -103,6 +104,7 @@ export default function OptionSelector({ type, items, onSelect, requiredFieldRef
                     defaultOption={defaultOption} // Opcion predeterminada
                     maxChecked={maxChecked}
                     ref = {optionRef}
+                    disabled = {disabled}
                 />
                 { isRequiredAlert ?
                     <Layout size='small' style={styles.alert}>
