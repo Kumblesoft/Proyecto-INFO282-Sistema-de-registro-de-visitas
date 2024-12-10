@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { StyleSheet, View, Text, FlatList, Alert, TouchableOpacity, Image } from 'react-native'
+import { StyleSheet, View, Text, FlatList, Alert, TouchableOpacity, Image, ScrollView } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Modal, Card, TopNavigation, TopNavigationAction, Divider, Layout, Button, Icon, Select, SelectItem, RangeCalendar, NativeDateService, Input } from '@ui-kitten/components'
 import { useNavigation } from '@react-navigation/native'
@@ -287,7 +287,10 @@ const SavedForms = () => {
                             {selectedForm && Object.entries(selectedForm.data).map(([key, value]) => (
                                 <Layout style={styles.containerRespuestas}>
                                     <Text style={styles.key} key={key}>{`${key}`}</Text>
-                                    <Text style={styles.value}>{`${value.substring(0,30)}`}</Text>
+                                    {console.log(value)}
+                                    <ScrollView style = {{maxHeight: 30}}>
+                                        <Text style={styles.value}>{`${value}`}</Text>
+                                    </ScrollView>
                                 </Layout>
                             ))}
                             
