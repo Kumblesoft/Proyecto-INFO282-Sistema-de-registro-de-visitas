@@ -5,16 +5,16 @@ import { Input, Button, List, ListItem, CheckBox } from '@ui-kitten/components'
 const TextoConstructor = ({ onSave }) => {
     const enumLimitaciones = {
         "solo letras": 0,
-        "solo numeros": 1,
+        "solo números": 1,
         "solo enteros": 2,
         "solo enteros positivos y cero": 3,
         "email": 4,
-        "no numeros": 5,
+        "no números": 5,
     }
 
     const enumFormato = {
-        "solo mayusculas": 0,
-        "solo minusculas": 1,
+        "solo mayúsculas": 0,
+        "solo minúsculas": 1,
     }
 
     const compatibilidadesLimitaciones = [
@@ -159,7 +159,7 @@ const TextoConstructor = ({ onSave }) => {
                 renderItem={renderFormatoItem}
             />
 
-            <Button style={styles.saveButton} onPress={handleSave}>Guardar y Salir</Button>
+            <Button style={styles.saveButton} onPress={handleSave}>Guardar campo</Button>
         </View>
     )
 }

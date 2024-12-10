@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { View, StyleSheet, Alert, TouchableOpacity } from 'react-native'
-import {Text, Select, SelectItem, Button, Card, Layout} from '@ui-kitten/components'
+import {Text, Select, SelectItem, Button} from '@ui-kitten/components'
+
 import fields from '../fieldsConstructor/fields' // Ajusta la ruta correctamente
 import SelectorConstructor from '../fieldsConstructor/SelectorConstructor'
 import RadioSelectorConstructor from '../fieldsConstructor/RadioConstructor'
@@ -133,7 +134,9 @@ const FieldSelector = () => {
         }
     }
     
+    
     return (
+        <>
         <View style={styles.container}>
             <Button onPress={() => handleDragMode()}>{dragMode ? "Guardar Orden":"Editar Orden"}</Button>
             {dragMode ? 
@@ -185,7 +188,8 @@ const FieldSelector = () => {
                     title="Agregar nuevo campo"
                     onPress={handleNewField}
                     disabled={!selectedIndex}
-                    style={styles.addButton}
+                    style={selectedIndex ? styles.addButton : styles.disButton}
+                    status={selectedIndex ? 'primary' : 'basic'}
                 >
                     Agregar nuevo campo
                 </Button>
@@ -193,7 +197,7 @@ const FieldSelector = () => {
             
         
     </View>
-    
+    </>
     )
 }
 const styles = StyleSheet.create({
@@ -247,10 +251,15 @@ const styles = StyleSheet.create({
         marginBottom: 12,
         textAlign: 'center'
     },
+    disButton: {
+        marginTop: 16,
+        borderRadius: 8,
+        paddingVertical: 10
+    },
     addButton: {
         marginTop: 16,
-        backgroundColor: '#6200ea',
         borderRadius: 8,
+        backgroundColor: '#6200ea',
         paddingVertical: 10
     }
 })

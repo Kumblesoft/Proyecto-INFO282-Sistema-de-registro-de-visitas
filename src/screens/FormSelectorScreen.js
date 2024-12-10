@@ -307,11 +307,11 @@ const FormSelectorScreen = () => {
                 </Layout>
               )
             }
-        <View style={styles.footerContainer}>
-          <Button status='info' style={styles.volverButton} onPress={() => navigation.goBack()}>
-            Volver
-          </Button>
-        </View>
+            <View style={styles.footer}>
+        <Button style={styles.buttonFormularios} onPress={() => navigation.navigate('FormEditor')}>
+          <Text style={styles.buttonText}>Creador de formularios</Text>
+        </Button>
+      </View>
       </Layout>
       </Layout>
     </>
@@ -396,8 +396,8 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   topNavigationText:{
-    marginRight: 70,
-    fontSize: 24,   
+    marginRight: 50,
+    fontSize: 22,   
     fontWeight: 'bold',
     color: '#fff',
   },
