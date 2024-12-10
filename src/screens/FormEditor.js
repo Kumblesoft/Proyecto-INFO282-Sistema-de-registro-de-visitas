@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { ScrollView, View, StyleSheet } from "react-native"
+import { ScrollView, View, StyleSheet, SafeAreaView } from "react-native"
 import { Text, Input, Layout, Icon, Button } from "@ui-kitten/components"
 import formTemplate from "../fieldsConstructor/fields.json" // Importar el JSON con los campos
 import FieldSelector from "../components/FieldSelector" 
@@ -56,7 +56,7 @@ export default function FormEditor() {
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} nestedScrollEnabled>
       <Text style={styles.label}>Nombre del Formulario</Text>
       <Input placeholder="Nombre del Formulario" style={styles.input} textStyle={{ color: isNameTaken ? 'red' : 'black' }} onChangeText={checkFormName}/>
       {isNameTaken && 
@@ -82,6 +82,7 @@ export default function FormEditor() {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     padding: 20,
   },
   fieldContainer: {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { View, StyleSheet, Alert, TouchableOpacity } from 'react-native'
-import {Text, Select, SelectItem, Button} from '@ui-kitten/components'
+import {Text, Select, SelectItem, Button, Card, Layout} from '@ui-kitten/components'
 import fields from '../fieldsConstructor/fields' // Ajusta la ruta correctamente
 import SelectorConstructor from '../fieldsConstructor/SelectorConstructor'
 import RadioSelectorConstructor from '../fieldsConstructor/RadioConstructor'
@@ -21,39 +21,41 @@ const constructors = new Map([
     ['checkbox', CheckBoxConstructor],
     ['camara', CameraConstructor]
 ])
+let fieldNames = new Set()
 
 const FieldSelector = () => {
     const [selectedField, setSelectedField] = useState('')
     const [selectedIndex, setSelectedIndex] = useState(null)
     const [fieldsToDisplay, setFieldsToDisplay] = useState([]) // Almacena los campos agregados
+    const [miniFields, setMiniFields] = useState([]) // Almacena los campos agregados
+    const [dragMode, setDragMode] = useState(false)
     const [form, setForm] = useState({})
+    
 
     // Obtiene los tipos de campos del JSON (keys del objeto)
     const fieldTypes = Object.keys(fields)
 
-    const handleFieldSave = (field) => {
-        fieldsToDisplay[fieldsToDisplay.indexOf(field)] = field
+    const handleFieldSave = (field, index) => {
+        if (fieldNames.has(field.nombre)) {
+            Alert.alert('Error', `El campo "${field.nombre}" ya existe en el formulario`)
+            return
+        }
+        fieldsToDisplay[index] = field
+        fieldNames.delete(miniFields[index])
+        miniFields[index] = field.nombre
+        fieldNames.add(field.nombre)
     }
 
     function renderItem(info) {
         const {item, onDragStart, onDragEnd, isActive} = info
-        const FieldComponent = constructors.get(item.tipo)
         
         return (
         <TouchableOpacity 
-            key={item.tipo}
+            key={item}
             onPressIn={onDragStart} 
-            onPressOut={onDragEnd}>
-            <View style={styles.fieldContainer}>
-                <FieldComponent field={item} onSave={() => handleFieldSave(item)} />
-                <Button
-                    title="Eliminar Campo"
-                    status="danger"
-                    onPress={() => handleDeleteField(fieldsToDisplay.indexOf(item))}
-                >
-                    Eliminar Campo
-                </Button>
-            </View>
+            onPressOut={onDragEnd}
+            style={styles.containerBox}>
+                    <Text>{item}</Text>
         </TouchableOpacity>
         )
     }
@@ -64,18 +66,34 @@ const FieldSelector = () => {
 
         copy.splice(toIndex, 0, removed[0]); // Now insert at the new pos
         setFieldsToDisplay(copy);
+        // Mini fields
+        const copyMini = [...miniFields]; // Don't modify react data in-place
+        const removedMini = copyMini.splice(fromIndex, 1);
+
+        copyMini.splice(toIndex, 0, removedMini[0]); // Now insert at the new pos
+        setMiniFields(copyMini);
+
     }
 
     // Agregar un nuevo campo
     const handleNewField = () => {
         if (fields[selectedField]) {
-            fieldsToDisplay.push({ ...fields[selectedField], tipo: selectedField })
-            setFieldsToDisplay([...fieldsToDisplay])
+            const copy = [...fieldsToDisplay]
+            copy.push({ ...fields[selectedField], tipo: selectedField })
+
+            const miniCopy = [...miniFields]
+            miniCopy.push(fields[selectedField].nombre)
+            setFieldsToDisplay(copy)
+            setMiniFields(miniCopy)
+            console.log(fieldNames)
         } else {
             console.log('Tipo de campo no implementado:', selectedField)
         }
     }
 
+    function keyExtractor(str, _index) {
+        return str;
+    }
     // Eliminar un campo específico con confirmación
     const handleDeleteField = (indexToDelete) => {
         const fieldName = fieldsToDisplay[indexToDelete]?.nombre || fieldsToDisplay[indexToDelete]?.tipo || "este campo"
@@ -92,6 +110,8 @@ const FieldSelector = () => {
                     text: 'Eliminar',
                     onPress: () => {
                         setFieldsToDisplay(fieldsToDisplay.filter((_, index) => index !== indexToDelete))
+                        setMiniFields(miniFields.filter((_, index) => index !== indexToDelete))
+                        fieldNames.delete(fieldName)
                     },
                     style: 'destructive', // Estilo rojo en iOS
                 },
@@ -104,19 +124,48 @@ const FieldSelector = () => {
         setForm(fieldsToDisplay)
         console.log(form)
     }
+
+    const handleDragMode = () => {
+        if (miniFields.filter((field) => field === '').length > 0 || miniFields.length === 0) {
+            console.log('No se pueden dejar campos vacíos')
+        }else{
+            setDragMode(!dragMode)
+        }
+    }
     
     return (
         <View style={styles.container}>
-            <DragList
-                data={fieldsToDisplay}
-                keyExtractor={(() => {let i = 0; return () => `${i++}`})()}
-                onReordered={onReordered}
-                renderItem={renderItem} 
-            />
+            <Button onPress={() => handleDragMode()}>{dragMode ? "Guardar Orden":"Editar Orden"}</Button>
+            {dragMode ? 
+                <View style={styles.fieldContainer}>
+                    <DragList
+                        data={miniFields}
+                        keyExtractor={keyExtractor}
+                        onReordered={onReordered}
+                        renderItem={renderItem} 
+                    />
+            </View> 
+            :
+            fieldsToDisplay.map((item, index) => {
+                
+                const FieldComponent = constructors.get(item.tipo)
+                return (
+                    <View style={styles.fieldContainer}>
+                            <FieldComponent field={item} onSave={(field) => {handleFieldSave(field, index)}} />
+                            <Button
+                                title="Eliminar Campo"
+                                status="danger"
+                                onPress={() => handleDeleteField(index)}
+                            >
+                                Eliminar Campo
+                            </Button>
+                    </View>
+                    )
+                })}
             
         
             {/* Sección destacada */}
-            <View style={styles.selectionContainer}>
+            {!dragMode ?(<View style={styles.selectionContainer}>
                 <Text style={styles.selectionTitle}>Crear un nuevo campo</Text>
                 <Select
                     selectedIndex={selectedIndex}
@@ -140,7 +189,8 @@ const FieldSelector = () => {
                 >
                     Agregar nuevo campo
                 </Button>
-            </View>
+            </View>) : <></>}
+            
         
     </View>
     
@@ -151,6 +201,22 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 16,
         backgroundColor: '#f5f5f5'
+    },
+    containerBox: {
+        padding: 10,
+        marginBottom: 15,
+        borderRadius: 8,
+        backgroundColor: '#ffffff', 
+        borderWidth: 1,
+        borderColor: '#00b7ae',
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: "10%" },
+        shadowOpacity: 0.9,
+        shadowRadius: 2,
+        elevation: 3,
+        alignItems: 'flex-start',
+        justifyContent: 'space-between',
+        flexDirection: 'row',
     },
     fieldContainer: {
         marginBottom: 16,
