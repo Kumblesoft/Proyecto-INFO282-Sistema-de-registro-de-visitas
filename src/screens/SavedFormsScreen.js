@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { StyleSheet, View, Text, FlatList, Alert, TouchableOpacity, Image } from 'react-native'
+import { StyleSheet, View, Text, FlatList, Alert, TouchableOpacity, Image, ScrollView } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Modal, Card, TopNavigation, TopNavigationAction, Divider, Layout, Button, Icon, Select, SelectItem, RangeCalendar, NativeDateService, Input } from '@ui-kitten/components'
 import { useNavigation } from '@react-navigation/native'
@@ -164,8 +164,8 @@ const SavedForms = () => {
     const handleLasts = value => {
         setLasts(value)
         const newForms = baseForms
-        newForms.sort((a,b) => a.id - b.id)
-        setForms((newForms.slice(-value)).reverse())
+        newForms.sort((a,b) => b.id - a.id)
+        setForms(newForms.slice(newForms.length - value))
     }
 
     const renderTitle = () => (
@@ -270,7 +270,6 @@ const SavedForms = () => {
                 <Modal
                     visible={modalVisible}
                     transparent={true}
-                    animationType="fade"
                     onRequestClose={closeModal}
                     backdropStyle={styles.backdrop}
                 >
@@ -280,7 +279,10 @@ const SavedForms = () => {
                             {selectedForm && Object.entries(selectedForm.data).map(([key, value]) => (
                                 <Layout style={styles.containerRespuestas}>
                                     <Text style={styles.key} key={key}>{`${key}`}</Text>
-                                    <Text style={styles.value}>{`${value}`}</Text>
+                                    {console.log(value)}
+                                    <ScrollView style = {{maxHeight: 30}}>
+                                        <Text style={styles.value}>{`${value}`}</Text>
+                                    </ScrollView>
                                 </Layout>
                             ))}
                             
@@ -379,7 +381,7 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         marginBottom: 10,
         paddingVertical: 10,
-        paddingHorizontal: 10,
+        paddingHorizontal: '1%',
         backgroundColor: '#f5f5f5',
         borderRadius: 8, 
     },
@@ -403,12 +405,13 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0)',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        zIndex : 10
     },
     modalCard: {
         alignSelf: 'center',
-        width: '200%', 
-        maxWidth: '250%', 
+        width: '100%', 
+        maxWidth: '100%', 
         borderRadius: 10,
         
         
