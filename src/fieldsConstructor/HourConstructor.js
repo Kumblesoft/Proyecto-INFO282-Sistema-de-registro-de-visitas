@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     saveButtonContainer: {
-        marginTop: 24,
+        marginTop: 20,
         alignSelf: 'center',
     },
 })

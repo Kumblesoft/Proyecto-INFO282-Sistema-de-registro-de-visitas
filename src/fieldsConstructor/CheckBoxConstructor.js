@@ -20,7 +20,7 @@ const CheckBoxConstructor = ({ onSave, field = {} }) => {
     const [fieldName, setFieldName] = useState(field.nombre || '')
     const [options, setOptions] = useState(field.opciones || [])
     const [maxSelections, setMaxSelections] = useState(field['cantidad de elecciones'] || 1)
-    const [isRequired, setIsRequired] = useState(true)
+    const [isRequired, setIsRequired] = useState(field.isRequired ?? true)
 
     const handleAddOption = () => {
         setOptions((prevOptions) => [
@@ -145,14 +145,10 @@ const CheckBoxConstructor = ({ onSave, field = {} }) => {
                 />
 
                 {/* Obligatorio */}
-                <Layout style={styles.toggleRow}>
-                    <Text category="s1">¿Es Obligatorio?</Text>
-                    <Toggle
-                        checked={isRequired}
-                        onChange={setIsRequired}
-                        style={styles.toggle}
-                    />
-                </Layout>
+                <View style={styles.field}>
+                    <Text>¿Es Obligatorio?</Text>
+                    <Toggle checked={isRequired} onChange={setIsRequired} />
+                </View>
 
                 {/* Guardar */}
                 <Button onPress={handleSave} style={styles.saveButton}>

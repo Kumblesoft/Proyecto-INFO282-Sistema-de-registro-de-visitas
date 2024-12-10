@@ -216,7 +216,7 @@ const styles = StyleSheet.create({
         color: '#fff',
     },
     saveButtonContainer: {
-        marginTop: 16,
+        marginTop: 20,
         alignSelf: 'center',
     },
 })

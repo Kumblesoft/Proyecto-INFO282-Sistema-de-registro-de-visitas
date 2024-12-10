@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import { View, Text, StyleSheet } from 'react-native'
-import { Input, Button, List, ListItem, CheckBox } from '@ui-kitten/components'
+import { Input, Button, List, ListItem, CheckBox,Toggle } from '@ui-kitten/components'
 
-const TextoConstructor = ({ onSave }) => {
+const TextoConstructor = ({ field, onSave }) => {
     const enumLimitaciones = {
         "solo letras": 0,
         "solo números": 1,
@@ -39,6 +39,8 @@ const TextoConstructor = ({ onSave }) => {
     const [fieldName, setFieldName] = useState('')
     const [selectedLimitaciones, setSelectedLimitaciones] = useState([])
     const [selectedFormato, setSelectedFormato] = useState(null)
+    const [isRequired, setIsRequired] = useState(field.isRequired ?? true)
+    const [isRequiredQR, setIsRequiredQR] = useState(field.isRequiredQR ?? false)
 
     const toggleLimitacion = (index) => {
         if (selectedLimitaciones.includes(index)) {
@@ -100,6 +102,8 @@ const TextoConstructor = ({ onSave }) => {
             salida: fieldName.toLowerCase().replace(/ /g, '_'),
             limitaciones,
             formato,
+            obligatorio: isRequired,
+            rellenarQR: isRequiredQR,
         }
 
         if (onSave) {
@@ -159,7 +163,22 @@ const TextoConstructor = ({ onSave }) => {
                 renderItem={renderFormatoItem}
             />
 
-            <Button style={styles.saveButton} onPress={handleSave}>Guardar campo</Button>
+            {/* Respuesta por QR */}
+            <View style={styles.field}>
+                    <Text>¿Aceptar Respuesta por QR?</Text>
+                    <Toggle checked={isRequiredQR} onChange={setIsRequiredQR} />
+            </View>
+
+            {/* Obligatorio */}
+            <View style={styles.field}>
+                    <Text>¿Es Obligatorio?</Text>
+                    <Toggle checked={isRequired} onChange={setIsRequired} />
+            </View>
+
+             {/* Guardar */}
+             <Button onPress={handleSave} style={styles.saveButton}>
+                    Guardar Campo
+            </Button>
         </View>
     )
 }
@@ -186,6 +205,13 @@ const styles = StyleSheet.create({
     },
     disabledOption: {
         backgroundColor: '#f0d0d0',
+    },
+    field: {
+        marginBottom: 0,
+    },
+    saveButtonContainer: {
+        marginTop: 20,
+        alignSelf: 'center',
     },
 })
 
