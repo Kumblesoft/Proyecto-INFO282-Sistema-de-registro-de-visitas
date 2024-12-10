@@ -211,7 +211,7 @@ const SavedForms = () => {
             onPress={() => handleSelection(item.id)}
             onLongPress={toggleSelectionMode}
         >
-            <Text style={styles.formTitle}>{item.plantilla}</Text>
+            <Text style={styles.formTitle}>{`${item.plantilla}`}</Text>
             {isSelectionMode ? null : (
                 <Button style={styles.button} onPress={() => exportForm([item])} accessoryLeft={shareIcon} />
             )}
@@ -228,7 +228,7 @@ const SavedForms = () => {
     const renderTypeItem = ({ item }) => (
         <View>
             <TouchableOpacity onPress={() => toggleExpand(item)} >
-                <Text style={styles.formType}>{item}</Text> {/* Mostrar el tipo de formulario */}
+                <Text style={styles.formType}>{`${item.plantilla}`}</Text> {/* Mostrar el tipo de formulario */}
             </TouchableOpacity>
             {expandedTypes[item] && (
                 <FlatList
@@ -274,7 +274,7 @@ const SavedForms = () => {
                 </Layout>
                 <FlatList
                     data={forms}
-                    renderItem={renderItem}
+                    renderItem={renderTypeItem}
                     keyExtractor={item => item.id.toString()}
                     contentContainerStyle={styles.listContainer}
                 />

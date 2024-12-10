@@ -9,7 +9,7 @@ import FormSelectorScreen from "./screens/FormSelectorScreen" // Importa tu pant
 import FormFiller from "./screens/FormFiller"
 import SavedForms from "./screens/SavedFormsScreen"
 import Settings from "./screens/Settings"
-import { SQLiteProvider, useSQLiteContext, type SQLiteDatabase } from 'expo-sqlite'
+import { SQLiteProvider, useSQLiteContext, SQLiteDatabase } from 'expo-sqlite'
 import { initializeDataBase } from './database/database'
 
 import { FormProvider } from './context/SelectedFormContext'
@@ -59,6 +59,7 @@ export default function App() {
                   <Stack.Screen name="SavedForms" component={SavedForms} options={{ headerShown: false }} />
                   <Stack.Screen name="FormFiller" component={FormFiller} options={{ headerShown: false }} />
                   <Stack.Screen name="Settings" component={Settings} options={{ headerShown: false }} />
+                  <Stack.Screen name="FormEditor" component={FormEditor} options={{ headerShown: false }} />
                 </Stack.Navigator>
               </IdentifierProvider>
             </FormProvider>
