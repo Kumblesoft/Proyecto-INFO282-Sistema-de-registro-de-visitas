@@ -12,6 +12,7 @@
     "texto" : {
         "nombre": "Comentarios adicionales",
         "salida": "comentarios",
+        "rellenarQR": "bool",
         "limitaciones": {
             "tipo" : "ArregloDelTipoTexto",
             "compatibilidadesLimitaciones": [
