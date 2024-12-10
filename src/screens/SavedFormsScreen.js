@@ -277,7 +277,6 @@ const SavedForms = () => {
                 <Modal
                     visible={modalVisible}
                     transparent={true}
-                    animationType="fade"
                     onRequestClose={closeModal}
                     backdropStyle={styles.backdrop}
                 >
