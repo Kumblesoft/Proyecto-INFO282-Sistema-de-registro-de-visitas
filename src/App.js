@@ -14,7 +14,7 @@ import { initializeDataBase } from './database/database'
 
 import { FormProvider } from './context/SelectedFormContext'
 import { IdentifierProvider } from './context/IdentifierContext'
-import FormEditor from './components/FormEditor'
+import FormEditor from './screens/FormEditor'
 
 
 const myTheme = {

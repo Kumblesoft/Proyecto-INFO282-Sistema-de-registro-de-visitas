@@ -63,7 +63,7 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
         const emptyFields = requiredFields.some(field => !formState.current.get(field.salida))
         if (emptyFields) {
             requiredFieldRefs.current.forEach(ref => ref())
-            return (new Err('Completa todos los campos obligatorios')).show()
+            return (new Err('Complete todos los campos obligatorios')).show()
         }
 
         try {
@@ -77,8 +77,8 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
             }
 
             const newForm = {
-                id: Date.now(), 
-                nombreFormulario: formData["nombre formulario"] || "Formulario Sin Nombre", 
+                plantilla: formData["nombre formulario"], 
+                umplantilla: formData["ultima modificacion"],
                 data: Object.fromEntries(formState.current), 
                 idDispositivo: identifier
             }

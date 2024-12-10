@@ -180,7 +180,7 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldR
       <Input 
         style={[styles.input, isRequiredAlert && { borderColor: '#ff0000' },QRfield && {flex :0.75},]} 
         value={inputValue} 
-        onChangeText={handleChange} 
+        OnChange={handleChange} 
         keyboardType={limitations.length ? limitationBehaviour.dGet(limitations.at(0)).keyboardType : "default"}/>
         {QRfield && (
           <TouchableOpacity style={styles.qrButton} onPress={() => setIsScanning(true)}>

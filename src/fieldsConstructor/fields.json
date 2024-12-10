@@ -1,18 +1,17 @@
 {
     "selector": {
         "nombre": "",
-        "salida": "nivel_educacion",
+        "salida": "",
         "opcion predeterminada": null,
-        "texto predeterminado": "Seleccione su nivel de educación",
+        "texto predeterminado": "",
         "opciones": [
          
         ]
     },
     
     "texto" : {
-        "nombre": "Comentarios adicionales",
-        "salida": "comentarios",
-        "rellenarQR": "bool",
+        "nombre": "",
+        "salida": "",
         "limitaciones": {
             "tipo" : "ArregloDelTipoTexto",
             "compatibilidadesLimitaciones": [
@@ -71,7 +70,7 @@
                 "dd/yyyy/mm": 5
             }
         },
-        "fecha predeterminada": "2024-10-01"
+        "fecha predeterminada": ""
     },
 
     "hora" : {

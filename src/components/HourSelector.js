@@ -80,13 +80,16 @@ export default function HourSelector ({onChange, optionalFeatures = {},requiredF
     }
     return (
         <Layout style={styles.container}>
+            
             <Layout style={styles.text}>
-                <Text style={styles.text} category={required ? "label" :"p2"}>
+                <Text style={styles.text} category={"p2"}>
                     {title}
-                </Text> 
+                </Text>
+                {/* 
                 <Text status='danger'>
                     {required ? "*": " "} 
                 </Text>  
+                 */}
             </Layout>   
             <Layout style={styles.buttonContainer }>
                 <Button disabled={disabled} status='success' onPress={()=>setShowPicker(true)} appearance='outline' style={disabled ? styles.disabledHour : styles.hour} size='large'>{hour}</Button>    
