@@ -56,7 +56,7 @@ export default function App() {
               <Stack.Screen name="SavedForms" component={SavedForms} options={{headerShown:false}}/>
               <Stack.Screen name="FormFiller" component={FormFiller} options={{headerShown:false}}/>
               <Stack.Screen name="Settings" component={Settings} options={{headerShown:false}}/>
-              <Stack.Screen name="FormEditor" component={FormEditor} options={{headerShown: true, title: "Editor de Formularios"}}/>
+              <Stack.Screen name="FormEditor" component={FormEditor} options={{headerShown: false}}/>
             </Stack.Navigator>
           </IdentifierProvider>
         </FormProvider>

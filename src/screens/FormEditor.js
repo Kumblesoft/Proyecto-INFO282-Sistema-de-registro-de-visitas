@@ -1,17 +1,38 @@
 import React, { useState } from "react"
-import { ScrollView, View, StyleSheet } from "react-native"
+import { ScrollView, View, StyleSheet, SafeAreaView } from "react-native"
 import { Text, Input, Layout, Icon, Button } from "@ui-kitten/components"
+import { LinearGradient } from "expo-linear-gradient"
+import { TopNavigation, TopNavigationAction, Divider } from "@ui-kitten/components"
+import { useNavigation } from "@react-navigation/native"
+
 import formTemplate from "../fieldsConstructor/fields.json" // Importar el JSON con los campos
 import FieldSelector from "../components/FieldSelector" 
 
 export default function FormEditor() {
+  const navigation = useNavigation()
   const [formFields, setFormFields] = useState(formTemplate)
   const [selectedField, setSelectedField] = useState("") // Estado para el FieldSelector
   const createdFields = [] 
   const formNames = new Set(require("../TestForms/forms.json").map(form => form["nombre formulario"]))
   const [isNameTaken, setIsNameTaken] = useState(false)
 
-  const handleFieldPos = createdFields.push
+  const BackIcon = (props) => (
+    <Icon
+        name='arrow-ios-back-outline'
+        style={styles.backIcon}
+        fill='#fff'
+        {...props}
+    />
+  )
+  const BackAction = () => (
+      <TopNavigationAction icon={BackIcon} onPress={() => navigation.goBack()} />
+  )
+
+  const renderTitle = () => (
+      <View style={styles.titleContainer}>
+          <Text style={styles.topNavigationText}>Creador de formularios</Text>
+      </View>
+  )
 
   const handleFieldChange = (fieldKey, fieldProperty, value) => {
     setFormFields(prevFields => ({
@@ -56,7 +77,17 @@ export default function FormEditor() {
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <>
+    <LinearGradient colors={['#2dafb9', '#17b2b6', '#00b4b2', '#00b7ad', '#00b9a7', '#00bba0', '#00bd98', '#00bf8f', '#00c185', '#00c27b']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+                <TopNavigation
+                    title={renderTitle}
+                    style={styles.topNavigation}
+                    accessoryLeft={BackAction}
+                    alignment='center'
+                />
+            </LinearGradient>
+            <Divider />
+    <ScrollView style={styles.container} nestedScrollEnabled>
       <Text style={styles.label}>Nombre del Formulario</Text>
       <Input placeholder="Nombre del Formulario" style={styles.input} textStyle={{ color: isNameTaken ? 'red' : 'black' }} onChangeText={checkFormName}/>
       {isNameTaken && 
@@ -77,13 +108,33 @@ export default function FormEditor() {
       {/* Botón para guardar cambios <Button onPress={handleFieldPos} margin='20' padding='20' title="Guardar" /> */}
       
     </ScrollView>
+    </>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     padding: 20,
   },
+  backIcon: {
+    width: 25,
+    height: 25,
+    paddingRight: 10,
+},
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  topNavigation: {
+    backgroundColor: 'transparent',
+  },
+  topNavigationText:{
+    marginRight: 0,
+    fontSize: 24,   
+    fontWeight: 'bold',
+    color: '#fff',
+},
   fieldContainer: {
     marginBottom: 20,
   },
