@@ -1,17 +1,39 @@
 import ChainInsertor from './ChainInsertor'
-import { SQLiteProvider, useSQLiteContext } from 'expo-sqlite'
+import { useSQLiteContext } from 'expo-sqlite'
 
 export default class TextChainInsertor extends ChainInsertor {
-    insert(fieldObject) {
-        if (fieldObject.type != 'texto')
-            return next && next.insert(fieldObject)
-        db = useSQLiteContext()
-
+    insert(fieldObject, formID) {
+        console.log(fieldObject)
+        if (fieldObject.tipo != 'texto')
+            return this?.next && this.next.insert(fieldObject)
+        const db = useSQLiteContext()
+        const fieldID = db.getFirstSync('SELECT id FROM field_table_name WHERE field = ?', [fieldObject.tipo]).id
 
         db.runSync(
-            'INSERT INTO fields (fk_filed, qr_refillable, fk_limitations, fk_format) VALUES (?,?,?,?)',
-            [fieldObject.type, fieldObject.rellenarQR, fieldObject.fk_limitations, fieldObject.fk_format]
+            'INSERT INTO texto (fk_field, name, qr_refillable) VALUES (?,?,?)',
+            [fieldID, fieldObject.nombre, fieldObject.rellenarQR]
         )
 
+        fieldObject.limitaciones?.forEach((limitation) => {
+            console.log(limitation)
+            const limitationID = db.getFirstSync('SELECT id FROM limitations WHERE name = ?', [limitation]).id
+            console.log(limitationID)
+            db.runSync(
+                'INSERT INTO limitations_intermediary (fk_forms, fk_fields, fk_limitations) VALUES (?,?,?)',
+                [formID, fieldID, limitationID]
+            )
+        })
+
+        fieldObject.formato?.forEach((format) => {
+            console.log(format)
+            const formatID = db.getFirstSync('SELECT id FROM format WHERE name = ?', [format]).id
+            console.log(formatID)
+            db.runSync(
+                'INSERT INTO format_intermediary (fk_forms, fk_field,fk_format) VALUES (?,?,?)',
+                [formID, fieldID, formatID]
+            )
+        })
+
+        return true
     }
 }

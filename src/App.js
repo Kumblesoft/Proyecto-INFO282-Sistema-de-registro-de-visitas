@@ -10,7 +10,7 @@ import FormFiller from "./screens/FormFiller"
 import SavedForms from "./screens/SavedFormsScreen"
 import Settings from "./screens/Settings"
 import { SQLiteProvider, useSQLiteContext, type SQLiteDatabase } from 'expo-sqlite'
-import { initializeDataBase } from './commonStructures/dataBase'
+import { initializeDataBase } from './database/database'
 
 import { FormProvider } from './context/SelectedFormContext'
 import { IdentifierProvider } from './context/IdentifierContext'

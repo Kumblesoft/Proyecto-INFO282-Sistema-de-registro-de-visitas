@@ -10,11 +10,17 @@ import * as Animatable from 'react-native-animatable'
 import shareTypes from '../commonStructures/shareTypes'
 import * as DocumentPicker from 'expo-document-picker'
 import { Ok } from '../commonStructures/resultEnum'
-import dataBase from '../commonStructures/dataBase'
+import { useSQLiteContext } from 'expo-sqlite'
+import Database from '../database/database'
+
+const dbFormTest = require('../TestForms/dbFormTest.json')
 
 
 const FormSelectorScreen = () => {
-  const db = dataBase()
+  const database = useSQLiteContext()
+  const db = new Database(database)
+  console.log(dbFormTest)
+  db.addForm(dbFormTest)
   const navigation = useNavigation()
   const forms = require("../TestForms/forms.json")
   const [localForms, setForms] = useState(forms)
