@@ -74,6 +74,8 @@ export default function Menu() {
             <Text style={styles.buttonText}>Formularios Guardados</Text>
           </TouchableOpacity>
         </View>
+
+
       </View>
     </Layout>
   )

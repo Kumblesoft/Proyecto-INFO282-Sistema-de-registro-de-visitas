@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Modal, Card, TopNavigation, TopNavigationAction, Divider, Layout, Button, Icon, Select, SelectItem, RangeCalendar, NativeDateService, Input } from '@ui-kitten/components'
 import { useNavigation } from '@react-navigation/native'
 import { LinearGradient } from 'expo-linear-gradient'
+import shareTypes from '../commonStructures/shareTypes'
 import * as FileSystem from 'expo-file-system' 
 import * as Sharing from 'expo-sharing'
 
@@ -58,8 +59,18 @@ const SavedForms = () => {
         }
     }
     const exportForm = form => {
-        const objectStringified = JSON.stringify(form)
-        const filePath = `${FileSystem.cacheDirectory}response.json`
+        const filePath = `${FileSystem.cacheDirectory}respuestasFormularios.json`
+
+
+        
+        const objectStringified = form.lenght === 1 ? JSON.stringify({ 
+            share_content_type: shareTypes.SINGLE_ANSWER,
+            content           : form 
+          }) : JSON.stringify({
+            share_content_type: shareTypes.MULTIPLE_ANSWERS,
+            content           : form
+        })
+        
     
         // Intentar compartir usando un archivo temporal
         FileSystem.writeAsStringAsync(filePath, objectStringified).then( 
@@ -215,7 +226,7 @@ const SavedForms = () => {
                     ))}
                 </Select>
                 {index && index.row === 2  ? <Text>{'Inicio: '+ (range.startDate ? configuredDateService.format(range.startDate) : '-') + ', Final: ' + (range.endDate ? configuredDateService.format(range.endDate): '-')}</Text> : <></>}
-                {index && index.row === 3 ? <Input placeholder='¿Cuantas respuestas desea?' value={lasts} onChangeText={handleLasts} keyboardType='numeric'/> : <></>}
+                {index && index.row === 3 ? <Input placeholder='¿Cuantas respuestas desea?' value={lasts} OnChange={handleLasts} keyboardType='numeric'/> : <></>}
                 {isSelectionMode && (
                     <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 10, paddingTop: 10}}>
                         <Button onPress={deselectAll} accessoryLeft={deleteIcon} style ={{width: '40%', marginRight: '10%'}}>Limpiar selección</Button>
@@ -310,7 +321,7 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     topNavigationText:{
-        marginRight: 60,
+        marginRight: 0,
         fontSize: 24,   
         fontWeight: 'bold',
         color: '#fff',

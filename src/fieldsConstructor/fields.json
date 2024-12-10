@@ -1,0 +1,119 @@
+{
+    "selector": {
+        "nombre": "",
+        "salida": "",
+        "opcion predeterminada": null,
+        "texto predeterminado": "",
+        "opciones": [
+         
+        ]
+    },
+    
+    "texto" : {
+        "nombre": "",
+        "salida": "",
+        "limitaciones": {
+            "tipo" : "ArregloDelTipoTexto",
+            "compatibilidadesLimitaciones": [
+                [1,0,0,0,0,0],
+                [0,1,1,1,0,0],
+                [0,1,1,1,0,0],
+                [0,1,1,1,0,0],
+                [0,0,0,0,1,0],
+                [0,0,0,0,0,1]
+            ],
+            "enumLimitaciones": {
+                "solo letras": 0,
+                "solo numeros": 1,
+                "solo enteros": 2,
+                "solo enteros positivos y cero": 3,
+                "email": 4,
+                "no numeros" :  5
+            }
+        },
+        "formato":{
+            "tipo": "ArregloStrings",
+            "compatibilidadFormato" : [
+                [1,0],
+                [0,1]
+            ],
+            "enumFormato": {
+                "solo mayusculas": 0,
+                "solo minusculas": 1
+            }
+        }
+    },
+
+    "fecha" : {
+        "nombre": "",
+        "salida": "",
+        "limitaciones": {
+            "tipo": "ArregloFecha",
+            "compatibilidadLimitaciones" : [
+                [1,0],
+                [0,1]
+            ],
+            "enumLimitaciones": {
+                "editable": 0,
+                "no editable": 1
+            }
+           
+        }, 
+        "formato": {
+            "tipo": "ArregloFecha",
+            "enumFormato": {
+                "dd/mm/yyyy": 0,
+                "mm/dd/yyyy": 1,
+                "yyyy/mm/dd": 2,
+                "yyyy/dd/mm": 3,
+                "mm/yyyy/dd": 4,
+                "dd/yyyy/mm": 5
+            }
+        },
+        "fecha predeterminada": ""
+    },
+
+    "hora" : {
+        
+        "nombre": "",
+        "hora predeterminada": "",
+        "limitaciones": {
+            "tipo": "ArregloFecha",
+            "compatibilidadLimitaciones" : [
+                [1,0],
+                [0,1]
+            ],
+            "enumLimitaciones": {
+                "editable": 0,
+                "no editable": 1
+            }
+        },
+        "salida": ""
+      },
+
+      "checkbox" : {
+        "nombre": "",
+        "opciones": [
+        ],
+        "opcion predeterminada": null,
+        "texto predeterminado": "",
+        "cantidad de elecciones": 1,
+        "obligatorio": true,
+        "salida": ""
+      },
+
+      "radio" : {
+        "nombre": "",
+        "opciones": [
+        ],
+        "opcion predeterminada": null,
+        "texto predeterminado": "",
+        "cantidad de elecciones": 1,
+        "salida": ""
+      },
+      "camara": {
+        "nombre": "",
+        "salida": "",
+        "editable": true
+    }
+}

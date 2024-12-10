@@ -40,7 +40,7 @@ export const IDInputComponent = () => {
           <Input
             placeholder="Ingresa el ID"
             value={id}
-            onChangeText={setId}
+            OnChange={setId}
             style={{ marginVertical: 10, width: '100%' }}
           />
           <Button onPress={handleSave} style={{ marginVertical: 10 }}>
