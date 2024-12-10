@@ -9,19 +9,17 @@ import * as Sharing from 'expo-sharing'
 import * as Animatable from 'react-native-animatable'
 import shareTypes from '../commonStructures/shareTypes'
 import * as DocumentPicker from 'expo-document-picker'
-import { Ok } from '../commonStructures/resultEnum'
-
 
 const FormSelectorScreen = () => {
   const navigation = useNavigation()
   const forms = require("../TestForms/forms.json")
-  const [localForms, setForms] = useState(forms)
+  const [ localForms, setForms ] = useState(forms)
   const [ isOptionModalVisible, setIsOptionModalVisible ] = useState(false)
   const [ selectedItem, setSelectedItem ] = useState({"nombre formulario": "err"})
   const { setSelectedForm } = useFormContext()
-  const [isSelectionMode, setIsSelectionMode] = useState(false) // Modo de selección
-  const [selectedForms, setSelectedForms] = useState([]) // Formularios seleccionados
-  const [file, setFile] = useState(null) // File picker function
+  const [ isSelectionMode, setIsSelectionMode ] = useState(false) // Modo de selección
+  const [ selectedForms, setSelectedForms ] = useState([]) // Formularios seleccionados
+  const [ file, setFile ] = useState(null) // File picker function
 
   const backIcon = () => <Icon name='arrow-ios-back-outline' fill='#fff' style={styles.topNavigationIcon}/>
   const importIcon = () => <Icon name='cloud-download-outline' fill='#fff' style={styles.topNavigationIcon}/>
@@ -78,13 +76,11 @@ const FormSelectorScreen = () => {
     try {
         const updatedForms = localForms.filter(form => !selectedForms.includes(form["nombre formulario"]))
         
-
         const filePath = `${FileSystem.cacheDirectory}forms.json`
         const updatedFormsString = JSON.stringify(updatedForms)
 
         await FileSystem.writeAsStringAsync(filePath, updatedFormsString)
       
-
         const newContent = await FileSystem.readAsStringAsync(filePath)
         const loc = localForms.pop(JSON.parse(newContent))
 
@@ -164,26 +160,31 @@ const FormSelectorScreen = () => {
     </TouchableOpacity>
   )
 
-  const shareFormTemplate = form => {
-      const filePath = `${FileSystem.cacheDirectory}plantillaFormulario.json`
-      const objectStringified = JSON.stringify({ 
-        share_content_type: shareTypes.SINGLE_FORM,
-        content           : form 
-      })
+  const shareFormTemplate = formItems => {
+      if (!formItems) return Alert.alert('Error', 'No se ha seleccionado un formulario')
+      if (formItems.constructor === Array) {
+        const formItemsSet = new Set(formItems)
+        formItems = forms.filter(form => formItemsSet.has(form["nombre formulario"]))
+      }
+
+      const typeOfMedia = formItems.constructor === Array ? shareTypes.MULTIPLE_FORMS : shareTypes.SINGLE_FORM
       
+      const objectStringified = JSON.stringify({ 
+        share_content_type: typeOfMedia,          
+        content           : formItems
+      })
       // Intentar compartir usando un archivo temporal
-      FileSystem.writeAsStringAsync(filePath, objectStringified).then( 
-        () => Sharing.shareAsync(filePath, 
-          {
+      const filePath = `${FileSystem.cacheDirectory}plantillaFormulario.json`
+      FileSystem.writeAsStringAsync(filePath, objectStringified).then(
+        () => Sharing.shareAsync(filePath, {
             dialogTitle : 'Compartir JSON como archivo',
             mimeType    : 'application/json',
             UTI         : 'public.json'
-          }
-        )
+          })
       // Si se compartio correctamente
       ).catch(error => {
-          console.error('Error al crear archivo:', error)
-          Alert.alert('Error', 'Hubo un problema al intentar compartir el archivo')
+        console.error('Error al crear archivo:', error)
+        Alert.alert('Error', 'Hubo un problema al intentar compartir el archivo')
       // Borrar el archivo temporal
       }).finally(
         async () => {
@@ -301,7 +302,7 @@ const FormSelectorScreen = () => {
                       Eliminar 
                   </Button>
 
-                    <Button status='info' style={styles.shareButton} accessoryLeft={shareIcon}>
+                    <Button status='info' style={styles.shareButton} accessoryLeft={shareIcon} onPress={() => shareFormTemplate(selectedForms)}>
                         Compartir
                     </Button>
                 </Layout>

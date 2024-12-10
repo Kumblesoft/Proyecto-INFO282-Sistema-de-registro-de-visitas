@@ -42,10 +42,10 @@ const SavedForms = () => {
     }
     
     const filters = [
-        {value:"Fecha ↓", func: () => {forms.sort((a,b) =>b.id - a.id)}},
-        {value:"Fecha ↑", func: () => {forms.sort((a,b)=> a.id - b.id)}},
-        {value: "Rango" , func: () => {setIsRangeMode(true)}},
-        {value: "Ultimos", func: () => {setIsLastsMode(true)}}
+        {value:"Fecha ↓", func: () => forms.sort((a,b) =>b.id - a.id)},
+        {value:"Fecha ↑", func: () => forms.sort((a,b)=> a.id - b.id)},
+        {value: "Rango" , func: () => setIsRangeMode(true)},
+        {value: "Ultimos", func: () => setIsLastsMode(true)}
     ]
 
     const fetchSavedForms = async () => {
@@ -64,9 +64,9 @@ const SavedForms = () => {
         // Intentar compartir usando un archivo temporal
         FileSystem.writeAsStringAsync(filePath, objectStringified).then( 
             () => Sharing.shareAsync(filePath, {
-            dialogTitle: 'Compartir JSON como archivo',
-            mimeType: 'application/json',
-            UTI: 'public.json'
+                dialogTitle : 'Compartir JSON como archivo',
+                mimeType    : 'application/json',
+                UTI         : 'public.json'
             })
         // Si se compartio correctamente
         ).then( 
@@ -81,12 +81,12 @@ const SavedForms = () => {
         // Borrar el archivo temporal
         }).finally(
             async () => {
-            try {
-                const fileInfo = await FileSystem.getInfoAsync(filePath)
-                if (fileInfo.exists) await FileSystem.deleteAsync(filePath)
-            } catch (deleteError) {
-                console.error('Error al eliminar el archivo:', deleteError)
-            }
+                try {
+                    const fileInfo = await FileSystem.getInfoAsync(filePath)
+                    if (fileInfo.exists) await FileSystem.deleteAsync(filePath)
+                } catch (deleteError) {
+                    console.error('Error al eliminar el archivo:', deleteError)
+                }
             }
         )
     }
@@ -130,26 +130,19 @@ const SavedForms = () => {
         />
     )
 
-    const deleteIcon = (props) => (<Icon name='trash' {...props} />)
-    
-    const shareIcon = (props) => (<Icon name='share' {...props}/>)
-
-    const BackAction = () => (<TopNavigationAction icon={BackIcon} onPress={() => navigation.goBack()} />)
-
-    const SelectionIcon = (props) => (<Icon fill='#fff' name={isSelectionMode ? 'checkmark-square' : 'checkmark-square'} style={styles.backIcon} {...props} />)
-
-    const SelectionAction = () => (<TopNavigationAction icon={SelectionIcon} onPress={toggleSelectionMode} />)
-
+    const deleteIcon = props => <Icon name='trash' {...props} />
+    const shareIcon = props => <Icon name='share' {...props}/>
+    const BackAction = () => <TopNavigationAction icon={BackIcon} onPress={() => navigation.goBack()} />
+    const SelectionIcon = props => <Icon fill='#fff' name={isSelectionMode ? 'checkmark-square' : 'checkmark-square'} style={styles.backIcon} {...props} />
+    const SelectionAction = () => <TopNavigationAction icon={SelectionIcon} onPress={toggleSelectionMode} />
+    const selectAll = () => setSelectedForms(forms.map(form => form.id))
+    const deselectAll = () => setSelectedForms([])
     const toggleSelectionMode = () => {
         setIsSelectionMode(!isSelectionMode)
         setSelectedForms([]) // Resetear selección al activar/desactivar modo
     }
 
-    const selectAll = () => {  setSelectedForms(forms.map(form => form.id))}
-
-    const deselectAll = () => {setSelectedForms([])}
-
-    const handleSelection = (id) => {
+    const handleSelection = id => {
         if (isSelectionMode) {
             setSelectedForms(prev =>
                 prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
