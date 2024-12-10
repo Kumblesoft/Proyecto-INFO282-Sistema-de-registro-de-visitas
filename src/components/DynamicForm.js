@@ -77,7 +77,7 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
             }
 
             const newForm = {
-                id : new Date().getTime(),
+                id : new Date(),
                 plantilla: formData["nombre formulario"], 
                 umplantilla: formData["ultima modificacion"],
                 data: Object.fromEntries(formState.current), 
@@ -87,7 +87,7 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
 
             storedForms.push(newForm) 
             await AsyncStorage.setItem('savedForms', JSON.stringify(storedForms))
-            console.log("Formulario guardado:", newForm)
+            Alert.alert("Formulario guardado")
             formState.current.clear()
             //Alert.alert("Formulario guardado")
             refreshFieldRefs.current.forEach(ref => ref())
