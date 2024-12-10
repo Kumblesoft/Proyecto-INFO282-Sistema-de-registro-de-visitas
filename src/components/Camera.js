@@ -158,23 +158,29 @@ export const Camera = ({ title, required, cameraConfiguration, requiredFieldRef 
       <Modal visible={isMenuVisible} transparent={true} animationType="fade">
         <View style={styles.modalContainer}>
           <View style={styles.menu}>
-          <Text style={styles.title}>Seleccione una opción</Text>
+            <Text style={styles.title}>Seleccione una opción</Text>
+
+            {/* Ícono de cámara */}
             <TouchableOpacity onPress={openCamera} style={styles.menuItem}>
               <Image source={cameraIcon} style={styles.icon} />
               <Text style={styles.menuText}>Cámara</Text>
             </TouchableOpacity>
 
+            {/* Ícono de galería */}
             <TouchableOpacity onPress={openGallery} style={styles.menuItem}>
               <Image source={galleryIcon} style={styles.icon} />
               <Text style={styles.menuText}>Galería</Text>
             </TouchableOpacity>
 
-            {/* Mostrar el botón de eliminar sólo si hay una imagen */}
+            {/* Contenedor de botones (Eliminar y Cerrar) */}
             <Layout style={styles.buttonContainer}>
-              <Button onPress={removeImage} style={styles.deleteButton} status={image ? 'danger' : 'info'}>
-                {"Eliminar"}
-              </Button>
-              <Button onPress={toggleMenu} style = {styles.closeButton} status='info'>
+              {/* Mostrar el botón "Eliminar" solo si hay una imagen */}
+              {image && (
+                <Button onPress={removeImage} style={styles.deleteButton} status="danger">
+                  {"Eliminar"}
+                </Button>
+              )}
+              <Button onPress={toggleMenu} style={styles.closeButton} status="info">
                 {"Cerrar"}
               </Button>
             </Layout>
@@ -241,7 +247,7 @@ const styles = StyleSheet.create({
   menuItem: {
     flexDirection: 'row', // Ícono y texto en línea
     alignItems: 'center',
-    marginVertical: 10
+    marginVertical: 5 // Reduce el margen vertical entre los íconos
   },
   icon: {
     width: 40, // Ajusta el tamaño de los íconos del menú
@@ -260,9 +266,10 @@ const styles = StyleSheet.create({
     marginLeft: '3%',
   },
   buttonContainer: {
-      backgroundColor: 'transparent',
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignSelf: 'center',
+    backgroundColor: 'transparent',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignSelf: 'center',
+    marginTop: 20 // Espaciado entre los íconos y los botones
   },
 })
