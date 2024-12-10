@@ -16,7 +16,8 @@ import { CameraView } from "expo-camera"
  * @param {string} [options.variableName] - "Salida", used to diferentiate different fields with same title
  * @param {Array<string>} [options.format=[]] - An array of conditions to format the input value.
  * @param {boolean} [options.QRfield = false] - Indicates if the field can be filled by QR
- *  @returns {Object} An object containing the defined optional features.
+* @param {boolean} [options.disabled = false] - Indicates if the field is disabled
+*  @returns {Object} An object containing the defined optional features.
  */
 export const OptionalTextFeatures = (options = {}) => {
   return {
@@ -25,7 +26,8 @@ export const OptionalTextFeatures = (options = {}) => {
     limitations: options.limitations ?? [],
     format: options.format ?? [],
     QRfield: options.QRfield ?? false,
-    variableName: options.variableName ?? ""
+    variableName: options.variableName ?? "",
+    disabled : options.disabled ?? false
   }
 }
 
@@ -91,7 +93,7 @@ const formatMap = new Map([
  * @returns {JSX.Element} The rendered TextEntry component.
  */
 const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldRef}) => {
-  const { title, required, limitations, format, QRfield} = optionalFeatures
+  const { title, required, limitations, format, QRfield,disabled} = optionalFeatures
   const [ inputValue, setInputValue ] = useState('')
   const [ invalidLimitations, setInvalidLimitations ] = useState([])
   const [ isRequiredAlert, setIsRequiredAlert] = useState(false)
@@ -180,6 +182,7 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldR
       <Input 
         style={[styles.input, isRequiredAlert && { borderColor: '#ff0000' },QRfield && {flex :0.75},]} 
         value={inputValue} 
+        disabled={disabled}
         onChangeText={handleChange} 
         keyboardType={limitations.length ? limitationBehaviour.dGet(limitations.at(0)).keyboardType : "default"}/>
         {QRfield && (

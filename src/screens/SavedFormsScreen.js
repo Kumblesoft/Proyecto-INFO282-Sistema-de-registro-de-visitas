@@ -1,29 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import { Platform, Dimensions, StyleSheet, View, Text, FlatList, Alert, TouchableOpacity, Image } from 'react-native'
+import { Platform, Dimensions, StyleSheet, View, Text, FlatList, Alert, TouchableOpacity, Image, ScrollView } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Menu, MenuItem, Modal, Card, TopNavigation, TopNavigationAction, Divider, Layout, Button, Icon, Select, SelectItem, RangeCalendar, NativeDateService, Input } from '@ui-kitten/components'
 import { useNavigation } from '@react-navigation/native'
 import { LinearGradient } from 'expo-linear-gradient'
+import shareTypes from '../commonStructures/shareTypes'
 import * as FileSystem from 'expo-file-system' 
 import * as Sharing from 'expo-sharing'
 import { SafeAreaView } from 'react-native-safe-area-context'
-
-const deleteIcon = (props) => (
-    <Icon name='trash' {...props} />
-)
-
-const shareIcon = (props) => (
-    <Icon name='share' {...props}/>
-)
-
-const downwardArrow = (props) => (
-    <Icon name='arrow-downward-outline' {...props}/>
-)
-
-const upwardArrow = (props) => (
-    <Icon name='arrow-upward-outline' {...props}/>
-)
-
 const { height } = Dimensions.get('window')
 const { width } = Dimensions.get('window')
 
@@ -43,6 +27,8 @@ const SavedForms = () => {
     const [isLastsMode, setIsLastsMode] = useState(false)
     const [isFilterVisible, setFilterVisible] = useState(false);
     const [lasts, setLasts] = useState(0)
+    const [confirmDelete, setConfirmDelete] = useState(false)
+    const [expandedTypes, setExpandedTypes] = useState({});
     const [visible, setVisible] = useState(false);
 
     const optionBar = () => (
@@ -69,10 +55,10 @@ const SavedForms = () => {
     }
     
     const filters = [
-        {value:"Fecha ↓", func: () => {forms.sort((a,b) =>b.id - a.id)}},
-        {value:"Fecha ↑", func: () => {forms.sort((a,b)=> a.id - b.id)}},
-        {value: "Rango" , func: () => {setIsRangeMode(true)}},
-        {value: "Ultimos", func: () => {setIsLastsMode(true)}}
+        {value:"Fecha ↓", func: () => forms.sort((a,b) =>b.id - a.id)},
+        {value:"Fecha ↑", func: () => forms.sort((a,b)=> a.id - b.id)},
+        {value: "Rango" , func: () => setIsRangeMode(true)},
+        {value: "Ultimos", func: () => setIsLastsMode(true)}
     ]
 
     const fetchSavedForms = async () => {
@@ -99,15 +85,24 @@ const SavedForms = () => {
     }
 
     const exportForm = form => {
-        const objectStringified = JSON.stringify(form)
-        const filePath = `${FileSystem.cacheDirectory}response.json`
+        const filePath = `${FileSystem.cacheDirectory}respuestasFormularios.json`
+        const copy = form.map(({id, ...form}) => form)
+
+        const objectStringified = form.lenght === 1 ? JSON.stringify({ 
+            share_content_type: shareTypes.SINGLE_ANSWER,
+            content           : copy 
+          }) : JSON.stringify({
+            share_content_type: shareTypes.MULTIPLE_ANSWERS,
+            content           : copy
+        })
+        
     
         // Intentar compartir usando un archivo temporal
         FileSystem.writeAsStringAsync(filePath, objectStringified).then( 
             () => Sharing.shareAsync(filePath, {
-            dialogTitle: 'Compartir JSON como archivo',
-            mimeType: 'application/json',
-            UTI: 'public.json'
+                dialogTitle : 'Compartir JSON como archivo',
+                mimeType    : 'application/json',
+                UTI         : 'public.json'
             })
         // Si se compartio correctamente
         ).then( 
@@ -122,12 +117,12 @@ const SavedForms = () => {
         // Borrar el archivo temporal
         }).finally(
             async () => {
-            try {
-                const fileInfo = await FileSystem.getInfoAsync(filePath)
-                if (fileInfo.exists) await FileSystem.deleteAsync(filePath)
-            } catch (deleteError) {
-                console.error('Error al eliminar el archivo:', deleteError)
-            }
+                try {
+                    const fileInfo = await FileSystem.getInfoAsync(filePath)
+                    if (fileInfo.exists) await FileSystem.deleteAsync(filePath)
+                } catch (deleteError) {
+                    console.error('Error al eliminar el archivo:', deleteError)
+                }
             }
         )
     }
@@ -139,6 +134,7 @@ const SavedForms = () => {
             setForms(updatedForms)
             setSelectedForms([]) // Resetear formularios seleccionados
             setIsSelectionMode(false) // Salir del modo de selección
+
             Alert.alert('Éxito', 'Formularios eliminados')
             fetchSavedForms()
         } catch (error) {
@@ -155,6 +151,7 @@ const SavedForms = () => {
     const closeModal = () => {
         setModalVisible(false)
         setSelectedForm(null)
+        setSelectedForms([])
     }
 
     useEffect(() => {
@@ -195,20 +192,13 @@ const SavedForms = () => {
         setSelectedForms([]) // Resetear selección al activar/desactivar modo
     }
 
-    const selectAll = () => {  
-        setSelectedForms(forms.map(form => form.id))
-    }
-
-    const deselectAll = () => {
-        setSelectedForms([])
-    }
-
-    const handleSelection = (id) => {
+    const handleSelection = id => {
         if (isSelectionMode) {
             setSelectedForms(prev =>
                 prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
             )
         } else {
+            setSelectedForms([id])
             openModal(forms.find(form => form.id === id))
         }
     }
@@ -224,8 +214,18 @@ const SavedForms = () => {
     const handleLasts = value => {
         setLasts(value)
         const newForms = baseForms
-        newForms.sort((a,b) => a.id - b.id)
-        setForms((newForms.slice(-value)).reverse())
+        newForms.sort((a,b) => b.id - a.id)
+        setForms(newForms.slice(newForms.length - value))
+    }
+    function isBase64(str) {
+        if (!str || typeof str !== 'string') {
+          return false;
+        }
+      
+        const base64Regex = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
+        
+        // Check if string length is a multiple of 4 and matches the Base64 pattern
+        return str.length % 4 === 0 && base64Regex.test(str);
     }
 
     const renderTitle = () => (
@@ -233,8 +233,19 @@ const SavedForms = () => {
             <Text style={styles.topNavigationText}>Formularios Guardados</Text>
         </View>
     )
+    const groupedForms = forms.reduce((acc, form) => {
+        if (!acc[form.plantilla]) {
+            acc[form.plantilla] = []
+        }
+        acc[form.plantilla].push(form)
+        return acc
+    }, {})
+    
+    const renderFormItem = ({ item }) => {
+        const dateString = `${new Date(item.id)}`	
+        const lenght = dateString.length
 
-    const renderItem = ({ item }) => (
+        return(
         <TouchableOpacity
             style={[
                 styles.containerBox,
@@ -243,16 +254,32 @@ const SavedForms = () => {
             onPress={() => handleSelection(item.id)}
             onLongPress={toggleSelectionMode}
         >
-            <Text style={styles.formTitle}>{item.nombreFormulario}</Text>
+            <Text style={styles.formTitle}>{dateString.substring(0, lenght-8 )}</Text>
             {isSelectionMode ? null : (
-                <Button style={styles.button} onPress={() => deleteForm(item.id)} accessoryLeft={deleteIcon} />
+                <Button style={styles.button} onPress={() => exportForm([item])} accessoryLeft={shareIcon} />
             )}
         </TouchableOpacity>
-    )
+    )}
 
-    const renderOption = (option) => (
-        <View style={styles.titleContainer}>
-            <Text style={styles.optionTitle}>{option}</Text>
+    const toggleExpand = (type) => {
+        setExpandedTypes(prevState => ({
+            ...prevState,
+            [type]: !prevState[type]
+        }))
+    }
+
+    const renderTypeItem = ({ item }) => (
+        <View>
+            <TouchableOpacity onPress={() => toggleExpand(item)} >
+                <Text style={styles.formType}>{item}</Text> {/* Mostrar el tipo de formulario */}
+            </TouchableOpacity>
+            {expandedTypes[item] && (
+                <FlatList
+                    data={groupedForms[item]}
+                    renderItem={renderFormItem}
+                    keyExtractor={(form) => form.id.toString()}
+                />
+            )}
         </View>
     )
 
@@ -304,7 +331,7 @@ const SavedForms = () => {
                         </Text>
                     </Layout> : <></>
                 }
-                {index && index.row === 3 ? <Input style={styles.inputUltimos} placeholder='¿Cuantas respuestas desea?' value={lasts} onChangeText={handleLasts} keyboardType='numeric'/> : <></>}
+                {index && index.row === 3 ? <Input style={styles.inputUltimos} placeholder='¿Cuantas respuestas desea?' value={lasts} OnChange={handleLasts} keyboardType='numeric'/> : <></>}
                 {isSelectionMode && (
                     <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 10, paddingTop: 10}}>
                         <Button onPress={deselectAll} accessoryLeft={deleteIcon} style ={{width: '40%', marginRight: '10%'}}>Limpiar selección</Button>
@@ -313,12 +340,12 @@ const SavedForms = () => {
                 )}
                 </Layout>
                 <FlatList
-                    data={forms}
-                    renderItem={renderItem}
-                    keyExtractor={(item) => item.id.toString()}
+                    data={Object.keys(groupedForms)}
+                    renderItem={renderTypeItem}
+                    keyExtractor={item => item}
                     contentContainerStyle={styles.listContainer}
                 />
-                <Modal visible ={isRangeMode}>
+                <Modal visible={isRangeMode}>
                     <Layout style = {styles.containerCalendar}>
                         <RangeCalendar range={range} onSelect={nextrange => setRange(nextrange)}/>
                             <View style={styles.buttonRangeContainer}>
@@ -329,36 +356,59 @@ const SavedForms = () => {
                             </View>
                     </Layout>
                 </Modal>
+                <Modal visible ={confirmDelete[0]}>
+                    <Layout style = {styles.container}>
+                        <Text>¿Está seguro que desea eliminar el/los formulario?</Text>
+                        <Layout style={styles.buttonContainer}>
+                        <Button accessoryLeft={deleteIcon} status='danger' style={styles.deleteButton} onPress={() => {deleteSelectedForms()
+                                                                            setConfirmDelete([false,false])
+                                                                            }}>Eliminar</Button>
+                        <Button accessoryLeft={BackIcon}style={styles.deleteButton} onPress={() => confirmDelete[1] ? (setConfirmDelete([false,false]), setModalVisible(true))
+                                                                                            : 
+                                                                                                setConfirmDelete([false,false])
+                                                                            }>Cancelar</Button>
+                        </Layout>
+                    </Layout>
+                </Modal>
+                
                 {isSelectionMode && (
                     <Layout style={styles.buttonContainer}>
-                        <Button style={styles.deleteButton} onPress={deleteSelectedForms} accessoryLeft={deleteIcon}>
+                        <Button status='danger' style={styles.deleteButton} onPress={() => setConfirmDelete([true,false])} accessoryLeft={deleteIcon}>
                             Eliminar 
                         </Button>
-
                         <Button status='info' style={styles.shareButton} accessoryLeft={shareIcon} onPress={() => exportForm(
                             forms.filter(form => selectedForms.includes(form.id)))}>
                             Compartir
                         </Button>
                     </Layout>
                 )}
+            
                 <Modal
                     visible={modalVisible}
                     transparent={true}
-                    animationType="fade"
                     onRequestClose={closeModal}
                     backdropStyle={styles.backdrop}
                 >
                     <Layout style={styles.modalContainer}>
                         <Card style={styles.modalCard} disabled={true} >
-                            <Text style={styles.modalTitle}>{selectedForm?.nombreFormulario}</Text>
+                            <Text style={styles.modalTitle}>{selectedForm?.plantilla}</Text>
                             {selectedForm && Object.entries(selectedForm.data).map(([key, value]) => (
                                 <Layout style={styles.containerRespuestas}>
                                     <Text style={styles.key} key={key}>{`${key}`}</Text>
-                                    <Text style={styles.value}>{`${value}`}</Text>
+                                    <ScrollView style = {{maxHeight: 200}}>
+                                        {console.log(isBase64(value))}
+                        
+                                        {
+                                        isBase64(value) ? <Image source={{uri: `data:image/jpeg;base64,${value}`}} style={{width: 300, height: 300 }} resizeMode='center'/> : <Text style={styles.value}>{`${value}`}</Text>}
+                                    </ScrollView>
                                 </Layout>
                             ))}
-                            <Button onPress={() => exportForm(selectedForm)}>Compartir</Button>
-                            <Button status='danger' onPress={closeModal}>Cerrar</Button>
+                            
+                            <Button accessoryLeft={deleteIcon} status='danger' onPress={() => {setConfirmDelete([true, true])
+                                                    setModalVisible(false)}
+                                                }>Eliminar</Button>
+                            <Button accessoryLeft={shareIcon} status='info' onPress={() => exportForm([selectedForm])}>Compartir</Button>
+                            <Button  onPress={closeModal}>Cerrar</Button>
                         </Card>
                     </Layout>
                 </Modal>
@@ -485,7 +535,7 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         marginBottom: 10,
         paddingVertical: 10,
-        paddingHorizontal: 10,
+        paddingHorizontal: '1%',
         backgroundColor: '#f5f5f5',
         borderRadius: 8, 
     },
@@ -509,13 +559,15 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0)',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        zIndex : 10
     },
     modalCard: {
         alignSelf: 'center',
-        width: '200%', 
-        maxWidth: '250%', 
+        width: '100%', 
+        maxWidth: '100%', 
         borderRadius: 10,
+        
         
     },
     modalTitle: {
@@ -544,6 +596,14 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignSelf: 'center',
+    },
+    formType: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginVertical: 10,
+        paddingHorizontal: 10,
+        backgroundColor: '#e0e0e0',
+        borderRadius: 5,
     },
     buttonRangeContainer: {
         backgroundColor: 'transparent',

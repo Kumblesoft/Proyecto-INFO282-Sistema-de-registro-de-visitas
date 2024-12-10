@@ -4,14 +4,16 @@ import { StyleSheet } from 'react-native'
 
 
 
-const ItemSelector = forwardRef(({ items, onSelect, value,defaultOption, placeholder,error }, ref) => {
+const ItemSelector = forwardRef(({ items, onSelect, value,defaultOption, placeholder,error,disabled }, ref) => {
   const [selectedIndex, setSelectedIndex] = useState(null) // Índice seleccionado
   const [selectedValue, setSelectedValue] = useState(null) // Valor inicial
 
 
   function refreshSelector(){
-    setSelectedIndex(null)
-    setSelectedValue(null)
+    if (defaultOption!= null )onSelect(defaultOption)
+    else{
+      setSelectedIndex(null)
+      setSelectedValue(null)}
   }
   useImperativeHandle(ref, () => ({
     refreshSelector,
@@ -36,6 +38,7 @@ const ItemSelector = forwardRef(({ items, onSelect, value,defaultOption, placeho
       selectedIndex={selectedIndex}
       onSelect={handleSelect}
       status={error? 'danger':'primary'}
+      disabled={disabled}
       placeholder={placeholder} // Placeholder para el Select
       value={selectedValue} // Muestra el nombre seleccionado o el placeholder
       style={styles.select} // Aplica estilo para el ancho mínimo 

@@ -3,19 +3,23 @@ import { Radio, RadioGroup, Text, Layout, Divider } from '@ui-kitten/components'
 import { StyleSheet } from 'react-native'
 
 
-const RadioButtonGroup = forwardRef(({ items, onSelect, defaultOption,error }, ref) => {
+const RadioButtonGroup = forwardRef(({ items, onSelect, defaultOption,error, disabled}, ref) => {
   // Al cargar, selecciona el valor predeterminado si se pasa
   const [selectedIndex, setSelectedIndex] = useState(null)
 
   function refreshSelector(){
-    setSelectedIndex(null)
+    console.log(defaultOption)
+    const index = items.findIndex(item => item.valor === defaultOption);
+    setSelectedIndex(index !== -1 ? index : null);
+    if (defaultOption != null) onSelect(defaultOption)
+    else setSelectedIndex(null)
   }
 
   useImperativeHandle(ref, () => ({
     refreshSelector,
   }))
   useEffect(() => {
-    const index = items.findIndex(item => item.value === defaultOption) 
+    const index = items.findIndex(item => item.valor === defaultOption) 
     setSelectedIndex(index !== -1 ? index : null)
   }, [defaultOption])
 
@@ -27,7 +31,7 @@ const RadioButtonGroup = forwardRef(({ items, onSelect, defaultOption,error }, r
   return (
     <RadioGroup selectedIndex={selectedIndex} onChange={handleSelect}>
       {items.map(item => (
-        <Radio key={item.valor} style={styles.radio}status={error? 'danger':'basic'}>
+        <Radio key={item.valor} style={styles.radio}status={error? 'danger':'basic'} disabled = {disabled}>
           <Text style={styles.radioText}>{item.nombre}</Text>
         </Radio>
       ))}

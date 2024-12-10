@@ -1,0 +1,19 @@
+{
+	"nombre formulario": "Formulario 1",
+	"formato salida": "JSON",
+	"nombre archivo salida": "respuestas formulario 1.json",
+	"ultima modificacion": "11/11/11",
+	"campos": [
+		{
+			"tipo": "texto",
+			"nombre": "Ingrese un mensaje",
+			"obligatorio": true,
+			"rellenarQR":true,
+			"salida": "mensaje",
+			"limitaciones": [
+			],
+			"formato": [
+			]
+		},
+	],
+}
