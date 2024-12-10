@@ -12,7 +12,15 @@ import CameraConstructor from '../fieldsConstructor/CameraConstructor'
 import DragList from 'react-native-draglist'
 
 
-
+const constructors = new Map([
+    ['radio', RadioSelectorConstructor],
+    ['texto', TextoConstructor],
+    ['selector', SelectorConstructor],
+    ['hora', HourConstructor],
+    ['fecha', DateConstructor],
+    ['checkbox', CheckBoxConstructor],
+    ['camara', CameraConstructor]
+])
 
 const FieldSelector = () => {
     const [selectedField, setSelectedField] = useState('')
@@ -23,45 +31,21 @@ const FieldSelector = () => {
     // Obtiene los tipos de campos del JSON (keys del objeto)
     const fieldTypes = Object.keys(fields)
 
-    function keyExtractor(str, _index) {
-        return str;
-    }
-
     const handleFieldSave = (field) => {
         fieldsToDisplay[fieldsToDisplay.indexOf(field)] = field
     }
 
     function renderItem(info) {
-        const {item, onDragStart, onDragEnd, isActive} = info;
-        const field = item;
-        console.log(field)
+        const {item, onDragStart, onDragEnd, isActive} = info
+        const FieldComponent = constructors.get(item.tipo)
+        
         return (
         <TouchableOpacity 
             key={item.tipo}
             onPressIn={onDragStart} 
             onPressOut={onDragEnd}>
             <View style={styles.fieldContainer}>
-            {field.tipo === 'radio' && (
-                <RadioSelectorConstructor field={field} onSave={() => {}} />
-                )}
-                {field.tipo === 'texto' && (
-                    <TextoConstructor field={field} onSave={() => {}} />
-                )}
-                {field.tipo === 'selector' && (
-                    <SelectorConstructor field={field} onSave={() => {}} />
-                )}
-                {field.tipo === 'hora' && (
-                    <HourConstructor field={field} onSave={() => {}} />
-                )}
-                {field.tipo === 'fecha' && (
-                    <DateConstructor field={field} onSave={() => {}} />
-                )}
-                {field.tipo === 'checkbox' && (
-                    <CheckBoxConstructor field={field} onSave={() => {}} />
-                )}
-                {field.tipo === 'camara' && (
-                    <CameraConstructor field={field} onSave={() => {}} />
-                )}
+                <FieldComponent field={item} onSave={() => handleFieldSave(item)} />
                 <Button
                     title="Eliminar Campo"
                     status="danger"
@@ -123,41 +107,41 @@ const FieldSelector = () => {
     
     return (
         <View style={styles.container}>
-        <DragList
-            data={fieldsToDisplay}
-            keyExtractor={keyExtractor}
-            onReordered={onReordered}
-            renderItem={renderItem} 
-        />
+            <DragList
+                data={fieldsToDisplay}
+                keyExtractor={(() => {let i = 0; return () => `${i++}`})()}
+                onReordered={onReordered}
+                renderItem={renderItem} 
+            />
+            
         
-    
-        {/* Sección destacada */}
-        <View style={styles.selectionContainer}>
-            <Text style={styles.selectionTitle}>Selecciona el tipo de campo</Text>
-            <Select
-                selectedIndex={selectedIndex}
-                value={selectedField}
-                onSelect={(itemValue) => {
-                    setSelectedIndex(itemValue)
-                    setSelectedField(fieldTypes[itemValue - 1])
-                }}
-                placeholder="Seleccione un tipo de campo"
-            >
-                {fieldTypes.map((fieldType) => (
-                    <SelectItem title={fieldType} key={fieldType} />
-                ))}
-            </Select>
-    
-            <Button
-                title="Agregar nuevo campo"
-                onPress={handleNewField}
-                disabled={!selectedIndex}
-                style={styles.addButton}
-            >
-                Agregar nuevo campo
-            </Button>
-        </View>
-        <Button title="Guardar Cambios" onPress={handleSave} > Guardar Cambios </Button>
+            {/* Sección destacada */}
+            <View style={styles.selectionContainer}>
+                <Text style={styles.selectionTitle}>Crear un nuevo campo</Text>
+                <Select
+                    selectedIndex={selectedIndex}
+                    value={selectedField}
+                    onSelect={(itemValue) => {
+                        setSelectedIndex(itemValue)
+                        setSelectedField(fieldTypes[itemValue - 1])
+                    }}
+                    placeholder="Seleccione un tipo de campo"
+                >
+                    {fieldTypes.map((fieldType) => (
+                        <SelectItem title={fieldType} key={fieldType} />
+                    ))}
+                </Select>
+        
+                <Button
+                    title="Agregar nuevo campo"
+                    onPress={handleNewField}
+                    disabled={!selectedIndex}
+                    style={styles.addButton}
+                >
+                    Agregar nuevo campo
+                </Button>
+            </View>
+        
     </View>
     
     )
@@ -170,14 +154,14 @@ const styles = StyleSheet.create({
     },
     fieldContainer: {
         marginBottom: 16,
-        padding: 12,
+        padding: 16,
         borderWidth: 1,
         borderColor: '#ddd',
         borderRadius: 8,
         backgroundColor: '#fff'
     },
     selectionContainer: {
-        marginTop: 20,
+        marginTop: 10,
         padding: 16,
         borderWidth: 2,
         borderColor: '#6200ea',
@@ -187,7 +171,8 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,
         shadowRadius: 4,
-        elevation: 5
+        elevation: 5,
+        marginBottom: 10
     },
     selectionTitle: {
         fontSize: 18,

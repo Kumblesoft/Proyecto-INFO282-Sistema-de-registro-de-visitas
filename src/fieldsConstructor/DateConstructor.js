@@ -42,7 +42,7 @@ const DateConstructor = ({ field = {}, onSave }) => {
     const configureDDateService = new NativeDateService('en', {
         startDayOfWeek:1,
         format: dateFormat
-      })
+    })
 
     const handleSave = () => {
         if (!fieldName.trim()) {
