@@ -171,8 +171,8 @@ const SavedForms = () => {
     const handleLasts = value => {
         setLasts(value)
         const newForms = baseForms
-        newForms.sort((a,b) => a.id - b.id)
-        setForms((newForms.slice(-value)).reverse())
+        newForms.sort((a,b) => b.id - a.id)
+        setForms(newForms.slice(newForms.length - value))
     }
 
     const renderTitle = () => (
