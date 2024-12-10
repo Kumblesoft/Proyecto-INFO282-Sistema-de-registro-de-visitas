@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Platform, View, StyleSheet, FlatList, TouchableOpacity, Alert, Image } from 'react-native'
+import { Dimensions, Platform, View, StyleSheet, FlatList, TouchableOpacity, Alert, Image } from 'react-native'
 import { ButtonGroup, Button, Text, TopNavigation, TopNavigationAction, Divider, Layout, Modal, Card, Icon } from '@ui-kitten/components'
 import { useFormContext } from '../context/FormContext'
 import { useNavigation } from '@react-navigation/native'
@@ -11,6 +11,7 @@ import * as Animatable from 'react-native-animatable'
 import shareTypes from '../commonStructures/shareTypes'
 import * as DocumentPicker from 'expo-document-picker'
 
+const { width, height } = Dimensions.get('window')
 
 const FormSelectorScreen = () => {
   const navigation = useNavigation()
@@ -25,8 +26,9 @@ const FormSelectorScreen = () => {
 
   const backIcon = () => <Icon name='arrow-ios-back-outline' fill='#fff' style={styles.topNavigationIcon}/>
   const importIcon = () => <Icon name='cloud-download-outline' fill='#fff' style={styles.topNavigationIcon}/>
-  const deleteIcon = props => <Icon name='trash' {...props} />
-  const shareIcon = props => <Icon name='share' {...props}/>
+  const deleteIcon = props => <Icon name='trash-outline' {...props} fill="#fff" animationConfig={{ cycles: Infinity }} animation='zoom' style={[props.style, { width: 30, height: 30 }]}/>
+  const shareIcon = props => <Icon name='share-outline' {...props} fill="#fff" animationConfig={{ cycles: Infinity }} animation='zoom' style={[props.style, { width: 30, height: 30 }]}/>
+  const plusIcon = props => <Icon name='plus-outline' {...props} fill="#fff" animationConfig={{ cycles: Infinity }} animation='zoom' style={[props.style, { width: 30, height: 30 }]}/>
   const BackAction = () => <TopNavigationAction icon={backIcon} onPress={() => navigation.goBack()} />
   const importAction = () => <TopNavigationAction icon={importIcon} onPress={() => pickDocument()} />
   const optionBar = () => (
@@ -94,8 +96,8 @@ const FormSelectorScreen = () => {
         console.log("Archivo actualizado guardado en:", filePath)
 
     } catch (error) {
-        console.error("Error al eliminar formularios seleccionados:", error)
-        Alert.alert("Error", "Hubo un problema al eliminar los formularios seleccionados")
+        
+        Alert.alert("Error", "Debe seleccionar uno o varios formularios para eliminarlos")
     }
   }
 
@@ -263,6 +265,7 @@ const FormSelectorScreen = () => {
 
   return (
     <>
+      
       {OptionsModal()}
       <Layout style={styles.layoutContainer}>
         <SafeAreaView style={styles.safeArea}>
@@ -284,30 +287,17 @@ const FormSelectorScreen = () => {
             keyExtractor={(item) => item["nombre formulario"]}
             contentContainerStyle={styles.listContainer}
           />
-          {isSelectionMode && (
-              <Layout style={styles.buttonContainer}>
-                  <Button
-                      style={styles.deleteButton}
-                      onPress={() => deleteSelectedForms()} // Pasamos los datos al botón
-                      accessoryLeft={deleteIcon}
-                  >
-                      Eliminar 
-                  </Button>
+        </Layout>
+      </Layout>
+        <View style={styles.containerMenuBar}>
 
-                    <Button status='info' style={styles.shareButton} accessoryLeft={shareIcon}>
-                        Compartir
-                    </Button>
-                </Layout>
-              )
-            }
-        <View style={styles.footerContainer}>
-          <ButtonGroup style={styles.footerContainer} status='info'>
-            <Button onPress={() => navigation.goBack()}>Volver</Button>
-            <Button onPress={() => navigation.navigate('CreateTemplate')}>Crear</Button>
-          </ButtonGroup>
+          <Button style={styles.iconButton2} appearance="ghost" onPress={() => deleteSelectedForms()} accessoryLeft={deleteIcon} />
+
+          <Button style={styles.centerButton} onPress={() => navigation.navigate('CreateTemplate')} accessoryLeft={plusIcon} />
+          
+          <Button style={styles.iconButton2} appearance="ghost" accessoryLeft={shareIcon} />
         </View>
-      </Layout>
-      </Layout>
+      
     </>
   )
 }
@@ -318,12 +308,13 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: 'transparent',
     padding: 20,
     justifyContent: 'space-between', // Esto ayuda a distribuir el espacio entre la lista y el botón
   },
   listContainer: {
     paddingBottom: 60, // Espacio para el botón en la parte inferior
+    backgroundColor: 'transparent',
   },
 
   backButton: {
@@ -393,8 +384,8 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   topNavigationText:{
-    marginRight: Platform.OS == "ios" ? 50 : 70,
-    fontSize: Platform.OS == "ios" ? 22: 24,   
+    marginRight: Platform.OS == "ios" ? 50 : 50,
+    fontSize: Platform.OS == "ios" ? 22: 22,   
     fontWeight: 'bold',
     color: '#fff',
   },
@@ -407,7 +398,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignSelf: 'center',
-    marginBottom: 10,
+    alignItems: 'center',
+    zIndex: 1000,
+    position: 'absolute',
+    bottom: width * 0.05,
   },
   layoutContainer:{
     backgroundColor: '#fff',
@@ -419,25 +413,84 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignSelf: 'center',
   },
+  formOptionBar: {
+    flexDirection: 'row', // Organiza los botones en una fila horizontal
+    justifyContent: 'space-between', // Distribuye los botones uniformemente
+    alignItems: 'center', // Centra verticalmente los botones
+    bottom: 0,
+    backgroundColor: 'black', // Color de fondo de la barras de opciones
+  },
   deleteButton: {
-    width: '35%',
-    marginRight: '3%'
+    marginLeft: "2%",
+    borderRadius: 5,
   },
   shareButton: {
-    width: '35%',
-    marginLeft: '3%'
-  },  
+    marginRight: "2%",
+    borderRadius: 5,
+  },
   shareIcon: {
     width: 20,
     height: 20,
   },
-  footerContainer: {
-    padding: 10,
-    backgroundColor: '#fff', // Color de fondo del pie de página
-    alignItems: 'center', // Centrar el botón
-    borderTopWidth: 1, // Línea superior (opcional)
-    borderTopColor: '#ccc', // Color de la línea
-  }
+
+  floatingButtonContainer: {
+    position: 'absolute',
+    bottom: height * 0.05, // Distancia desde la parte inferior
+    right: width * 0.2,  // Distancia desde el lado derecho
+    zIndex: 1000, // Asegura que esté encima de otros elementos
+  },
+  createButton: {
+    width: width * 0.15,  // Ajusta el tamaño según tus necesidades
+    height: width * 0.15,
+    borderRadius: (width * 0.15)/2, // Hace el botón circular
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'flex-end',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5, 
+  },
+  containerMenuBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#00ffa7', 
+    paddingHorizontal: 10,
+    paddingVertical: 0,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    position: 'relative',
+  },
+  iconButton2: {
+    flex: 1,
+    alignItems: 'center',
+    
+  },
+  centerButtonContainer: {
+    position: 'absolute',
+    top: -30, // Elevar el botón
+    alignSelf: 'center',
+    marginTop: width * 0.9 
+  },
+  centerButton: {
+    top: -20,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#00e593', 
+    borderColor: '#00ffa7', 
+    borderWidth: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+  },
 })
 
 const newModalStyles = StyleSheet.create({
