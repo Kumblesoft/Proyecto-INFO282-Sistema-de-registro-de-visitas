@@ -51,7 +51,6 @@
 
     CREATE TABLE IF NOT EXISTS camara (
     fk_field TEXT REFERENCES field_table_name(field) NOT NULL,
-    editable INTEGER NOT NULL,
     aspect_relation TEXT NOT NULL
     );
 
