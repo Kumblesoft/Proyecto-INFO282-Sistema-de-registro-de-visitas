@@ -70,14 +70,16 @@ export default class Database {
         if (Database.instance) {
             return Database.instance // Return the existing instance if it already exists
         }
+
         this.db = db
-        Database.instance = this // Cache the instance
-        this.chainInsertors = new TextChainInsertor(db)
+        this.chainInsertors = new TextChainInsertor(this.db)
         this.chainInsertors
-            .add(new SelectorChainInsertor(db))
-            .add(new DateChainInsertor(db))
-            .add(new TimeChainInsertor(db))
-            .add(new CameraChainInsertor(db))
+            .add(new SelectorChainInsertor(this.db))
+            .add(new DateChainInsertor(this.db))
+            .add(new TimeChainInsertor(this.db))
+            .add(new CameraChainInsertor(this.db))
+            
+        Database.instance = this // Cache the instance
     }
 
     getForms() {
@@ -95,7 +97,7 @@ export default class Database {
         try {
             const statement = this.db.prepareSync('INSERT INTO forms (name, last_modification) VALUES (?,?)')
             statement.executeSync([newForm["nombre formulario"], newForm["ultima modificacion"]])
-            const formID = this.db.getFirstSync('SELECT id FROM forms WHERE name = ?', [newForm["nombre formulario"]]).id
+            const formID = this.db.getFirstSync('select last_insert_rowid() as id').id
 
             newForm.campos.forEach((fieldObject, i) => {
                 const { id: typeOfField, table_name: fieldTableName } = this.db.getFirstSync('SELECT id, table_name FROM field_table_name WHERE field_type_name=?', [fieldObject.tipo])
