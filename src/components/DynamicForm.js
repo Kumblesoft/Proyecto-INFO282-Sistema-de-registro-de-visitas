@@ -69,35 +69,24 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
             requiredFieldRefs.current.forEach(ref => ref())
             return (new Err('Complete todos los campos obligatorios')).show()
         }
-        const newForm = {
-            fecha : new Date().getTime(),
-            plantilla: formData["nombre formulario"], 
-            umplantilla: formData["ultima modificacion"],
-            data: Object.fromEntries(formState.current), 
-            idDispositivo: identifier
-        }
-
-
-       /* storedForms.push(newForm) 
-        await AsyncStorage.setItem('savedForms', JSON.stringify(storedForms))*/
         
 
         try {
-            //const savedFormsString = await AsyncStorage.getItem('savedForms')
-            let storedForms = []
+            
+            
+            const newForm = {
+                fecha : new Date().getTime(),
+                plantilla: formData["nombre formulario"], 
+                umplantilla: formData["ultima modificacion"],
+                data: Object.fromEntries(formState.current), 
+                idDispositivo: identifier
+            }
             db.insertAnswer(newForm)
-
-            /*if (savedFormsString) {
-                storedForms = JSON.parse(savedFormsString)
-                if (!Array.isArray(storedForms)) 
-                    storedForms = []
-            }*/
 
             
 
             Alert.alert("Formulario guardado")
             formState.current.clear()
-            //Alert.alert("Formulario guardado")
             refreshFieldRefs.current.forEach(ref => ref())
         } catch (error) {
             console.error("Error al guardar el formulario:", error)
