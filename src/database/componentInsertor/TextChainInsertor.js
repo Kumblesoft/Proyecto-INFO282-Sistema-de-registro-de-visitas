@@ -10,24 +10,21 @@ export default class TextChainInsertor extends ChainInsertor {
             'INSERT INTO text_properties (fk_field, qr_refillable) VALUES (?,?)',
             [fieldId, fieldObject.rellenarQR]
         )
+        const idTextInserted = this.db.getFirstSync('SELECT last_insert_rowid() as id').id
 
-        fieldObject.limitaciones?.forEach((limitation) => {
-            console.log(limitation)
+        fieldObject.limitaciones?.forEach(limitation => {
             const limitationID = this.db.getFirstSync('SELECT id FROM limitations WHERE name = ?', [limitation]).id
-            console.log(limitationID)
             this.db.runSync(
-                'INSERT INTO limitations_intermediary (fk_field, fk_limitations) VALUES (?,?)',
+                'INSERT INTO limitations_intermediary (fk_field, fk_limitation) VALUES (?,?)',
                 [fieldId, limitationID]
             )
         })
 
         fieldObject.formato?.forEach((format) => {
-            console.log(format)
-            const formatID = this.db.getFirstSync('SELECT id FROM format WHERE name = ?', [format]).id
-            console.log(formatID)
+            const formatID = this.db.getFirstSync('SELECT id_format FROM format WHERE name = ?', [format]).id_format
             this.db.runSync(
                 'INSERT INTO is_formatted (fk_id_format,fk_id_text) VALUES (?,?)',
-                [fieldId, formatID]
+                [formatID, idTextInserted]
             )
         })
 

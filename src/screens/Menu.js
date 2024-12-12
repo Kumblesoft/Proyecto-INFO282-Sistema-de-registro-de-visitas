@@ -62,7 +62,6 @@ export default function Menu() {
           <Svg height="200" width="200" style={styles.circleOverlay}>
             <Circle cx="100" cy="100" r="100" fill="#E8E9EB" />
           </Svg>
-          <Button onPress={() => db.addForm(testForm) } >Agregar Formulario</Button> 
           <TouchableOpacity style={styles.buttonRellenar} onPress={handleRellenarPress}>
             <Text style={styles.buttonText}>Rellenar</Text>
           </TouchableOpacity>

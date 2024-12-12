@@ -9,8 +9,8 @@ import initDatabaseScript from './tables'
 
 const { dbInit } = initDatabaseScript
 const tables = ['forms', 'fields', 'field_table_name', 'text_properties', 'selector_properties', 'checkbox_properties', 'radio_properties', 'date_properties', 'hour_properties', 'camera_properties', 'limitations',
-    'limitations_intermediary', 'format', 'selector_options', 'radio_options', 'checkbox_options', 'compatibility_matrix', 'respuestas', 'campo_respuesta']
-const table_types = [['text_properties', 'texto'], ['selector_properties', 'selector'], ['date_properties', 'fecha'], ['hour_properties', 'hora'], ['camera_properties', 'camara']]
+    'format', 'is_formatted', 'limitations_intermediary', 'selector_options', 'radio_options', 'checkbox_options', 'compatibility_matrix', 'respuestas', 'campo_respuesta']
+const table_types = [['text_properties', 'texto'], ['selector_properties', 'selector'], ['checkbox_properties', 'checkbox'], ['radio_properties', 'radio'], ['date_properties', 'fecha'], ['hour_properties', 'hora'], ['camera_properties', 'camara']]
 
 /**
  * Guarda si dos elementos son compatibles
@@ -55,8 +55,8 @@ export async function initializeDataBase(db) {
 
     ;[[1, 2], [1, 3], [2, 3]].forEach(pair => setCompatibility(db, pair[0], pair[1], "texto", 1, 0))
     
-    db.runSync('INSERT INTO format (name, regex, value_enum_matrix) VALUES (?,?,?)', ["solo mayusculas", "/^[A-Z]*$/", 0])
-    db.runSync('INSERT INTO format (name, regex, value_enum_matrix) VALUES (?,?,?)', ["solo minusculas", "/^[a-z]*$/", 1])
+    db.runSync('INSERT INTO format (name, value_enum_matrix) VALUES (?,?)', ["solo mayusculas", 0])
+    db.runSync('INSERT INTO format (name, value_enum_matrix) VALUES (?,?)', ["solo minusculas", 1])
 }
 
 // Singleton factory method to get the instance
@@ -106,15 +106,16 @@ export default class Database {
 
             newForm.campos.forEach((fieldObject, i) => {
                 const { id: typeOfField, table_name: fieldTableName } = this.db.getFirstSync('SELECT id, table_name FROM field_table_name WHERE field_type_name=?', [fieldObject.tipo])
-
+                
                 this.db.runSync(
                     'INSERT INTO fields (fk_id_form, fk_field_table_name, name, ordering, obligatory, output) VALUES (?,?,?,?,?,?)',
                     [formID, typeOfField, fieldObject.nombre, i, fieldObject.obligatorio, fieldObject.salida]
                 )
                 const lastFieldId = this.db.getFirstSync('SELECT id FROM fields ORDER BY id DESC LIMIT 1').id
-                if (!this.chainInsertors.insert(fieldObject, lastFieldId, typeOfField, fieldTableName)) throw new Error('Error al insertar')
+                if (!this.chainInsertors.insert(fieldObject, lastFieldId, typeOfField, fieldTableName)) 
+                    throw new Error(`Tipo de campo desconocido ${fieldObject.tipo}`)
+                //this.getForms()
             })
-            //this.getForms()
         } catch (error) {
             console.log(error)
         }

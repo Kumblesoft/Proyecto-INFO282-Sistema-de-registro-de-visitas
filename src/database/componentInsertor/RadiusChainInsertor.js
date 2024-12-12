@@ -10,12 +10,11 @@ export default class RadiusChainInsertor extends ChainInsertor {
             [ fieldId, fieldObject["opcion predeterminada"]]
         )
         const insertedRowId = this.db.getFirstSync('select last_insert_rowid() as id')
-        console.log(insertedRowId)
 
         fieldObject.options?.forEach(option => 
             this.db.runSync(
                 `INSERT INTO select_options (fk_selector_id, name, value) VALUES (?, ?, ?)`,
-                [insertedRowId, option.nombre, option.valor]
+                [insertedRowId.id, option.nombre, option.valor]
         ))
         return true
     }

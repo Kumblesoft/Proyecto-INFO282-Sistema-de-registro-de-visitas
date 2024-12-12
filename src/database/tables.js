@@ -76,6 +76,10 @@ export default initDatabaseScript = {
     );
     CREATE INDEX name_limitation ON limitations(name);
 
+    CREATE TABLE IF NOT EXISTS limitations_intermediary (
+    fk_field int references fields(id),
+    fk_limitation int references limitations(id)
+    );
 
    CREATE TABLE IF NOT EXISTS is_formatted (
    fk_id_format int references format(id_format),
@@ -115,7 +119,7 @@ export default initDatabaseScript = {
     );
 
     CREATE TABLE IF NOT EXISTS respuestas (
-    ID_RESPUESTA INT PRIMARY KEY AUTOINCREMENT,
+    ID_RESPUESTA INTEGER PRIMARY KEY AUTOINCREMENT,
     ID_PLANTILLA INT REFERENCES forms(id),
     FECHA_RESPUESTA INT,
     UM_PLANTILLA INT,
@@ -127,7 +131,6 @@ export default initDatabaseScript = {
         ID_RESPUESTA INT REFERENCES respuestas(id_respuesta),
         NOMBRE_CAMPO TEXT,
         VALOR_CAMPO TEXT,
-        PRIMARY KEY (ID_CAMPO_RESPUESTA),
         FOREIGN KEY (ID_RESPUESTA) REFERENCES RESPUESTAS(ID_RESPUESTA)
     );
 
