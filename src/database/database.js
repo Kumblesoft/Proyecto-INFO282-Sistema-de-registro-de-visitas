@@ -38,7 +38,7 @@ export async function initializeDataBase(db) {
     }
 
     table_types.forEach(type =>
-        db.runSync('INSERT INTO field_table_name (table_name, field_type_name) VALUES (?)', type)
+        db.runSync('INSERT INTO field_table_name (table_name, field_type_name) VALUES (?,?)', type)
     )
 
 
@@ -106,7 +106,7 @@ export default class Database {
             const formID = this.db.getFirstSync('SELECT id FROM forms WHERE name = ?', [newForm["nombre formulario"]]).id
             
             newForm.campos.forEach((fieldObject, i) => {
-                const {id: typeOfField, table_name: fieldTableName} = this.db.getFirstSync('SELECT id, table_name FROM field_table_name WHERE field_type_name=?', [fieldObject.tipo])
+                const { id: typeOfField, table_name: fieldTableName } = this.db.getFirstSync('SELECT id, table_name FROM field_table_name WHERE field_type_name=?', [fieldObject.tipo])
                 this.db.runSync(
                     'INSERT INTO fields (fk_id_form, fk_field_table_name, name, ordering, obligatory, output) VALUES (?,?,?,?,?,?)',
                     [formID, typeOfField, fieldObject.nombre, i, fieldObject.obligatorio, fieldObject.salida]
