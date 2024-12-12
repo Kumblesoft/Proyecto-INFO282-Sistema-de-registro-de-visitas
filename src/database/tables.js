@@ -75,7 +75,7 @@ export default initDatabaseScript = {
 
     CREATE TABLE IF NOT EXISTS format (
     id_text_format INTEGER REFERENCES text_properties(id_formats) NOT NULL,
-    name TEXT NOT NULL UNIQUE,  
+    name TEXT NOT NULL UNIQUE,
     value_enum_matrix INTEGER NOT NULL
     );
     CREATE UNIQUE INDEX name_format ON format(id_text_format);
@@ -98,8 +98,7 @@ export default initDatabaseScript = {
     ID_PLANTILLA INT,
     UM_PLANTILLA INT,
     ID_DISPOSITIVO TEXT,
-    FOREIGN KEY (ID_PLANTILLA) REFERENCES FORMS(ID),
-    FOREIGN KEY (UM_PLANTILLA) REFERENCES FORMS(LAST_MODIFICATION)
+    FOREIGN KEY (ID_PLANTILLA) REFERENCES FORMS(ID)
 );
 
 -- Crear la tabla CAMPO_RESPUESTA
