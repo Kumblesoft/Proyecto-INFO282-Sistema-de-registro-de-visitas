@@ -17,7 +17,6 @@ import { getDatabaseInstance } from '../database/database'
 const { width, height } = Dimensions.get('window')
 
 const FormSelectorScreen = () => {
-  console.log(dbFormTest)
   const db = getDatabaseInstance(useSQLiteContext())
   const navigation = useNavigation()
   const forms = require("../TestForms/forms.json")

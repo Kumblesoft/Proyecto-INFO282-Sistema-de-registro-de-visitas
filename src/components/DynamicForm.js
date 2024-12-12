@@ -11,6 +11,8 @@ import { Err, Ok } from '../commonStructures/resultEnum'
 import { useIdentifierContext } from '../context/IdentifierContext'
 import { StyleSheet } from "react-native"
 import { useFormContext } from '../context/SelectedFormContext'
+import { useSQLiteContext } from 'expo-sqlite'
+import { getDatabaseInstance } from '../database/database'
 
 
 const tickIcon = (props) => <Icon name='save' {...props} />
@@ -26,6 +28,7 @@ const tickIcon = (props) => <Icon name='save' {...props} />
  */
 
 const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
+    const db = getDatabaseInstance(useSQLiteContext())
     const requiredFieldRefs = useRef([])
     const refreshFieldRefs = useRef([])
     const formState = useRef(new Map())
@@ -66,28 +69,32 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
             requiredFieldRefs.current.forEach(ref => ref())
             return (new Err('Complete todos los campos obligatorios')).show()
         }
+        const newForm = {
+            fecha : new Date().getTime(),
+            plantilla: formData["nombre formulario"], 
+            umplantilla: formData["ultima modificacion"],
+            data: Object.fromEntries(formState.current), 
+            idDispositivo: identifier
+        }
+
+
+       /* storedForms.push(newForm) 
+        await AsyncStorage.setItem('savedForms', JSON.stringify(storedForms))*/
+        
 
         try {
-            const savedFormsString = await AsyncStorage.getItem('savedForms')
+            //const savedFormsString = await AsyncStorage.getItem('savedForms')
             let storedForms = []
+            db.putAnswers(newForm)
 
-            if (savedFormsString) {
+            /*if (savedFormsString) {
                 storedForms = JSON.parse(savedFormsString)
                 if (!Array.isArray(storedForms)) 
                     storedForms = []
-            }
+            }*/
 
-            const newForm = {
-                id : new Date().getTime(),
-                plantilla: formData["nombre formulario"], 
-                umplantilla: formData["ultima modificacion"],
-                data: Object.fromEntries(formState.current), 
-                idDispositivo: identifier
-            }
+            
 
-
-            storedForms.push(newForm) 
-            await AsyncStorage.setItem('savedForms', JSON.stringify(storedForms))
             Alert.alert("Formulario guardado")
             formState.current.clear()
             //Alert.alert("Formulario guardado")

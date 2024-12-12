@@ -206,7 +206,8 @@ export default class Database {
             'INSERT INTO respuestas (id_plantilla, fecha_respuesta, um_plantilla, id_dispositivo) VALUES (?,?,?,?)',
             [formID, answerObject.fecha, answerObject["um plantilla"], answerObject["idDispositivo"]]
         )
-        const lastAnswerID = this.db.getFirstSync('SELECT id FROM respuestas ORDER BY id DESC LIMIT 1').id
+        const lastAnswerID = this.db.getFirstSync('SELECT id FROM respuestas ORDER BY id DESC LIMIT 1')
+        console.log(lastAnswerID)
         Object.entries(answerObject.data).forEach(([key, value]) =>
             this.db.runSync(
                 'INSERT INTO campo_respuesta (id_respuesta, nombre_campo, valor_campo) VALUES (?,?,?)',
