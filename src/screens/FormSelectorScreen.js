@@ -70,21 +70,7 @@ const FormSelectorScreen = () => {
         })
 
         const content = await FileSystem.readAsStringAsync(newPath) // Now read the file from the cache
-        // console.log("File Content:", content) // Log the content (JSON)
-
         db.addForm(content)
-
-
-        try {
-          // Write new content to the file (overwrites existing content)
-          await FileSystem.writeAsStringAsync(`${FileSystem.documentDirectory}forms.json`, JSON.stringify(tempo))
-          Alert.alert("Success", "File content has been overwritten!")
-        } catch (err) {
-          console.error("Error writing to file:", err)
-          Alert.alert("Error", "Failed to overwrite the file.")
-        }
-
-        console.log(localForms)
       }
       else if (result.canceled) { console.log("Action Canceled, no file selected.") }
       else { Alert.alert("Error", "Failed to pick a document. Please try again.") }
@@ -94,29 +80,14 @@ const FormSelectorScreen = () => {
     }
   }
 
-  const deleteSelectedForms = async () => {
+  const deleteSelectedForms = async (formID) => {
     try {
-      const updatedForms = localForms.filter(form => !selectedForms.includes(form["nombre formulario"]))
+      db.deleteForm(formID)
 
-      const filePath = `${FileSystem.cacheDirectory}forms.json`
-      const updatedFormsString = JSON.stringify(updatedForms)
-
-      await FileSystem.writeAsStringAsync(filePath, updatedFormsString)
-
-
-
-      const newContent = await FileSystem.readAsStringAsync(filePath)
-      const loc = localForms.pop(JSON.parse(newContent))
-
-      setForms(loc)
       setSelectedForms([])
       setIsSelectionMode(false)
-      console.log(localForms)
-      console.log("Formularios restantes después de la eliminación:", updatedForms)
-      console.log("Archivo actualizado guardado en:", filePath)
 
     } catch (error) {
-
       Alert.alert("Error", "Debe seleccionar uno o varios formularios para eliminarlos")
     }
   }

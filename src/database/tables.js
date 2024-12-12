@@ -131,7 +131,6 @@ export default initDatabaseScript = {
         ID_RESPUESTA INT REFERENCES respuestas(id_respuesta),
         NOMBRE_CAMPO TEXT,
         VALOR_CAMPO TEXT,
-        FOREIGN KEY (ID_RESPUESTA) REFERENCES RESPUESTAS(ID_RESPUESTA)
     );
 
     -- Crear un índice compuesto para las columnas fila y columna
