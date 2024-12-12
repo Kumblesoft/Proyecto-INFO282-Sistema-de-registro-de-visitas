@@ -6,7 +6,6 @@
     CREATE TABLE IF NOT EXISTS forms (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL UNIQUE,
-    output_file_name TEXT NOT NULL UNIQUE,
     last_modification TEXT NOT NULL
     );
 
@@ -27,31 +26,30 @@
     CREATE UNIQUE INDEX field_name ON field_table_name(field);
 
     CREATE TABLE IF NOT EXISTS texto (
-    fk_field INTEGER REFERENCES field_table_name(id) NOT NULL,
+    fk_field INTEGER REFERENCES fields(id) NOT NULL,
     name TEXT NOT NULL,
     qr_refillable INTEGER NOT NULL
     );
 
     CREATE TABLE IF NOT EXISTS selector (
-    fk_field TEXT REFERENCES field_table_name(field) NOT NULL,
+    fk_field INTEGER REFERENCES fields(id) NOT NULL,
     dafault_option TEXT,
     dafault_text TEXT NOT NULL
     );
 
     CREATE TABLE IF NOT EXISTS fecha (
-    fk_field TEXT REFERENCES field_table_name(field) NOT NULL,
+    fk_field INTEGER REFERENCES fields(id) NOT NULL,
     dafault_text TEXT NOT NULL,
     dafault_date TEXT NOT NULL
     );
 
     CREATE TABLE IF NOT EXISTS hora (
-    fk_field TEXT REFERENCES field_table_name(field) NOT NULL,
+    fk_field INTEGER REFERENCES fields(id) NOT NULL,
     dafault_time TEXT NOT NULL
     );
 
     CREATE TABLE IF NOT EXISTS camara (
-    fk_field TEXT REFERENCES field_table_name(field) NOT NULL,
-    editable INTEGER NOT NULL,
+    fk_field INTEGER REFERENCES fields(id) NOT NULL,
     aspect_relation TEXT NOT NULL
     );
 
