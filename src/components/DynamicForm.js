@@ -85,7 +85,7 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
         try {
             //const savedFormsString = await AsyncStorage.getItem('savedForms')
             let storedForms = []
-            db.putAnswers(newForm)
+            db.insertAnswer(newForm)
 
             /*if (savedFormsString) {
                 storedForms = JSON.parse(savedFormsString)

@@ -129,7 +129,7 @@ export default initDatabaseScript = {
     CREATE TABLE IF NOT EXISTS campo_respuesta (
         ID_RESPUESTA INT REFERENCES respuestas(id_respuesta),
         NOMBRE_CAMPO TEXT,
-        VALOR_CAMPO TEXT,
+        VALOR_CAMPO TEXT
     );
 
     CREATE INDEX idx_fila_columna ON compatibility_matrix (fila, columna);
