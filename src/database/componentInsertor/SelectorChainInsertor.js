@@ -10,7 +10,7 @@ export default class SelectorChainInsertor extends ChainInsertor {
             [fieldId, fieldObject["opcion predeterminada"], fieldObject["texto predeterminado"]]
         )
 
-        const insertedRowId = this.db.runSync('select lastInsertRowid() as id').id
+        const insertedRowId = this.db.runSync('select last_insert_rowid() as id').id
 
         fieldObject.options?.forEach(option => {
             this.db.runSync(
