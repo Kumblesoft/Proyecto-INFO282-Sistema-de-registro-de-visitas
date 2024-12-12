@@ -6,9 +6,10 @@ export default class DateChainInsertor extends ChainInsertor {
             return next && next.insert(fieldObject)
 
         this.db.runSync(
-            `INSERT INTO ${fieldTableName} (fk_field, name, default_date) VALUES (?,?,?)`,
-            [fieldId, fieldObject.nombre, fieldObject.default_date]
+            `INSERT INTO ${fieldTableName} (fk_field, date_format, default_date) VALUES (?,?,?)`,
+            [fieldId, fieldObject.formato, fieldObject['fecha predeterminada']]
         )
+
         // Colocar formato.
     }
 }

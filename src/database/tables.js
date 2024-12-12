@@ -1,5 +1,6 @@
 export default initDatabaseScript = {
     "dbInit": `
+    
     PRAGMA journal_mode = WAL;
     PRAGMA foreign_keys = ON;
 
@@ -39,6 +40,19 @@ export default initDatabaseScript = {
     selector_placeholder TEXT
     );
 
+   	CREATE TABLE IF NOT EXISTS checkbox_properties (
+   	fk_field integer references fields(id) not null,
+   	id_options integer primary key autoincrement,
+   	default_option TEXT,
+   	max_checked_options integer
+   	);
+   
+   	create table if not exists radio_properties (
+   	fk_field integer references fields(id) not null,
+   	default_option TEXT,
+   	id_options integer primary key autoincrement
+   	);
+   
     CREATE TABLE IF NOT EXISTS date_properties (
     fk_field INTEGER REFERENCES fields(id) NOT NULL,
     date_format TEXT NOT NULL,
@@ -78,12 +92,24 @@ export default initDatabaseScript = {
     );
     CREATE UNIQUE INDEX name_format ON format(id_text_format);
 
-    CREATE TABLE IF NOT EXISTS options (
+    CREATE TABLE IF NOT EXISTS selector_options (
     fk_selector_id INTEGER REFERENCES selector_properties(id_options) NOT NULL,
     name TEXT NOT NULL,
     value TEXT NOT NULL
     );
 
+    CREATE TABLE IF NOT EXISTS radio_options (
+    fk_selector_id INTEGER REFERENCES radio_properties(id_options) NOT NULL,
+    name TEXT NOT NULL,
+    value TEXT NOT NULL
+    );
+   
+    CREATE TABLE IF NOT EXISTS checkbox_options (
+    fk_selector_id INTEGER REFERENCES checkbox_properties(id_options) NOT NULL,
+    name TEXT NOT NULL,
+    value TEXT NOT NULL
+    );
+   
     CREATE TABLE compatibility_matrix (
     fila INTEGER NOT NULL,
     columna INTEGER NOT NULL,
