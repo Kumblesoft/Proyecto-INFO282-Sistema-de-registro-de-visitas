@@ -6,7 +6,7 @@ export default class TimeChainInsertor extends ChainInsertor {
             return next && next.insert(fieldObject)
         this.db.runSync(
             `INSERT INTO ${fieldTableName} (fk_field, default_time) VALUES (?,?,?)`,
-            [fieldId, fieldObject.nombre, fieldObject.default_time]
+            [fieldId, fieldObject['hora predeterminada']]
         )
     }
 }

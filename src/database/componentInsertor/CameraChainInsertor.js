@@ -7,7 +7,7 @@ export default class CameraChainInsertor extends ChainInsertor {
         
         this.db.runSync(
             `INSERT INTO ${fieldTableName}(fk_field, aspect_relation) values (?,?)`, 
-            [fieldId, fieldObject.aspect_relation.toString()]
+            [fieldId, fieldObject['relacion de aspecto'].toString()]
         )
     }
 }
