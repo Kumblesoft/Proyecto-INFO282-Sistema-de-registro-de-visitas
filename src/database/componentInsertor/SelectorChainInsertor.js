@@ -7,7 +7,7 @@ export default class SelectorChainInsertor extends ChainInsertor {
             return next && next.insert(fieldObject)
         this.db.runSync(
             `INSERT INTO ${fieldTableName} (fk_field, name, default_option, selector_placeholder) VALUES (?,?,?)`,
-            [fieldId, fieldObject.nombre, fieldObject.default_option, selector_placeholder]
+            [fieldId, fieldObject.nombre, fieldObject['opcion predeterminada'], fieldObject['texto predeterminado']]
         )
     }
 }
