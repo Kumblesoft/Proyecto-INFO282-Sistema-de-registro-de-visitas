@@ -9,7 +9,7 @@ export default class CheckboxChainInsertor extends ChainInsertor {
             `INSERT INTO ${fieldTableName} (fk_field, default_option, max_checked_options) VALUES (?,?,?)`,
             [fieldId, fieldObject["opcion predeterminada"], fieldObject["cantidad de elecciones"]]
         )
-        const insertedRowId = this.db.getFirstSync('select last_insert_rowid() as id')["id"]
+        const insertedRowId = this.db.getFirstSync('select last_insert_rowid() as id')
         console.log(insertedRowId)
 
         fieldObject.options?.forEach(option => 

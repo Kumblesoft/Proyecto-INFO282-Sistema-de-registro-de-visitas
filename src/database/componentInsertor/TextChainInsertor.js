@@ -13,20 +13,20 @@ export default class TextChainInsertor extends ChainInsertor {
 
         fieldObject.limitaciones?.forEach((limitation) => {
             console.log(limitation)
-            const limitationID = db.getFirstSync('SELECT id FROM limitations WHERE name = ?', [limitation]).id
+            const limitationID = this.db.getFirstSync('SELECT id FROM limitations WHERE name = ?', [limitation]).id
             console.log(limitationID)
-            db.runSync(
-                'INSERT INTO limitations_intermediary (fk_fields, fk_limitations) VALUES (?,?)',
+            this.db.runSync(
+                'INSERT INTO limitations_intermediary (fk_field, fk_limitations) VALUES (?,?)',
                 [fieldId, limitationID]
             )
         })
 
         fieldObject.formato?.forEach((format) => {
             console.log(format)
-            const formatID = db.getFirstSync('SELECT id FROM format WHERE name = ?', [format]).id
+            const formatID = this.db.getFirstSync('SELECT id FROM format WHERE name = ?', [format]).id
             console.log(formatID)
-            db.runSync(
-                'INSERT INTO format_intermediary (fk_field,fk_format) VALUES (?,?)',
+            this.db.runSync(
+                'INSERT INTO is_formatted (fk_id_format,fk_id_text) VALUES (?,?)',
                 [fieldId, formatID]
             )
         })
