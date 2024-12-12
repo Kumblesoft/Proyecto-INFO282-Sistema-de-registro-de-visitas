@@ -9,5 +9,15 @@ export default class SelectorChainInsertor extends ChainInsertor {
             `INSERT INTO ${fieldTableName} (id_options, fk_field, default_option, selector_placeholder) VALUES (?,?,?,?)`,
             [fieldId, fieldObject["opcion predeterminada"], fieldObject["texto predeterminado"]]
         )
+
+        const insertedRowId = this.db.runSync('select lastInsertRowid() as id').id
+
+        fieldObject.options?.forEach(option => {
+            this.db.runSync(
+                `INSERT INTO select_options (fk_selector_id, name, value) VALUES (?, ?, ?)`,
+                [insertedRowId, option.nombre, option.valor]
+            )
+        })
+        
     }
 }

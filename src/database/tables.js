@@ -1,6 +1,5 @@
 export default initDatabaseScript = {
-    "dbInit": `
-    
+    "dbInit": `    
     PRAGMA journal_mode = WAL;
     PRAGMA foreign_keys = ON;
 
@@ -99,13 +98,13 @@ export default initDatabaseScript = {
     );
 
     CREATE TABLE IF NOT EXISTS radio_options (
-    fk_selector_id INTEGER REFERENCES radio_properties(id_options) NOT NULL,
+    fk_radio_id INTEGER REFERENCES radio_properties(id_options) NOT NULL,
     name TEXT NOT NULL,
     value TEXT NOT NULL
     );
    
     CREATE TABLE IF NOT EXISTS checkbox_options (
-    fk_selector_id INTEGER REFERENCES checkbox_properties(id_options) NOT NULL,
+    fk_checkbox_id INTEGER REFERENCES checkbox_properties(id_options) NOT NULL,
     name TEXT NOT NULL,
     value TEXT NOT NULL
     );
