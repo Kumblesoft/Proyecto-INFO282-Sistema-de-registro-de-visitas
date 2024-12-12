@@ -53,12 +53,10 @@ export async function initializeDataBase(db) {
     db.runSync('INSERT INTO limitations (name, value_enum_matrix) VALUES (?,?)', ["editable", 0])
     db.runSync('INSERT INTO limitations (name, value_enum_matrix) VALUES (?,?)', ["no editable", 1])
 
-        ;[[1, 2], [1, 3], [2, 3], [3, 4]].forEach(pair => setCompatibility(db, pair[0], pair[1], "texto", 1, 0))
+    ;[[1, 2], [1, 3], [2, 3]].forEach(pair => setCompatibility(db, pair[0], pair[1], "texto", 1, 0))
     
     db.runSync('INSERT INTO format (name, regex, value_enum_matrix) VALUES (?,?,?)', ["solo mayusculas", "/^[A-Z]*$/", 0])
     db.runSync('INSERT INTO format (name, regex, value_enum_matrix) VALUES (?,?,?)', ["solo minusculas", "/^[a-z]*$/", 1])
-
-      ;[[0, 1]].forEach(pair => setCompatibility(db, pair[0], pair[1], "texto", 1, 1))
 }
 
 // Singleton factory method to get the instance
