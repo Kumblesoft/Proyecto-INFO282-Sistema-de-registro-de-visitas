@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { use, useState } from 'react'
 import { Dimensions, Platform, View, StyleSheet, FlatList, TouchableOpacity, Alert, Image } from 'react-native'
 import { ButtonGroup, Button, Text, TopNavigation, TopNavigationAction, Divider, Layout, Modal, Card, Icon } from '@ui-kitten/components'
 import { useFormContext } from '../context/SelectedFormContext'
@@ -11,18 +11,14 @@ import * as Animatable from 'react-native-animatable'
 import shareTypes from '../commonStructures/shareTypes'
 import * as DocumentPicker from 'expo-document-picker'
 import { useSQLiteContext } from 'expo-sqlite'
-import Database from '../database/database'
+import { getDatabaseInstance } from '../database/database'
 
-
-const dbFormTest = require('../TestForms/dbFormTest.json')
 
 const { width, height } = Dimensions.get('window')
 
 const FormSelectorScreen = () => {
-  const database = useSQLiteContext()
-  const db = new Database(database)
   console.log(dbFormTest)
-  db.addForm(dbFormTest)
+  const db = getDatabaseInstance(useSQLiteContext())
   const navigation = useNavigation()
   const forms = require("../TestForms/forms.json")
   const [ localForms, setForms ] = useState(forms)
