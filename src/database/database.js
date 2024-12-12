@@ -162,28 +162,28 @@ export default class Database {
 
     getAllAnswers() {
         try {
-            const answerIDs = this.db.getAllSync('SELECT ID_RESPUESTA FROM respuestas')
-            return answerIDs.map(answer => this.getAnswer(answer.id))
+            const answers = this.db.getAllSync('SELECT ID_RESPUESTA FROM respuestas')
+            return answers.map(answer => this.getAnswer(answer['ID_RESPUESTA']))
         } catch (error) {
             console.log(error)
         }
     }
     getAnswerFromFormTemplate(formName){
         try{
-            const formID = this.db.getAllSync('SELECT id FROM forms WHERE name = ?', [formName])
-            return answers.map(answer => this.getAnswer(answer.id))
+            const answers = this.db.getAllSync('SELECT id FROM forms WHERE name = ?', [formName])
+            return answers.map(answer => this.getAnswer(answer['ID_RESPUESTA']))
         } catch(error) {
             console.log(error)
         }
     }
     getAnswer(idRespuesta){
         try {
-            const answer = this.db.getFirstSync('SELECT * FROM respuestas WHERE id = ?', [idRespuesta])
+            const answer = this.db.getFirstSync('SELECT * FROM respuestas WHERE ID_RESPUESTA = ?', [idRespuesta])
             const fields = this.db.getAllSync('select NOMBRE_CAMPO, VALOR_CAMPO from CAMPO_RESPUESTA where id_respuesta = ?', [idRespuesta])
-            const formName = this.db.getFirstSync('select name from forms where id = ?', [answer.ID_PLANTILLA])
+            const formName = this.db.getFirstSync('select name from forms where id = ?', [answer.ID_PLANTILLA]).name
             
             let data = {}
-            object.entries(fields).forEach(([key, value]) => data[key] = value)
+            fields.map(field => data[field.NOMBRE_CAMPO] = field.VALOR_CAMPO)
 
             return {
                 'plantilla': formName,

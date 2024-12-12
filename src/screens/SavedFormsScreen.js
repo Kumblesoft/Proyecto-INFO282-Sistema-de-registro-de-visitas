@@ -8,8 +8,12 @@ import shareTypes from '../commonStructures/shareTypes'
 import * as FileSystem from 'expo-file-system' 
 import * as Sharing from 'expo-sharing'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { getDatabaseInstance } from '../database/database'
+import { useSQLiteContext } from 'expo-sqlite'
+
 const { height } = Dimensions.get('window')
 const { width } = Dimensions.get('window')
+
 
 
 const SavedForms = () => {
@@ -30,6 +34,9 @@ const SavedForms = () => {
     const [confirmDelete, setConfirmDelete] = useState(false)
     const [expandedTypes, setExpandedTypes] = useState({});
     const [visible, setVisible] = useState(false);
+
+    
+    const database = getDatabaseInstance(useSQLiteContext())
 
     const optionBar = () => (
         <Layout style={styles.iconContainer}>
@@ -63,7 +70,8 @@ const SavedForms = () => {
 
     const fetchSavedForms = async () => {
         try {
-            const savedForms = JSON.parse(await AsyncStorage.getItem('savedForms')) || []
+            const savedForms = database.getAllAnswers() || []
+            console.log(JSON.stringify(savedForms))
             setBaseForms(savedForms)
             setForms(savedForms)
         } catch (error) {
@@ -237,9 +245,8 @@ const SavedForms = () => {
         </View>
     )
     const groupedForms = forms.reduce((acc, form) => {
-        if (!acc[form.plantilla]) {
+        if (!acc[form.plantilla]) 
             acc[form.plantilla] = []
-        }
         acc[form.plantilla].push(form)
         return acc
     }, {})
@@ -280,7 +287,7 @@ const SavedForms = () => {
                 <FlatList
                     data={groupedForms[item]}
                     renderItem={renderFormItem}
-                    keyExtractor={(form) => form.id.toString()}
+                    keyExtractor={form => form.fecha.toString()}
                 />
             )}
         </View>
