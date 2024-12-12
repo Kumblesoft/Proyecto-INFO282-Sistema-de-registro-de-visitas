@@ -44,7 +44,6 @@ export async function initializeDataBase(db) {
         db.runSync('INSERT INTO field_table_name (table_name, field_type_name) VALUES (?,?)', type)
     )
 
-
     db.runSync('INSERT INTO limitations (name, regex, value_enum_matrix) VALUES (?,?,?)', ["solo letras", "((/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/))", 0])
     db.runSync('INSERT INTO limitations (name, regex, value_enum_matrix) VALUES (?,?,?)', ["solo numeros", "/^-?\d+([.,]\d+)?$/", 1])
     db.runSync('INSERT INTO limitations (name, regex, value_enum_matrix) VALUES (?,?,?)', ["solo enteros", "/^-?\d+$/", 2])
@@ -92,7 +91,6 @@ export default class Database {
     }
 
     getForms() {
-
         try {
             tables.forEach(table =>
                 console.log(`${table}:\n${JSON.stringify(this.db.getAllSync(`SELECT * FROM ${table}`))}`)
@@ -110,7 +108,7 @@ export default class Database {
 
             newForm.campos.forEach((fieldObject, i) => {
                 const { id: typeOfField, table_name: fieldTableName } = this.db.getFirstSync('SELECT id, table_name FROM field_table_name WHERE field_type_name=?', [fieldObject.tipo])
-                
+
                 this.db.runSync(
                     'INSERT INTO fields (fk_id_form, fk_field_table_name, name, ordering, obligatory, output) VALUES (?,?,?,?,?,?)',
                     [formID, typeOfField, fieldObject.nombre, i, fieldObject.obligatorio, fieldObject.salida]
@@ -124,7 +122,7 @@ export default class Database {
         }
     }
 
-    async deleteForm(formID) {
+    deleteForm(formID) {
         try {
             const fieldsID = this.db.getAllSync('SELECT id FROM fields WHERE fk_id_form = ?', [formID])
             fieldsID.forEach(field => {
