@@ -6,8 +6,8 @@ import CameraChainInsertor from './componentInsertor/CameraChainInsertor'
 import initDatabaseScript from './tables'
 
 const { dbInit } = initDatabaseScript
-const tables = ['forms', 'fields', 'field_table_name', 'text_properties', 'selector_properties', 'date_properties', 'hour_properties', 'camera_properties', 'limitations',
-    'limitations_intermediary', 'format', 'options', 'compatibility_matrix', 'respuestas', 'campo_respuesta']
+const tables = ['forms', 'fields', 'field_table_name', 'text_properties', 'selector_properties', 'checkbox_properties', 'radio_properties', 'date_properties', 'hour_properties', 'camera_properties', 'limitations',
+    'limitations_intermediary', 'format', 'selector_options', 'radio_options', 'checkbox_options', 'compatibility_matrix', 'respuestas', 'campo_respuesta']
 const table_types = [['text_properties', 'texto'], ['selector_properties', 'selector'], ['date_properties', 'fecha'], ['hour_properties', 'hora'], ['camera_properties', 'camara']]
 
 /**
@@ -78,7 +78,7 @@ export default class Database {
             .add(new DateChainInsertor(this.db))
             .add(new TimeChainInsertor(this.db))
             .add(new CameraChainInsertor(this.db))
-            
+
         Database.instance = this // Cache the instance
     }
 
