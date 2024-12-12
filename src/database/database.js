@@ -98,6 +98,44 @@ export default class Database {
         }
     }
 
+    getAllAnswers() {
+        try {
+            const answerIDs = this.db.getAllSync('SELECT ID_RESPUESTA FROM respuestas')
+            return answerIDs.map(answer => this.getAnswer(answer.id))
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    getAnswerFromFormTemplate(formName){
+        try{
+            const formID = this.db.getAllSync('SELECT id FROM forms WHERE name = ?', [formName])
+            return answers.map(answer => this.getAnswer(answer.id))
+        } catch(error) {
+            console.log(error)
+        }
+    }
+    getAnswer(idRespuesta){
+        try {
+            const answer = this.db.getFirstSync('SELECT * FROM respuestas WHERE id = ?', [idRespuesta])
+            const fields = this.db.getAllSync('select NOMBRE_CAMPO, VALOR_CAMPO from CAMPO_RESPUESTA where id_respuesta = ?', [idRespuesta])
+            const formName = this.db.getFirstSync('select name from forms where id = ?', [answer.ID_PLANTILLA])
+            
+            let data = {}
+            object.entries(fields).forEach(([key, value]) => data[key] = value)
+
+            return {
+                'plantilla': formName,
+                'fecha': answer.FECHA_RESPUESTA,
+                'um plantilla': answer.UM_PLANTILLA,
+                'idDispositivo': answer.ID_DISPOSITIVO,
+                'data': data
+            }
+            
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     addForm(newForm) {
         try {
             const statement = this.db.prepareSync('INSERT INTO forms (name, last_modification) VALUES (?,?)')
@@ -162,8 +200,8 @@ export default class Database {
     } */
 
 
-    getAnswers(answerObject) {
-        const formID = this.db.getFirsSync('SELECT id FROM forms WHHERE name = ?', [answerObject.plantilla]).id
+    insertAnswer(answerObject) {
+        const formID = this.db.getFirstSync('SELECT id FROM forms WHERE name = ?', [answerObject.plantilla]).id
         this.db.runSync(
             'INSERT INTO respuestas (id_plantilla, fecha_respuesta, um_plantilla, id_dispositivo) VALUES (?,?,?,?)',
             [formID, answerObject.fecha, answerObject["um plantilla"], answerObject["idDispositivo"]]
@@ -173,7 +211,7 @@ export default class Database {
             this.db.runSync(
                 'INSERT INTO campo_respuesta (id_respuesta, nombre_campo, valor_campo) VALUES (?,?,?)',
                 [lastAnswerID, key, value]
-            ))
+        ))
     }
 
     deleteAnswers(formID, answerID) {
