@@ -29,6 +29,7 @@ export default initDatabaseScript = {
 
     CREATE TABLE IF NOT EXISTS text_properties (
     fk_field INTEGER REFERENCES fields(id) NOT NULL,
+    id_formats INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     qr_refillable INTEGER NOT NULL
     );
@@ -42,6 +43,7 @@ export default initDatabaseScript = {
 
     CREATE TABLE IF NOT EXISTS date_properties (
     fk_field INTEGER REFERENCES fields(id) NOT NULL,
+    date_format TEXT NOT NULL,
     default_date TEXT NOT NULL
     );
 
@@ -72,19 +74,11 @@ export default initDatabaseScript = {
     CREATE INDEX fk_limitations_int_lim ON limitations_intermediary(fk_limitations);
 
     CREATE TABLE IF NOT EXISTS format (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL UNIQUE,
+    id_text_format INTEGER REFERENCES text_properties(id_formats) NOT NULL,
+    name TEXT NOT NULL UNIQUE,  
     value_enum_matrix INTEGER NOT NULL
     );
-    CREATE UNIQUE INDEX name_format ON format(name);
-
-    CREATE TABLE IF NOT EXISTS format_intermediary (
-    fk_field INTEGER REFERENCES fields(id) NOT NULL,
-    fk_format INTEGER REFERENCES format(id) NOT NULL
-    );
-    CREATE INDEX fk_forms_int_for ON format_intermediary(fk_field);
-    CREATE INDEX fk_field_int_for ON format_intermediary(fk_field);
-    CREATE INDEX fk_format_int_for ON format_intermediary(fk_format);
+    CREATE UNIQUE INDEX name_format ON format(id_text_format);
 
     CREATE TABLE IF NOT EXISTS options (
     fk_selector_id INTEGER REFERENCES selector_properties(id_options) NOT NULL,

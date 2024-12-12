@@ -60,7 +60,7 @@ export async function initializeDataBase(db) {
     db.runSync('INSERT INTO format (name, value_enum_matrix) VALUES (?,?)', ["mm/yyyy/dd", 4])
     db.runSync('INSERT INTO format (name, value_enum_matrix) VALUES (?,?)', ["dd/yyyy/mm", 5])
 
-        ;[[1, 2], [1, 3], [2, 3], [3, 4]].forEach(pair => setCompatibility(pair[0], pair[1], "texto", 1, 0))
+    ;[[1,2],[1,3],[2,3],[3,4]].forEach(pair => setCompatibility(pair[0], pair[1], "texto", 1, 0))
 }
 
 // Singleton factory method to get the instance
