@@ -1,6 +1,6 @@
 import React, { useState} from 'react'
 import { Button, Text, Layout, Icon, IconElement, View } from '@ui-kitten/components'
-import { StyleSheet} from 'react-native'
+import { Platform, StyleSheet} from 'react-native'
 import { TimerPickerModal } from "react-native-timer-picker"
 import { LinearGradient } from "expo-linear-gradient"
 import * as Haptics from "expo-haptics" // for haptic feedback
@@ -144,9 +144,9 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#00b7ae',
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 10 },
-        shadowOpacity: 0.9,
-        shadowRadius: 2,
+        shadowOffset: { width: 0, height: Platform.OS == "ios" ? 1 : 10 },
+        shadowOpacity: Platform.OS == "ios" ? 0.2 : 0.9,
+        shadowRadius: Platform.OS == "ios" ? 2 : 2,
         elevation: 3,
         alignItems: 'flex-start'
     },

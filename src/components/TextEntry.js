@@ -276,9 +276,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#00b7ae',
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.9,
-    shadowRadius: 2,
+    shadowOffset: { width: 0, height: Platform.OS == "ios" ? 1 : 10 },
+    shadowOpacity: Platform.OS == "ios" ? 0.2 : 0.9,
+    shadowRadius: Platform.OS == "ios" ? 2 : 2,
     elevation: 3,
     alignItems: 'flex-start'
   },
