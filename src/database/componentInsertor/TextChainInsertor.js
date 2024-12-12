@@ -3,9 +3,8 @@ import { useSQLiteContext } from 'expo-sqlite'
 
 export default class TextChainInsertor extends ChainInsertor {
     insert(fieldObject, fieldId, fieldTypeId, fieldTableName) {
-        console.log(fieldObject)
         if (fieldObject.tipo != 'texto')
-            return this?.next && this.next.insert(fieldObject)
+            return this.next && this.next.insert(fieldObject, fieldId, fieldTypeId, fieldTableName)
 
         this.db.runSync(
             'INSERT INTO text_properties (fk_field, qr_refillable) VALUES (?,?)',

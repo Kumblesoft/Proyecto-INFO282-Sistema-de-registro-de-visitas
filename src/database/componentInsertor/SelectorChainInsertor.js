@@ -3,10 +3,10 @@ import ChainInsertor from './ChainInsertor'
 
 export default class SelectorChainInsertor extends ChainInsertor {
     insert(fieldObject, fieldId, fieldTypeId, fieldTableName) {
-        if (fieldObject.type != 'selector')
-            return next && next.insert(fieldObject)
+        if (fieldObject.tipo != 'selector')
+            return this.next && this.next.insert(fieldObject, fieldId, fieldTypeId, fieldTableName)
         this.db.runSync(
-            `INSERT INTO ${fieldTableName} (id_options, fk_field, default_option, selector_placeholder) VALUES (?,?,?,?)`,
+            `INSERT INTO ${fieldTableName} (fk_field, default_option, selector_placeholder) VALUES (?,?,?)`,
             [fieldId, fieldObject["opcion predeterminada"], fieldObject["texto predeterminado"]]
         )
 
@@ -17,7 +17,7 @@ export default class SelectorChainInsertor extends ChainInsertor {
                 `INSERT INTO select_options (fk_selector_id, name, value) VALUES (?, ?, ?)`,
                 [insertedRowId, option.nombre, option.valor]
         ))
-        
+        return true
     }
     delete(fieldId, fieldTableName) {
 

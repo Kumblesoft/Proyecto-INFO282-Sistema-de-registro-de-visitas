@@ -3,8 +3,8 @@ import ChainInsertor from './ChainInsertor'
 
 export default class RadiusChainInsertor extends ChainInsertor {
     insert(fieldObject, fieldId, fieldTypeId, fieldTableName) {
-        if (fieldObject.type != 'radio')
-            return next && next.insert(fieldObject)
+        if (fieldObject.tipo != 'radio')
+            return this.next && this.next.insert(fieldObject, fieldId, fieldTypeId, fieldTableName)
         this.db.runSync(
             `INSERT INTO ${fieldTableName} (fk_field, default_option) VALUES (?,?,?,?)`,
             [ fieldId, fieldObject["opcion predeterminada"]]
@@ -16,6 +16,7 @@ export default class RadiusChainInsertor extends ChainInsertor {
                 `INSERT INTO select_options (fk_selector_id, name, value) VALUES (?, ?, ?)`,
                 [insertedRowId, option.nombre, option.valor]
         ))
+        return true
     }
 
     delete(fieldId, fieldTableName) {
