@@ -1,17 +1,16 @@
 import React, { useState } from 'react'
 import {
     View,
-    TextInput,
-    StyleSheet,
-    Switch,
-    Alert
+    Alert,
+    StyleSheet
 } from 'react-native'
 
-import { Text, Input, Button, Layout, Toggle } from '@ui-kitten/components'
+import { Text, Input, Button, Toggle } from '@ui-kitten/components'
 
 const CameraConstructor = ({ onSave, field = {} }) => {
     const [fieldName, setFieldName] = useState(field.nombre || '')
-    const [isEditable, setIsEditable] = useState(isEditable || false)
+    const [isEditable, setIsEditable] = useState(field.editable || false)
+    const [isRequired, setIsRequired] = useState(field.isRequired ?? true) // Por defecto, true
 
     const handleSave = () => {
         // Validar el nombre del campo
@@ -19,10 +18,12 @@ const CameraConstructor = ({ onSave, field = {} }) => {
             Alert.alert("Error", "El nombre del campo no puede estar vacío.")
             return
         }
+
         const field = {
             nombre: fieldName,
             salida: fieldName.toLowerCase().replace(/ /g, '_'),
-            editable: isEditable,  // no se que es hace
+            editable: isEditable,
+            obligatorio: isRequired // Agregar valor al objeto field
         }
 
         if (onSave) {
@@ -46,15 +47,18 @@ const CameraConstructor = ({ onSave, field = {} }) => {
                 />
             </View>
 
-            {/* Editable */}
+            
+
+            {/* Obligatorio */}
             <View style={styles.field}>
-                <Text>¿Es Editable?</Text>
-                <Toggle checked={isEditable} onChange={setIsEditable} />
+                <Text>¿Es Obligatorio?</Text>
+                <Toggle checked={isRequired} onChange={setIsRequired} />
             </View>
 
-
             {/* Botón Guardar */}
-            <Button title="Guardar Campo" onPress={handleSave} >Guardar Campo</Button>
+            <Button onPress={handleSave} style={styles.saveButton}>
+                Guardar Campo
+            </Button>
         </View>
     )
 }
@@ -71,7 +75,7 @@ const styles = StyleSheet.create({
         marginBottom: 16
     },
     field: {
-        marginBottom: 16
+        marginBottom: 0
     },
     input: {
         borderWidth: 1,
@@ -79,22 +83,8 @@ const styles = StyleSheet.create({
         borderRadius: 4,
         padding: 8
     },
-    aspectRatioContainer: {
-        flexDirection: 'row',
-        alignItems: 'center'
-    },
-    aspectInput: {
-        flex: 1,
-        borderWidth: 1,
-        borderColor: '#cccccc',
-        borderRadius: 4,
-        padding: 8,
-        marginHorizontal: 4
-    },
-    aspectSeparator: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginHorizontal: 4
+    saveButton: {
+        marginTop: 16
     }
 })
 

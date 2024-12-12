@@ -122,12 +122,14 @@ export default class Database {
             const statement = this.db.prepareSync('INSERT INTO forms (name, output_file_name, last_modification) VALUES (?,?,?)')
             statement.executeSync([newForm["nombre formulario"], newForm["nombre archivo salida"], newForm["ultima modificacion"]])
             const formID = this.db.getFirstSync('SELECT id FROM forms WHERE name = ?', [newForm["nombre formulario"]]).id
+            
             newForm.campos.forEach((fieldObject, i) => {
                 this.db.runSync(
                     'INSERT INTO fields (fk_id_form, fk_field_table_name, name, ordering, obligatory, output) VALUES (?,?,?,?,?,?)',
                     [formID, this.getComponnentTypeId(fieldObject.tipo), fieldObject.nombre, i, fieldObject.obligatorio, fieldObject.salida]
                 )
-                if (!this.chainInsertors.insert(fieldObject, formID)) throw new Error('Error al insertar')
+                const lastFieldId = this.db.getFirstSync('SELECT id FROM fields ORDER BY id DESC LIMIT 1').id
+                if (!this.chainInsertors.insert(fieldObject, lastFieldId, typeOfField)) throw new Error('Error al insertar')
             })
             this.getForms()
         } catch (error) {

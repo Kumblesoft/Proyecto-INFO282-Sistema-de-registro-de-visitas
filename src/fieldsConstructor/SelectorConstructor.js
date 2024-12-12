@@ -1,11 +1,12 @@
 import React, { useState } from 'react'
 import { View, Text, StyleSheet,FlatList } from 'react-native'
-import { Input, Button, List, ListItem, Icon, Layout} from '@ui-kitten/components'
+import { Input, Button, List, ListItem, Icon,Toggle, Layout} from '@ui-kitten/components'
 
 const SelectorConstructor = ({ field, onSave }) => {
     const [options, setOptions] = useState(field.opciones || [])
     const [newOptionName, setNewOptionName] = useState('')
     const [fieldName, setFieldName] = useState(field.nombre || '')
+    const [isRequired, setIsRequired] = useState(field.isRequired ?? true)
 
     const handleAddOption = () => {
         setOptions((prevOptions) => [
@@ -28,6 +29,7 @@ const SelectorConstructor = ({ field, onSave }) => {
             "texto predeterminado" :  fieldName, // no se que es  
             tipo: 'selector',
             opciones: options,
+            obligatorio: isRequired,
         }
 
         if (onSave) {
@@ -89,8 +91,17 @@ const SelectorConstructor = ({ field, onSave }) => {
                         </Button>
                     )}
                 />
+          
+              {/* Obligatorio */}
+              <View style={styles.field}>
+                    <Text>¿Es Obligatorio?</Text>
+                    <Toggle checked={isRequired} onChange={setIsRequired} />
+                </View>
 
-            <Button onPress={handleSave} >Guardar campo</Button>
+             {/* Guardar */}
+             <Button onPress={handleSave} style={styles.saveButton}>
+                    Guardar Campo
+            </Button>
         </Layout>
     )
 }
@@ -129,6 +140,13 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 8,
+    },
+    field: {
+        marginBottom: 14,
+    },
+    saveButtonContainer: {
+        marginTop: 20,
+        alignSelf: 'center',
     },
 })
 

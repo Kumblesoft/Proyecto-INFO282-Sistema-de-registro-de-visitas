@@ -4,8 +4,10 @@ import { Image, View, StyleSheet, Alert, Linking, TouchableOpacity, Modal, Text 
 import {Button, Layout} from '@ui-kitten/components'
 import * as ImagePicker from 'expo-image-picker'
 import * as MediaLibrary from 'expo-media-library'
+import * as FileSystem from 'expo-file-system'
 import cameraIcon from '../assets/camera.png'
 import galleryIcon from '../assets/gallery.png'
+
 /**
  * Class representing the configuration settings for the camera.
  */
@@ -53,13 +55,13 @@ class CameraConfiguration {
  * 
  * @returns {JSX.Element} Rendered camera component.
  */
-export const Camera = ({ title, required, cameraConfiguration, requiredFieldRef , refreshFieldRef}) => {
+export const Camera = ({ title, required, cameraConfiguration, requiredFieldRef , refreshFieldRef, disabled}) => {
   const [image, setImage] = useState(null)
   const [isMenuVisible, setMenuVisible] = useState(false)
   const [isRequiredAlert, setIsRequiredAlert] = useState(false)
 
   async function openMedia(cameraConfiguration, launchFunction) {
-    
+    if (disabled) return new Err('Camera is disabled').show();
     let mediaPermissions = await ImagePicker.requestMediaLibraryPermissionsAsync()
     let cameraPermissions = await ImagePicker.requestCameraPermissionsAsync()    
     let permissionsGranted = mediaPermissions.status === 'granted' && cameraPermissions.status === 'granted'
@@ -83,9 +85,9 @@ export const Camera = ({ title, required, cameraConfiguration, requiredFieldRef 
 
     const result = await launchFunction(cameraConfiguration.getSettings())
     if (result.canceled) return new Err('Operation cancelled')
-
+    
     const imageUri = result.assets[0].uri
-
+    const base64 = await FileSystem.readAsStringAsync(imageUri, { encoding: FileSystem.EncodingType.Base64 })
     if (launchFunction === ImagePicker.launchCameraAsync) {
       try {
         const asset = await MediaLibrary.createAssetAsync(imageUri)
@@ -95,7 +97,7 @@ export const Camera = ({ title, required, cameraConfiguration, requiredFieldRef 
       }
     }
 
-    cameraConfiguration.setImage(imageUri)
+    cameraConfiguration.setImage(base64)
     setImage(imageUri) // Actualiza la imagen seleccionada
     setIsRequiredAlert(false)
     setMenuVisible(false)
@@ -141,6 +143,7 @@ export const Camera = ({ title, required, cameraConfiguration, requiredFieldRef 
       
       {/* Contenedor que muestra el icono o imagen seleccionada */}
       <TouchableOpacity onPress={toggleMenu} 
+      disabled= {disabled}
       style={[
         styles.imageContainer, 
         isRequiredAlert && { backgroundColor: '#FFCCCC' } // Change background to red if isRequiredAlert is true

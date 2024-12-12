@@ -1,5 +1,5 @@
 import React from "react"
-import { StyleSheet, View, TouchableOpacity, StatusBar, Alert } from "react-native"
+import { Platform, StyleSheet, View, TouchableOpacity, StatusBar, Alert } from "react-native"
 import { Text, Layout, Icon } from "@ui-kitten/components" 
 import Svg, { Circle, Defs, Stop, LinearGradient as SvgLinearGradient } from "react-native-svg"
 import { useNavigation } from '@react-navigation/native'
@@ -131,8 +131,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#5a6bf7",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.9,
-    shadowRadius: 10,
+    shadowOpacity: Platform.OS == "ios" ? 0.3 : 0.9,
+    shadowRadius: Platform.OS == "ios" ? 5 : 8,
     elevation: 15,
     alignItems: "center",
     justifyContent: "center",

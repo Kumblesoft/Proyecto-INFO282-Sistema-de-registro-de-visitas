@@ -2,6 +2,7 @@
     "selector": {
         "nombre": "",
         "salida": "",
+        "obligatorio": true,
         "opcion predeterminada": null,
         "texto predeterminado": "",
         "opciones": [
@@ -12,6 +13,8 @@
     "texto" : {
         "nombre": "",
         "salida": "",
+        "obligatorio": true,
+        "rellenarQR": true,
         "limitaciones": {
             "tipo" : "ArregloDelTipoTexto",
             "compatibilidadesLimitaciones": [
@@ -98,12 +101,13 @@
         "opcion predeterminada": null,
         "texto predeterminado": "",
         "cantidad de elecciones": 1,
-        "obligatorio": true,
+        "obligatorio": false,
         "salida": ""
       },
 
       "radio" : {
         "nombre": "",
+        "obligatorio": true,
         "opciones": [
         ],
         "opcion predeterminada": null,
@@ -114,6 +118,7 @@
       "camara": {
         "nombre": "",
         "salida": "",
+        "obligatorio": true,
         "editable": true
     }
 }

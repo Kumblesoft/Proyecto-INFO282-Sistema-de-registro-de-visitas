@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React from "react"
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { ApplicationProvider, IconRegistry } from "@ui-kitten/components"
@@ -6,10 +6,11 @@ import * as eva from "@eva-design/eva"
 import { EvaIconsPack } from '@ui-kitten/eva-icons'
 import Menu from "./screens/Menu"
 import FormSelectorScreen from "./screens/FormSelectorScreen" // Importa tu pantalla de selección de formularios
+import CreateTemplate from './screens/CreateTemplate'
 import FormFiller from "./screens/FormFiller"
 import SavedForms from "./screens/SavedFormsScreen"
 import Settings from "./screens/Settings"
-import { SQLiteProvider, useSQLiteContext, type SQLiteDatabase } from 'expo-sqlite'
+import { SQLiteProvider, useSQLiteContext, SQLiteDatabase } from 'expo-sqlite'
 import { initializeDataBase } from './database/database'
 
 import { FormProvider } from './context/SelectedFormContext'
@@ -59,6 +60,7 @@ export default function App() {
                   <Stack.Screen name="SavedForms" component={SavedForms} options={{ headerShown: false }} />
                   <Stack.Screen name="FormFiller" component={FormFiller} options={{ headerShown: false }} />
                   <Stack.Screen name="Settings" component={Settings} options={{ headerShown: false }} />
+                  <Stack.Screen name="FormEditor" component={FormEditor} options={{ headerShown: false }} />
                 </Stack.Navigator>
               </IdentifierProvider>
             </FormProvider>

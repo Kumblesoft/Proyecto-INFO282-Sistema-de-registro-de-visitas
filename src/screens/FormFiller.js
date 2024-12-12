@@ -1,10 +1,11 @@
 import React, { useState, useRef } from 'react'
-import { ScrollView, View, StyleSheet } from 'react-native'
+import { Platform, ScrollView, View, StyleSheet } from 'react-native'
 import { Layout, Button, Text, TopNavigation, TopNavigationAction, Divider, Icon, Modal } from '@ui-kitten/components'
 import DynamicForm from '../components/DynamicForm'
 import { useNavigation } from '@react-navigation/native'
 import { LinearGradient } from 'expo-linear-gradient'
-import { useFormContext } from '../context/SelectedFormContext'
+import { useFormContext } from '../context/FormContext'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const FormFillerScreen = ({ route }) => {
     const [backAlert, setBackAlert] = useState(false)
@@ -24,7 +25,10 @@ const FormFillerScreen = ({ route }) => {
 
     function handleBack() {
         const dataMap = formRef.current.getMap()
-        if (dataMap.size > 0) setBackAlert(true)
+    
+        const ignoreDefault = form.campos.filter(field => 
+            field.tipo === 'fecha' || field.tipo === 'hora' || field['opcion predeterminada'] || field.tipo === 'checkbox').length
+        if ((dataMap.size - ignoreDefault) > 0 ) setBackAlert(true)
         else navigation.goBack()
     }
     const renderTitle = () => (
@@ -35,14 +39,16 @@ const FormFillerScreen = ({ route }) => {
 
     return (
         <Layout style={styles.layoutContainer}>
-            <LinearGradient colors={['#29C9A2', '#A0ECA5']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
-                <TopNavigation
-                    title={renderTitle}
-                    style={styles.topNavigation}
-                    accessoryLeft={BackAction}
-                    alignment='start'
-                />
-            </LinearGradient>
+            <SafeAreaView style={styles.safeArea}>
+                <LinearGradient colors={['#2dafb9', '#17b2b6', '#00b4b2', '#00b7ad', '#00b9a7', '#00bba0', '#00bd98', '#00bf8f', '#00c185', '#00c27b']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+                    <TopNavigation
+                        title={renderTitle}
+                        style={styles.topNavigation}
+                        accessoryLeft={BackAction}
+                        alignment='start'
+                    />
+                </LinearGradient>
+            </SafeAreaView>
             <Divider />
             <ScrollView style={styles.layoutContainer}>
 
@@ -65,7 +71,10 @@ const FormFillerScreen = ({ route }) => {
 }
 
 const styles = StyleSheet.create({
-    topNavigation: {
+    safeArea: {
+        backgroundColor: '#00baa4'
+    },
+    topNavigation:{
         backgroundColor: 'transparent'
     },
     titleContainer: {
@@ -98,9 +107,9 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#00b7ae',
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 10 },
-        shadowOpacity: 0.9,
-        shadowRadius: 2,
+        shadowOffset: { width: 0, height: Platform.OS == "ios" ? 1 : 10 },
+        shadowOpacity: Platform.OS == "ios" ? 0.2 : 0.9,
+        shadowRadius: Platform.OS == "ios" ? 2 : 2,
         elevation: 3,
         alignItems: 'flex-start'
     },

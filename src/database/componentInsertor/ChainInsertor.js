@@ -11,7 +11,7 @@ export default class ChainInsertor {
         return this.next
     }
 
-    insert(fieldObject) {
+    insert(fieldObject, fieldId, fieldTypeId) {
         throw new Error('Este metodo no esta implementado')
     }
 }

@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react'
-import { StyleSheet, View, Text, FlatList, Alert, TouchableOpacity, Image, ScrollView } from 'react-native'
+import { Platform, Dimensions, StyleSheet, View, Text, FlatList, Alert, TouchableOpacity, Image, ScrollView } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { Modal, Card, TopNavigation, TopNavigationAction, Divider, Layout, Button, Icon, Select, SelectItem, RangeCalendar, NativeDateService, Input } from '@ui-kitten/components'
+import { Menu, MenuItem, Modal, Card, TopNavigation, TopNavigationAction, Divider, Layout, Button, Icon, Select, SelectItem, RangeCalendar, NativeDateService, Input } from '@ui-kitten/components'
 import { useNavigation } from '@react-navigation/native'
 import { LinearGradient } from 'expo-linear-gradient'
 import shareTypes from '../commonStructures/shareTypes'
 import * as FileSystem from 'expo-file-system' 
 import * as Sharing from 'expo-sharing'
-
+import { SafeAreaView } from 'react-native-safe-area-context'
+const { height } = Dimensions.get('window')
+const { width } = Dimensions.get('window')
 
 
 const SavedForms = () => {
@@ -23,13 +25,23 @@ const SavedForms = () => {
     const [range, setRange] = useState({})
     const [isRangeMode, setIsRangeMode] = useState(false)
     const [isLastsMode, setIsLastsMode] = useState(false)
+    const [isFilterVisible, setFilterVisible] = useState(false);
     const [lasts, setLasts] = useState(0)
     const [confirmDelete, setConfirmDelete] = useState(false)
+    const [expandedTypes, setExpandedTypes] = useState({});
+    const [visible, setVisible] = useState(false);
+
+    const optionBar = () => (
+        <Layout style={styles.iconContainer}>
+            <TopNavigationAction icon={SelectionIcon} onPress={toggleSelectionMode} />
+            <TopNavigationAction icon={filterIcon} onPress={() => setFilterVisible(true)}/>
+        </Layout>
+    )
     
     const configuredDateService = new NativeDateService('en', {
         startDayOfWeek:1,
         format: 'DD/MM/YYYY'
-      })
+    })
 
     const handleRange = () => {
         const startInt = range.startDate ? range.startDate.getTime() : null
@@ -58,17 +70,30 @@ const SavedForms = () => {
             console.error('Error :', error)
         }
     }
+
+    const deleteForm = async (id) => {
+        try {
+            const updatedForms = forms.filter(form => form.id !== id)
+            await AsyncStorage.setItem('savedForms', JSON.stringify(updatedForms))
+            setForms(updatedForms)
+            Alert.alert('Éxito', 'Formulario eliminado')
+            fetchSavedForms()
+        } catch (error) {
+            console.error('Error :', error)
+            Alert.alert('Error', 'No se pudo eliminar el formulario')
+        }
+    }
+
     const exportForm = form => {
         const filePath = `${FileSystem.cacheDirectory}respuestasFormularios.json`
+        const copy = form.map(({id, ...form}) => form)
 
-
-        
         const objectStringified = form.lenght === 1 ? JSON.stringify({ 
             share_content_type: shareTypes.SINGLE_ANSWER,
-            content           : form 
+            content           : copy 
           }) : JSON.stringify({
             share_content_type: shareTypes.MULTIPLE_ANSWERS,
-            content           : form
+            content           : copy
         })
         
     
@@ -111,6 +136,7 @@ const SavedForms = () => {
             setIsSelectionMode(false) // Salir del modo de selección
 
             Alert.alert('Éxito', 'Formularios eliminados')
+            fetchSavedForms()
         } catch (error) {
             console.error('Error :', error)
             Alert.alert('Error', 'No se pudo eliminar los formularios seleccionados')
@@ -141,13 +167,26 @@ const SavedForms = () => {
         />
     )
 
-    const deleteIcon = props => <Icon name='trash' {...props} />
-    const shareIcon = props => <Icon name='share' {...props}/>
-    const BackAction = () => <TopNavigationAction icon={BackIcon} onPress={() => navigation.goBack()} />
-    const SelectionIcon = props => <Icon fill='#fff' name={isSelectionMode ? 'checkmark-square' : 'checkmark-square'} style={styles.backIcon} {...props} />
-    const SelectionAction = () => <TopNavigationAction icon={SelectionIcon} onPress={toggleSelectionMode} />
-    const selectAll = () => setSelectedForms(forms.map(form => form.id))
-    const deselectAll = () => setSelectedForms([])
+    const deleteIcon = (props) => (
+        <Icon name='trash' {...props} />
+    );
+    
+    const shareIcon = (props) => (
+        <Icon name='share' {...props}/>
+    );
+
+    const filterIcon = (props) => (
+        <Icon name='funnel-outline' fill="#fff" {...props}/>
+    );
+
+    const BackAction = () => (
+        <TopNavigationAction icon={BackIcon} onPress={() => navigation.goBack()} />
+    )
+
+    const SelectionIcon = (props) => (
+        <Icon fill='#fff' name={isSelectionMode ? 'checkmark-square' : 'checkmark-square'} style={styles.backIcon} {...props} />
+    )
+
     const toggleSelectionMode = () => {
         setIsSelectionMode(!isSelectionMode)
         setSelectedForms([]) // Resetear selección al activar/desactivar modo
@@ -164,13 +203,13 @@ const SavedForms = () => {
         }
     }
 
-    const handleFilter = index => {
-        const selectedItem = filters[index.row]
-        setSelectedIndex(index)
-        selectedFilter(selectedItem.value)
-        const newForms = baseForms
-        selectedItem.func(newForms)
-        setForms(newForms)
+    const handleFilter = (index) => {
+        const selectedItem = filters[index.row]  
+        setSelectedIndex(index)                 
+        selectedFilter(selectedItem.value)      
+        const newForms = baseForms           
+        selectedItem.func(newForms)             
+        setForms(newForms)                 
     }
     const handleLasts = value => {
         setLasts(value)
@@ -178,14 +217,35 @@ const SavedForms = () => {
         newForms.sort((a,b) => b.id - a.id)
         setForms(newForms.slice(newForms.length - value))
     }
+    function isBase64(str) {
+        if (!str || typeof str !== 'string') {
+          return false;
+        }
+      
+        const base64Regex = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
+        
+        // Check if string length is a multiple of 4 and matches the Base64 pattern
+        return str.length % 4 === 0 && base64Regex.test(str);
+    }
 
     const renderTitle = () => (
         <View style={styles.titleContainer}>
             <Text style={styles.topNavigationText}>Formularios Guardados</Text>
         </View>
     )
+    const groupedForms = forms.reduce((acc, form) => {
+        if (!acc[form.plantilla]) {
+            acc[form.plantilla] = []
+        }
+        acc[form.plantilla].push(form)
+        return acc
+    }, {})
+    
+    const renderFormItem = ({ item }) => {
+        const dateString = `${new Date(item.id)}`	
+        const lenght = dateString.length
 
-    const renderItem = ({ item }) => (
+        return(
         <TouchableOpacity
             style={[
                 styles.containerBox,
@@ -194,39 +254,84 @@ const SavedForms = () => {
             onPress={() => handleSelection(item.id)}
             onLongPress={toggleSelectionMode}
         >
-            <Text style={styles.formTitle}>{item.nombreFormulario}</Text>
+            <Text style={styles.formTitle}>{dateString.substring(0, lenght-8 )}</Text>
             {isSelectionMode ? null : (
-                <Button style={styles.button} onPress={() => exportForm(item)} accessoryLeft={shareIcon} />
+                <Button style={styles.button} onPress={() => exportForm([item])} accessoryLeft={shareIcon} />
             )}
-
         </TouchableOpacity>
+    )}
+
+    const toggleExpand = (type) => {
+        setExpandedTypes(prevState => ({
+            ...prevState,
+            [type]: !prevState[type]
+        }))
+    }
+
+    const renderTypeItem = ({ item }) => (
+        <View>
+            <TouchableOpacity onPress={() => toggleExpand(item)} >
+                <Text style={styles.formType}>{item}</Text> {/* Mostrar el tipo de formulario */}
+            </TouchableOpacity>
+            {expandedTypes[item] && (
+                <FlatList
+                    data={groupedForms[item]}
+                    renderItem={renderFormItem}
+                    keyExtractor={(form) => form.id.toString()}
+                />
+            )}
+        </View>
     )
+
 
     return (
         <>
-            <LinearGradient colors={['#2dafb9', '#17b2b6', '#00b4b2', '#00b7ad', '#00b9a7', '#00bba0', '#00bd98', '#00bf8f', '#00c185', '#00c27b']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
-                <TopNavigation
-                    title={renderTitle}
-                    style={styles.topNavigation}
-                    accessoryLeft={BackAction}
-                    accessoryRight={SelectionAction}
-                    alignment='center'
-                />
-            </LinearGradient>
-            <Divider />
+            <SafeAreaView style={styles.safeArea}>
+                <LinearGradient colors={['#2dafb9', '#17b2b6', '#00b4b2', '#00b7ad', '#00b9a7', '#00bba0', '#00bd98', '#00bf8f', '#00c185', '#00c27b']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+                    <TopNavigation
+                        title={renderTitle}
+                        style={styles.topNavigation}
+                        accessoryLeft={BackAction}
+                        accessoryRight={optionBar}
+                        alignment='center'
+                    />
+                </LinearGradient>
+            </SafeAreaView>
+            
             <View style={styles.container}>
                 <Layout style = {{alignItems : 'flex-end', backgroundColor : '#f2f2f2'}}>
-                <Select placeholder={'Filtro'} 
-                        selectedIndex={index} 
-                        style = {{width : '40%'}}
-                        onSelect={handleFilter}
-                        value={filter}>
-                    {filters.map(item => (
-                        <SelectItem key={item.value} title={item.value}/>
-                    ))}
-                </Select>
-                {index && index.row === 2  ? <Text>{'Inicio: '+ (range.startDate ? configuredDateService.format(range.startDate) : '-') + ', Final: ' + (range.endDate ? configuredDateService.format(range.endDate): '-')}</Text> : <></>}
-                {index && index.row === 3 ? <Input placeholder='¿Cuantas respuestas desea?' value={lasts} OnChange={handleLasts} keyboardType='numeric'/> : <></>}
+                {isFilterVisible && (
+                    <Modal 
+                        visible={isFilterVisible} 
+                        onBackdropPress={() => setFilterVisible(false)}
+                        style={styles.filterWindowModal} 
+                        animationType='slide'
+                    >
+                        <Card disabled={true} style={{width: width, borderRadius: 10}}>
+                            <Menu>
+                            {filters.map((item, index) => (
+                                item && item.value ? (
+                                    <MenuItem 
+                                        key={item.value} 
+                                        title={item.value} 
+                                        onPress={() => handleFilter({row: index})} // Pasa un objeto con el índice
+                                    />
+                                ) : null
+                            ))}
+                            </Menu>
+                            <Button onPress={() => setFilterVisible(false)}>DISMISS</Button>
+                        </Card>
+                    </Modal>
+                )}
+                
+                {index && index.row === 2  ? 
+                    <Layout style={styles.buttonDateStyle}>
+                        <Text style={styles.textDateStyle}>
+                            {'Inicio: '+ (range.startDate ? configuredDateService.format(range.startDate) : '-') + ', Final: ' + (range.endDate ? configuredDateService.format(range.endDate): '-')}
+                        </Text>
+                    </Layout> : <></>
+                }
+                {index && index.row === 3 ? <Input style={styles.inputUltimos} placeholder='¿Cuantas respuestas desea?' value={lasts} OnChange={handleLasts} keyboardType='numeric'/> : <></>}
                 {isSelectionMode && (
                     <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 10, paddingTop: 10}}>
                         <Button onPress={deselectAll} accessoryLeft={deleteIcon} style ={{width: '40%', marginRight: '10%'}}>Limpiar selección</Button>
@@ -235,17 +340,17 @@ const SavedForms = () => {
                 )}
                 </Layout>
                 <FlatList
-                    data={forms}
-                    renderItem={renderItem}
-                    keyExtractor={(item) => item.id.toString()}
+                    data={Object.keys(groupedForms)}
+                    renderItem={renderTypeItem}
+                    keyExtractor={item => item}
                     contentContainerStyle={styles.listContainer}
                 />
                 <Modal visible={isRangeMode}>
                     <Layout style = {styles.containerCalendar}>
                         <RangeCalendar range={range} onSelect={nextrange => setRange(nextrange)}/>
-                            <View style={{alignContent : 'row'}}>
-                                <Button onPress={() => setIsRangeMode(false)}>Volver</Button>
-                                <Button onPress={() => {setIsRangeMode(false)
+                            <View style={styles.buttonRangeContainer}>
+                                <Button style={{marginRight: "3%"}} status='info' onPress={() => setIsRangeMode(false)}>Volver</Button>
+                                <Button style={{marginLeft: "3%"}} onPress={() => {setIsRangeMode(false)
                                                         handleRange()
                                 }}>Confirmar</Button>        
                             </View>
@@ -286,13 +391,15 @@ const SavedForms = () => {
                 >
                     <Layout style={styles.modalContainer}>
                         <Card style={styles.modalCard} disabled={true} >
-                            <Text style={styles.modalTitle}>{selectedForm?.nombreFormulario}</Text>
+                            <Text style={styles.modalTitle}>{selectedForm?.plantilla}</Text>
                             {selectedForm && Object.entries(selectedForm.data).map(([key, value]) => (
                                 <Layout style={styles.containerRespuestas}>
                                     <Text style={styles.key} key={key}>{`${key}`}</Text>
-                                    {console.log(value)}
-                                    <ScrollView style = {{maxHeight: 30}}>
-                                        <Text style={styles.value}>{`${value}`}</Text>
+                                    <ScrollView style = {{maxHeight: 200}}>
+                                        {console.log(isBase64(value))}
+                        
+                                        {
+                                        isBase64(value) ? <Image source={{uri: `data:image/jpeg;base64,${value}`}} style={{width: 300, height: 300 }} resizeMode='center'/> : <Text style={styles.value}>{`${value}`}</Text>}
                                     </ScrollView>
                                 </Layout>
                             ))}
@@ -300,7 +407,7 @@ const SavedForms = () => {
                             <Button accessoryLeft={deleteIcon} status='danger' onPress={() => {setConfirmDelete([true, true])
                                                     setModalVisible(false)}
                                                 }>Eliminar</Button>
-                            <Button accessoryLeft={shareIcon} status='info' onPress={() => exportForm(selectedForm)}>Compartir</Button>
+                            <Button accessoryLeft={shareIcon} status='info' onPress={() => exportForm([selectedForm])}>Compartir</Button>
                             <Button  onPress={closeModal}>Cerrar</Button>
                         </Card>
                     </Layout>
@@ -312,6 +419,42 @@ const SavedForms = () => {
 
 
 const styles = StyleSheet.create({
+    inputUltimos: {
+        marginBottom: "3%",
+        backgroundColor: '#ededed',
+        color: '#7D7D7D',
+        borderColor: '#D1D1D1', 
+    },
+    buttonDateStyle: {
+        backgroundColor: '#ededed', 
+        borderRadius: 6, 
+        padding: "2%",
+        marginTop: "3%",
+        marginBottom: "3%",
+        borderWidth: 1, 
+        borderColor: '#D1D1D1',  
+        alignItems: 'center',
+        alignSelf: 'start',
+    },
+    textDateStyle: {
+        color: '#7D7D7D', 
+        fontWeight: '500', 
+        textAlign: 'center',  
+    },
+    filterWindowModal: {
+        margin: 0,  
+        height: height,  
+        justifyContent: 'flex-end',
+    },
+    safeArea: {
+        backgroundColor: '#00baa4'
+    },
+    iconContainer: {
+        backgroundColor: 'transparent',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignSelf: 'center',
+    },
     container: {
         flex: 1,
         padding: 16,
@@ -321,8 +464,8 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     topNavigationText:{
-        marginRight: 0,
-        fontSize: 24,   
+        marginRight: Platform.OS == "ios" ? 50 : 50,
+        fontSize: Platform.OS == "ios" ? 22: 22,   
         fontWeight: 'bold',
         color: '#fff',
     },
@@ -453,6 +596,22 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignSelf: 'center',
+    },
+    formType: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginVertical: 10,
+        paddingHorizontal: 10,
+        backgroundColor: '#e0e0e0',
+        borderRadius: 5,
+    },
+    buttonRangeContainer: {
+        backgroundColor: 'transparent',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignSelf: 'center',
+        marginBottom: "2%",
+        marginTop: "2%",
     },
 })
 
