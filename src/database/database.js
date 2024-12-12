@@ -6,8 +6,8 @@ import CameraChainInsertor from './componentInsertor/CameraChainInsertor'
 import initDatabaseScript from './tables'
 
 const { dbInit } = initDatabaseScript
-const tables = ['forms', 'fields', 'field_table_name', 'text_properties', 'selector_properties', 'date_properties', 'hour_properties', 'camera_properties', 'limitations',
-    'limitations_intermediary', 'format', 'options', 'compatibility_matrix', 'respuestas', 'campo_respuesta']
+const tables = ['forms', 'fields', 'field_table_name', 'text_properties', 'selector_properties', 'checkbox_properties', 'radio_properties', 'date_properties', 'hour_properties', 'camera_properties', 'limitations',
+    'limitations_intermediary', 'format', 'selector_options', 'radio_options', 'checkbox_options', 'compatibility_matrix', 'respuestas', 'campo_respuesta']
 const table_types = [['text_properties', 'texto'], ['selector_properties', 'selector'], ['date_properties', 'fecha'], ['hour_properties', 'hora'], ['camera_properties', 'camara']]
 
 /**
@@ -70,14 +70,16 @@ export default class Database {
         if (Database.instance) {
             return Database.instance // Return the existing instance if it already exists
         }
+
         this.db = db
-        Database.instance = this // Cache the instance
-        this.chainInsertors = new TextChainInsertor()
+        this.chainInsertors = new TextChainInsertor(this.db)
         this.chainInsertors
-            .add(new SelectorChainInsertor())
-            .add(new DateChainInsertor())
-            .add(new TimeChainInsertor())
-            .add(new CameraChainInsertor())
+            .add(new SelectorChainInsertor(this.db))
+            .add(new DateChainInsertor(this.db))
+            .add(new TimeChainInsertor(this.db))
+            .add(new CameraChainInsertor(this.db))
+
+        Database.instance = this // Cache the instance
     }
 
     getForms() {
@@ -95,7 +97,7 @@ export default class Database {
         try {
             const statement = this.db.prepareSync('INSERT INTO forms (name, last_modification) VALUES (?,?)')
             statement.executeSync([newForm["nombre formulario"], newForm["ultima modificacion"]])
-            const formID = this.db.getFirstSync('SELECT id FROM forms WHERE name = ?', [newForm["nombre formulario"]]).id
+            const formID = this.db.getFirstSync('select last_insert_rowid() as id').id
 
             newForm.campos.forEach((fieldObject, i) => {
                 const { id: typeOfField, table_name: fieldTableName } = this.db.getFirstSync('SELECT id, table_name FROM field_table_name WHERE field_type_name=?', [fieldObject.tipo])
@@ -104,7 +106,7 @@ export default class Database {
                     [formID, typeOfField, fieldObject.nombre, i, fieldObject.obligatorio, fieldObject.salida]
                 )
                 const lastFieldId = this.db.getFirstSync('SELECT id FROM fields ORDER BY id DESC LIMIT 1').id
-                //if (!this.chainInsertors.insert(fieldObject, lastFieldId, typeOfField, fieldTableName)) throw new Error('Error al insertar')
+                if (!this.chainInsertors.insert(fieldObject, lastFieldId, typeOfField, fieldTableName)) throw new Error('Error al insertar')
             })
             this.getForms()
         } catch (error) {
