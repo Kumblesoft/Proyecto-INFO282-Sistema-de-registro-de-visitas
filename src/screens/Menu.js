@@ -8,11 +8,13 @@ import {getDatabaseInstance} from "../database/database"
 import { useSQLiteContext } from "expo-sqlite"
 
 
+
 export default function Menu() {
   const db = getDatabaseInstance(useSQLiteContext())
   const navigation = useNavigation()
   const { selectedForm } = useFormContext()
   const testForm = require('../TestForms/forms.json') // Importa el formulario de prueba
+  testForm.forEach((test) => db.addForm(test))
 
   const handleFormulariosPress = () => navigation.navigate('FormSelector') // Solo pasar forms
 
@@ -66,7 +68,6 @@ export default function Menu() {
             <Text style={styles.buttonText}>Rellenar</Text>
           </TouchableOpacity>
         </View>
-        <Button onPress = { () => testForm.forEach((test) => db.addForm(test)) } >Agregar Formulario</Button>
         <View style={styles.footer}>
           <TouchableOpacity style={styles.buttonFormularios} onPress={handleFormulariosPress}>
             <Text style={styles.buttonText}>Formularios</Text>
