@@ -112,9 +112,15 @@ export default class Database {
         }
     }
 
-    async deleteForm(id) {
+    async deleteForm(name) {
         try {
-            this.db.runSync('DELETE FROM forms WHERE id = ?', [id])
+            const formID = this.db.getFirstSync('SELECT id FROM forms WHERE name = ?', [name])
+            const fieldsID = this.db.getAllSync('SELECT id FROM fields WHERE fk_id_form = ?', [formID])
+            fieldsID.forEach(fieldID => {
+                if (!this.chainInsertors.delete(formID, fieldID.id)) throw new Error('Error al eliminar')
+                this.db.runSync('DELETE FROM fields WHERE id = ?', [fieldID.id])
+            })
+            this.db.runSync('DELETE FROM forms WHERE id = ?', [formID])
             this.getForms()
         } catch (error) {
             console.log(error)
