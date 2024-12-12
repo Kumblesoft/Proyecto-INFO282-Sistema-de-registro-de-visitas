@@ -99,6 +99,26 @@ export default initDatabaseScript = {
     fk_field_type_id TEXT REFERENCES field_table_name(id) NOT NULL,
     limitation_or_format INTEGER NOT NULL
     );
+
+    CREATE TABLE RESPUESTAS (
+    ID_RESPUESTA INT PRIMARY KEY,
+    ID_PLANTILLA INT,
+    UM_PLANTILLA INT,
+    ID_DISPOSITIVO TEXT,
+    FOREIGN KEY (ID_PLANTILLA) REFERENCES FORMS(ID),
+    FOREIGN KEY (UM_PLANTILLA) REFERENCES FORMS(LAST_MODIFICATION)
+);
+
+-- Crear la tabla CAMPO_RESPUESTA
+    CREATE TABLE CAMPO_RESPUESTA (
+        ID_CAMPO_RESPUESTA INT,
+        ID_RESPUESTA INT,
+        NOMBRE_CAMPO TEXT,
+        VALOR_CAMPO TEXT,
+        PRIMARY KEY (ID_CAMPO_RESPUESTA),
+        FOREIGN KEY (ID_RESPUESTA) REFERENCES RESPUESTAS(ID_RESPUESTA)
+    );
+
     -- Crear un índice compuesto para las columnas fila y columna
     CREATE INDEX idx_fila_columna ON compatibility_matrix (fila, columna);
     `
