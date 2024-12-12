@@ -19,4 +19,21 @@ export default class SelectorChainInsertor extends ChainInsertor {
         ))
         
     }
+    delete(fieldId, fieldTableName) {
+
+        const id_options = this.db.getFirstSync(
+            `SELECT id_options FROM ${fieldTableName} WHERE fk_field = ?`,
+            [fieldId]
+        ).id_options
+
+        this.db.runSync(
+            'DELETE FROM select_options WHERE fk_selector_id IN (SELECT id FROM selector WHERE fk_field = ?)',
+            [id_options]
+        )
+
+        this.db.runSync(
+            `DELETE FROM ${fieldTableName} WHERE fk_field = ?`,
+            [fieldId]
+        )
+    }
 }

@@ -17,4 +17,21 @@ export default class CheckboxChainInsertor extends ChainInsertor {
                 [insertedRowId, option.nombre, option.valor]
         ))
     }
+    delete(fieldId, fieldTableName) {
+
+        const id_options = this.db.getFirstSync(
+            `SELECT id_options FROM ${fieldTableName} WHERE fk_field = ?`,
+            [fieldId]
+        ).id_options
+
+        this.db.runSync(
+            'DELETE FROM checkbox_options WHERE fk_selector_id IN (SELECT id FROM checkbox WHERE fk_field = ?)',
+            [id_options]
+        )
+
+        this.db.runSync(
+            `DELETE FROM ${fieldTableName} WHERE fk_field = ?`,
+            [fieldId]
+        )
+    }
 }

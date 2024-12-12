@@ -34,4 +34,25 @@ export default class TextChainInsertor extends ChainInsertor {
 
         return true
     }
+
+    delete(fieldId, fieldTableName) {
+        
+        const id_formats = this.db.getFirstSync(`select id_formats from ${fieldTableName} where fk_field = ?`, [fieldId]).id_formats
+        
+        this.db.runSync(
+            'DELETE FROM text_properties WHERE fk_field = ?',
+            [fieldId]
+        )
+
+        this.db.runSync(
+            'DELETE FROM limitations_intermediary WHERE fk_fields = ?',
+            [fieldId]
+        )
+
+        this.db.runSync(
+            'DELETE FROM format_intermediary WHERE fk_field = ?',
+            [id_formats]
+        )
+    }
+
 }

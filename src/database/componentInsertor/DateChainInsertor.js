@@ -12,4 +12,10 @@ export default class DateChainInsertor extends ChainInsertor {
 
         // Colocar formato.
     }
+    delete(fieldId, fieldTableName) {
+        this.db.runSync(
+            `DELETE FROM ${fieldTableName} WHERE fk_field = ?`,
+            [fieldId]
+        )
+    }
 }

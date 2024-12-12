@@ -9,5 +9,11 @@ export default class TimeChainInsertor extends ChainInsertor {
             [fieldId, fieldObject['hora predeterminada']]
         )
     }
+    delete(fieldId, fieldTableName) {
+        this.db.runSync(
+            `DELETE FROM ${fieldTableName} WHERE fk_field = ?`,
+            [fieldId]
+        )
+    }
 }
 //Prueba
