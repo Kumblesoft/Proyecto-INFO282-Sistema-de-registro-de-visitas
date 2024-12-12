@@ -45,10 +45,15 @@ const FieldSelector = () => {
             Alert.alert('Error', `El campo "${field.nombre}" ya existe en el formulario`)
             return
         }
+        if (field.nombre === '') {
+            Alert.alert('Error', 'El campo debe tener un nombre')
+            return
+        }
         fieldsToDisplay[index] = field
         fieldNames.delete(miniFields[index])
         miniFields[index] = field.nombre
         fieldNames.add(field.nombre)
+        Alert.alert('Campo actualizado', `El campo "${field.nombre}" ha sido actualizado correctamente`)
     }
 
     function renderItem(info) {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState} from 'react'
 import { View, Alert, StyleSheet } from 'react-native'
 import { Text, Input, Button, Toggle, Layout, Divider, Icon } from '@ui-kitten/components'
 import { TimerPickerModal } from 'react-native-timer-picker'
@@ -117,7 +117,7 @@ const HourConstructor = ({ field = {}, onSave }) => {
                         size="large"
                         style={{ opacity: 0.9, borderColor: '#cccccc' }}
                     >
-                        {getCurrentTime()}
+                        {"La hora será definida al momento de llenar el formulario"}
                     </Button>
                 )}
 
