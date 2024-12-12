@@ -9,6 +9,24 @@ const { dbInit } = initDatabaseScript
 const tables = ['forms', 'fields', 'field_table_name', 'text_properties', 'selector_properties', 'date_properties', 'hour_properties', 'camera_properties', 'limitations', 'limitations_intermediary', 'format', 'format_intermediary', 'options', 'compatibility_matrix']
 const table_types = [['text_properties', 'texto'], ['selector_properties', 'selector'], ['date_properties', 'fecha'], ['hour_properties', 'hora'], ['camera_properties', 'camara']]
 
+/**
+ * Guarda si dos elementos son compatibles
+ * @param {Number} firstElement "Primer elemento de la matriz de compatibilidad"
+ * @param {Number} secondElement "Segundo elemento de la matriz de compatibilidad"
+ * @param {String} typenameOfField ""Nombre del tipo de campo"
+ * @param {boolean} isCompatible "Indica si los elementos son compatibles, true si lo son, false si no"
+ * @param {[Number]} isFormat "1 si es formato, 0 si es limitacion"
+ */
+export const setCompatibility = async (firstElement, secondElement, typenameOfField, isCompatible, isFormat=0) => {
+    if (firstElement == secondElement) return 'Ok'
+    if (firstElement > secondElement) secondElement = [firstElement, firstElement=secondElement][0]
+
+    const fieldTypeId = db.runSync('select id from field_table_name where field_type_name = ?', [typenameOfField]).getFirstSync().id
+    if (isCompatible) 
+        return db.runSync('INSERT INTO compatibility_matrix (fila, columna, fk_field_table_name, limitation_or_format) VALUES (?,?,?,?)', [firstElement, secondElement, fieldTypeId, isFormat])
+    return db.runSync('DELETE FROM compatibility_matrix WHERE fila = ? AND columna = ? AND fk_field_table_name = ? AND limitation_or_format = ?', [firstElement, secondElement, fieldTypeId, isFormat])
+}
+
 export async function initializeDataBase(db) {
     try {
         tables.forEach(table =>
@@ -42,19 +60,7 @@ export async function initializeDataBase(db) {
     db.runSync('INSERT INTO format (name, value_enum_matrix) VALUES (?,?)', ["mm/yyyy/dd", 4])
     db.runSync('INSERT INTO format (name, value_enum_matrix) VALUES (?,?)', ["dd/yyyy/mm", 5])
 
-    db.runSync('INSERT INTO compatibility_matrix (fila, columna, fk_field_table_name, limitation_or_format) VALUES (?,?,?,?)', [1, 2, "texto", 0])
-    db.runSync('INSERT INTO compatibility_matrix (fila, columna, fk_field_table_name, limitation_or_format) VALUES (?,?,?,?)', [1, 3, "texto", 0])
-    db.runSync('INSERT INTO compatibility_matrix (fila, columna, fk_field_table_name, limitation_or_format) VALUES (?,?,?,?)', [2, 3, "texto", 0])
-    db.runSync('INSERT INTO compatibility_matrix (fila, columna, fk_field_table_name, limitation_or_format) VALUES (?,?,?,?)', [3, 4, "texto", 0])
-
-    db.runSync('INSERT INTO compatibility_matrix (fila, columna, fk_field_table_name, limitation_or_format) VALUES (?,?,?,?)', [1, 1, "texto", 1])
-    db.runSync('INSERT INTO compatibility_matrix (fila, columna, fk_field_table_name, limitation_or_format) VALUES (?,?,?,?)', [2, 2, "texto", 1])
-
-    db.runSync('INSERT INTO compatibility_matrix (fila, columna, fk_field_table_name, limitation_or_format) VALUES (?,?,?,?)', [1, 1, "fecha", 0])
-    db.runSync('INSERT INTO compatibility_matrix (fila, columna, fk_field_table_name, limitation_or_format) VALUES (?,?,?,?)', [2, 2, "fecha", 0])
-
-    db.runSync('INSERT INTO compatibility_matrix (fila, columna, fk_field_table_name, limitation_or_format) VALUES (?,?,?,?)', [1, 1, "hora", 0])
-    db.runSync('INSERT INTO compatibility_matrix (fila, columna, fk_field_table_name, limitation_or_format) VALUES (?,?,?,?)', [2, 2, "hora", 0])
+    [[1,2],[1,3],[2,3],[3,4]].forEach(pair => setCompatibility(pair[0], pair[1], "texto", 0, 0))
 }
 
 // Singleton factory method to get the instance
@@ -83,6 +89,7 @@ export default class Database {
     }
 
     getForms() {
+        
         try {
             tables.forEach(table =>
                 console.log(`${table}:\n${JSON.stringify(this.db.getAllSync(`SELECT * FROM ${table}`))}`)
@@ -99,7 +106,7 @@ export default class Database {
             const formID = this.db.getFirstSync('SELECT id FROM forms WHERE name = ?', [newForm["nombre formulario"]]).id
             
             newForm.campos.forEach((fieldObject, i) => {
-                const {tipo: typeOfField, table_name: fieldTableName} = this.db.getFirstSync('SELECT table_name FROM field_table_name WHERE field_type_name=?', [fieldObject.tipo])
+                const {id: typeOfField, table_name: fieldTableName} = this.db.getFirstSync('SELECT id, table_name FROM field_table_name WHERE field_type_name=?', [fieldObject.tipo])
                 this.db.runSync(
                     'INSERT INTO fields (fk_id_form, fk_field_table_name, name, ordering, obligatory, output) VALUES (?,?,?,?,?,?)',
                     [formID, typeOfField, fieldObject.nombre, i, fieldObject.obligatorio, fieldObject.salida]
