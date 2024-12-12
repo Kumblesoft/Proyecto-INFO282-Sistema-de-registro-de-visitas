@@ -4,11 +4,16 @@ import { Text, Layout, Icon } from "@ui-kitten/components"
 import Svg, { Circle, Defs, Stop, LinearGradient as SvgLinearGradient } from "react-native-svg"
 import { useNavigation } from '@react-navigation/native'
 import { useFormContext } from '../context/SelectedFormContext' // Importa el contexto
+import { Button } from "react-native-web"
+import Database from "../database/database"
+import { useSQLiteContext } from "expo-sqlite"
+
 
 export default function Menu() {
+  const db = new Database(useSQLiteContext())
   const navigation = useNavigation()
   const { selectedForm } = useFormContext()
-
+  const testForm = require('../TestForms/dbFormTest.json')[0] // Importa el formulario de prueba
 
   const handleFormulariosPress = () => navigation.navigate('FormSelector') // Solo pasar forms
 
@@ -58,6 +63,7 @@ export default function Menu() {
           <Svg height="200" width="200" style={styles.circleOverlay}>
             <Circle cx="100" cy="100" r="100" fill="#E8E9EB" />
           </Svg>
+          <Button onPress={() => db.addForm(testForm) } >{}</Button> 
           <TouchableOpacity style={styles.buttonRellenar} onPress={handleRellenarPress}>
             <Text style={styles.buttonText}>Rellenar</Text>
           </TouchableOpacity>
