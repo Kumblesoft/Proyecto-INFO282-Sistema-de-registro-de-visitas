@@ -65,7 +65,7 @@ const FormSelectorScreen = () => {
         console.log("File Size:", pickedFile.size)
         console.log("MIME Type:", pickedFile.mimeType)
 
-        // Copy the file to a cache directory
+        // Copy the file to a cache director
         const fileUri = pickedFile.uri
         const newPath = `${FileSystem.cacheDirectory}${pickedFile.name}`
         await FileSystem.copyAsync({
