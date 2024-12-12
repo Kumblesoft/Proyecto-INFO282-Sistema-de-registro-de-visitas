@@ -10,23 +10,12 @@ import { useSQLiteContext } from 'expo-sqlite'
 
 const { dbInit } = require('./tables.json')
 
+const tables = ['forms', 'fields', 'field_table_name', 'texto', 'selector', 'fecha', 'hora', 'camara', 'limitations', 'limitations_intermediary', 'format', 'format_intermediary', 'options', 'compatibility_matrix']
+
 export async function initializeDataBase(db) {
     try {
-        db.runSync('DROP TABLE IF EXISTS forms')
-        db.runSync('DROP TABLE IF EXISTS fields')
-        db.runSync('DROP TABLE IF EXISTS field_table_name')
-        db.runSync('DROP TABLE IF EXISTS texto')
-        db.runSync('DROP TABLE IF EXISTS selector')
-        db.runSync('DROP TABLE IF EXISTS fecha')
-        db.runSync('DROP TABLE IF EXISTS hora')
-        db.runSync('DROP TABLE IF EXISTS camara')
-        db.runSync('DROP TABLE IF EXISTS limitations')
-        db.runSync('DROP TABLE IF EXISTS limitations_intermediary')
-        db.runSync('DROP TABLE IF EXISTS format')
-        db.runSync('DROP TABLE IF EXISTS format_intermediary')
-        db.runSync('DROP TABLE IF EXISTS options')
-        db.runSync('DROP TABLE IF EXISTS compatibility_matrix')
-
+        tables.forEach(table => 
+            db.runSync(`DROP TABLE IF EXISTS ${table}`))
         db.execSync(dbInit)
         console.log('Database inicialized')
     } catch (error) {
