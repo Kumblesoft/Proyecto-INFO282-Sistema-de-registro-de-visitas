@@ -87,7 +87,6 @@ export default class Database {
     }
 
     getForms() {
-
         try {
             tables.forEach(table =>
                 console.log(`${table}:\n${JSON.stringify(this.db.getAllSync(`SELECT * FROM ${table}`))}`)
@@ -119,7 +118,7 @@ export default class Database {
         }
     }
 
-    async deleteForm(formID) {
+    deleteForm(formID) {
         try {
             const fieldsID = this.db.getAllSync('SELECT id FROM fields WHERE fk_id_form = ?', [formID])
             fieldsID.forEach(field => {

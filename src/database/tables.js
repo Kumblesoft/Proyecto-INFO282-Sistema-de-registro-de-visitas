@@ -1,5 +1,5 @@
 export default initDatabaseScript = {
-    "dbInit": `    
+    "dbInit": ` 
     PRAGMA journal_mode = WAL;
     PRAGMA foreign_keys = ON;
 
@@ -76,20 +76,18 @@ export default initDatabaseScript = {
     );
     CREATE INDEX name_limitation ON limitations(name);
 
-    CREATE TABLE IF NOT EXISTS limitations_intermediary (
-    fk_field INTEGER REFERENCES fields(id) NOT NULL, 
-    fk_limitations INTEGER REFERENCES limitations(id) NOT NULL
-    );
-    CREATE INDEX fk_forms_int_lim ON limitations_intermediary(fk_field);
-    CREATE INDEX fk_field_int_lim ON limitations_intermediary(fk_field);
-    CREATE INDEX fk_limitations_int_lim ON limitations_intermediary(fk_limitations);
 
+   CREATE TABLE IF NOT EXISTS is_formatted (
+   fk_id_format int references format(id_format),
+   fk_id_text int references text_properties(id_formats)
+   );
+   
     CREATE TABLE IF NOT EXISTS format (
-    id_text_format INTEGER REFERENCES text_properties(id_formats) NOT NULL,
+    id_format INTEGER PRIMARY KEY,
     name TEXT NOT NULL UNIQUE,
     value_enum_matrix INTEGER NOT NULL
     );
-    CREATE UNIQUE INDEX name_format ON format(id_text_format);
+    
 
     CREATE TABLE IF NOT EXISTS selector_options (
     fk_selector_id INTEGER REFERENCES selector_properties(id_options) NOT NULL,
@@ -123,7 +121,7 @@ export default initDatabaseScript = {
     UM_PLANTILLA INT,
     ID_DISPOSITIVO TEXT,
     FOREIGN KEY (ID_PLANTILLA) REFERENCES FORMS(ID)
-);
+	);
 
 -- Crear la tabla CAMPO_RESPUESTA
     CREATE TABLE CAMPO_RESPUESTA (
