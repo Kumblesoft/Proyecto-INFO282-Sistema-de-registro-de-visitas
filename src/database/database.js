@@ -53,8 +53,8 @@ export async function initializeDataBase(db) {
     db.runSync('INSERT INTO limitations (name, value_enum_matrix) VALUES (?,?)', ["editable", 0])
     db.runSync('INSERT INTO limitations (name, value_enum_matrix) VALUES (?,?)', ["no editable", 1])
 
-    ;[[1, 2], [1, 3], [2, 3]].forEach(pair => setCompatibility(db, pair[0], pair[1], "texto", 1, 0))
-    
+        ;[[1, 2], [1, 3], [2, 3]].forEach(pair => setCompatibility(db, pair[0], pair[1], "texto", 1, 0))
+
     db.runSync('INSERT INTO format (name, regex, value_enum_matrix) VALUES (?,?,?)', ["solo mayusculas", "/^[A-Z]*$/", 0])
     db.runSync('INSERT INTO format (name, regex, value_enum_matrix) VALUES (?,?,?)', ["solo minusculas", "/^[a-z]*$/", 1])
 }
@@ -173,6 +173,11 @@ export default class Database {
                 'INSERT INTO campo_respuesta (id_respuesta, nombre_campo, valor_campo) VALUES (?,?,?)',
                 [lastAnswerID, key, value]
             ))
+    }
+
+    deleteAnswers(formID, answerID) {
+        this.db.runSync('DELETE FROM respuestas WHERE id_plantilla = ?', [formID])
+        this.db.runSync('DELETE FROM campo_respuesta WHERE id_respuesta = ?', [answerID])
     }
 
     getComponnentTypeId(fieldType) {
