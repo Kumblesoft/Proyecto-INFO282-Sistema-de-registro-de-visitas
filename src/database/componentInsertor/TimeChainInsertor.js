@@ -1,7 +1,7 @@
 import ChainInsertor from './ChainInsertor'
 
 export default class TimeChainInsertor extends ChainInsertor {
-    insert(fieldObject) {
+    insert(fieldObject, formID) {
         if (fieldObject.type != 'hora')
             return next && next.insert(fieldObject)
 

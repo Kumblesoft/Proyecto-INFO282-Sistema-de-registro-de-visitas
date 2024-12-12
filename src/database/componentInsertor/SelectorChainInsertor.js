@@ -1,7 +1,7 @@
 import ChainInsertor from './ChainInsertor'
 
 export default class SelectorChainInsertor extends ChainInsertor {
-    insert(fieldObject) {
+    insert(fieldObject, formID) {
         if (fieldObject.type != 'selector')
             return next && next.insert(fieldObject)
 

@@ -1,7 +1,7 @@
 import ChainInsertor from './ChainInsertor'
 
 export default class CameraChainInsertor extends ChainInsertor {
-    insert(fieldObject) {
+    insert(fieldObject, formID) {
         if (fieldObject.type != 'camara')
             return next && next.insert(fieldObject)
 
