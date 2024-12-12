@@ -230,7 +230,7 @@ const SavedForms = () => {
     }
     function isBase64(str) {
         if (!str || typeof str !== 'string') {
-          return false;
+            return false
         }
       
         const base64Regex = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
@@ -329,7 +329,11 @@ const SavedForms = () => {
                                 ) : null
                             ))}
                             </Menu>
-                            <Button onPress={() => setFilterVisible(false)}>DISMISS</Button>
+                            <Button onPress={() => setFilterVisible(false)}>
+                                <Text>
+                                    DISMISS
+                                </Text>
+                            </Button>
                         </Card>
                     </Modal>
                 )}
@@ -344,8 +348,16 @@ const SavedForms = () => {
                 {index && index.row === 3 ? <Input style={styles.inputUltimos} placeholder='¿Cuantas respuestas desea?' value={lasts} OnChange={handleLasts} keyboardType='numeric'/> : <></>}
                 {isSelectionMode && (
                     <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 10, paddingTop: 10}}>
-                        <Button onPress={deselectAll} accessoryLeft={deleteIcon} style ={{width: '40%', marginRight: '10%'}}>Limpiar selección</Button>
-                        <Button onPress={selectAll} accessoryLeft={SelectionIcon} style={{width: '40%', marginLeft: "10%"}}>Seleccionar todo</Button>
+                        <Button onPress={deselectAll} accessoryLeft={deleteIcon} style ={{width: '40%', marginRight: '10%'}}>
+                            <Text>
+                                Limpiar selección
+                            </Text>
+                        </Button>
+                        <Button onPress={selectAll} accessoryLeft={SelectionIcon} style={{width: '40%', marginLeft: "10%"}}>
+                            <Text>
+                                Seleccionar todo
+                            </Text>    
+                        </Button>
                     </View>
                 )}
                 </Layout>
@@ -359,10 +371,16 @@ const SavedForms = () => {
                     <Layout style = {styles.containerCalendar}>
                         <RangeCalendar range={range} onSelect={nextrange => setRange(nextrange)}/>
                             <View style={styles.buttonRangeContainer}>
-                                <Button style={{marginRight: "3%"}} status='info' onPress={() => setIsRangeMode(false)}>Volver</Button>
-                                <Button style={{marginLeft: "3%"}} onPress={() => {setIsRangeMode(false)
-                                                        handleRange()
-                                }}>Confirmar</Button>        
+                                <Button style={{marginRight: "3%"}} status='info' onPress={() => setIsRangeMode(false)}><Text>Volver</Text></Button>
+                                <Button style={{marginLeft: "3%"}} 
+                                    onPress={() => {
+                                        setIsRangeMode(false)
+                                        handleRange()
+                                }}>
+                                    <Text>
+                                        Confirmar
+                                    </Text>
+                                </Button>        
                             </View>
                     </Layout>
                 </Modal>
@@ -370,13 +388,25 @@ const SavedForms = () => {
                     <Layout style = {styles.container}>
                         <Text>¿Está seguro que desea eliminar el/los formulario?</Text>
                         <Layout style={styles.buttonContainer}>
-                        <Button accessoryLeft={deleteIcon} status='danger' style={styles.deleteButton} onPress={() => {deleteSelectedForms()
-                                                                            setConfirmDelete([false,false])
-                                                                            }}>Eliminar</Button>
-                        <Button accessoryLeft={BackIcon}style={styles.deleteButton} onPress={() => confirmDelete[1] ? (setConfirmDelete([false,false]), setModalVisible(true))
-                                                                                            : 
-                                                                                                setConfirmDelete([false,false])
-                                                                            }>Cancelar</Button>
+                        <Button accessoryLeft={deleteIcon} 
+                            status='danger' 
+                            style={styles.deleteButton} 
+                            onPress={() => {
+                                deleteSelectedForms()
+                                setConfirmDelete([false,false])
+                            }}>
+                                <Text>
+                                    Eliminar
+                                </Text>
+                            </Button>
+                        <Button 
+                            accessoryLeft={BackIcon}
+                            style={styles.deleteButton} 
+                            onPress={() => confirmDelete[1] ? (setConfirmDelete([false,false]), setModalVisible(true)) : setConfirmDelete([false,false])}>
+                                <Text>
+                                    Cancelar
+                                </Text>
+                            </Button>
                         </Layout>
                     </Layout>
                 </Modal>
@@ -384,11 +414,15 @@ const SavedForms = () => {
                 {isSelectionMode && (
                     <Layout style={styles.buttonContainer}>
                         <Button status='danger' style={styles.deleteButton} onPress={() => setConfirmDelete([true,false])} accessoryLeft={deleteIcon}>
-                            Eliminar 
+                            <Text>
+                                Eliminar 
+                            </Text>
                         </Button>
                         <Button status='info' style={styles.shareButton} accessoryLeft={shareIcon} onPress={() => exportForm(
                             forms.filter(form => selectedForms.includes(form.id)))}>
-                            Compartir
+                            <Text>
+                                Compartir
+                            </Text>
                         </Button>
                     </Layout>
                 )}
@@ -407,19 +441,30 @@ const SavedForms = () => {
                                 <Layout style={styles.containerRespuestas}>
                                     <Text style={styles.key} key={key}>{`${key}`}</Text>
                                     <ScrollView style = {{maxHeight: 200}}>
-                                        {console.log(isBase64(value))}
-                        
                                         {
-                                        isBase64(value) ? <Image source={{uri: `data:image/jpeg;base64,${value}`}} style={{width: 300, height: 300 }} resizeMode='center'/> : <Text style={styles.value}>{`${value}`}</Text>}
+                                            isBase64(value) ?
+                                            <Image source={{uri: `data:image/jpeg;base64,${value}`}} style={{width: 300, height: 300 }} resizeMode='center'/> :
+                                            <Text style={styles.value}>{`${value}`}</Text>
+                                        }
                                     </ScrollView>
                                 </Layout>
                             ))}
                             
-                            <Button accessoryLeft={deleteIcon} status='danger' onPress={() => {setConfirmDelete([true, true])
-                                                    setModalVisible(false)}
-                                                }>Eliminar</Button>
-                            <Button accessoryLeft={shareIcon} status='info' onPress={() => exportForm([selectedForm])}>Compartir</Button>
-                            <Button  onPress={closeModal}>Cerrar</Button>
+                                <Button accessoryLeft={deleteIcon} status='danger' onPress={() => {setConfirmDelete([true, true]); setModalVisible(false)}}>
+                                    <Text>
+                                        Eliminar
+                                    </Text>   
+                                </Button>
+                                <Button accessoryLeft={shareIcon} status='info' onPress={() => exportForm([selectedForm])}>
+                                    <Text>
+                                        Compartir
+                                    </Text>
+                                </Button>
+                                <Button  onPress={closeModal}>
+                                    <Text>
+                                        Cerrar
+                                    </Text>    
+                                </Button>
                             </ScrollView>
                         </Card>
                     </Layout>
