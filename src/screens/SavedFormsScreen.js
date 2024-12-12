@@ -391,6 +391,7 @@ const SavedForms = () => {
                 >
                     <Layout style={styles.modalContainer}>
                         <Card style={styles.modalCard} disabled={true} >
+                            <ScrollView style={{maxHeight: height * 0.8}} nestedScrollEnabled = {true} >
                             <Text style={styles.modalTitle}>{selectedForm?.plantilla}</Text>
                             {selectedForm && Object.entries(selectedForm.data).map(([key, value]) => (
                                 <Layout style={styles.containerRespuestas}>
@@ -409,6 +410,7 @@ const SavedForms = () => {
                                                 }>Eliminar</Button>
                             <Button accessoryLeft={shareIcon} status='info' onPress={() => exportForm([selectedForm])}>Compartir</Button>
                             <Button  onPress={closeModal}>Cerrar</Button>
+                            </ScrollView>
                         </Card>
                     </Layout>
                 </Modal>
