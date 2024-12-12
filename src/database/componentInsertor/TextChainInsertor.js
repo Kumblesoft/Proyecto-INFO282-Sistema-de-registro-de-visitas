@@ -2,14 +2,14 @@ import ChainInsertor from './ChainInsertor'
 import { useSQLiteContext } from 'expo-sqlite'
 
 export default class TextChainInsertor extends ChainInsertor {
-    insert(fieldObject, fieldId, fieldTypeId, fieldTableName) {
+    insert(fieldObject, fieldID, fieldTypeId, fieldTableName) {
         console.log(fieldObject)
         if (fieldObject.tipo != 'texto')
             return this?.next && this.next.insert(fieldObject)
         const db = useSQLiteContext()
 
         db.runSync(
-            'INSERT INTO texto (fk_field, name, qr_refillable) VALUES (?,?,?)',
+            'INSERT INTO text_properties (fk_field, name, qr_refillable) VALUES (?,?,?)',
             [fieldID, fieldObject.nombre, fieldObject.rellenarQR]
         )
 
