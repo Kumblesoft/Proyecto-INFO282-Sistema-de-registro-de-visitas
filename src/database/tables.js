@@ -126,14 +126,12 @@ export default initDatabaseScript = {
     ID_DISPOSITIVO TEXT
 	);
 
--- Crear la tabla CAMPO_RESPUESTA
     CREATE TABLE IF NOT EXISTS campo_respuesta (
         ID_RESPUESTA INT REFERENCES respuestas(id_respuesta),
         NOMBRE_CAMPO TEXT,
-        VALOR_CAMPO TEXT,
+        VALOR_CAMPO TEXT
     );
 
-    -- Crear un índice compuesto para las columnas fila y columna
     CREATE INDEX idx_fila_columna ON compatibility_matrix (fila, columna);
     `
 }
