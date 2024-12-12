@@ -89,11 +89,72 @@ export default class Database {
         Database.instance = this // Cache the instance
     }
 
-    getForms() {
+    getForm(formID, fieldID) {
         try {
             tables.forEach(table =>
                 console.log(`${table}:\n${JSON.stringify(this.db.getAllSync(`SELECT * FROM ${table}`))}`)
+
             )
+            const { name: nombreFormulario, table_name: fieldTableName } = this.db.getFirstSync('SELECT name,last_modification FROM forms WHERE id = ?', [formID])
+            const { name: fieldName, ordering: orden, obligatory: obligatorio, output: salida } = this.getAllSync('SELECT name,ordering,obligatory,output FROM fields WHERE fk_id_form = ?', [formID])
+
+            const form =
+            {
+                "nombre formulario": "Formulario 1",
+                "formato salida": "JSON",
+                "nombre archivo salida": "respuestas formulario 1.json",
+                "ultima modificacion": "11/11/2011",
+                "campos": [
+                    {
+                        "tipo": "selector",
+                        "nombre": "Edad del participante",
+                        "obligatorio": true,
+                        "salida": "edad",
+                        "opcion predeterminada": null,
+                        "texto predeterminado": "Seleccione su edad",
+                        "opciones": [
+                            {
+                                "nombre": "18 años",
+                                "valor": "18"
+                            },
+                            {
+                                "nombre": "19 años",
+                                "valor": "19"
+                            }
+                        ]
+                    },
+                    {
+                        "tipo": "texto",
+                        "nombre": "Ingrese un mensaje",
+                        "obligatorio": true,
+                        "rellenarQR": true,
+                        "salida": "mensaje",
+                        "limitaciones": [
+                        ],
+                        "formato": [
+                        ]
+                    },
+                    {
+                        "tipo": "fecha",
+                        "nombre": "Fecha de Hoy",
+                        "obligatorio": true,
+                        "salida": "fecha",
+                        "limitaciones": [
+                            "no editable"
+                        ],
+                        "formato": "dd/aaaa/mm",
+                        "fecha predeterminada": "hoy"
+                    },
+                    {
+                        "tipo": "camara",
+                        "nombre": "Foto personal",
+                        "obligatorio": true,
+                        "salida": "foto",
+                        "editable": true,
+                        "relacion de aspecto": [16, 9]
+                    }
+                ]
+            }
         } catch (error) {
             console.log(error)
         }
@@ -169,7 +230,7 @@ export default class Database {
                 this.db.runSync('DELETE FROM fields WHERE id = ?', [field.id])
             })
             this.db.runSync('DELETE FROM forms WHERE id = ?', [formID])
-            this.getForms()
+            //this.getForms()
         } catch (error) {
             console.log(error)
         }
