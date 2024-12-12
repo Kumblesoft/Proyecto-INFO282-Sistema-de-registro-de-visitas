@@ -2,7 +2,7 @@ import ChainInsertor from './ChainInsertor'
 import { useSQLiteContext } from 'expo-sqlite'
 
 export default class TextChainInsertor extends ChainInsertor {
-    insert(fieldObject, formID, fieldID) {
+    insert(fieldObject, fieldId, fieldTypeId, fieldTableName) {
         console.log(fieldObject)
         if (fieldObject.tipo != 'texto')
             return this?.next && this.next.insert(fieldObject)
