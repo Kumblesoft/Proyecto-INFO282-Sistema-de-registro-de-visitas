@@ -3,6 +3,8 @@ import SelectorChainInsertor from './componentInsertor/SelectorChainInsertor'
 import DateChainInsertor from './componentInsertor/DateChainInsertor'
 import TimeChainInsertor from './componentInsertor/TimeChainInsertor'
 import CameraChainInsertor from './componentInsertor/CameraChainInsertor'
+import CheckboxChainInsertor from './componentInsertor/CheckboxChainInsertor'
+import RadiusChainInsertor from './componentInsertor/RadiusChainInsertor'
 import initDatabaseScript from './tables'
 
 const { dbInit } = initDatabaseScript
@@ -78,6 +80,8 @@ export default class Database {
             .add(new DateChainInsertor(this.db))
             .add(new TimeChainInsertor(this.db))
             .add(new CameraChainInsertor(this.db))
+            .add(new CheckboxChainInsertor(this.db))
+            .add(new RadiusChainInsertor(this.db))
 
         Database.instance = this // Cache the instance
     }
