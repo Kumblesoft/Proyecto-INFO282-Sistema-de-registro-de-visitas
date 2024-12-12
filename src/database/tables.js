@@ -109,14 +109,14 @@ export default initDatabaseScript = {
     value TEXT NOT NULL
     );
    
-    CREATE TABLE compatibility_matrix (
+    CREATE TABLE IF NOT EXISTS compatibility_matrix (
     fila INTEGER NOT NULL,
     columna INTEGER NOT NULL,
     fk_field_type_id TEXT REFERENCES field_table_name(id) NOT NULL,
     limitation_or_format INTEGER NOT NULL
     );
 
-    CREATE TABLE RESPUESTAS (
+    CREATE TABLE IF NOT EXISTS respuestas (
     ID_RESPUESTA INT PRIMARY KEY,
     ID_PLANTILLA INT,
     FECHA_RESPUESTA INT,
@@ -126,7 +126,7 @@ export default initDatabaseScript = {
 );
 
 -- Crear la tabla CAMPO_RESPUESTA
-    CREATE TABLE CAMPO_RESPUESTA (
+    CREATE TABLE IF NOT EXISTS campo_respuesta (
         ID_CAMPO_RESPUESTA INT,
         ID_RESPUESTA INT,
         NOMBRE_CAMPO TEXT,
