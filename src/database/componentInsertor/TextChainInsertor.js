@@ -8,7 +8,7 @@ export default class TextChainInsertor extends ChainInsertor {
             return this?.next && this.next.insert(fieldObject)
 
         this.db.runSync(
-            'INSERT INTO texto (fk_field, qr_refillable) VALUES (?,?,?)',
+            'INSERT INTO text_properties (fk_field, qr_refillable) VALUES (?,?,?)',
             [fieldId, fieldObject.rellenarQR]
         )
 

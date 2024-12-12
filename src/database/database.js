@@ -72,12 +72,12 @@ export default class Database {
         }
         this.db = db
         Database.instance = this // Cache the instance
-        this.chainInsertors = new TextChainInsertor()
+        this.chainInsertors = new TextChainInsertor(db)
         this.chainInsertors
-            .add(new SelectorChainInsertor())
-            .add(new DateChainInsertor())
-            .add(new TimeChainInsertor())
-            .add(new CameraChainInsertor())
+            .add(new SelectorChainInsertor(db))
+            .add(new DateChainInsertor(db))
+            .add(new TimeChainInsertor(db))
+            .add(new CameraChainInsertor(db))
     }
 
     getForms() {
@@ -104,7 +104,7 @@ export default class Database {
                     [formID, typeOfField, fieldObject.nombre, i, fieldObject.obligatorio, fieldObject.salida]
                 )
                 const lastFieldId = this.db.getFirstSync('SELECT id FROM fields ORDER BY id DESC LIMIT 1').id
-                //if (!this.chainInsertors.insert(fieldObject, lastFieldId, typeOfField, fieldTableName)) throw new Error('Error al insertar')
+                if (!this.chainInsertors.insert(fieldObject, lastFieldId, typeOfField, fieldTableName)) throw new Error('Error al insertar')
             })
             this.getForms()
         } catch (error) {

@@ -1,6 +1,7 @@
 export default class ChainInsertor {
-    constructor() {
+    constructor(db) {
         this.next = null
+        this.db = db
     }
 
     add(chainInsertor) {
