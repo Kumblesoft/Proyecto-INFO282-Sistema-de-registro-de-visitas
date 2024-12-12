@@ -107,7 +107,7 @@ export default initDatabaseScript = {
     value TEXT NOT NULL
     );
    
-    CREATE TABLE IF NOT EXISTS compatibility_matrix (
+    CREATE TABLE compatibility_matrix (
     fila INTEGER NOT NULL,
     columna INTEGER NOT NULL,
     fk_field_type_id TEXT REFERENCES field_table_name(id) NOT NULL,
@@ -124,11 +124,11 @@ export default initDatabaseScript = {
 
 -- Crear la tabla CAMPO_RESPUESTA
     CREATE TABLE IF NOT EXISTS campo_respuesta (
-        ID_CAMPO_RESPUESTA INT AUTOINCREMENT,
         ID_RESPUESTA INT REFERENCES respuestas(id_respuesta),
         NOMBRE_CAMPO TEXT,
         VALOR_CAMPO TEXT,
-        PRIMARY KEY (ID_CAMPO_RESPUESTA)
+        PRIMARY KEY (ID_CAMPO_RESPUESTA),
+        FOREIGN KEY (ID_RESPUESTA) REFERENCES RESPUESTAS(ID_RESPUESTA)
     );
 
     -- Crear un índice compuesto para las columnas fila y columna
