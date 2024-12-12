@@ -6,7 +6,8 @@ import CameraChainInsertor from './componentInsertor/CameraChainInsertor'
 import initDatabaseScript from './tables'
 
 const { dbInit } = initDatabaseScript
-const tables = ['forms', 'fields', 'field_table_name', 'text_properties', 'selector_properties', 'date_properties', 'hour_properties', 'camera_properties', 'limitations', 'limitations_intermediary', 'format', 'format_intermediary', 'options', 'compatibility_matrix']
+const tables = ['forms', 'fields', 'field_table_name', 'text_properties', 'selector_properties', 'date_properties', 'hour_properties', 'camera_properties', 'limitations',
+    'limitations_intermediary', 'format', 'options', 'compatibility_matrix', 'respuestas', 'campo_respuesta']
 const table_types = [['text_properties', 'texto'], ['selector_properties', 'selector'], ['date_properties', 'fecha'], ['hour_properties', 'hora'], ['camera_properties', 'camara']]
 
 /**
@@ -17,11 +18,11 @@ const table_types = [['text_properties', 'texto'], ['selector_properties', 'sele
  * @param {boolean} isCompatible "Indica si los elementos son compatibles, true si lo son, false si no"
  * @param {[Number]} isFormat "1 si es formato, 0 si es limitacion"
  */
-export const setCompatibility = async (firstElement, secondElement, typenameOfField, isCompatible, isFormat = 0) => {
+export const setCompatibility = (db, firstElement, secondElement, typenameOfField, isCompatible, isFormat) => {
     if (firstElement == secondElement) return 'Ok'
     if (firstElement > secondElement) secondElement = [firstElement, firstElement = secondElement][0]
 
-    const fieldTypeId = db.runSync('SELECT id FROM field_table_name WHERE field_type_name = ?', [typenameOfField]).getFirstSync().id
+    const fieldTypeId = db.getFirstSync('SELECT id FROM field_table_name WHERE field_type_name = ?', [typenameOfField]).id
     if (isCompatible)
         return db.runSync('INSERT INTO compatibility_matrix (fila, columna, fk_field_type_id, limitation_or_format) VALUES (?,?,?,?)', [firstElement, secondElement, fieldTypeId, isFormat])
     return db.runSync('DELETE FROM compatibility_matrix WHERE fila = ? AND columna = ? AND fk_field_type_id = ? AND limitation_or_format = ?', [firstElement, secondElement, fieldTypeId, isFormat])
@@ -51,16 +52,7 @@ export async function initializeDataBase(db) {
     db.runSync('INSERT INTO limitations (name, value_enum_matrix) VALUES (?,?)', ["editable", 0])
     db.runSync('INSERT INTO limitations (name, value_enum_matrix) VALUES (?,?)', ["no editable", 1])
 
-    db.runSync('INSERT INTO format (name, value_enum_matrix) VALUES (?,?)', ["solo mayusculas", 0])
-    db.runSync('INSERT INTO format (name, value_enum_matrix) VALUES (?,?)', ["solo minusculas", 1])
-    db.runSync('INSERT INTO format (name, value_enum_matrix) VALUES (?,?)', ["dd/mm/yyyy", 0])
-    db.runSync('INSERT INTO format (name, value_enum_matrix) VALUES (?,?)', ["mm/dd/yyyy", 1])
-    db.runSync('INSERT INTO format (name, value_enum_matrix) VALUES (?,?)', ["yyyy/mm/dd", 2])
-    db.runSync('INSERT INTO format (name, value_enum_matrix) VALUES (?,?)', ["yyyy/dd/mm", 3])
-    db.runSync('INSERT INTO format (name, value_enum_matrix) VALUES (?,?)', ["mm/yyyy/dd", 4])
-    db.runSync('INSERT INTO format (name, value_enum_matrix) VALUES (?,?)', ["dd/yyyy/mm", 5])
-
-    ;[[1,2],[1,3],[2,3],[3,4]].forEach(pair => setCompatibility(pair[0], pair[1], "texto", 1, 0))
+        ;[[1, 2], [1, 3], [2, 3], [3, 4]].forEach(pair => setCompatibility(db, pair[0], pair[1], "texto", 1, 0))
 }
 
 // Singleton factory method to get the instance
@@ -101,8 +93,8 @@ export default class Database {
 
     addForm(newForm) {
         try {
-            const statement = this.db.prepareSync('INSERT INTO forms (name, output_file_name, last_modification) VALUES (?,?,?)')
-            statement.executeSync([newForm["nombre formulario"], newForm["nombre archivo salida"], newForm["ultima modificacion"]])
+            const statement = this.db.prepareSync('INSERT INTO forms (name, last_modification) VALUES (?,?)')
+            statement.executeSync([newForm["nombre formulario"], newForm["ultima modificacion"]])
             const formID = this.db.getFirstSync('SELECT id FROM forms WHERE name = ?', [newForm["nombre formulario"]]).id
 
             newForm.campos.forEach((fieldObject, i) => {
@@ -112,7 +104,7 @@ export default class Database {
                     [formID, typeOfField, fieldObject.nombre, i, fieldObject.obligatorio, fieldObject.salida]
                 )
                 const lastFieldId = this.db.getFirstSync('SELECT id FROM fields ORDER BY id DESC LIMIT 1').id
-                if (!this.chainInsertors.insert(fieldObject, lastFieldId, typeOfField, fieldTableName)) throw new Error('Error al insertar')
+                //if (!this.chainInsertors.insert(fieldObject, lastFieldId, typeOfField, fieldTableName)) throw new Error('Error al insertar')
             })
             this.getForms()
         } catch (error) {

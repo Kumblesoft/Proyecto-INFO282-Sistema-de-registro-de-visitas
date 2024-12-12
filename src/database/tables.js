@@ -6,7 +6,6 @@ export default initDatabaseScript = {
     CREATE TABLE IF NOT EXISTS forms (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL UNIQUE,
-    output_file_name TEXT NOT NULL UNIQUE,
     last_modification TEXT NOT NULL
     );
 
@@ -30,7 +29,6 @@ export default initDatabaseScript = {
     CREATE TABLE IF NOT EXISTS text_properties (
     fk_field INTEGER REFERENCES fields(id) NOT NULL,
     id_formats INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
     qr_refillable INTEGER NOT NULL
     );
 
