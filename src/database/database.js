@@ -112,7 +112,7 @@ export default class Database {
                 const lastFieldId = this.db.getFirstSync('SELECT id FROM fields ORDER BY id DESC LIMIT 1').id
                 if (!this.chainInsertors.insert(fieldObject, lastFieldId, typeOfField, fieldTableName)) throw new Error('Error al insertar')
             })
-            this.getForms()
+            //this.getForms()
         } catch (error) {
             console.log(error)
         }
