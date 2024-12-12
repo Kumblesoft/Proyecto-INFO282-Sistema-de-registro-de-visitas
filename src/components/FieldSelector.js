@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import { View, StyleSheet, Alert, TouchableOpacity } from 'react-native'
-import {Text, Select, SelectItem, Button} from '@ui-kitten/components'
+import { View, StyleSheet, Alert, TouchableOpacity, Dimensions } from 'react-native'
+import {Text, Select, SelectItem, Button, Layout, Divider, Icon} from '@ui-kitten/components'
 
 import fields from '../fieldsConstructor/fields' // Ajusta la ruta correctamente
 import SelectorConstructor from '../fieldsConstructor/SelectorConstructor'
@@ -12,6 +12,7 @@ import CheckBoxConstructor from '../fieldsConstructor/CheckBoxConstructor'
 import CameraConstructor from '../fieldsConstructor/CameraConstructor'
 import DragList from 'react-native-draglist'
 
+const { width, height } = Dimensions.get('window')
 
 const constructors = new Map([
     ['radio', RadioSelectorConstructor],
@@ -33,6 +34,9 @@ const FieldSelector = () => {
     const [form, setForm] = useState({})
     
 
+    const deleteIcon = props => <Icon name='trash-outline' {...props} fill="#fff" style={[props.style, { width: 20, height: 20 }]}/>
+    const editIcon = props => <Icon name='edit-outline' {...props} fill="#fff" style={[props.style, { width: 20, height: 20 }]}/>
+    
     // Obtiene los tipos de campos del JSON (keys del objeto)
     const fieldTypes = Object.keys(fields)
 
@@ -134,40 +138,60 @@ const FieldSelector = () => {
             setDragMode(!dragMode)
         }
     }
+
+    const renderButtons = (index) => {
+        <View style={styles.buttonContainer}>
+            <Button style={styles.editButton} onPress={() => handleDragMode()}>{dragMode ? "Guardar Orden":"Editar Orden"}</Button>
+
+        </View>
+    }
     
     
     return (
         <>
         <View style={styles.container}>
-            <Button onPress={() => handleDragMode()}>{dragMode ? "Guardar Orden":"Editar Orden"}</Button>
-            {dragMode ? 
-                <View style={styles.fieldContainer}>
-                    <DragList
-                        data={miniFields}
-                        keyExtractor={keyExtractor}
-                        onReordered={onReordered}
-                        renderItem={renderItem} 
-                    />
-            </View> 
-            :
-            fieldsToDisplay.map((item, index) => {
-                
-                const FieldComponent = constructors.get(item.tipo)
-                return (
-                    <View style={styles.fieldContainer}>
-                            <FieldComponent field={item} onSave={(field) => {handleFieldSave(field, index)}} />
-                            <Button
-                                title="Eliminar Campo"
-                                status="danger"
-                                onPress={() => handleDeleteField(index)}
-                            >
-                                Eliminar Campo
-                            </Button>
-                    </View>
-                    )
-                })}
             
-        
+            <Button style={styles.editButton} onPress={() => handleDragMode()}> {dragMode ? "Guardar Orden" : "Editar Orden"} </Button>
+
+            {dragMode ? (
+                <View style={styles.fieldContainer}>
+                <DragList
+                    data={miniFields}
+                    keyExtractor={keyExtractor}
+                    onReordered={onReordered}
+                    renderItem={renderItem}
+                />
+                </View>
+            ) : (
+            fieldsToDisplay.map((item, index) => {
+                const FieldComponent = constructors.get(item.tipo);
+
+                return (
+                    <View key={index}>
+                    {/* Contenedor del campo */}
+                    <View style={styles.fieldContainer}>
+                        <FieldComponent
+                        field={item}
+                        onSave={(field) => handleFieldSave(field, index)}
+                        />
+                    </View>
+
+                    {/* Botón "Eliminar Campo" */}
+                    <View style={styles.buttonContainer}>
+                        <Button
+                        status="danger"
+                        style={styles.deleteButton}
+                        onPress={() => handleDeleteField(index)}
+                        >
+                        Eliminar Campo
+                        </Button>
+                    </View>
+                    </View>
+                );
+            }))}
+            
+                
+            <Divider />
             {/* Sección destacada */}
             {!dragMode ?(<View style={styles.selectionContainer}>
                 <Text style={styles.selectionTitle}>Crear un nuevo campo</Text>
@@ -204,7 +228,7 @@ const FieldSelector = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 16,
+        padding: "4%",
         backgroundColor: '#f5f5f5'
     },
     containerBox: {
@@ -224,10 +248,11 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
     fieldContainer: {
-        marginBottom: 16,
-        padding: 16,
+        marginTop: "1%",
+        marginBottom: "4%",
+        padding: "4%",
         borderWidth: 1,
-        borderColor: '#ddd',
+        borderColor: '#00b7ae',
         borderRadius: 8,
         backgroundColor: '#fff'
     },
@@ -235,9 +260,9 @@ const styles = StyleSheet.create({
         marginTop: 10,
         padding: 16,
         borderWidth: 2,
-        borderColor: '#6200ea',
+        borderColor: '#00b7ae',
         borderRadius: 12,
-        backgroundColor: '#e8eaf6',
+        backgroundColor: '#e8f6ee',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,
@@ -248,7 +273,7 @@ const styles = StyleSheet.create({
     selectionTitle: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#6200ea',
+        color: '#00b7ae',
         marginBottom: 12,
         textAlign: 'center'
     },
@@ -260,9 +285,22 @@ const styles = StyleSheet.create({
     addButton: {
         marginTop: 16,
         borderRadius: 8,
-        backgroundColor: '#6200ea',
         paddingVertical: 10
-    }
+    },
+    buttonContainer: {
+        backgroundColor: 'transparent',
+        width: '100%',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignSelf: 'center',
+        marginBottom: "4%",
+    },
+    deleteButton: {
+        borderRadius: 5,
+    },
+    editButton: {
+        borderRadius: 5,
+    },
 })
 
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { View, Alert, StyleSheet } from 'react-native'
-import { Text, Input, Button, Toggle, Layout } from '@ui-kitten/components'
+import { Text, Input, Button, Toggle, Layout, Divider, Icon } from '@ui-kitten/components'
 import { TimerPickerModal } from 'react-native-timer-picker'
 import * as Haptics from 'expo-haptics'
 import { LinearGradient } from 'expo-linear-gradient'
@@ -19,6 +19,8 @@ const HourConstructor = ({ field = {}, onSave }) => {
     const [showPicker, setShowPicker] = useState(false)
     const [isActual, setIsActual] = useState(defaultHour === 'actual' || !field.hora_predeterminada)
 
+
+    const saveIcon = props => <Icon name='save-outline' {...props} fill="#fff" style={[props.style, { width: 25, height: 25 }]}/>
     const formatTime = ({ hours, minutes }) =>
         `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
 
@@ -57,6 +59,7 @@ const HourConstructor = ({ field = {}, onSave }) => {
         <View style={styles.container}>
             <Text style={styles.title}>Configurar Campo de Hora</Text>
 
+            <Divider />
             {/* Nombre del Campo */}
             <View style={styles.field}>
                 <Text style={styles.label}>Nombre del Campo</Text>
@@ -68,16 +71,17 @@ const HourConstructor = ({ field = {}, onSave }) => {
                 />
             </View>
 
+            <Divider />
             {/* Hora Predeterminada */}
             <View style={styles.field}>
                 <Text style={styles.label}>Hora Predeterminada</Text>
-                <Layout style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Layout style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: "4%", alignSelf: 'center', width: "95%" }}>
                     {/* Botón Actual */}
                     <Button
                         status={isActual ? 'primary' : 'basic'}
                         onPress={() => {
                             setIsActual(true)
-                            setDefaultHour('actual')
+                            setDefaultHour(getCurrentTime())
                         }}
                     >
                         Actual
@@ -94,7 +98,7 @@ const HourConstructor = ({ field = {}, onSave }) => {
                         Personalizada
                     </Button>
                 </Layout>
-
+                
                 {/* Selector de hora personalizada */}
                 {!isActual ? (
                     <Button
@@ -106,7 +110,15 @@ const HourConstructor = ({ field = {}, onSave }) => {
                         {defaultHour}
                     </Button>
                 ) : (
-                    <Text>{defaultHour}</Text>
+                    <Button
+                        status= "success"
+                        disabled={true}
+                        appearance="outline"
+                        size="large"
+                        style={{ opacity: 0.9, borderColor: '#cccccc' }}
+                    >
+                        {getCurrentTime()}
+                    </Button>
                 )}
 
                 <TimerPickerModal
@@ -131,19 +143,23 @@ const HourConstructor = ({ field = {}, onSave }) => {
                     agressivelyGetLatestDuretion={true}
                 />
             </View>
-
+                
+            <Divider />    
             {/* Editable */}
             <View style={styles.field}>
                 <Text style={styles.label}>¿Editable?</Text>
-                <Toggle checked={isEditable} onChange={setIsEditable} />
+                <Toggle style={{flex: 1, alignSelf: 'flex-start'}} checked={isEditable} onChange={setIsEditable} />
             </View>
-
+                
+            <Divider />
             {/* Botón Guardar */}
             <View style={styles.saveButtonContainer}>
-                <Button title="Guardar Campo" onPress={handleSave}>
+                <Button accessoryLeft={saveIcon} title="Guardar Campo" onPress={handleSave}>
                     Guardar Campo
                 </Button>
+                
             </View>
+            
         </View>
     )
 }
@@ -153,7 +169,7 @@ const HourConstructor = ({ field = {}, onSave }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 16,
+        padding: "1%",
         backgroundColor: '#ffffff',
     },
     title: {
@@ -162,7 +178,8 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     field: {
-        marginBottom: 16,
+        marginTop: "4%",
+        marginBottom: "4%",
     },
     label: {
         fontSize: 14,
@@ -172,7 +189,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#cccccc',
         borderRadius: 4,
-        padding: 8,
+        padding: 0,
         fontSize: 16,
     },
     saveButtonContainer: {

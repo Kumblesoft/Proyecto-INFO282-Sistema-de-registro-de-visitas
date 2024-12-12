@@ -1,6 +1,6 @@
 import React, { useState } from "react"
-import { ScrollView, View, StyleSheet, SafeAreaView } from "react-native"
-import { Text, Input, Layout, Icon, Button } from "@ui-kitten/components"
+import { ScrollView, View, StyleSheet, SafeAreaView, Platform } from "react-native"
+import { Text, Input, Layout, Icon, Buttonr } from "@ui-kitten/components"
 import { LinearGradient } from "expo-linear-gradient"
 import { TopNavigation, TopNavigationAction, Divider } from "@ui-kitten/components"
 import { useNavigation } from "@react-navigation/native"
@@ -88,8 +88,13 @@ export default function FormEditor() {
             </LinearGradient>
             <Divider />
     <ScrollView style={styles.container} nestedScrollEnabled>
-      <Text style={styles.label}>Nombre del Formulario</Text>
-      <Input placeholder="Nombre del Formulario" style={styles.input} textStyle={{ color: isNameTaken ? 'red' : 'black' }} onChangeText={checkFormName}/>
+      <Layout style={styles.containerBox}>
+
+        <Text style={styles.label}>Nombre del Formulario</Text>
+        <Input placeholder="Nombre del Formulario" style={styles.input} textStyle={{ color: isNameTaken ? 'red' : 'black' }} onChangeText={checkFormName}/>
+      
+      </Layout>
+      <Divider/>
       {isNameTaken && 
         <Layout size='small' style={styles.alert}>
           <Icon status='danger' fill='#FF0000' name='alert-circle' style={styles.icon} />
@@ -115,7 +120,6 @@ export default function FormEditor() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
   },
   backIcon: {
     width: 25,
@@ -138,14 +142,33 @@ const styles = StyleSheet.create({
   fieldContainer: {
     marginBottom: 20,
   },
+  containerBox: {
+    padding: "4%",
+    marginBottom: "0%",
+    backgroundColor: 'transparent',
+    borderWidth: 3,
+    borderLeftWidth: 0,
+    borderRightWidth: 0,
+    borderStartColor: 'transparent',
+    borderEndColor: 'transparent',
+    borderTopColor: 'transparent',
+    borderBottomColor: '#00b7ae',
+    alignItems: 'flex-start',
+    height: 'auto',
+    width: '100%',
+  },
   label: {
+    flex: 1,
+    alignSelf: "flex-start",
     fontWeight: "bold",
     marginBottom: 5,
   },
   input: {
+    flex: 1,
+    alignSelf: 'flex-start',
     borderWidth: 1,
     borderColor: "#ccc",
-    padding: 10,
+    
     borderRadius: 5
   },
   optionContainer: {
