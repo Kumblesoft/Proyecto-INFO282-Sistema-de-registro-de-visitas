@@ -330,7 +330,7 @@ const FormSelectorScreen = () => {
 
           <Button style={styles.iconButton2} appearance="ghost" onPress={() => deleteSelectedForms()} accessoryLeft={deleteIcon} />
 
-          <Button style={styles.centerButton} onPress={() => navigation.navigate('Menu')} accessoryLeft={plusIcon} />
+          <Button style={styles.centerButton} onPress={() => navigation.navigate('FormEditor')} accessoryLeft={plusIcon} />
           
           <Button style={styles.iconButton2} appearance="ghost" accessoryLeft={shareIcon} />
         </View>
