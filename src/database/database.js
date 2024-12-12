@@ -54,11 +54,11 @@ export async function initializeDataBase(db) {
     db.runSync('INSERT INTO limitations (name, value_enum_matrix) VALUES (?,?)', ["no editable", 1])
 
         ;[[1, 2], [1, 3], [2, 3], [3, 4]].forEach(pair => setCompatibility(db, pair[0], pair[1], "texto", 1, 0))
-    
+
     db.runSync('INSERT INTO format (name, regex, value_enum_matrix) VALUES (?,?,?)', ["solo mayusculas", "/^[A-Z]*$/", 0])
     db.runSync('INSERT INTO format (name, regex, value_enum_matrix) VALUES (?,?,?)', ["solo minusculas", "/^[a-z]*$/", 1])
 
-      ;[[0, 1]].forEach(pair => setCompatibility(db, pair[0], pair[1], "texto", 1, 1))
+        ;[[0, 1]].forEach(pair => setCompatibility(db, pair[0], pair[1], "texto", 1, 1))
 }
 
 // Singleton factory method to get the instance
@@ -161,6 +161,21 @@ export default class Database {
             console.log(error)
         }
     } */
+
+
+    getAnswers(answerObject) {
+        const formID = this.db.getFirsSync('SELECT id FROM forms WHHERE name = ?', [answerObject.plantilla]).id
+        this.db.runSync(
+            'INSERT INTO respuestas (id_plantilla, fecha_respuesta, um_plantilla, id_dispositivo) VALUES (?,?,?,?)',
+            [formID, answerObject.fecha, answerObject["um plantilla"], answerObject["idDispositivo"]]
+        )
+        const lastAnswerID = this.db.getFirstSync('SELECT id FROM respuestas ORDER BY id DESC LIMIT 1').id
+        Object.entries(answerObject.data).forEach(([key, value]) =>
+            this.db.runSync(
+                'INSERT INTO campo_respuesta (id_respuesta, nombre_campo, valor_campo) VALUES (?,?,?)',
+                [lastAnswerID, key, value]
+            ))
+    }
 
     getComponnentTypeId(fieldType) {
         return this.db.getFirstSync('SELECT id FROM field_table_name WHERE field = ?', [fieldType]).id
