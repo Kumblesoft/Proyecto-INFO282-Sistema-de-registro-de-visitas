@@ -7,7 +7,6 @@ export default class TextChainInsertor extends ChainInsertor {
         if (fieldObject.tipo != 'texto')
             return this?.next && this.next.insert(fieldObject)
         const db = useSQLiteContext()
-        const fieldID = db.getFirstSync('SELECT id FROM field_table_name WHERE field = ?', [fieldObject.tipo]).id
 
         db.runSync(
             'INSERT INTO texto (fk_field, name, qr_refillable) VALUES (?,?,?)',

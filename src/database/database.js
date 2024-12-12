@@ -3,30 +3,26 @@ import SelectorChainInsertor from './componentInsertor/SelectorChainInsertor'
 import DateChainInsertor from './componentInsertor/DateChainInsertor'
 import TimeChainInsertor from './componentInsertor/TimeChainInsertor'
 import CameraChainInsertor from './componentInsertor/CameraChainInsertor'
-import { useSQLiteContext } from 'expo-sqlite'
+import initDatabaseScript from './tables'
 
-// CREATE UNIQUE INDEX form_name ON forms(name);
-
-
-const { dbInit } = require('./tables.json')
-
-const tables = ['forms', 'fields', 'field_table_name', 'texto', 'selector', 'fecha', 'hora', 'camara', 'limitations', 'limitations_intermediary', 'format', 'format_intermediary', 'options', 'compatibility_matrix']
+const { dbInit } = initDatabaseScript
+const tables = ['forms', 'fields', 'field_table_name', 'text_properties', 'selector_properties', 'date_properties', 'hour_properties', 'camera_properties', 'limitations', 'limitations_intermediary', 'format', 'format_intermediary', 'options', 'compatibility_matrix']
+const table_types = [['text_properties', 'texto'], ['selector_properties', 'selector'], ['date_properties', 'fecha'], ['hour_properties', 'hora'], ['camera_properties', 'camara']]
 
 export async function initializeDataBase(db) {
     try {
-        tables.forEach(table => 
+        tables.forEach(table =>
             db.runSync(`DROP TABLE IF EXISTS ${table}`))
         db.execSync(dbInit)
-        console.log('Database inicialized')
+        console.log('Database initialized')
     } catch (error) {
         console.log(error)
     }
 
-    db.runSync('INSERT INTO field_table_name (field) VALUES (?)', ["texto"])
-    db.runSync('INSERT INTO field_table_name (field) VALUES (?)', ["selector"])
-    db.runSync('INSERT INTO field_table_name (field) VALUES (?)', ["fecha"])
-    db.runSync('INSERT INTO field_table_name (field) VALUES (?)', ["hora"])
-    db.runSync('INSERT INTO field_table_name (field) VALUES (?)', ["camara"])
+    table_types.forEach(type =>
+        db.runSync('INSERT INTO field_table_name (table_name, field_type_name) VALUES (?)', type)
+    )
+
 
     db.runSync('INSERT INTO limitations (name, regex, value_enum_matrix) VALUES (?,?,?)', ["solo letras", "((/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/))", 0])
     db.runSync('INSERT INTO limitations (name, regex, value_enum_matrix) VALUES (?,?,?)', ["solo numeros", "/^-?\d+([.,]\d+)?$/", 1])
@@ -88,19 +84,9 @@ export default class Database {
 
     getForms() {
         try {
-            console.log(`forms:\n${JSON.stringify(this.db.getAllSync('SELECT * FROM forms'))}`)
-            console.log(`fields:\n${JSON.stringify(this.db.getAllSync('SELECT * FROM fields'))}`)
-            console.log(`field_table name\n${JSON.stringify(this.db.getAllSync('SELECT * FROM field_table_name'))}`)
-            console.log(`texto:\n${JSON.stringify(this.db.getAllSync('SELECT * FROM texto'))}`)
-            console.log(`selector:\n${JSON.stringify(this.db.getAllSync('SELECT * FROM selector'))}`)
-            console.log(`fecha:\n${JSON.stringify(this.db.getAllSync('SELECT * FROM fecha'))}`)
-            console.log(`hora:\n${JSON.stringify(this.db.getAllSync('SELECT * FROM hora'))}`)
-            console.log(`camara:\n${JSON.stringify(this.db.getAllSync('SELECT * FROM camara'))}`)
-            console.log(`limitations:\n${JSON.stringify(this.db.getAllSync('SELECT * FROM limitations'))}`)
-            console.log(`limitations_intermediary:\n${JSON.stringify(this.db.getAllSync('SELECT * FROM limitations_intermediary'))}`)
-            console.log(`format:\n${JSON.stringify(this.db.getAllSync('SELECT * FROM format'))}`)
-            console.log(`format_intermediary:\n${JSON.stringify(this.db.getAllSync('SELECT * FROM format_intermediary'))}`)
-            console.log(`options:\n${JSON.stringify(this.db.getAllSync('SELECT * FROM options'))}`)
+            tables.forEach(table =>
+                console.log(`${table}:\n${JSON.stringify(this.db.getAllSync(`SELECT * FROM ${table}`))}`)
+            )
         } catch (error) {
             console.log(error)
         }
@@ -111,7 +97,7 @@ export default class Database {
             const statement = this.db.prepareSync('INSERT INTO forms (name, output_file_name, last_modification) VALUES (?,?,?)')
             statement.executeSync([newForm["nombre formulario"], newForm["nombre archivo salida"], newForm["ultima modificacion"]])
             const formID = this.db.getFirstSync('SELECT id FROM forms WHERE name = ?', [newForm["nombre formulario"]]).id
-            
+
             newForm.campos.forEach((fieldObject, i) => {
                 this.db.runSync(
                     'INSERT INTO fields (fk_id_form, fk_field_table_name, name, ordering, obligatory, output) VALUES (?,?,?,?,?,?)',
