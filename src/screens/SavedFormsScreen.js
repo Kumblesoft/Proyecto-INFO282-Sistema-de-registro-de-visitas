@@ -229,9 +229,9 @@ const SavedForms = () => {
         setForms(newForms.slice(newForms.length - value))
     }
     function isBase64(str) {
-        if (!str || typeof str !== 'string') {
+        if (!str || str.constructor !== String || str.length < 5000) {
             return false
-        }
+        } 
       
         const base64Regex = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
         
@@ -616,7 +616,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        backgroundColor: 'transparent',
         zIndex : 10
     },
     modalCard: {
@@ -624,8 +624,7 @@ const styles = StyleSheet.create({
         width: '100%', 
         maxWidth: '100%', 
         borderRadius: 10,
-        
-        
+        minWidth: '90%'
     },
     modalTitle: {
         fontSize: 20,

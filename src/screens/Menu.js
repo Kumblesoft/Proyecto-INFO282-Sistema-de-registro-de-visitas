@@ -6,27 +6,34 @@ import { useNavigation } from '@react-navigation/native'
 import { useFormContext } from '../context/SelectedFormContext' // Importa el contexto
 import {getDatabaseInstance} from "../database/database"
 import { useSQLiteContext } from "expo-sqlite"
+import * as SecureStore from 'expo-secure-store'
 
 
+const LoadDatabase = db => 
+  SecureStore.getItemAsync('db_initialized').then(value => {
+    console.log(value)
+      if (value == null){
+        const testForm = require('../TestForms/forms.json') // Importa el formulario de prueba
+        testForm.forEach(test => db.addForm(test))
+        SecureStore.setItemAsync('db_initialized', 'true')
+      }
+})
 
 export default function Menu() {
   const db = getDatabaseInstance(useSQLiteContext())
   const navigation = useNavigation()
   const { selectedForm } = useFormContext()
-  const testForm = require('../TestForms/forms.json') // Importa el formulario de prueba
-  testForm.forEach((test) => db.addForm(test))
 
   const handleFormulariosPress = () => navigation.navigate('FormSelector') // Solo pasar forms
-
+  const handleSavedFormsPress = () => navigation.navigate('SavedForms') // Nueva función para navegar a SavedForms
+  const handleSettingsPress = () => navigation.navigate('Settings')
   const handleRellenarPress = () => {
     selectedForm ?
       navigation.navigate('FormFiller') :
       Alert.alert('Error', 'Seleccione un formulario primero')
   }
 
-  const handleSavedFormsPress = () => navigation.navigate('SavedForms') // Nueva función para navegar a SavedForms
-
-  const handleSettingsPress = () => navigation.navigate('Settings')
+  LoadDatabase(db)
 
   return (
     <Layout style={{ flex: 1 }}>

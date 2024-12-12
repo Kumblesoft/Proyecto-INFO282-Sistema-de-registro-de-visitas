@@ -6,7 +6,6 @@ import CameraChainInsertor from './componentInsertor/CameraChainInsertor'
 import CheckboxChainInsertor from './componentInsertor/CheckboxChainInsertor'
 import RadiusChainInsertor from './componentInsertor/RadiusChainInsertor'
 import initDatabaseScript from './tables'
-import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry'
 
 const { dbInit } = initDatabaseScript
 const tables = ['forms', 'fields', 'field_table_name', 'text_properties', 'selector_properties', 'checkbox_properties', 'radio_properties', 'date_properties', 'hour_properties', 'camera_properties', 'limitations',
@@ -62,6 +61,7 @@ export async function initializeDataBase(db) {
 
 // Singleton factory method to get the instance
 let instance = null
+
 
 export function getDatabaseInstance(db) {
     if (!instance) {
