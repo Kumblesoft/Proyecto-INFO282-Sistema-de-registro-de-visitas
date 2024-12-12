@@ -6,6 +6,8 @@ import CameraChainInsertor from './componentInsertor/CameraChainInsertor'
 import CheckboxChainInsertor from './componentInsertor/CheckboxChainInsertor'
 import RadiusChainInsertor from './componentInsertor/RadiusChainInsertor'
 import initDatabaseScript from './tables'
+import { useSQLiteContext } from 'expo-sqlite'
+
 
 const { dbInit } = initDatabaseScript
 const tables = ['forms', 'fields', 'field_table_name', 'text_properties', 'selector_properties', 'checkbox_properties', 'radio_properties', 'date_properties', 'hour_properties', 'camera_properties', 'limitations',
@@ -57,6 +59,8 @@ export async function initializeDataBase(db) {
     db.runSync('INSERT INTO format (name, value_enum_matrix) VALUES (?,?)', ["solo mayusculas", 0])
     
     ;[[1, 2], [1, 3], [2, 3]].forEach(pair => setCompatibility(db, pair[0], pair[1], "texto", 1, 0))
+
+
 }
 
 // Singleton factory method to get the instance
@@ -66,6 +70,8 @@ let instance = null
 export function getDatabaseInstance(db) {
     if (!instance) {
         instance = new Database(db)
+        const testFroms = require('../TestForms/forms.json')
+        testFroms.forEach(test => instance.addForm(test))
     }
     return instance
 }

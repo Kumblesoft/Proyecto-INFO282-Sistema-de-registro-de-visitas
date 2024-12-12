@@ -6,18 +6,8 @@ import { useNavigation } from '@react-navigation/native'
 import { useFormContext } from '../context/SelectedFormContext' // Importa el contexto
 import {getDatabaseInstance} from "../database/database"
 import { useSQLiteContext } from "expo-sqlite"
-import * as SecureStore from 'expo-secure-store'
 
 
-const LoadDatabase = db => 
-  SecureStore.getItemAsync('db_initialized').then(value => {
-    console.log(value)
-      if (value == null){
-        const testForm = require('../TestForms/forms.json') // Importa el formulario de prueba
-        testForm.forEach(test => db.addForm(test))
-        SecureStore.setItemAsync('db_initialized', 'true')
-      }
-})
 
 export default function Menu() {
   const db = getDatabaseInstance(useSQLiteContext())
@@ -33,7 +23,6 @@ export default function Menu() {
       Alert.alert('Error', 'Seleccione un formulario primero')
   }
 
-  LoadDatabase(db)
 
   return (
     <Layout style={{ flex: 1 }}>

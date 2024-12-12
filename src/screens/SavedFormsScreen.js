@@ -252,7 +252,7 @@ const SavedForms = () => {
     }, {})
     
     const renderFormItem = ({ item }) => {
-        const dateString = `${new Date(item.id)}`	
+        const dateString = `${new Date(item.fecha)}`	
         const lenght = dateString.length
 
         return(
