@@ -15,4 +15,8 @@ export default class ChainInsertor {
     insert(fieldObject, fieldId, fieldTypeId, fieldTableName) {
         throw new Error('Este metodo no esta implementado')
     }
+
+    delete(fieldId, fieldTableName) {
+        throw new Error('Este metodo no esta implementado')
+    }
 }

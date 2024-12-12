@@ -10,5 +10,11 @@ export default class TimeChainInsertor extends ChainInsertor {
         )
         return true
     }
+    delete(fieldId, fieldTableName) {
+        this.db.runSync(
+            `DELETE FROM ${fieldTableName} WHERE fk_field = ?`,
+            [fieldId]
+        )
+    }
 }
 //Prueba
