@@ -37,12 +37,11 @@ export default initDatabaseScript = {
     fk_field INTEGER REFERENCES fields(id) NOT NULL,
     id_options INTEGER PRIMARY KEY AUTOINCREMENT,
     default_option TEXT,
-    default_text TEXT NOT NULL
+    selector_placeholder TEXT
     );
 
     CREATE TABLE IF NOT EXISTS date_properties (
     fk_field INTEGER REFERENCES fields(id) NOT NULL,
-    default_text TEXT NOT NULL,
     default_date TEXT NOT NULL
     );
 

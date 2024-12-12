@@ -2,15 +2,15 @@ import ChainInsertor from './ChainInsertor'
 import { useSQLiteContext } from 'expo-sqlite'
 
 export default class TextChainInsertor extends ChainInsertor {
-    insert(fieldObject, fieldID, fieldTypeId, fieldTableName) {
+    insert(fieldObject, fieldId, fieldTypeId, fieldTableName) {
+        const formId = db.getFirstSync('SELECT id FROM forms WHERE name = ?', [formName]).id
         console.log(fieldObject)
         if (fieldObject.tipo != 'texto')
             return this?.next && this.next.insert(fieldObject)
-        const db = useSQLiteContext()
 
-        db.runSync(
-            'INSERT INTO text_properties (fk_field, name, qr_refillable) VALUES (?,?,?)',
-            [fieldID, fieldObject.nombre, fieldObject.rellenarQR]
+        this.db.runSync(
+            'INSERT INTO texto (fk_field, name, qr_refillable) VALUES (?,?,?)',
+            [fieldId, fieldObject.nombre, fieldObject.rellenarQR]
         )
 
         fieldObject.limitaciones?.forEach((limitation) => {
@@ -29,7 +29,7 @@ export default class TextChainInsertor extends ChainInsertor {
             console.log(formatID)
             db.runSync(
                 'INSERT INTO format_intermediary (fk_forms, fk_field,fk_format) VALUES (?,?,?)',
-                [formID, fieldID, formatID]
+                [formId, fieldId, formatID]
             )
         })
 
