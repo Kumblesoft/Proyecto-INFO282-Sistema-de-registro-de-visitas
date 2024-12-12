@@ -1,12 +1,14 @@
 import React, { useState } from 'react'
 import { View, Text, StyleSheet,FlatList } from 'react-native'
-import { Input, Button, List, ListItem, Icon,Toggle, Layout} from '@ui-kitten/components'
+import { Input, Button, List, ListItem, Icon,Toggle, Layout, Divider} from '@ui-kitten/components'
 
 const SelectorConstructor = ({ field, onSave }) => {
     const [options, setOptions] = useState(field.opciones || [])
     const [newOptionName, setNewOptionName] = useState('')
     const [fieldName, setFieldName] = useState(field.nombre || '')
     const [isRequired, setIsRequired] = useState(field.isRequired ?? true)
+
+    const saveIcon = props => <Icon name='save-outline' {...props} fill="#fff" style={[props.style, { width: 25, height: 25 }]}/>
 
     const handleAddOption = () => {
         setOptions((prevOptions) => [
@@ -51,65 +53,76 @@ const SelectorConstructor = ({ field, onSave }) => {
 
     return (
         <Layout style={styles.container}>
-            <Text style={styles.title}>Nombre del Campo Selector</Text>
+            <Text style={styles.title}>Configurar del Campo Selector</Text>
 
-            <Input
-                style={styles.input}
-                placeholder="Nombre del campo Selector"
-                value={fieldName}
-                onChangeText={setFieldName}
-            />
-
-
-            <Text style={styles.subtitle}>Opciones:</Text>
-            <FlatList
-                    data={options}
-                    renderItem={({ item, index }) => (
-                        <Layout style={styles.optionRow}>
-                            <Input
-                                value={item.nombre}
-                                onChangeText={(text) => {
-                                    const updatedOptions = [...options]
-                                    updatedOptions[index].nombre = text
-                                    setOptions(updatedOptions)
-                                }}
-                                style={styles.optionInput}
-                            />
-                            <Button
-                                size="small"
-                                status="danger"
-                                onPress={() => removeOption(index)}
-                            >
-                                Eliminar
-                            </Button>
-                        </Layout>
-                    )}
-                    keyExtractor={(_, index) => index.toString()}
-                    scrollEnabled={false}
-                    ListFooterComponent={() => (
-                        <Button onPress={handleAddOption} style={styles.addButton} accessoryRight={<Icon name={'plus-outline'}/>}>
-                        </Button>
-                    )}
+            <Divider />
+            <View style={styles.field}>
+                <Input
+                    label={"Nombre del Campo"}
+                    style={styles.input}
+                    placeholder="Nombre del campo Selector"
+                    value={fieldName}
+                    onChangeText={setFieldName}
                 />
-          
-              {/* Obligatorio */}
-              <View style={styles.field}>
-                    <Text>¿Es Obligatorio?</Text>
-                    <Toggle checked={isRequired} onChange={setIsRequired} />
-                </View>
+            </View>
+            <Divider />
+            <View style={styles.field}>
+                <Text style={styles.label}>Opciones:</Text>
+                <FlatList
+                        data={options}
+                        renderItem={({ item, index }) => (
+                            <Layout style={styles.optionRow}>
+                                <Input
+                                    value={item.nombre}
+                                    onChangeText={(text) => {
+                                        const updatedOptions = [...options]
+                                        updatedOptions[index].nombre = text
+                                        setOptions(updatedOptions)
+                                    }}
+                                    style={styles.optionInput}
+                                />
+                                <Button
+                                    size="medium"
+                                    status="danger"
+                                    onPress={() => removeOption(index)}
+                                    accessoryLeft={<Icon name={'trash-outline'}/>}
+                                >
+                                    
+                                </Button>
+                            </Layout>
+                        )}
+                        keyExtractor={(_, index) => index.toString()}
+                        scrollEnabled={false}
+                        ListFooterComponent={() => (
+                            <Button onPress={handleAddOption} style={styles.addButton} accessoryRight={<Icon name={'plus-outline'}/>}>
+                            </Button>
+                        )}
+                    />
+            </View>
 
+            <Divider />
+              {/* Obligatorio */}
+            <View style={styles.field}>
+                <Text style={styles.label}>¿Es Obligatorio?</Text>
+                <Toggle style={{alignSelf: 'flex-start'}} checked={isRequired} onChange={setIsRequired} />
+            </View>
+            
+            <Divider />
              {/* Guardar */}
-             <Button onPress={handleSave} style={styles.saveButton}>
+            <View style={styles.saveButtonContainer}>
+                <Button accessoryLeft={saveIcon} title="Guardar Campo" onPress={handleSave}>
                     Guardar Campo
-            </Button>
+                </Button>        
+            </View>
         </Layout>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
-        padding: 16,
-        backgroundColor: '#fff',
+        flex: 1,
+        padding: "1%",
+        backgroundColor: '#ffffff',
     },
     addButton: {
         marginTop: 8,
@@ -120,21 +133,30 @@ const styles = StyleSheet.create({
         marginRight: 8,
     },
     title: {
-        fontSize: 18,
+        marginBottom: 16,
         fontWeight: 'bold',
-        marginBottom: 8,
+        fontSize: 18,
     },
     subtitle: {
         fontSize: 16,
         marginBottom: 8,
     },
+    label: {
+        fontSize: 14,
+        marginBottom: "3%",
+
+    },
     input: {
-        marginBottom: 8,
+        borderWidth: 1,
+        borderColor: '#cccccc',
+        padding: 0,
+        borderRadius: 4,
     },
     addOptionContainer: {
         flexDirection: 'column',
         alignItems: 'center',
-        marginTop: 16,
+        marginTop: "4%",
+        marginBottom: "4%",
     },
     optionRow: {
         flexDirection: 'row',
@@ -142,7 +164,8 @@ const styles = StyleSheet.create({
         marginBottom: 8,
     },
     field: {
-        marginBottom: 14,
+        marginTop: "4%",
+        marginBottom: "4%",
     },
     saveButtonContainer: {
         marginTop: 20,

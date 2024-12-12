@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect  } from 'react'
 import {
     View,
     FlatList,
@@ -14,14 +14,38 @@ import {
     Button,
     Toggle,
     Icon,
+    Divider,
 } from '@ui-kitten/components'
 
+
+const useToggleState = (initialState = false) => {
+    const [checked, setChecked] = React.useState(initialState);
+
+    const onCheckedChange = (isChecked) => {
+        setChecked(isChecked);
+    };
+
+    return { checked, onChange: onCheckedChange };
+};
+
 const CheckBoxConstructor = ({ onSave, field = {} }) => {
+
+    
+    const [stateRequired, setStateRequired] = useState(true)
     const [fieldName, setFieldName] = useState(field.nombre || '')
     const [options, setOptions] = useState(field.opciones || [])
     const [maxSelections, setMaxSelections] = useState(field['cantidad de elecciones'] || 1)
-    const [isRequired, setIsRequired] = useState(field.isRequired ?? true)
+    const [isRequired, setIsRequired] = useState(field.isRequired ?? (true ? false : true))
 
+    const saveIcon = props => <Icon name='save-outline' {...props} fill="#fff" style={[props.style, { width: 25, height: 25 }]}/>
+
+    const deleteIcon = props => <Icon name='trash-outline' {...props} fill="#fff" style={[props.style, { width: 25, height: 25 }]}/>
+
+    const onChangeRequired = () => {
+        console.log(isRequired)
+        setIsRequired((prev) => !prev)
+    }
+    
     const handleAddOption = () => {
         setOptions((prevOptions) => [
             ...prevOptions,
@@ -75,6 +99,8 @@ const CheckBoxConstructor = ({ onSave, field = {} }) => {
     }
 
     return (
+
+        
         <KeyboardAvoidingView
             style={{ flex: 1 }}
             behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -84,76 +110,93 @@ const CheckBoxConstructor = ({ onSave, field = {} }) => {
                     Configurar Campo CheckBox
                 </Text>
 
+                <Divider />
                 {/* Nombre del Campo */}
-                <Input
-                    label="Nombre del Campo"
-                    placeholder="Nombre del campo"
-                    value={fieldName}
-                    onChangeText={setFieldName}
-                    style={styles.input}
-                />
+                <View style={styles.field}>
+                    <Input
+                        label={"Nombre del Campo"}
+                        style={styles.input}
+                        placeholder="Nombre del campo Checkbox"
+                        value={fieldName}
+                        onChangeText={setFieldName}
+                    />
+                </View>
 
+                <Divider />
                 {/* Opciones */}
-                <Text category="s1" style={styles.label}>
-                    Opciones
-                </Text>
-                <FlatList
-                    data={options}
-                    renderItem={({ item, index }) => (
-                        <Layout style={styles.optionRow}>
-                            <Input
-                                value={item.nombre}
-                                onChangeText={(text) => {
-                                    const updatedOptions = [...options]
-                                    updatedOptions[index].nombre = text
-                                    setOptions(updatedOptions)
-                                }}
-                                style={styles.optionInput}
-                            />
-                            <Button
-                                size="small"
-                                status="danger"
-                                onPress={() => handleRemoveOption(index)}
-                            >
-                                Eliminar
+                <View style={styles.field}>
+                    <Text category="s1" style={styles.label}>
+                        Opciones
+                    </Text>
+                    <FlatList
+                        data={options}
+                        renderItem={({ item, index }) => (
+                            <Layout style={styles.optionRow}>
+                                <Input
+                                    value={item.nombre}
+                                    onChangeText={(text) => {
+                                        const updatedOptions = [...options]
+                                        updatedOptions[index].nombre = text
+                                        setOptions(updatedOptions)
+                                    }}
+                                    style={styles.optionInput}
+                                />
+                                <Button
+                                    size="medium"
+                                    status="danger"
+                                    onPress={() => handleRemoveOption(index)}
+                                    accessoryLeft={<Icon name={'trash-outline'}/>}
+                                >
+                                </Button>
+                            </Layout>
+                        )}
+                        keyExtractor={(_, index) => index.toString()}
+                        scrollEnabled={false}
+                        ListFooterComponent={() => (
+                            <Button onPress={handleAddOption} style={styles.addButton} accessoryRight={<Icon name={'plus-outline'}/>}>
                             </Button>
-                        </Layout>
-                    )}
-                    keyExtractor={(_, index) => index.toString()}
-                    scrollEnabled={false}
-                    ListFooterComponent={() => (
-                        <Button onPress={handleAddOption} style={styles.addButton} accessoryRight={<Icon name={'plus-outline'}/>}>
-                        </Button>
-                    )}
-                />
-
+                        )}
+                    />
+                </View>
+                
+                <Divider />
                 {/* Cantidad de Elecciones */}
-                <Input
-                    label="Cantidad de Elecciones"
-                    placeholder="Número de elecciones"
-                    value={String(maxSelections)}
-                    onChangeText={(text) => {
-                        const value = Number(text)
-                        if (!isNaN(value) && value >= 0) {
-                            setMaxSelections(value)
-                        } else {
-                            Alert.alert("Error", "Por favor ingrese un número válido.")
-                        }
-                    }}
-                    keyboardType="numeric"
-                    style={styles.input}
-                />
+                <View style={styles.field}>
+                    <Input
+                        label="Cantidad de Elecciones"
+                        placeholder="Número de elecciones"
+                        value={String(maxSelections)}
+                        onChangeText={(text) => {
+                            const value = Number(text)
+                            if (!isNaN(value) && value >= 0) {
+                                setMaxSelections(value)
+                            } else {
+                                Alert.alert("Error", "Por favor ingrese un número válido.")
+                            }
+                        }}
+                        keyboardType="numeric"
+                        style={styles.input}
+                    />
+                </View>
+
+                <Divider />
 
                 {/* Obligatorio */}
                 <View style={styles.field}>
-                    <Text>¿Es Obligatorio?</Text>
-                    <Toggle checked={isRequired} onChange={setIsRequired} />
+                    <Text style={styles.label}>¿Es Obligatorio?</Text>
+                    <Toggle style={{alignSelf: 'flex-start'}}  checked={isRequired} onChange={() => onChangeRequired()}/>
+                
                 </View>
 
+                <Divider />
+
                 {/* Guardar */}
-                <Button onPress={handleSave} style={styles.saveButton}>
-                    Guardar Campo
-                </Button>
+                <View style={styles.saveButtonContainer}>
+                    <Button accessoryLeft={saveIcon} title="Guardar Campo" onPress={handleSave}>
+                        Guardar Campo
+                    </Button>        
+                </View>
+
             </Layout>
         </KeyboardAvoidingView>
     )
@@ -162,17 +205,28 @@ const CheckBoxConstructor = ({ onSave, field = {} }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 16,
+        padding: "1%",
+        backgroundColor: '#ffffff',
+
     },
     title: {
         marginBottom: 16,
-        textAlign: 'center',
+        fontWeight: 'bold',
+        fontSize: 18,
     },
-    input: {
-        marginBottom: 16,
+    field: {
+        marginTop: "4%",
+        marginBottom: "4%",
     },
     label: {
+        fontSize: 14,
         marginBottom: 8,
+    },
+    input: {
+        borderWidth: 1,
+        borderColor: '#cccccc',
+        padding: 0,
+        borderRadius: 4,
     },
     optionRow: {
         flexDirection: 'row',
@@ -195,8 +249,9 @@ const styles = StyleSheet.create({
     toggle: {
         marginLeft: 8,
     },
-    saveButton: {
-        marginTop: 16,
+    saveButtonContainer: {
+        marginTop: 20,
+        alignSelf: 'center',
     },
 })
 

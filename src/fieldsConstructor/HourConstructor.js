@@ -75,7 +75,7 @@ const HourConstructor = ({ field = {}, onSave }) => {
             {/* Hora Predeterminada */}
             <View style={styles.field}>
                 <Text style={styles.label}>Hora Predeterminada</Text>
-                <Layout style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: "4%", alignSelf: 'center', width: "95%" }}>
+                <Layout style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: "4%", alignSelf: 'center', width: "100%" }}>
                     {/* Botón Actual */}
                     <Button
                         status={isActual ? 'primary' : 'basic'}
@@ -115,7 +115,7 @@ const HourConstructor = ({ field = {}, onSave }) => {
                         disabled={true}
                         appearance="outline"
                         size="large"
-                        style={{ opacity: 0.9, borderColor: '#cccccc' }}
+                        style={{ opacity: 0.9, borderColor: '#cccccc'}}
                     >
                         {"La hora será definida al momento de llenar el formulario"}
                     </Button>
@@ -156,8 +156,7 @@ const HourConstructor = ({ field = {}, onSave }) => {
             <View style={styles.saveButtonContainer}>
                 <Button accessoryLeft={saveIcon} title="Guardar Campo" onPress={handleSave}>
                     Guardar Campo
-                </Button>
-                
+                </Button>        
             </View>
             
         </View>

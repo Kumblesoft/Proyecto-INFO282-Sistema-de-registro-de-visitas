@@ -1,8 +1,11 @@
 import React, { useState } from 'react'
 import { View, Text, StyleSheet } from 'react-native'
-import { Input, Button, List, ListItem, CheckBox,Toggle } from '@ui-kitten/components'
+import { Input, Button, List, ListItem, CheckBox,Toggle, Icon, Divider } from '@ui-kitten/components'
 
 const TextoConstructor = ({ field, onSave }) => {
+
+    const saveIcon = props => <Icon name='save-outline' {...props} fill="#fff" style={[props.style, { width: 25, height: 25 }]}/>
+
     const enumLimitaciones = {
         "solo letras": 0,
         "solo números": 1,
@@ -142,63 +145,89 @@ const TextoConstructor = ({ field, onSave }) => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Nombre del Campo Texto</Text>
+            <Text style={styles.title}>Configurar Campo de Texto</Text>
 
-            <Input
-                style={styles.input}
-                placeholder="Nombre del campo Texto"
-                value={fieldName}
-                onChangeText={setFieldName}
-            />
+            <Divider />
+            <View style={styles.field}>
+                <Input
+                    label={"Nombre del Campo"}
+                    style={styles.input}
+                    placeholder="Nombre del campo de texto"
+                    value={fieldName}
+                    onChangeText={setFieldName}
+                />
+            </View>
 
-            <Text style={styles.subtitle}>Limitaciones:</Text>
-            <List
-                data={Object.keys(enumLimitaciones)}
-                renderItem={renderLimitacionItem}
-            />
+            <Divider />
 
-            <Text style={styles.subtitle}>Formato:</Text>
-            <List
-                data={Object.keys(enumFormato)}
-                renderItem={renderFormatoItem}
-            />
+            <View style={styles.field}>
+                <Text style={styles.subtitle}>Limitaciones:</Text>
+                <List
+                    data={Object.keys(enumLimitaciones)}
+                    renderItem={renderLimitacionItem}
+                />
+            </View>
+
+            <Divider />
+
+            <View style={styles.field}>
+                <Text style={styles.subtitle}>Formato:</Text>
+                <List
+                    data={Object.keys(enumFormato)}
+                    renderItem={renderFormatoItem}
+                />
+            </View>
+
+            <Divider />
 
             {/* Respuesta por QR */}
             <View style={styles.field}>
-                    <Text>¿Aceptar Respuesta por QR?</Text>
-                    <Toggle checked={isRequiredQR} onChange={setIsRequiredQR} />
+                    <Text style={styles.label}>¿Aceptar Respuesta por QR?</Text>
+                    <Toggle style={{alignSelf: 'flex-start'}} checked={isRequiredQR} onChange={setIsRequiredQR} />
             </View>
 
             {/* Obligatorio */}
             <View style={styles.field}>
-                    <Text>¿Es Obligatorio?</Text>
-                    <Toggle checked={isRequired} onChange={setIsRequired} />
+                    <Text style={styles.label}>¿Es Obligatorio?</Text>
+                    <Toggle style={{alignSelf: 'flex-start'}} checked={isRequired} onChange={setIsRequired} />
             </View>
 
+            <Divider/>
              {/* Guardar */}
-             <Button onPress={handleSave} style={styles.saveButton}>
+            <View style={styles.saveButtonContainer}>
+                <Button accessoryLeft={saveIcon} title="Guardar Campo" onPress={handleSave}>
                     Guardar Campo
-            </Button>
+                </Button>        
+            </View>
         </View>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
-        padding: 16,
-        backgroundColor: '#fff',
+        flex: 1,
+        padding: "1%",
+        backgroundColor: '#ffffff',
     },
     title: {
-        fontSize: 18,
+        marginBottom: 16,
         fontWeight: 'bold',
-        marginBottom: 8,
+        fontSize: 18,
     },
     subtitle: {
         fontSize: 16,
         marginBottom: 8,
     },
     input: {
-        marginBottom: 8,
+        borderWidth: 1,
+        borderColor: '#cccccc',
+        padding: 0,
+        borderRadius: 4,
+    },
+    label: {
+        fontSize: 14,
+        marginBottom: "3%",
+
     },
     saveButton: {
         marginTop: 16,
@@ -207,7 +236,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#f0d0d0',
     },
     field: {
-        marginBottom: 0,
+        marginTop: "4%",
+        marginBottom: "4%",
     },
     saveButtonContainer: {
         marginTop: 20,

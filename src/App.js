@@ -24,23 +24,32 @@ const myTheme = {
   'color-primary-active': '#00c17f',
   'color-primary-hover': '#60e0b5',
 
-  'color-info-default': '#2196F3',   // Azul normal
-  'color-info-active': '#1976D2',    // Azul oscuro al presionar
-  'color-info-hover': '#64B5F6',     // Azul claro en hover
+  'color-info-default': '#2196F3',
+  'color-info-active': '#1976D2',
+  'color-info-hover': '#64B5F6',
 
-  'color-danger-default': '#f44336',    // Rojo normal
-  'color-danger-active': '#d32f2f',     // Rojo oscuro al presionar
-  'color-danger-hover': '#e57373',      // Rojo claro en hover
+  'color-danger-default': '#f44336',
+  'color-danger-active': '#d32f2f',
+  'color-danger-hover': '#e57373',
 
-  'color-gray-default': '#9e9e9e',      // Gris normal
-  'color-gray-active': '#757575',       // Gris oscuro al presionar
-  'color-gray-hover': '#bdbdbd',        // Gris claro en hover
+  'color-gray-default': '#9e9e9e',
+  'color-gray-active': '#757575',
+  'color-gray-hover': '#bdbdbd',
 
-  'color-custom-default': '#00b7ae',    // El color personalizado
-  'color-custom-active': '#009f8d',     // Color oscuro al presionar
-  'color-custom-hover': '#33bfa6',      // Color claro en hover
+  'color-basic-default': '#e0e0e0',  // Fondo del toggle apagado
+  'color-basic-active': '#bdbdbd',   // Fondo al presionar
+  'color-basic-hover': '#f5f5f5',    // Fondo en hover
 
-};
+  'color-custom-default': '#00b7ae',
+  'color-custom-active': '#009f8d',
+  'color-custom-hover': '#33bfa6',
+
+  'color-control-default': '#ffffff',   // Color de fondo del interruptor
+  'color-control-active': '#e0e0e0',   // Fondo al presionar
+  'color-control-hover': '#f5f5f5',    // Fondo en hover
+
+}
+
 
 const Stack = createNativeStackNavigator();
 

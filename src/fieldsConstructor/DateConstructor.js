@@ -163,7 +163,9 @@ const DateConstructor = ({ field = {}, onSave }) => {
             </View>
             <Divider />
             <View style={styles.saveButtonContainer}>
-                <Button title="Guardar Campo" onPress={handleSave} accessoryLeft={saveIcon} ></Button>
+                <Button accessoryLeft={saveIcon} title="Guardar Campo" onPress={handleSave}>
+                    Guardar Campo
+                </Button>        
             </View>
         </View>
     )
@@ -190,10 +192,7 @@ const styles = StyleSheet.create({
         marginBottom: 8,
     },
     input: {
-        borderWidth: 1,
-        borderColor: '#cccccc',
-        padding: 0,
-        borderRadius: 4,
+        marginBottom: 8,
     },
     buttonGroup: {
         flexDirection: 'row',

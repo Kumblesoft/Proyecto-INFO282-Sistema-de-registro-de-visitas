@@ -35,8 +35,9 @@ const FieldSelector = () => {
     
 
     const deleteIcon = props => <Icon name='trash-outline' {...props} fill="#fff" style={[props.style, { width: 20, height: 20 }]}/>
+    const saveIcon = props => <Icon name='save-outline' {...props} fill="#fff" style={[props.style, { width: 20, height: 20 }]}/>
     const editIcon = props => <Icon name='edit-outline' {...props} fill="#fff" style={[props.style, { width: 20, height: 20 }]}/>
-    
+    const closeIcon = props => <Icon name='close-outline' {...props} fill="#fff" style={[props.style, { width: 25, height: 25 }]}/>
     // Obtiene los tipos de campos del JSON (keys del objeto)
     const fieldTypes = Object.keys(fields)
 
@@ -156,7 +157,7 @@ const FieldSelector = () => {
         <>
         <View style={styles.container}>
             
-            <Button style={styles.editButton} onPress={() => handleDragMode()}> {dragMode ? "Guardar Orden" : "Editar Orden"} </Button>
+            <Button accessoryLeft={dragMode ? saveIcon : editIcon} style={styles.editButton} onPress={() => handleDragMode()}> {dragMode ? "Guardar Orden" : "Editar Orden"} </Button>
 
             {dragMode ? (
                 <View style={styles.fieldContainer}>
@@ -174,22 +175,23 @@ const FieldSelector = () => {
                 return (
                     <View key={index}>
                     {/* Contenedor del campo */}
+
+
                     <View style={styles.fieldContainer}>
+                        <View style={styles.buttonContainer}>
+                            <Button
+                            status="danger"
+                            style={styles.deleteButton}
+                            onPress={() => handleDeleteField(index)}
+                            accessoryLeft={closeIcon}
+                            >
+                            </Button>
+                        </View>
                         <FieldComponent
                         field={item}
                         onSave={(field) => handleFieldSave(field, index)}
+                        accessoryLeft={editIcon}
                         />
-                    </View>
-
-                    {/* Botón "Eliminar Campo" */}
-                    <View style={styles.buttonContainer}>
-                        <Button
-                        status="danger"
-                        style={styles.deleteButton}
-                        onPress={() => handleDeleteField(index)}
-                        >
-                        Eliminar Campo
-                        </Button>
                     </View>
                     </View>
                 );
@@ -296,11 +298,16 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent',
         width: '100%',
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'flex-end',
         alignSelf: 'center',
         marginBottom: "4%",
+        marginTop: "2%",
+        zIndex: 1000,
+        position: 'absolute',
     },
     deleteButton: {
+        width: 40,
+        height: 40,
         borderRadius: 5,
     },
     editButton: {
