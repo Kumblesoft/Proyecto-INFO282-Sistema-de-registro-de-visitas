@@ -48,8 +48,8 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
      * @param {string} field - The field name that is being updated.
      * @param {string} value - The new value for the field.
      */
-    const handleInputChange = (field, [typeOfField,value]) => {
-        formState.current.set(field, [typeOfField, value])
+    const handleInputChange = (field, value) => {
+        formState.current.set(field, value)
     }
 
     useImperativeHandle(ref, () => ({
@@ -81,6 +81,7 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
                 data: Object.fromEntries(formState.current), 
                 idDispositivo: identifier
             }
+            console.log(newForm)
             db.insertAnswer(newForm)
 
             
@@ -185,7 +186,7 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
                     <HourSelector
                         key={`hora-${index}`}
                         value={formState.current.get(field.salida)}
-                        onChange={(value) => handleInputChange(field.salida, ['hora',value])}
+                        onChange={(value) => handleInputChange(field.salida, ["hora", value])}
                         requiredFieldRef={requiredFieldRef}
                         refreshFieldRef={refreshFieldRef}
                         optionalFeatures={OptionalTimeFeatures({

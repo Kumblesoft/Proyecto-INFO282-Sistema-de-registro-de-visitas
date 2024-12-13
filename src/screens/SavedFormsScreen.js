@@ -14,7 +14,7 @@ import { useSQLiteContext } from 'expo-sqlite'
 const { height } = Dimensions.get('window')
 const { width } = Dimensions.get('window')
 
-
+const types = []
 
 const SavedForms = () => {
     const navigation = useNavigation()
@@ -55,15 +55,15 @@ const SavedForms = () => {
         const endInt = range.endDate ? range.endDate.getTime() : null
         if(startInt){
             endInt ? setForms(baseForms.filter((data) => {
-                return data.id >= startInt && data.id <= endInt + 86399999})) : setForms(baseForms.filter((data) => {
-                return data.id >= startInt
+                return data.fecha >= startInt && data.fecha <= endInt + 86399999})) : setForms(baseForms.filter((data) => {
+                return data.fecha >= startInt
             }))
          }
     }
     
     const filters = [
-        {value:"Fecha ↓", func: () => forms.sort((a,b) =>b.id - a.id)},
-        {value:"Fecha ↑", func: () => forms.sort((a,b)=> a.id - b.id)},
+        {value:"Fecha ↓", func: () => forms.sort((a,b) =>b.fecha - a.fecha)},
+        {value:"Fecha ↑", func: () => forms.sort((a,b)=> a.fecha - b.fecha)},
         {value: "Rango" , func: () => setIsRangeMode(true)},
         {value: "Ultimos", func: () => setIsLastsMode(true)}
     ]
@@ -79,18 +79,6 @@ const SavedForms = () => {
         }
     }
 
-    const deleteForm = async (id) => {
-        try {
-            const updatedForms = forms.filter(form => form.id !== id)
-            await AsyncStorage.setItem('savedForms', JSON.stringify(updatedForms))
-            setForms(updatedForms)
-            Alert.alert('Éxito', 'Formulario eliminado')
-            fetchSavedForms()
-        } catch (error) {
-            console.error('Error :', error)
-            Alert.alert('Error', 'No se pudo eliminar el formulario')
-        }
-    }
 
     const exportForm = form => {
         const filePath = `${FileSystem.cacheDirectory}respuestasFormularios.json`
@@ -137,7 +125,7 @@ const SavedForms = () => {
 
     const deleteSelectedForms = async () => {
         try {
-            const updatedForms = forms.filter(form => !selectedForms.includes(form.id))
+            const updatedForms = forms.filter(form => !selectedForms.includes(form.fecha))
             await AsyncStorage.setItem('savedForms', JSON.stringify(updatedForms))
             setForms(updatedForms)
             setSelectedForms([]) // Resetear formularios seleccionados
@@ -195,7 +183,7 @@ const SavedForms = () => {
         <Icon fill='#fff' name={isSelectionMode ? 'checkmark-square' : 'checkmark-square'} style={styles.backIcon} {...props} />
     )
 
-    const selectAll = () => setSelectedForms(forms.map(form => form.id))
+    const selectAll = () => setSelectedForms(forms.map(form => form.fecha))
     const deselectAll = () => setSelectedForms([])
 
     const toggleSelectionMode = () => {
@@ -210,7 +198,7 @@ const SavedForms = () => {
             )
         } else {
             setSelectedForms([id])
-            openModal(forms.find(form => form.id === id))
+            openModal(forms.find(form => form.fecha === id))
         }
     }
 
@@ -225,18 +213,8 @@ const SavedForms = () => {
     const handleLasts = value => {
         setLasts(value)
         const newForms = baseForms
-        newForms.sort((a,b) => b.id - a.id)
+        newForms.sort((a,b) => b.fecha - a.fecha)
         setForms(newForms.slice(newForms.length - value))
-    }
-    function isBase64(str) {
-        if (!str || str.constructor !== String || str.length < 5000) {
-            return false
-        } 
-      
-        const base64Regex = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
-        
-        // Check if string length is a multiple of 4 and matches the Base64 pattern
-        return str.length % 4 === 0 && base64Regex.test(str);
     }
 
     const renderTitle = () => (
@@ -259,9 +237,9 @@ const SavedForms = () => {
         <TouchableOpacity
             style={[
                 styles.containerBox,
-                selectedForms.includes(item.id) && styles.selectedItem
+                selectedForms.includes(item.fecha) && styles.selectedItem
             ]}
-            onPress={() => handleSelection(item.id)}
+            onPress={() => handleSelection(item.fecha)}
             onLongPress={toggleSelectionMode}
         >
             <Text style={styles.formTitle}>{dateString.substring(0, lenght-8 )}</Text>
@@ -364,7 +342,7 @@ const SavedForms = () => {
                 <FlatList
                     data={Object.keys(groupedForms)}
                     renderItem={renderTypeItem}
-                    keyExtractor={item => item}
+                    keyExtractor={item => item.toString()}
                     contentContainerStyle={styles.listContainer}
                 />
                 <Modal visible={isRangeMode}>
@@ -419,7 +397,7 @@ const SavedForms = () => {
                             </Text>
                         </Button>
                         <Button status='info' style={styles.shareButton} accessoryLeft={shareIcon} onPress={() => exportForm(
-                            forms.filter(form => selectedForms.includes(form.id)))}>
+                            forms.filter(form => selectedForms.includes(form.fecha)))}>
                             <Text>
                                 Compartir
                             </Text>
@@ -442,9 +420,9 @@ const SavedForms = () => {
                                     <Text style={styles.key} key={key}>{`${key}`}</Text>
                                     <ScrollView style = {{maxHeight: 200}}>
                                         {
-                                            isBase64(value) ?
-                                            <Image source={{uri: `data:image/jpeg;base64,${value}`}} style={{width: 300, height: 300 }} resizeMode='center'/> :
-                                            <Text style={styles.value}>{`${value}`}</Text>
+                                            value[0] === 'camara' ?
+                                            <Image source={{uri: `data:image/jpeg;base64,${value[1]}`}} style={{width: 300, height: 300 }} resizeMode='center'/> :
+                                            <Text style={styles.value}>{`${value[1]}`}</Text>
                                         }
                                     </ScrollView>
                                 </Layout>

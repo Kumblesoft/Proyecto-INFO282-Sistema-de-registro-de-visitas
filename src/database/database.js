@@ -157,7 +157,9 @@ export default class Database {
             const formName = this.db.getFirstSync('select name from forms where id = ?', [answer.ID_PLANTILLA]).name
 
             let data = {}
-            fields.map(field => data[field.NOMBRE_CAMPO] = [fields.ENUM_TIPO_CAMPO, field.VALOR_CAMPO])
+            fields.map(field => {const tipoCampo = this.db.getFirstSync('select field_type_name from field_table_name where id = ?', [field.ENUM_TIPO_CAMPO]).field_type_name
+                console.log(tipoCampo)
+                data[field.NOMBRE_CAMPO] = [tipoCampo, field.VALOR_CAMPO]})
 
             return {
                 'plantilla': formName,
@@ -246,10 +248,10 @@ export default class Database {
         console.log(lastAnswerID)
 
         Object.entries(answerObject.data).forEach(([fieldOutput, [typeOfField, value]]) => {
-            console.log(this.db.getFirstSync('SELECT id from field_table_name where field_type_name = ?', typeOfField))
+            console.log(typeOfField)
             this.db.runSync(
                 'INSERT INTO campo_respuesta (id_respuesta, enum_tipo_campo, nombre_campo, valor_campo) VALUES (?,?,?,?)',
-                [lastAnswerID, this.db.getFirstSync('SELECT id from field_table_name where field_type_name = ?', typeOfField), fieldOutput, value.toString()]
+                [lastAnswerID, this.db.getFirstSync('SELECT id from field_table_name where field_type_name = ?', typeOfField).id, fieldOutput, value.toString()]
         )})
     }
 
