@@ -157,7 +157,9 @@ const FormSelectorScreen = () => {
   const shareFormTemplate = formItems => {
     if (!formItems) return Alert.alert('Error', 'No se ha seleccionado un formulario')
     if (formItems.constructor === Array) {
+      console.log("FormItems:", formItems)
       const formItemsSet = new Set(formItems)
+      formItems = formItemsSet.forEach(form => db.getForm(form))
       formItems = forms.filter(form => formItemsSet.has(form["nombre formulario"]))
     }
 
