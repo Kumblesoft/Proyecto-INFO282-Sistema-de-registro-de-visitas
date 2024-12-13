@@ -35,13 +35,14 @@ const FieldSelector = ({onSave, form}) => {
     // Obtiene los tipos de campos del JSON (keys del objeto)
     const fieldTypes = Object.keys(fields)
      // Inicializar los campos del formulario recibido
-     useEffect(() => {
+    useEffect(() => {
         if (form?.campos) {
             setFieldsToDisplay(form.campos)
             setMiniFields(form.campos.map((field) => field.nombre || ''))
             fieldNames = new Set(form.campos.map((field) => field.nombre || ''))
         }
     }, [form])
+    
 
     const handleFieldSave = (field, index) => {
         if (fieldNames.has(field.nombre) && field.nombre !== miniFields[index]) {
