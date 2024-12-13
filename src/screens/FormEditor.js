@@ -62,9 +62,6 @@ export default function FormEditor() {
       db.addForm(newForm)
       console.log(newForm)
 
-
-
-    
   }
 
   const checkFormName = name => {
