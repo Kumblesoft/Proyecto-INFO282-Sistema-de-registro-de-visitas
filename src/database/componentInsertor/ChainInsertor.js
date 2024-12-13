@@ -16,11 +16,11 @@ export default class ChainInsertor {
         throw new Error('Este metodo no esta implementado')
     }
 
-    delete(fieldId, fieldTableName) {
+    delete(fieldId, fieldTableName, fieldTypeName) {
         throw new Error('Este metodo no esta implementado')
     }
 
-    getFieldProperties(fieldId, fieldTableName) {
+    getFieldProperties(fieldId, fieldTableName, fieldTypeName) {
         throw new Error('Este metodo no esta implementado')
     }
 }

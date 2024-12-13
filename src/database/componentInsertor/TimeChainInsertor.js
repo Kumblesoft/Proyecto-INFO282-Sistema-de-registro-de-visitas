@@ -10,13 +10,17 @@ export default class TimeChainInsertor extends ChainInsertor {
         )
         return true
     }
-    delete(fieldId, fieldTableName) {
+    delete(fieldId, fieldTableName, fieldTypeName) {
+        if (fieldTypeName != 'hora')
+            return this.next && this.next.delete(fieldId, fieldTableName, fieldTypeName)
         this.db.runSync(
             `DELETE FROM ${fieldTableName} WHERE fk_field = ?`,
             [fieldId]
         )
     }
-    getFieldProperties(fieldId, fieldTableName) {
+    getFieldProperties(fieldId, fieldTableName, fieldTypeName) {
+        if (fieldTypeName != 'hora')
+            return this.next && this.next.getFieldProperties(fieldId, fieldTableName, fieldTypeName)
         return {
             "hora predeterminada": this.db.getFirstSync(`SELECT default_time FROM ${fieldTableName} WHERE fk_field = ?`,[fieldId])
         }

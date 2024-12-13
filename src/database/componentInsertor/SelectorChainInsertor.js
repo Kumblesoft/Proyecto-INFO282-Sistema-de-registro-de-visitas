@@ -19,8 +19,10 @@ export default class SelectorChainInsertor extends ChainInsertor {
         ))
         return true
     }
-    delete(fieldId, fieldTableName) {
-
+    delete(fieldId, fieldTableName, fieldTypeName) {
+        if(fieldTypeName != 'selector')
+            return this.next && this.next.delete(fieldId, fieldTableName, fieldTypeName)
+        
         const id_options = this.db.getFirstSync(
             `SELECT id_options FROM ${fieldTableName} WHERE fk_field = ?`,
             [fieldId]
@@ -36,7 +38,10 @@ export default class SelectorChainInsertor extends ChainInsertor {
             [fieldId]
         )
     }
-    getFieldProperties(fieldId, fieldTableName) {
+    getFieldProperties(fieldId, fieldTableName, fieldTypeName) {
+        if (fieldTypeName != 'selector')
+            return this.next && this.next.getFieldProperties(fieldId, fieldTableName, fieldTypeName)
+
         const fieldProperties = this.db.getFirstSync(
             `SELECT id_option, default_option, selector_placeholder FROM ${fieldTableName} WHERE fk_field = ?`,
             [fieldId]
