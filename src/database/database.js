@@ -4,7 +4,7 @@ import DateChainInsertor from './componentInsertor/DateChainInsertor'
 import TimeChainInsertor from './componentInsertor/TimeChainInsertor'
 import CameraChainInsertor from './componentInsertor/CameraChainInsertor'
 import CheckboxChainInsertor from './componentInsertor/CheckboxChainInsertor'
-import RadiusChainInsertor from './componentInsertor/RadiusChainInsertor'
+import RadioChainInsertor from './componentInsertor/RadiusChainInsertor'
 import initDatabaseScript from './tables'
 import { useSQLiteContext } from 'expo-sqlite'
 
@@ -93,7 +93,7 @@ export default class Database {
             .add(new TimeChainInsertor(this.db))
             .add(new CameraChainInsertor(this.db))
             .add(new CheckboxChainInsertor(this.db))
-            .add(new RadiusChainInsertor(this.db))
+            .add(new RadioChainInsertor(this.db))
 
         Database.instance = this // Cache the instance
     }
@@ -119,7 +119,7 @@ export default class Database {
                 }
 
                 const { table_name: typeTableName, field_type_name: fieldTypeName } = this.db.getFirstSync('SELECT table_name,field_type_name FROM field_table_name WHERE id = ?', [typeID])
-                const outputTypeFieldData = this.chainInsertors.getFieldProprties(fieldID, typeTableName, fieldTypeName)
+                const outputTypeFieldData = this.chainInsertors.getFieldProperties(fieldID, typeTableName, fieldTypeName)
                 Object.entries(outputTypeFieldData).forEach(([key, value]) =>
                     outputField[key] = value
                 )
@@ -128,7 +128,7 @@ export default class Database {
             })
             outputForm.campos = outputFields
 
-            console.log(outputForm)
+            return outputForm
 
         } catch (error) {
             console.log(error)
@@ -158,9 +158,11 @@ export default class Database {
             const formName = this.db.getFirstSync('select name from forms where id = ?', [answer.ID_PLANTILLA]).name
 
             let data = {}
-            fields.map(field => {const tipoCampo = this.db.getFirstSync('select field_type_name from field_table_name where id = ?', [field.ENUM_TIPO_CAMPO]).field_type_name
+            fields.map(field => {
+                const tipoCampo = this.db.getFirstSync('select field_type_name from field_table_name where id = ?', [field.ENUM_TIPO_CAMPO]).field_type_name
                 console.log(tipoCampo)
-                data[field.NOMBRE_CAMPO] = [tipoCampo, field.VALOR_CAMPO]})
+                data[field.NOMBRE_CAMPO] = [tipoCampo, field.VALOR_CAMPO]
+            })
 
             return {
                 'plantilla': formName,
