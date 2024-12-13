@@ -70,7 +70,7 @@ const SavedForms = () => {
     const fetchSavedForms = async () => {
         try {
             const savedForms = database.getAllAnswers() || []
-            console.log(JSON.stringify(savedForms))
+            // console.log(JSON.stringify(savedForms))
             setBaseForms(savedForms)
             setForms(savedForms)
         } catch (error) {

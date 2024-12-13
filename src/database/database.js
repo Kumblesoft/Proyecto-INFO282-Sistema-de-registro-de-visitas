@@ -136,7 +136,7 @@ export default class Database {
     getAllAnswers() {
         try {
             const answers = this.db.getAllSync('SELECT ID_RESPUESTA FROM respuestas')
-            return answers.map(answer => this.db.getAnswer(answer['ID_RESPUESTA']))
+            return answers.map(answer => this.getAnswer(answer['ID_RESPUESTA']))
         } catch (error) {
             console.log(error)
         }
@@ -144,7 +144,7 @@ export default class Database {
     getAnswerFromFormTemplate(formName) {
         try {
             const answers = this.db.getAllSync('SELECT id FROM forms WHERE name = ?', [formName])
-            return answers.map(answer => this.db.getAnswer(answer['ID_RESPUESTA']))
+            return answers.map(answer => this.getAnswer(answer['ID_RESPUESTA']))
         } catch (error) {
             console.log(error)
         }
@@ -158,7 +158,6 @@ export default class Database {
             let data = {}
             fields.map(field => {
                 const tipoCampo = this.db.getFirstSync('select field_type_name from field_table_name where id = ?', [field.ENUM_TIPO_CAMPO]).field_type_name
-                console.log(tipoCampo)
                 data[field.NOMBRE_CAMPO] = [tipoCampo, field.VALOR_CAMPO]
             })
 
@@ -246,7 +245,6 @@ export default class Database {
             [formID, answerObject.fecha, answerObject["um plantilla"], answerObject["idDispositivo"]]
         )
         const lastAnswerID = this.db.getFirstSync('SELECT ID_RESPUESTA FROM respuestas ORDER BY ID_RESPUESTA DESC LIMIT 1')['ID_RESPUESTA']
-        console.log(lastAnswerID)
 
         Object.entries(answerObject.data).forEach(([fieldOutput, [typeOfField, value]]) => {
             this.db.runSync(
