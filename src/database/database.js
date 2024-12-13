@@ -96,6 +96,15 @@ export default class Database {
         Database.instance = this // Cache the instance
     }
 
+    getAllForms(){
+        try {
+            const forms = this.db.getAllSync('SELECT name FROM forms')
+            return forms.map(form => this.getForm(form.name))
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     getForm(nombreFormulario) {
         try {
             const { id: formID, last_modification: ultimaModificacion } = this.db.getFirstSync('SELECT id,last_modification FROM forms WHERE name = ?', [nombreFormulario])
