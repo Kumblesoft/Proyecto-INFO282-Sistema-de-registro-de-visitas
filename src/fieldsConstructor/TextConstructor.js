@@ -180,16 +180,12 @@ const TextoConstructor = ({ field, onSave }) => {
 
             <Divider />
 
-            {/* Respuesta por QR */}
-            <View style={styles.field}>
-                    <Text style={styles.label}>¿Aceptar Respuesta por QR?</Text>
-                    <Toggle style={{alignSelf: 'flex-start'}} checked={isRequiredQR} onChange={setIsRequiredQR} />
-            </View>
+            {/* Respuesta por QR & Obligatorio*/}
 
-            {/* Obligatorio */}
             <View style={styles.field}>
-                    <Text style={styles.label}>¿Es Obligatorio?</Text>
-                    <Toggle style={{alignSelf: 'flex-start'}} checked={isRequired} onChange={setIsRequired} />
+                    <Text style={styles.subtitle}>Características opcionales</Text>
+                    <CheckBox style={{margin: '2%', alignSelf: 'flex-start', marginTop: '4%'}} checked={isRequiredQR} onChange={setIsRequiredQR}>¿Aceptar Respuesta por QR?</CheckBox>
+                    <CheckBox style={{margin: '2%', flex: 1, alignSelf: 'flex-start', marginTop: '4%'}} checked={isRequired} onChange={setIsRequired}>Obligatorio</CheckBox>
             </View>
 
             <Divider/>

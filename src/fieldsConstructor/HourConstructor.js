@@ -1,9 +1,10 @@
 import React, { useState} from 'react'
 import { View, Alert, StyleSheet } from 'react-native'
-import { Text, Input, Button, Toggle, Layout, Divider, Icon } from '@ui-kitten/components'
+import { Text, Input, Button, Toggle, Layout, Divider, Icon, CheckBox, RadioGroup, Radio } from '@ui-kitten/components'
 import { TimerPickerModal } from 'react-native-timer-picker'
 import * as Haptics from 'expo-haptics'
 import { LinearGradient } from 'expo-linear-gradient'
+
 
 const HourConstructor = ({ field = {}, onSave }) => {
     // Obtener hora actual en formato hh:mm
@@ -18,7 +19,9 @@ const HourConstructor = ({ field = {}, onSave }) => {
     const [isEditable, setIsEditable] = useState(field.isEditable || false)
     const [showPicker, setShowPicker] = useState(false)
     const [isActual, setIsActual] = useState(defaultHour === 'actual' || !field.hora_predeterminada)
+    const [selectedIndex, setSelectedIndex] = useState(0);
 
+    const options = ["Hora Actual", "Hora Personalizada"];
 
     const saveIcon = props => <Icon name='save-outline' {...props} fill="#fff" style={[props.style, { width: 25, height: 25 }]}/>
     const formatTime = ({ hours, minutes }) =>
@@ -62,8 +65,8 @@ const HourConstructor = ({ field = {}, onSave }) => {
             <Divider />
             {/* Nombre del Campo */}
             <View style={styles.field}>
-                <Text style={styles.label}>Nombre del Campo</Text>
                 <Input
+                    label={"Nombre del Campo"}
                     value={fieldName}
                     onChangeText={setFieldName}
                     placeholder="Nombre del campo Hora"
@@ -74,30 +77,35 @@ const HourConstructor = ({ field = {}, onSave }) => {
             <Divider />
             {/* Hora Predeterminada */}
             <View style={styles.field}>
-                <Text style={styles.label}>Hora Predeterminada</Text>
-                <Layout style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: "4%", alignSelf: 'center', width: "100%" }}>
-                    {/* Botón Actual */}
-                    <Button
-                        status={isActual ? 'primary' : 'basic'}
-                        onPress={() => {
-                            setIsActual(true)
-                            setDefaultHour(getCurrentTime())
-                        }}
-                    >
-                        Actual
-                    </Button>
+                <Text style={styles.subtitle}>Hora Predeterminada</Text>
+                <RadioGroup
+                    style={{ flexDirection: 'row', justifyContent: 'space-around', width: '100%', marginBottom: '4%', marginTop: '1%' }}
+                    selectedIndex={selectedIndex}
+                    onChange={(index) => {
+                        setSelectedIndex(index);
 
-                    {/* Botón Personalizada */}
-                    <Button
-                        status={!isActual ? 'primary' : 'basic'}
-                        onPress={() => {
-                            setIsActual(false)
-                            setDefaultHour('00:00')
-                        }}
+                        if (index === 0) {
+                        // Acción para Hora Actual
+                        setIsActual(true);
+                        setDefaultHour(getCurrentTime());
+                        } else {
+                        // Acción para Hora Personalizada
+                        setIsActual(false);
+                        setDefaultHour('00:00');
+                        }
+                    }}
+                >
+                    <Radio 
+                        style={{ marginVertical: 8 }}
                     >
-                        Personalizada
-                    </Button>
-                </Layout>
+                        Hora Actual
+                    </Radio>
+                    <Radio 
+                        style={{ marginVertical: 8 }}
+                    >
+                        Hora Personalizada
+                    </Radio>
+                </RadioGroup>
                 
                 {/* Selector de hora personalizada */}
                 {!isActual ? (
@@ -147,8 +155,8 @@ const HourConstructor = ({ field = {}, onSave }) => {
             <Divider />    
             {/* Editable */}
             <View style={styles.field}>
-                <Text style={styles.label}>¿Editable?</Text>
-                <Toggle style={{flex: 1, alignSelf: 'flex-start'}} checked={isEditable} onChange={setIsEditable} />
+                <Text style={styles.subtitle}>Características opcionales</Text>
+                <CheckBox style={{margin: '2%', alignSelf: 'flex-start', marginTop: '4%'}} checked={isEditable} onChange={setIsEditable}>Obligatorio</CheckBox>
             </View>
                 
             <Divider />
@@ -175,6 +183,10 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         marginBottom: 16,
+    },
+    subtitle: {
+        fontSize: 16,
+        marginBottom: 8,
     },
     field: {
         marginTop: "4%",

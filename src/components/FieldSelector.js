@@ -36,7 +36,7 @@ const FieldSelector = () => {
 
     const deleteIcon = props => <Icon name='trash-outline' {...props} fill="#fff" style={[props.style, { width: 20, height: 20 }]}/>
     const saveIcon = props => <Icon name='save-outline' {...props} fill="#fff" style={[props.style, { width: 20, height: 20 }]}/>
-    const editIcon = props => <Icon name='edit-outline' {...props} fill="#fff" style={[props.style, { width: 20, height: 20 }]}/>
+    const editIcon = props => <Icon name='edit-outline' {...props} fill="#fff" style={[props.style, { width: 25, height: 25 }]}/>
     const closeIcon = props => <Icon name='close-outline' {...props} fill="#fff" style={[props.style, { width: 25, height: 25 }]}/>
     // Obtiene los tipos de campos del JSON (keys del objeto)
     const fieldTypes = Object.keys(fields)
@@ -157,7 +157,17 @@ const FieldSelector = () => {
         <>
         <View style={styles.container}>
             
-            <Button accessoryLeft={dragMode ? saveIcon : editIcon} style={styles.editButton} onPress={() => handleDragMode()}> {dragMode ? "Guardar Orden" : "Editar Orden"} </Button>
+            <Button 
+                accessoryLeft={dragMode ? saveIcon : editIcon} 
+                style={styles.editButton} 
+                onPress={() => handleDragMode()}
+                
+            > 
+                {dragMode ? 
+                    <Text category='p2' > Guardar Orden </Text> : 
+                    <Text category='p2'> Editar Orden </Text>
+                } 
+            </Button>
 
             {dragMode ? (
                 <View style={styles.fieldContainer}>
@@ -312,6 +322,7 @@ const styles = StyleSheet.create({
     },
     editButton: {
         borderRadius: 5,
+        marginBottom: '2%',
     },
 })
 

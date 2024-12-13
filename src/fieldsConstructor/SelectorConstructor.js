@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { View, Text, StyleSheet,FlatList } from 'react-native'
-import { Input, Button, List, ListItem, Icon,Toggle, Layout, Divider} from '@ui-kitten/components'
+import { Input, Button, List, ListItem, Icon,Toggle, Layout, Divider, CheckBox} from '@ui-kitten/components'
+
 
 const SelectorConstructor = ({ field, onSave }) => {
     const [options, setOptions] = useState(field.opciones || [])
@@ -67,7 +68,7 @@ const SelectorConstructor = ({ field, onSave }) => {
             </View>
             <Divider />
             <View style={styles.field}>
-                <Text style={styles.label}>Opciones:</Text>
+                <Text style={styles.subtitle}>Opciones</Text>
                 <FlatList
                         data={options}
                         renderItem={({ item, index }) => (
@@ -103,8 +104,8 @@ const SelectorConstructor = ({ field, onSave }) => {
             <Divider />
               {/* Obligatorio */}
             <View style={styles.field}>
-                <Text style={styles.label}>¿Es Obligatorio?</Text>
-                <Toggle style={{alignSelf: 'flex-start'}} checked={isRequired} onChange={setIsRequired} />
+                <Text style={styles.subtitle}>Características opcionales</Text>
+                <CheckBox style={{margin: '2%', alignSelf: 'flex-start', marginTop: '4%'}} checked={isRequired} onChange={setIsRequired}>Obligatorio</CheckBox>
             </View>
             
             <Divider />

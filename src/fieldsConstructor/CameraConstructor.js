@@ -5,7 +5,7 @@ import {
     StyleSheet
 } from 'react-native'
 
-import { Text, Input, Button, Toggle, Icon, Divider } from '@ui-kitten/components'
+import { Text, Input, Button, Toggle, Icon, Divider, CheckBox } from '@ui-kitten/components'
 
 const CameraConstructor = ({ onSave, field = {} }) => {
     const [fieldName, setFieldName] = useState(field.nombre || '')
@@ -55,8 +55,8 @@ const CameraConstructor = ({ onSave, field = {} }) => {
             <Divider />
             {/* Obligatorio */}
             <View style={styles.field}>
-                <Text style={styles.label}>¿Es Obligatorio?</Text>
-                <Toggle style={{alignSelf: 'flex-start'}} checked={isRequired} onChange={setIsRequired} />
+                <Text style={styles.subtitle}>Características opcionales</Text>
+                <CheckBox style={{margin: '2%', alignSelf: 'flex-start', marginTop: '4%'}} checked={isRequired} onChange={setIsRequired}> Obligatorio </CheckBox> 
             </View>
 
             <Divider />
@@ -81,6 +81,10 @@ const styles = StyleSheet.create({
         marginBottom: 16,
         fontWeight: 'bold',
         fontSize: 18,
+    },
+    subtitle: {
+        fontSize: 16,
+        marginBottom: 8,
     },
     field: {
         marginTop: "4%",

@@ -15,6 +15,7 @@ import {
     Toggle,
     Icon,
     Divider,
+    CheckBox,
 } from '@ui-kitten/components'
 
 
@@ -125,7 +126,7 @@ const CheckBoxConstructor = ({ onSave, field = {} }) => {
                 <Divider />
                 {/* Opciones */}
                 <View style={styles.field}>
-                    <Text category="s1" style={styles.label}>
+                    <Text category="s1" style={styles.subtitle}>
                         Opciones
                     </Text>
                     <FlatList
@@ -183,9 +184,22 @@ const CheckBoxConstructor = ({ onSave, field = {} }) => {
 
                 {/* Obligatorio */}
                 <View style={styles.field}>
-                    <Text style={styles.label}>¿Es Obligatorio?</Text>
-                    <Toggle style={{alignSelf: 'flex-start'}}  checked={isRequired} onChange={() => onChangeRequired()}/>
-                
+                    <Text style={styles.subtitle}>Características opcionales</Text>
+                    <CheckBox
+                        style={{
+                            alignSelf: 'flex-start',
+                            margin: '2%',
+                            marginTop: "4%",
+                        }}
+                        textStyle={{
+                            fontSize: 24,
+                        }}
+                        status='success'
+                        checked={isRequired}
+                        onChange={setIsRequired}
+                    >
+                        Obligatorio
+                    </CheckBox>
                 </View>
 
                 <Divider />
@@ -203,6 +217,9 @@ const CheckBoxConstructor = ({ onSave, field = {} }) => {
 }
 
 const styles = StyleSheet.create({
+    checkbox: {
+        margin: 2,
+    },
     container: {
         flex: 1,
         padding: "1%",
@@ -213,6 +230,10 @@ const styles = StyleSheet.create({
         marginBottom: 16,
         fontWeight: 'bold',
         fontSize: 18,
+    },
+    subtitle: {
+        fontSize: 16,
+        marginBottom: 8,
     },
     field: {
         marginTop: "4%",

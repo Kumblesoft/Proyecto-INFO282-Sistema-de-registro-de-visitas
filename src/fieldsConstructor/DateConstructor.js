@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { View, StyleSheet, Alert, TouchableOpacity } from 'react-native'
-import { Text, Input, Button, Toggle, Datepicker, NativeDateService, Divider, Icon } from '@ui-kitten/components'	
+import { Text, Input, Button, Toggle, Datepicker, NativeDateService, Divider, Icon, CheckBox } from '@ui-kitten/components'	
 
 const DateConstructor = ({ field = {}, onSave }) => {
     const [fieldName, setFieldName] = useState(field.name || "")
@@ -100,8 +100,8 @@ const DateConstructor = ({ field = {}, onSave }) => {
             <Text style={styles.title}>Configurar Campo de Fecha</Text>
             <Divider />
             <View style={styles.field}>
-                <Text style={styles.label}>Nombre del Campo</Text>
                 <Input
+                    label={"Nombre del Campo"}
                     value={fieldName}
                     onChange={setFieldName}
                     placeholder="Nombre del campo"
@@ -110,7 +110,7 @@ const DateConstructor = ({ field = {}, onSave }) => {
             </View>
             <Divider/>
             <View style={styles.field}>
-                <Text style={styles.label}>Formato de Fecha</Text>
+                <Text style={styles.subtitle}>Formato de Fecha</Text>
                 <View style={styles.buttonGroup}>
                     {[
                         "DD/MM/YYYY",
@@ -154,12 +154,19 @@ const DateConstructor = ({ field = {}, onSave }) => {
             />
             <Divider />
             <View style={styles.field}>
-                <Text style={styles.label}>¿Editable?</Text>
-                <Toggle
-                    style={{flex: 1, alignSelf: 'flex-start'}}
+                <Text style={styles.subtitle}>Características opcionales</Text>
+                <CheckBox
+                    style={{
+                        alignSelf: "flex-start",
+                        margin: "2%",
+                        marginTop: "4%",
+                    }}
+                    status='success'
                     checked={isEditable}
                     onChange={setIsEditable}
-                />
+                >
+                    Obligatorio
+                </CheckBox>
             </View>
             <Divider />
             <View style={styles.saveButtonContainer}>
@@ -183,6 +190,10 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 18,
     },
+    subtitle: {
+        fontSize: 16,
+        marginBottom: 8,
+    },
     field: {
         marginTop: "4%",
         marginBottom: "4%",
@@ -192,7 +203,10 @@ const styles = StyleSheet.create({
         marginBottom: 8,
     },
     input: {
-        marginBottom: 8,
+        borderWidth: 1,
+        borderColor: '#cccccc',
+        padding: 0,
+        borderRadius: 4,
     },
     buttonGroup: {
         flexDirection: 'row',
