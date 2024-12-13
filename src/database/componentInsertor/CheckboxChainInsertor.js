@@ -30,7 +30,7 @@ export default class CheckboxChainInsertor extends ChainInsertor {
         ).id_options
 
         this.db.runSync(
-            'DELETE FROM checkbox_options WHERE fk_selector_id IN (SELECT id FROM checkbox WHERE fk_field = ?)',
+            `DELETE FROM checkbox_options WHERE fk_selector_id IN (SELECT id FROM ${fieldTableName} WHERE fk_field = ?)`,
             [id_options]
         )
 
@@ -56,7 +56,7 @@ export default class CheckboxChainInsertor extends ChainInsertor {
         return {
             "opcion predeterminada": JSON.parse(fieldProperties.default_option),
             "cantidad de elecciones": fieldProperties.max_checked_options,
-            opciones: optionsQuery.map(option => ({nombre: option.name, valor: option.value}))
+            opciones: optionsQuery.map(option => ({ nombre: option.name, valor: option.value }))
         }
     }
 }
