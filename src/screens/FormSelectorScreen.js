@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Dimensions, Platform, View, StyleSheet, FlatList, TouchableOpacity, Alert, Image } from 'react-native'
-import { ButtonGroup, Button, Text, TopNavigation, TopNavigationAction, Divider, Layout, Modal, Card, Icon } from '@ui-kitten/components'
+import { ButtonGroup, Button, Text, CheckBox,TopNavigation, TopNavigationAction, Divider, Layout, Modal, Card, Icon } from '@ui-kitten/components'
 import { useFormContext } from '../context/SelectedFormContext'
 import { useNavigation } from '@react-navigation/native'
 import { LinearGradient } from 'expo-linear-gradient'
@@ -174,7 +174,21 @@ const FormSelectorScreen = () => {
       onPress={() => handlePress(item)}
       onLongPress={toggleSelectionMode}
     >
-      <Text style={styles.itemText}>{item["nombre formulario"]}</Text>
+
+      {isSelectionMode ? (
+        <View style={styles.selectionRow}>
+          <CheckBox
+            checked={selectedForms.includes(item["nombre formulario"])}
+            status='success'
+            onChange={() => handlePress(item)}
+            style={styles.checkbox}
+          />
+          <Text style={styles.itemText}>{item["nombre formulario"]}</Text>
+        </View>
+      ) : (
+        <Text style={{padding: "2%", fontSize: 20, fontWeight: 'bold',}}>{item["nombre formulario"]}</Text>
+      )}
+
       <Button
         accessoryLeft={
           <Icon name='menu-outline' style={{ width: 25, height: 25 }} fill='#000' />
@@ -498,6 +512,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 5,
     position: 'relative',
+  },
+  selectionRow: {
+    padding: "2%",
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  checkbox: {
+    marginRight: 8, // Espaciado entre checkbox y texto
   },
   iconButton2: {
     flex: 1,
