@@ -21,8 +21,6 @@ export default function FormEditor() {
   const formNames = new Set(require("../TestForms/forms.json").map(form => form["nombre formulario"]))
   const [isNameTaken, setIsNameTaken] = useState(false)
   const [formName, setFormName] = useState("")
-  
-  const onEdit = () => navigation.navigate('FormEditor', { form: selectedItem })
 
   const BackIcon = (props) => (
     <Icon
@@ -61,8 +59,6 @@ export default function FormEditor() {
       }
       // Guardar el nuevo formulario en el archivo JSON
       console.log(newForm)
-
-
 
     }
   }
