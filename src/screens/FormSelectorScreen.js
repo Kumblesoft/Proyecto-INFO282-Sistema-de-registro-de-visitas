@@ -13,7 +13,6 @@ import * as DocumentPicker from 'expo-document-picker'
 import { useSQLiteContext } from 'expo-sqlite'
 import { getDatabaseInstance } from '../database/database'
 
-
 const { width, height } = Dimensions.get('window')
 
 const FormSelectorScreen = () => {
@@ -25,6 +24,7 @@ const FormSelectorScreen = () => {
   const [isSelectionMode, setIsSelectionMode] = useState(false) // Modo de selección
   const [selectedForms, setSelectedForms] = useState([]) // Formularios seleccionados
   const [file, setFile] = useState(null) // File picker function
+  const [forms, setForms] = useState(db.getAllForms())
 
   const backIcon = () => <Icon name='arrow-ios-back-outline' fill='#fff' style={styles.topNavigationIcon} />
   const importIcon = () => <Icon name='cloud-download-outline' fill='#fff' style={styles.topNavigationIcon} />
@@ -83,10 +83,13 @@ const FormSelectorScreen = () => {
     }
   }
 
-  const deleteSelectedForms = async (formID) => {
+  const deleteSelectedForms = async () => {
     try {
-      db.deleteForm(formID)
-
+      selectedForms.forEach(formID => 
+          db.deleteForm(formID)
+          
+      )
+      
       setSelectedForms([])
       setIsSelectionMode(false)
 
@@ -287,7 +290,7 @@ const FormSelectorScreen = () => {
         <Divider />
         <Layout style={styles.container}>
           <FlatList
-            data={db.getAllForms()}
+            data={forms}
             renderItem={renderItem}
             keyExtractor={(item) => item["nombre formulario"]}
             contentContainerStyle={styles.listContainer}

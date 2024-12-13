@@ -49,24 +49,29 @@ export default function FormEditor() {
   }
 
   const handleSaveForm = (fields) => {
-    isNameTaken ? Alert.alert('Error', 'El nombre de la plantilla ya existe') : () => {
+    if (isNameTaken) {
+      Alert.alert('Error', 'El nombre de la plantilla ya existe')
+      return
+    }
       const newForm = {
         "nombre formulario": formName,
         "ultima modificacion": new Date().getTime(),
         campos: fields,
       }
       // Guardar el nuevo formulario en el archivo JSON
+      db.addForm(newForm)
       console.log(newForm)
 
 
 
-    }
+    
   }
 
   const checkFormName = name => {
     console.log(name)
     console.log(formNames)
     setIsNameTaken(db.isFormNameRepeated(name) && name != formName  && name != "")
+    isNameTaken ? setFormName(name) : setFormName("")
   }
   const renderField = (fieldKey, field) => {
     return (

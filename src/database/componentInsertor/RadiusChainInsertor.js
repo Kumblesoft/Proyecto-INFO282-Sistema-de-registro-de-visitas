@@ -37,6 +37,7 @@ export default class RadioChainInsertor extends ChainInsertor {
             `DELETE FROM ${fieldTableName} WHERE fk_field = ?`,
             [fieldId]
         )
+        return true
     }
     getFieldProperties(fieldId, fieldTableName, fieldTypeName) {
         if (fieldTypeName != 'radio')

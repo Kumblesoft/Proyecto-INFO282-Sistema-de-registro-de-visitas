@@ -38,6 +38,7 @@ export default class CheckboxChainInsertor extends ChainInsertor {
             `DELETE FROM ${fieldTableName} WHERE fk_field = ?`,
             [fieldId]
         )
+        return true
     }
     getFieldProperties(fieldId, fieldTableName, fieldTypeName) {
         if (fieldTypeName != 'checkbox')

@@ -23,6 +23,7 @@ export default class TimeChainInsertor extends ChainInsertor {
             `DELETE FROM ${fieldTableName} WHERE fk_field = ?`,
             [fieldId]
         )
+        return true
     }
     getFieldProperties(fieldId, fieldTableName, fieldTypeName) {
         if (fieldTypeName != 'hora')

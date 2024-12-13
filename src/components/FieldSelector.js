@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { View, StyleSheet, Alert, TouchableOpacity } from 'react-native'
 import {Text, Select, SelectItem, Button} from '@ui-kitten/components'
 
@@ -33,6 +33,10 @@ const FieldSelector = ({onSave}) => {
     const [miniFields, setMiniFields] = useState([]) // Almacena los campos agregados
     const [dragMode, setDragMode] = useState(false)
     const [form, setForm] = useState({})
+    const [fieldNames, setFieldNames] = useState(new Set())
+    useEffect(() => {
+        setFieldNames(new Set(miniFields))
+    }, [miniFields])
     
 
     // Obtiene los tipos de campos del JSON (keys del objeto)

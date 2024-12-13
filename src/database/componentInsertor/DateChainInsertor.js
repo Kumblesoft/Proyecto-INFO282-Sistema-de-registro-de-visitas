@@ -26,6 +26,7 @@ export default class DateChainInsertor extends ChainInsertor {
             `DELETE FROM ${fieldTableName} WHERE fk_field = ?`,
             [fieldId]
         )
+        return true
     }
     getFieldProperties(fieldId, fieldTableName, fieldTypeName) {
         if (fieldTypeName != 'fecha')
