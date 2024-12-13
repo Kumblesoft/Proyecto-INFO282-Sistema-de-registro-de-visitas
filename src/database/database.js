@@ -291,4 +291,9 @@ export default class Database {
     getComponnentTypeId(fieldType) {
         return this.db.getFirstSync('SELECT id FROM field_table_name WHERE field = ?', [fieldType]).id
     }
+
+    isFormNameRepeated(formName) {
+        const result = this.db.getFirstSync('SELECT 1 FROM forms WHERE name = ? LIMIT 1', [formName])
+        return result === undefined
+    }
 }
