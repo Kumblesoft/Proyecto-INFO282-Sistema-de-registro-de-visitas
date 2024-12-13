@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Platform, Dimensions, StyleSheet, View, Text, FlatList, Alert, TouchableOpacity, Image, ScrollView } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { Menu, MenuItem, Modal, Card, TopNavigation, TopNavigationAction, Divider, Layout, Button, Icon, Select, SelectItem, RangeCalendar, NativeDateService, Input } from '@ui-kitten/components'
+import { Menu, CheckBox, MenuItem, Modal, Card, TopNavigation, TopNavigationAction, Divider, Layout, Button, Icon, Select, SelectItem, RangeCalendar, NativeDateService, Input } from '@ui-kitten/components'
 import { useNavigation } from '@react-navigation/native'
 import { LinearGradient } from 'expo-linear-gradient'
 import shareTypes from '../commonStructures/shareTypes'
@@ -169,8 +169,13 @@ const SavedForms = () => {
     const SelectionIcon = props => <Icon fill='#fff' name={isSelectionMode ? 'checkmark-square' : 'checkmark-square'} style={styles.backIcon} {...props} />;
     
 
-    const selectAll = () => setSelectedForms(forms.map(form => form.fecha))
-    const deselectAll = () => setSelectedForms([])
+    const selectAll = () => {
+        console.log("Seleccionando todos");
+        setSelectedForms(forms.map(form => form.fecha))
+    }
+    const deselectAll = () => {
+        setSelectedForms([])
+    }
 
     const toggleSelectionMode = () => {
         setIsSelectionMode(!isSelectionMode)
@@ -328,19 +333,17 @@ const SavedForms = () => {
                 }
                 {index && index.row === 3 ? <Input style={styles.inputUltimos} placeholder='¿Cuantas respuestas desea?' value={lasts} OnChange={handleLasts} keyboardType='numeric'/> : <></>}
                 {isSelectionMode && (
-                    <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 10, paddingTop: 10}}>
-                        <Button onPress={deselectAll} accessoryLeft={deleteIcon} style ={{width: '40%', marginRight: '10%'}}>
-                            <Text>
+                    <View style={{flexDirection: 'row', justifyContent: 'space-between', alignSelf:'center', width:'100%', marginBottom:'3%', padding: 4}}>
+                        <CheckBox status='success' onChange={() => deselectAll()} style ={styles.checkbox}>
                                 Limpiar selección
-                            </Text>
-                        </Button>
-                        <Button onPress={selectAll} accessoryLeft={SelectionIcon} style={{width: '40%', marginLeft: "10%"}}>
-                            <Text>
-                                Seleccionar todo
-                            </Text>    
-                        </Button>
+                        </CheckBox>
+                        <CheckBox status='success' onChange={() => selectAll()} style={styles.checkbox}>
+                                Seleccionar todo    
+                        </CheckBox>
                     </View>
+                    
                 )}
+                <Divider />
                 </Layout>
                 <FlatList
                     data={Object.keys(groupedForms)}
@@ -483,6 +486,9 @@ const styles = StyleSheet.create({
         margin: 0,  
         height: height,  
         justifyContent: 'flex-end',
+    },
+    checkbox: {
+        marginRight: 8, // Espaciado entre checkbox y texto
     },
     safeArea: {
         backgroundColor: '#00baa4'
