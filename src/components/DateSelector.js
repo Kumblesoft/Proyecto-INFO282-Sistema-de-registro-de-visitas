@@ -100,7 +100,8 @@ const DateSelector = ({value, onChange, optionalFeatures,requiredFieldRef, refre
 
 
   return (
-    <Layout style={styles.containerBox}>
+   
+    <Layout style={[styles.containerBox, disabled && {backgroundColor: '#f5f5f5', borderWidth: 0,}]}>
       {title && (
         <View style={styles.text}>
           <Text style={styles.text} category={"p2"}>
@@ -176,7 +177,8 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start'
   },
   datepicker: {
-    width: '100%'
+    width: '100%',
+    backgroundColor: '#e0f7fa',
   },
   disabledDate:
   {

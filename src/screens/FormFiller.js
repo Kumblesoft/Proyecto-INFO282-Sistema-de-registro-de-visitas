@@ -4,7 +4,7 @@ import { Layout, Button, Text, TopNavigation, TopNavigationAction, Divider, Icon
 import DynamicForm from '../components/DynamicForm'
 import { useNavigation } from '@react-navigation/native'
 import { LinearGradient } from 'expo-linear-gradient'
-import { useFormContext } from '../context/FormContext'
+import { useFormContext } from '../context/SelectedFormContext'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 const FormFillerScreen = ({ route }) => {
@@ -58,7 +58,7 @@ const FormFillerScreen = ({ route }) => {
             </ScrollView>
             <Modal visible = {backAlert} backdropStyle={styles.backdrop}>
                 <Layout style = {styles.containerBox}>
-                    <Text style={styles.modalTitle}> ¿Seguro que quiere salir?</Text>
+                    <Text style={styles.modalTitle}> ¿Volver al menú principal?</Text>
                     {disabledSave ||(<Text style={{fontSize: 18, marginBottom: 15}}> Se perderán los datos sin guardar</Text>)}
                         <Layout style={styles.buttonContainer}>
                             <Button style = {{flex : 1, marginRight: '10%'}} status='danger' onPress={() => navigation.goBack()}>Si</Button>

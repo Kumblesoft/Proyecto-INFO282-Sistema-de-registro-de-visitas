@@ -121,16 +121,17 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldR
     setInvalidLimitations(!text.length ? [] : limitations.reduce(
       (acc, limName) => {
         const limitationOk = limitationBehaviour.get(limName).regex.test(text)
-        console.log(limitationOk, limitationBehaviour.get(limName).regex, text)
+        //console.log(limitationOk, limitationBehaviour.get(limName).regex, text)
         if (!limitationOk) {
           const limitationName = String.fromCharCode(limName.charCodeAt(0) - 32) + limName.substr(1)
           acc.push(limitationName)
+          text = text.slice(0,-1)
         }
 
         return acc
       }, []))
 
-    console.log(invalidLimitations)
+    //console.log(invalidLimitations)
 
     if (invalidLimitations.length) {
       setInputValue(text)
@@ -139,7 +140,13 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldR
       return new Err("No cumple las limitaciones")
     }
     // Formatting
-    format.forEach(formattingOption => text = formatMap.get(formattingOption)(text))
+    if (text.length > inputValue.length) {
+      let lastChar = text.slice(-1)
+      format.forEach(formattingOption => {
+        lastChar = formatMap.get(formattingOption)(lastChar)
+      })
+      text = inputValue + lastChar 
+    }
     if (onSelect) onSelect(text) 
     setInputValue(text)
     setIsRequiredAlert(false) 
@@ -160,6 +167,7 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldR
   }
 
     const handleBarCodeScanned = ({ data }) => {
+
       handleChange(data)  
       setIsScanning(false) 
       Alert.alert("Se ha escaneado exitosamente")
