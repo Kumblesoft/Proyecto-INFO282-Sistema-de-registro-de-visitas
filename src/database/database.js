@@ -153,11 +153,11 @@ export default class Database {
     getAnswer(idRespuesta) {
         try {
             const answer = this.db.getFirstSync('SELECT * FROM respuestas WHERE ID_RESPUESTA = ?', [idRespuesta])
-            const fields = this.db.getAllSync('select NOMBRE_CAMPO, VALOR_CAMPO from CAMPO_RESPUESTA where id_respuesta = ?', [idRespuesta])
+            const fields = this.db.getAllSync('select ENUM_TIPO_CAMPO, NOMBRE_CAMPO, VALOR_CAMPO from CAMPO_RESPUESTA where id_respuesta = ?', [idRespuesta])
             const formName = this.db.getFirstSync('select name from forms where id = ?', [answer.ID_PLANTILLA]).name
 
             let data = {}
-            fields.map(field => data[field.NOMBRE_CAMPO] = field.VALOR_CAMPO)
+            fields.map(field => data[field.NOMBRE_CAMPO] = [fields.ENUM_TIPO_CAMPO, field.VALOR_CAMPO])
 
             return {
                 'plantilla': formName,
