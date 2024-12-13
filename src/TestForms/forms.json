@@ -347,7 +347,7 @@
 				{ "nombre": "Intermedio", "valor": "intermedio" },
 				{ "nombre": "Avanzado", "valor": "avanzado" }
 			  ],
-			  "opcion predeterminada": "principiante",
+			  "opcion predeterminada": null ,
 			  "texto predeterminado": "Selecciona tu nivel",
 			  "cantidad de elecciones": 1,
 			  "obligatorio": true,
