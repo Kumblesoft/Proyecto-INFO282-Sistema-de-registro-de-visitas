@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState} from "react"
 import { ScrollView, View, StyleSheet, SafeAreaView } from "react-native"
 import { Text, Input, Layout, Icon, Button } from "@ui-kitten/components"
 import { LinearGradient } from "expo-linear-gradient"
@@ -6,11 +6,13 @@ import { TopNavigation, TopNavigationAction, Divider } from "@ui-kitten/componen
 import { useNavigation } from "@react-navigation/native"
 import { useSQLiteContext } from "expo-sqlite"
 import { getDatabaseInstance } from "../database/database"
-
+import { useRoute } from "@react-navigation/native" 
 import formTemplate from "../fieldsConstructor/fields.json" // Importar el JSON con los campos
 import FieldSelector from "../components/FieldSelector" 
 
 export default function FormEditor() {
+  const route = useRoute()
+  const { form } = route.params || {}
   const db = getDatabaseInstance(useSQLiteContext())
   const navigation = useNavigation()
   const [formFields, setFormFields] = useState(formTemplate)
@@ -119,6 +121,7 @@ export default function FormEditor() {
         selectedValue={selectedField}
         onValueChange={setSelectedField} // Actualiza el estado cuando cambia el selector
         onSave = {(fields) => handleSaveForm(fields)}
+        form = {form}
       />
 
       {/* Botón para guardar cambios <Button onPress={handleFieldPos} margin='20' padding='20' title="Guardar" /> */}
