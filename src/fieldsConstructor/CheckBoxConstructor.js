@@ -13,7 +13,7 @@ import {
     Input,
     Button,
     Toggle,
-    Icon,
+    Icon, CheckBox
 } from '@ui-kitten/components'
 
 const CheckBoxConstructor = ({ onSave, field = {} }) => {
@@ -22,12 +22,30 @@ const CheckBoxConstructor = ({ onSave, field = {} }) => {
     const [maxSelections, setMaxSelections] = useState(field['cantidad de elecciones'] || 1)
     const [isRequired, setIsRequired] = useState(field.isRequired ?? true)
 
+    const TrashIcon = (props) => (
+        <Icon {...props} name='trash-2-outline' />
+      );
+
     const handleAddOption = () => {
         setOptions((prevOptions) => [
             ...prevOptions,
-            { nombre: `Nueva opción ${prevOptions.length + 1}`, valor: `opcion${prevOptions.length + 1}` }
+            { 
+                nombre: `Nueva opción ${prevOptions.length + 1}`, 
+                valor: `opcion${prevOptions.length + 1}`, 
+                predeterminada: false 
+            }
         ])
     }
+
+    const toggleDefaultOption = (index) => {
+        setOptions((prevOptions) =>
+            prevOptions.map((option, i) => ({
+                ...option,
+                predeterminada: i === index ? !option.predeterminada : option.predeterminada,
+            }))
+        )
+    }
+    
 
     const handleRemoveOption = (index) => {
         const updatedOptions = options.filter((_, idx) => idx !== index)
@@ -37,42 +55,47 @@ const CheckBoxConstructor = ({ onSave, field = {} }) => {
         }
     }
 
+    const removeOption = (index) => {
+        setOptions(options.filter((_, i) => i !== index))
+    }
+
     const handleSave = () => {
         if (!fieldName.trim()) {
-            Alert.alert("Error", "El nombre del campo no puede estar vacío.")
-            return
+            Alert.alert("Error", "El nombre del campo no puede estar vacío.");
+            return;
         }
-
+    
         if (options.length === 0) {
-            Alert.alert("Error", "Debe haber al menos una opción.")
-            return
+            Alert.alert("Error", "Debe haber al menos una opción.");
+            return;
         }
-
+    
         if (maxSelections <= 0 || maxSelections > options.length) {
             Alert.alert(
                 "Error",
                 maxSelections <= 0
                     ? "La cantidad máxima de selecciones debe ser al menos 1."
                     : "La cantidad máxima de selecciones no puede ser mayor que el número de opciones."
-            )
-            return
+            );
+            return;
         }
-
+    
         const field = {
             nombre: fieldName,
             opciones: options,
-            salida: fieldName.toLowerCase().replace(/ /g, '_'),
-            "opcion predeterminada": null,
+            salida: fieldName.toLowerCase().replace(/ /g, "_"),
+            "opciones predeterminadas": options.filter(option => option.predeterminada), // Corregido aquí
             "texto predeterminado": fieldName,
             "cantidad de elecciones": maxSelections,
             obligatorio: isRequired,
-        }
-
+        };
+    
         if (onSave) {
-            console.log(field)
-            onSave(field)
+            console.log(field);
+            onSave(field);
         }
-    }
+    };
+    
 
     return (
         <KeyboardAvoidingView
@@ -100,24 +123,37 @@ const CheckBoxConstructor = ({ onSave, field = {} }) => {
                 <FlatList
                     data={options}
                     renderItem={({ item, index }) => (
-                        <Layout style={styles.optionRow}>
+                        <Layout style={styles.optionContainer}>
+                        <View style={styles.optionTopRow}>
                             <Input
                                 value={item.nombre}
                                 onChangeText={(text) => {
-                                    const updatedOptions = [...options]
-                                    updatedOptions[index].nombre = text
-                                    setOptions(updatedOptions)
+                                    const updatedOptions = [...options];
+                                    updatedOptions[index].nombre = text;
+                                    setOptions(updatedOptions);
                                 }}
                                 style={styles.optionInput}
+                                placeholder="Nombre de la opción"
                             />
                             <Button
                                 size="small"
                                 status="danger"
-                                onPress={() => handleRemoveOption(index)}
-                            >
-                                Eliminar
+                                onPress={() => removeOption(index)}
+                                accessoryLeft={TrashIcon}
+                                style={styles.deleteButton}
+                                >
                             </Button>
-                        </Layout>
+                        </View>
+                        <View style={styles.checkboxRow}>
+                            <CheckBox
+                                checked={item.predeterminada}
+                                onChange={() => toggleDefaultOption(index)}
+                                style={styles.checkbox}
+                            >
+                                {evaProps => <Text {...evaProps} style={styles.checkboxLabel}>¿Predeterminada?</Text>}
+                            </CheckBox>
+                        </View>
+                    </Layout>
                     )}
                     keyExtractor={(_, index) => index.toString()}
                     scrollEnabled={false}
@@ -197,6 +233,30 @@ const styles = StyleSheet.create({
     },
     saveButton: {
         marginTop: 16,
+    },
+    optionContainer: {
+        marginBottom: 12,
+        padding: 8,
+        borderWidth: 1,
+        borderColor: '#e0e0e0',
+        borderRadius: 8,
+        backgroundColor: '#f9f9f9',
+    },
+    optionTopRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 8,
+    },
+    checkboxRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start', // Correcto
+    },
+    checkboxLabel: {
+        fontSize: 14,
+    },
+    deleteButton: {
+        marginLeft: 8,
     },
 })
 

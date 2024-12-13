@@ -1,53 +1,59 @@
 import React, { useState } from 'react'
 import { View, Text, StyleSheet,FlatList } from 'react-native'
-import { Input, Button, List, ListItem, Icon,Toggle, Layout} from '@ui-kitten/components'
+import { Input, Button, List, ListItem, Icon,Toggle, Layout, CheckBox} from '@ui-kitten/components'
 
 const RadioConstructor = ({ field, onSave }) => {
-    const [options, setOptions] = useState(field.opciones || [])
-    const [newOptionName, setNewOptionName] = useState('')
-    const [fieldName, setFieldName] = useState(field.nombre || '')
-    const [isRequired, setIsRequired] = useState(field.isRequired ?? true)
+    const TrashIcon = (props) => (
+        <Icon {...props} name='trash-2-outline' />
+      );
+    const [options, setOptions] = useState(
+        (field.opciones || []).map(option => ({
+            ...option,
+            predeterminada: option.predeterminada ?? false
+        }))
+    );
+    const [fieldName, setFieldName] = useState(field.nombre || '');
+    const [isRequired, setIsRequired] = useState(field.isRequired ?? true);
 
     const handleAddOption = () => {
         setOptions((prevOptions) => [
             ...prevOptions,
-            { nombre: `Nueva opción ${prevOptions.length + 1}`, valor: `opcion${prevOptions.length + 1}` }
+            { 
+                nombre: `Nueva opción ${prevOptions.length + 1}`, 
+                valor: `opcion${prevOptions.length + 1}`, 
+                predeterminada: false 
+            }
         ])
     }
 
+    const toggleDefaultOption = (index) => {
+        setOptions((prevOptions) => 
+            prevOptions.map((option, i) => ({
+                ...option,
+                predeterminada: i === index
+            }))
+        )
+    }
 
     const removeOption = (index) => {
         setOptions(options.filter((_, i) => i !== index))
     }
 
     const handleSave = () => {
-        // Crear el objeto `field` con los datos
         const field = {
             nombre: fieldName,
-            salida : fieldName.toLowerCase().replace(/ /g, '_'),
-            "opcion predeterminada" : null,  // no se que es
-            "texto predeterminado" :  fieldName, // no se que es  
+            salida: fieldName.toLowerCase().replace(/ /g, '_'),
+            "opcion predeterminada": options.find(option => option.predeterminada) || null,
             tipo: 'radio',
             opciones: options,
             obligatorio: isRequired,
-        }
+        };
 
         if (onSave) {
-            console.log(field)
-            onSave(field)
+            console.log(field);
+            onSave(field);
         }
-    }
-
-    const renderOption = ({ item, index }) => (
-        <ListItem
-            title={item.nombre}
-            accessoryRight={() => (
-                <Button size="tiny" status="danger" onPress={() => removeOption(index)}>
-                    Eliminar
-                </Button>
-            )}
-        />
-    )
+    };
 
     return (
         <Layout style={styles.container}>
@@ -62,47 +68,61 @@ const RadioConstructor = ({ field, onSave }) => {
 
             <Text style={styles.subtitle}>Opciones:</Text>
             <FlatList
-                    data={options}
-                    renderItem={({ item, index }) => (
-                        <Layout style={styles.optionRow}>
+                data={options}
+                renderItem={({ item, index }) => (
+                    <Layout style={styles.optionContainer}>
+                        <View style={styles.optionTopRow}>
                             <Input
                                 value={item.nombre}
                                 onChangeText={(text) => {
-                                    const updatedOptions = [...options]
-                                    updatedOptions[index].nombre = text
-                                    setOptions(updatedOptions)
+                                    const updatedOptions = [...options];
+                                    updatedOptions[index].nombre = text;
+                                    setOptions(updatedOptions);
                                 }}
                                 style={styles.optionInput}
+                                placeholder="Nombre de la opción"
                             />
                             <Button
                                 size="small"
                                 status="danger"
                                 onPress={() => removeOption(index)}
-                            >
-                                Eliminar
+                                accessoryLeft={TrashIcon}
+                                style={styles.deleteButton}
+                                >
                             </Button>
-                        </Layout>
-                    )}
-                    keyExtractor={(_, index) => index.toString()}
-                    scrollEnabled={false}
-                    ListFooterComponent={() => (
-                        <Button onPress={handleAddOption} style={styles.addButton} accessoryRight={<Icon name={'plus-outline'}/>}>
-                        </Button>
-                    )}
-                />
-                {/* Obligatorio */}
-                <View style={styles.field}>
-                    <Text>¿Es Obligatorio?</Text>
-                    <Toggle checked={isRequired} onChange={setIsRequired} />
-                </View>
+                        </View>
+                        <View style={styles.checkboxRow}>
+                            <CheckBox
+                                checked={item.predeterminada}
+                                onChange={() => toggleDefaultOption(index)}
+                                style={styles.checkbox}
+                            >
+                                {evaProps => <Text {...evaProps} style={styles.checkboxLabel}>¿Predeterminada?</Text>}
+                            </CheckBox>
+                        </View>
+                    </Layout>
+                )}
+                keyExtractor={(_, index) => index.toString()}
+                scrollEnabled={false}
+                ListFooterComponent={() => (
+                    <Button onPress={handleAddOption} style={styles.addButton}>
+                        Agregar Opción
+                    </Button>
+                )}
+            />
 
-            {/* Guardar */}
+            <View style={styles.field}>
+                <Text>¿Es Obligatorio?</Text>
+                <Toggle checked={isRequired} onChange={setIsRequired} />
+            </View>
+
             <Button onPress={handleSave} style={styles.saveButton}>
-                    Guardar Campo
+                Guardar Campo
             </Button>
         </Layout>
     )
-}
+};
+
 
 const styles = StyleSheet.create({
     container: {
@@ -148,6 +168,30 @@ const styles = StyleSheet.create({
     saveButtonContainer: {
         marginTop: 20,
         alignSelf: 'center',
+    },
+    optionContainer: {
+        marginBottom: 12,
+        padding: 8,
+        borderWidth: 1,
+        borderColor: '#e0e0e0',
+        borderRadius: 8,
+        backgroundColor: '#f9f9f9',
+    },
+    optionTopRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 8,
+    },
+    checkboxRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start', // Correcto
+    },
+    checkboxLabel: {
+        fontSize: 14,
+    },
+    deleteButton: {
+        marginLeft: 8,
     },
 })
 

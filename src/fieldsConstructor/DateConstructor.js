@@ -1,20 +1,27 @@
 import React, { useState, useEffect } from 'react'
 import { View, StyleSheet, Alert, TouchableOpacity } from 'react-native'
-import { Text, Input, Button, Toggle, Datepicker, NativeDateService } from '@ui-kitten/components'	
+import { Text, Input, Button, Toggle, Datepicker, NativeDateService } from '@ui-kitten/components'
 
 const DateConstructor = ({ field = {}, onSave }) => {
     const [fieldName, setFieldName] = useState(field.name || "")
-    const [defaultDate, setDefaultDate] = useState(field.defaultDate || "")
+    const [defaultDate, setDefaultDate] = useState(field.defaultDate || 'hoy')
     const [date, setDate] = useState(new Date())
     const [isEditable, setIsEditable] = useState(field.isEditable || false)
-    const [dateFormat, setDateFormat] = useState("DD/MM/YYYY") // Formato por defecto
+    const [dateFormat, setDateFormat] = useState("DD/MM/YYYY")
+    const [isToday, setIsToday] = useState(defaultDate === 'hoy')
 
-    // Obtiene la fecha actual en el formato solicitado
-    const formatCurrentDate = (format) => {
-        const today = new Date()
-        const day = String(today.getDate()).padStart(2, "0")
-        const month = String(today.getMonth() + 1).padStart(2, "0")
-        const year = today.getFullYear()
+    useEffect(() => {
+        if (isToday) {
+            setDefaultDate("hoy")
+        } else {
+            setDefaultDate(formatCurrentDate(dateFormat, date))
+        }
+    }, [isToday, dateFormat, date])
+
+    const formatCurrentDate = (format, dateObj = new Date()) => {
+        const day = String(dateObj.getDate()).padStart(2, "0")
+        const month = String(dateObj.getMonth() + 1).padStart(2, "0")
+        const year = dateObj.getFullYear()
 
         switch (format) {
             case "DD/MM/YYYY":
@@ -34,13 +41,8 @@ const DateConstructor = ({ field = {}, onSave }) => {
         }
     }
 
-    // Actualiza la fecha predeterminada cada vez que cambia el formato
-    useEffect(() => {
-        setDefaultDate(formatCurrentDate(dateFormat))
-    }, [dateFormat])
-
-    const configureDDateService = new NativeDateService('en', {
-        startDayOfWeek:1,
+    const configureDateService = new NativeDateService('en', {
+        startDayOfWeek: 1,
         format: dateFormat
     })
 
@@ -59,14 +61,16 @@ const DateConstructor = ({ field = {}, onSave }) => {
             "DD/YYYY/MM": /^\d{2}\/\d{4}\/\d{2}$/
         }
 
-        const isValid = formatPatterns[dateFormat]?.test(defaultDate)
+        if (!isToday) {
+            const isValid = formatPatterns[dateFormat]?.test(defaultDate)
 
-        if (!isValid) {
-            Alert.alert(
-                "Error",
-                `La fecha predeterminada debe coincidir con el formato ${dateFormat}.`
-            )
-            return
+            if (!isValid) {
+                Alert.alert(
+                    "Error",
+                    `La fecha predeterminada debe coincidir con el formato ${dateFormat}.`
+                )
+                return
+            }
         }
 
         const field = {
@@ -101,7 +105,7 @@ const DateConstructor = ({ field = {}, onSave }) => {
                 <Text style={styles.label}>Nombre del Campo</Text>
                 <Input
                     value={fieldName}
-                    onChange={setFieldName}
+                    onChangeText={setFieldName}
                     placeholder="Nombre del campo"
                     style={styles.input}
                 />
@@ -110,14 +114,7 @@ const DateConstructor = ({ field = {}, onSave }) => {
             <View style={styles.field}>
                 <Text style={styles.label}>Formato de Fecha</Text>
                 <View style={styles.buttonGroup}>
-                    {[
-                        "DD/MM/YYYY",
-                        "MM/DD/YYYY",
-                        "YYYY/MM/DD",
-                        "YYYY/DD/MM",
-                        "MM/YYYY/DD",
-                        "DD/YYYY/MM"
-                    ].map((format) => (
+                    {["DD/MM/YYYY", "MM/DD/YYYY", "YYYY/MM/DD", "YYYY/DD/MM", "MM/YYYY/DD", "DD/YYYY/MM"].map((format) => (
                         <TouchableOpacity
                             key={format}
                             style={[
@@ -139,16 +136,35 @@ const DateConstructor = ({ field = {}, onSave }) => {
                 </View>
             </View>
 
-            <Datepicker
-                date={date}
-                onSelect={nextDate => {
-                    setDate(nextDate);
-                }}
-                placeholder={dateFormat}
-                min={new Date(1900, 0, 1)}
-                max={new Date(2100, 11, 31)}
-                dateService={configureDDateService}
-            />
+            <View style={styles.field}>
+                <Text style={styles.label}>Fecha Predeterminada</Text>
+                <View style={styles.buttonGroup}>
+                    <Button
+                        status={isToday ? 'primary' : 'basic'}
+                        onPress={() => setIsToday(true)}
+                    >
+                        Hoy
+                    </Button>
+
+                    <Button
+                        status={!isToday ? 'primary' : 'basic'}
+                        onPress={() => setIsToday(false)}
+                    >
+                        Personalizada
+                    </Button>
+                </View>
+
+                {!isToday && (
+                    <Datepicker
+                        date={date}
+                        onSelect={setDate}
+                        placeholder={dateFormat}
+                        min={new Date(1900, 0, 1)}
+                        max={new Date(2100, 11, 31)}
+                        dateService={configureDateService}
+                    />
+                )}
+            </View>
 
             <View style={styles.field}>
                 <Text style={styles.label}>¿Editable?</Text>
@@ -159,7 +175,7 @@ const DateConstructor = ({ field = {}, onSave }) => {
             </View>
 
             <View style={styles.saveButtonContainer}>
-                <Button title="Guardar Campo" onPress={handleSave} >Guardar Campo</Button>
+                <Button onPress={handleSave}>Guardar Campo</Button>
             </View>
         </View>
     )
