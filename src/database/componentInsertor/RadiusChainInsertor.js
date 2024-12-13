@@ -1,15 +1,14 @@
 import ChainInsertor from './ChainInsertor'
 
 
-export default class SelectorChainInsertor extends ChainInsertor {
+export default class RadioChainInsertor extends ChainInsertor {
     insert(fieldObject, fieldId, fieldTypeId, fieldTableName) {
-        if (fieldObject.tipo != 'selector')
+        if (fieldObject.tipo != 'radio')
             return this.next && this.next.insert(fieldObject, fieldId, fieldTypeId, fieldTableName)
         this.db.runSync(
-            `INSERT INTO ${fieldTableName} (fk_field, default_option, selector_placeholder) VALUES (?,?,?)`,
-            [fieldId, fieldObject["opcion predeterminada"], fieldObject["texto predeterminado"]]
+            `INSERT INTO ${fieldTableName} (fk_field, default_option) VALUES (?,?)`,
+            [fieldId, fieldObject["opcion predeterminada"]]
         )
-
         const insertedRowId = this.db.getFirstSync('select last_insert_rowid() as id')
 
         fieldObject.options?.forEach(option =>
@@ -19,8 +18,9 @@ export default class SelectorChainInsertor extends ChainInsertor {
             ))
         return true
     }
+
     delete(fieldId, fieldTableName, fieldTypeName) {
-        if (fieldTypeName != 'selector')
+        if (fieldTypeName != 'radio')
             return this.next && this.next.delete(fieldId, fieldTableName, fieldTypeName)
 
         const id_options = this.db.getFirstSync(
@@ -29,7 +29,7 @@ export default class SelectorChainInsertor extends ChainInsertor {
         ).id_options
 
         this.db.runSync(
-            'DELETE FROM selector_options WHERE fk_selector_id IN (SELECT id FROM selector WHERE fk_field = ?)',
+            'DELETE FROM selector_options WHERE fk_selector_id IN (SELECT id FROM radio WHERE fk_field = ?)',
             [id_options]
         )
 
@@ -39,11 +39,11 @@ export default class SelectorChainInsertor extends ChainInsertor {
         )
     }
     getFieldProperties(fieldId, fieldTableName, fieldTypeName) {
-        if (fieldTypeName != 'selector')
+        if (fieldTypeName != 'radio')
             return this.next && this.next.getFieldProperties(fieldId, fieldTableName, fieldTypeName)
 
         const fieldProperties = this.db.getFirstSync(
-            `SELECT id_options, default_option, selector_placeholder FROM ${fieldTableName} WHERE fk_field = ?`,
+            `SELECT id_options, default_option FROM ${fieldTableName} WHERE fk_field = ?`,
             [fieldId]
         )
         const optionsQuery = this.db.getAllSync(
@@ -54,7 +54,6 @@ export default class SelectorChainInsertor extends ChainInsertor {
         optionsQuery.forEach(option => options[option.name] = option.value)
         return {
             "opcion predeterminada": fieldProperties.default_option,
-            "texto predeterminada": fieldProperties.selector_placeholder,
             opciones: options
         }
     }

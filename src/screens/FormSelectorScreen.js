@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { use, useState } from 'react'
 import { Dimensions, Platform, View, StyleSheet, FlatList, TouchableOpacity, Alert, Image } from 'react-native'
 import { ButtonGroup, Button, Text, CheckBox,TopNavigation, TopNavigationAction, Divider, Layout, Modal, Card, Icon } from '@ui-kitten/components'
 import { useFormContext } from '../context/SelectedFormContext'
@@ -11,33 +11,28 @@ import * as Animatable from 'react-native-animatable'
 import shareTypes from '../commonStructures/shareTypes'
 import * as DocumentPicker from 'expo-document-picker'
 import { useSQLiteContext } from 'expo-sqlite'
-import Database from '../database/database'
+import { getDatabaseInstance } from '../database/database'
 
-
-const dbFormTest = require('../TestForms/dbFormTest.json')
 
 const { width, height } = Dimensions.get('window')
 
 const FormSelectorScreen = () => {
-  const database = useSQLiteContext()
-  const db = new Database(database)
-  console.log(dbFormTest)
-  db.addForm(dbFormTest)
+  const db = getDatabaseInstance(useSQLiteContext())
   const navigation = useNavigation()
   const forms = require("../TestForms/forms.json")
-  const [ localForms, setForms ] = useState(forms)
+  const [localForms, setForms] = useState(forms)
   const [isOptionModalVisible, setIsOptionModalVisible] = useState(false)
   const [selectedItem, setSelectedItem] = useState({ "nombre formulario": "err" })
   const { setSelectedForm } = useFormContext()
-  const [ isSelectionMode, setIsSelectionMode ] = useState(false) // Modo de selección
-  const [ selectedForms, setSelectedForms ] = useState([]) // Formularios seleccionados
-  const [ file, setFile ] = useState(null) // File picker function
+  const [isSelectionMode, setIsSelectionMode] = useState(false) // Modo de selección
+  const [selectedForms, setSelectedForms] = useState([]) // Formularios seleccionados
+  const [file, setFile] = useState(null) // File picker function
 
-  const backIcon = () => <Icon name='arrow-ios-back-outline' fill='#fff' style={styles.topNavigationIcon}/>
-  const importIcon = () => <Icon name='cloud-download-outline' fill='#fff' style={styles.topNavigationIcon}/>
-  const deleteIcon = props => <Icon name='trash-outline' {...props} fill="#fff" animationConfig={{ cycles: Infinity }} animation='zoom' style={[props.style, { width: 30, height: 30 }]}/>
-  const shareIcon = props => <Icon name='share-outline' {...props} fill="#fff" animationConfig={{ cycles: Infinity }} animation='zoom' style={[props.style, { width: 30, height: 30 }]}/>
-  const plusIcon = props => <Icon name='plus-outline' {...props} fill="#fff" animationConfig={{ cycles: Infinity }} animation='zoom' style={[props.style, { width: 40, height: 40 }]}/>
+  const backIcon = () => <Icon name='arrow-ios-back-outline' fill='#fff' style={styles.topNavigationIcon} />
+  const importIcon = () => <Icon name='cloud-download-outline' fill='#fff' style={styles.topNavigationIcon} />
+  const deleteIcon = props => <Icon name='trash-outline' {...props} fill="#fff" animationConfig={{ cycles: Infinity }} animation='zoom' style={[props.style, { width: 30, height: 30 }]} />
+  const shareIcon = props => <Icon name='share-outline' {...props} fill="#fff" animationConfig={{ cycles: Infinity }} animation='zoom' style={[props.style, { width: 30, height: 30 }]} />
+  const plusIcon = props => <Icon name='plus-outline' {...props} fill="#fff" animationConfig={{ cycles: Infinity }} animation='zoom' style={[props.style, { width: 40, height: 40 }]} />
   const BackAction = () => <TopNavigationAction icon={backIcon} onPress={() => navigation.goBack()} />
   const importAction = () => <TopNavigationAction icon={importIcon} onPress={() => pickDocument()} />
   const optionBar = () => (
@@ -74,22 +69,7 @@ const FormSelectorScreen = () => {
         })
 
         const content = await FileSystem.readAsStringAsync(newPath) // Now read the file from the cache
-        // console.log("File Content:", content) // Log the content (JSON)
-        const tempo = localForms.concat(JSON.parse(content))
-        setForms(tempo)
-
-        console.log(tempo, '\n')
-
-        try {
-          // Write new content to the file (overwrites existing content)
-          await FileSystem.writeAsStringAsync(`${FileSystem.documentDirectory}forms.json`, JSON.stringify(tempo))
-          Alert.alert("Success", "File content has been overwritten!")
-        } catch (err) {
-          console.error("Error writing to file:", err)
-          Alert.alert("Error", "Failed to overwrite the file.")
-        }
-
-        console.log(localForms)
+        db.addForm(content)
       }
       else if (result.canceled) { console.log("Action Canceled, no file selected.") }
       else { Alert.alert("Error", "Failed to pick a document. Please try again.") }
@@ -99,30 +79,15 @@ const FormSelectorScreen = () => {
     }
   }
 
-  const deleteSelectedForms = async () => {
+  const deleteSelectedForms = async (formID) => {
     try {
-      const updatedForms = localForms.filter(form => !selectedForms.includes(form["nombre formulario"]))
+      db.deleteForm(formID)
 
-      const filePath = `${FileSystem.cacheDirectory}forms.json`
-      const updatedFormsString = JSON.stringify(updatedForms)
-
-      await FileSystem.writeAsStringAsync(filePath, updatedFormsString)
-
-
-
-      const newContent = await FileSystem.readAsStringAsync(filePath)
-      const loc = localForms.pop(JSON.parse(newContent))
-
-      setForms(loc)
       setSelectedForms([])
       setIsSelectionMode(false)
-      console.log(localForms)
-      console.log("Formularios restantes después de la eliminación:", updatedForms)
-      console.log("Archivo actualizado guardado en:", filePath)
 
     } catch (error) {
-        
-        Alert.alert("Error", "Debe seleccionar uno o varios formularios para eliminarlos")
+      Alert.alert("Error", "Debe seleccionar uno o varios formularios para eliminarlos")
     }
   }
 
@@ -316,7 +281,7 @@ const FormSelectorScreen = () => {
 
   return (
     <>
-      
+
       {OptionsModal()}
       <Layout style={styles.layoutContainer}>
         <SafeAreaView style={styles.safeArea}>
@@ -337,18 +302,18 @@ const FormSelectorScreen = () => {
             renderItem={renderItem}
             keyExtractor={(item) => item["nombre formulario"]}
             contentContainerStyle={styles.listContainer}
-          />    
+          />
         </Layout>
       </Layout>
-        <View style={styles.containerMenuBar}>
+      <View style={styles.containerMenuBar}>
 
-          <Button style={styles.iconButton2} appearance="ghost" onPress={() => deleteSelectedForms()} accessoryLeft={deleteIcon} />
+        <Button style={styles.iconButton2} appearance="ghost" onPress={() => deleteSelectedForms()} accessoryLeft={deleteIcon} />
 
-          <Button style={styles.centerButton} onPress={() => navigation.navigate('Menu')} accessoryLeft={plusIcon} />
-          
-          <Button style={styles.iconButton2} appearance="ghost" accessoryLeft={shareIcon} />
-        </View>
-      
+        <Button style={styles.centerButton} onPress={() => navigation.navigate('FormEditor')} accessoryLeft={plusIcon} />
+
+        <Button style={styles.iconButton2} appearance="ghost" accessoryLeft={shareIcon} />
+      </View>
+
     </>
   )
 }
@@ -434,9 +399,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#fff',
   },
-  topNavigationText:{
+  topNavigationText: {
     marginRight: Platform.OS == "ios" ? 50 : 50,
-    fontSize: Platform.OS == "ios" ? 22: 22,   
+    fontSize: Platform.OS == "ios" ? 22 : 22,
     fontWeight: 'bold',
     color: '#fff',
   },
@@ -493,7 +458,7 @@ const styles = StyleSheet.create({
   createButton: {
     width: width * 0.15,  // Ajusta el tamaño según tus necesidades
     height: width * 0.15,
-    borderRadius: (width * 0.15)/2, // Hace el botón circular
+    borderRadius: (width * 0.15) / 2, // Hace el botón circular
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'flex-end',
@@ -502,7 +467,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#00baa2', 
+    backgroundColor: '#00baa2',
     paddingHorizontal: 10,
     paddingVertical: 0,
     borderTopLeftRadius: 20,
@@ -524,21 +489,21 @@ const styles = StyleSheet.create({
   iconButton2: {
     flex: 1,
     alignItems: 'center',
-    
+
   },
   centerButtonContainer: {
     position: 'absolute',
     top: -30, // Elevar el botón
     alignSelf: 'center',
-    marginTop: width * 0.9 
+    marginTop: width * 0.9
   },
   centerButton: {
     top: -25,
     width: 75,
     height: 75,
     borderRadius: 40,
-    backgroundColor: '#00e895', 
-    borderColor: '#fff', 
+    backgroundColor: '#00e895',
+    borderColor: '#fff',
     borderWidth: 6,
   },
 })

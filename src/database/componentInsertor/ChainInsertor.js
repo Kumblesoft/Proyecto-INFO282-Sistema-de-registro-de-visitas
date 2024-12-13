@@ -1,6 +1,7 @@
 export default class ChainInsertor {
-    constructor() {
+    constructor(db) {
         this.next = null
+        this.db = db
     }
 
     add(chainInsertor) {
@@ -11,7 +12,15 @@ export default class ChainInsertor {
         return this.next
     }
 
-    insert(fieldObject) {
+    insert(fieldObject, fieldId, fieldTypeId, fieldTableName) {
+        throw new Error('Este metodo no esta implementado')
+    }
+
+    delete(fieldId, fieldTableName, fieldTypeName) {
+        throw new Error('Este metodo no esta implementado')
+    }
+
+    getFieldProperties(fieldId, fieldTableName, fieldTypeName) {
         throw new Error('Este metodo no esta implementado')
     }
 }

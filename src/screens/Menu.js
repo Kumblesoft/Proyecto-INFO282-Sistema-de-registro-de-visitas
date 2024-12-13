@@ -1,26 +1,28 @@
-import React from "react"
+import React, { use } from "react"
 import { Platform, StyleSheet, View, TouchableOpacity, StatusBar, Alert } from "react-native"
-import { Text, Layout, Icon } from "@ui-kitten/components" 
+import { Text, Layout, Icon,Button } from "@ui-kitten/components" 
 import Svg, { Circle, Defs, Stop, LinearGradient as SvgLinearGradient } from "react-native-svg"
 import { useNavigation } from '@react-navigation/native'
 import { useFormContext } from '../context/SelectedFormContext' // Importa el contexto
+import {getDatabaseInstance} from "../database/database"
+import { useSQLiteContext } from "expo-sqlite"
+
+
 
 export default function Menu() {
+  const db = getDatabaseInstance(useSQLiteContext())
   const navigation = useNavigation()
   const { selectedForm } = useFormContext()
 
-
   const handleFormulariosPress = () => navigation.navigate('FormSelector') // Solo pasar forms
-
+  const handleSavedFormsPress = () => navigation.navigate('SavedForms') // Nueva función para navegar a SavedForms
+  const handleSettingsPress = () => navigation.navigate('Settings')
   const handleRellenarPress = () => {
     selectedForm ?
       navigation.navigate('FormFiller') :
       Alert.alert('Error', 'Seleccione un formulario primero')
   }
 
-  const handleSavedFormsPress = () => navigation.navigate('SavedForms') // Nueva función para navegar a SavedForms
-
-  const handleSettingsPress = () => navigation.navigate('Settings')
 
   return (
     <Layout style={{ flex: 1 }}>
@@ -62,7 +64,6 @@ export default function Menu() {
             <Text style={styles.buttonText}>Rellenar</Text>
           </TouchableOpacity>
         </View>
-
         <View style={styles.footer}>
           <TouchableOpacity style={styles.buttonFormularios} onPress={handleFormulariosPress}>
             <Text style={styles.buttonText}>Formularios</Text>

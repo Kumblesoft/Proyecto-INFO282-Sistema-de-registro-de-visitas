@@ -11,6 +11,9 @@ import { Err, Ok } from '../commonStructures/resultEnum'
 import { useIdentifierContext } from '../context/IdentifierContext'
 import { StyleSheet } from "react-native"
 import { useFormContext } from '../context/SelectedFormContext'
+import { useSQLiteContext } from 'expo-sqlite'
+import { getDatabaseInstance } from '../database/database'
+
 
 const tickIcon = (props) => <Icon name='save' {...props} />
 
@@ -25,6 +28,7 @@ const tickIcon = (props) => <Icon name='save' {...props} />
  */
 
 const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
+    const db = getDatabaseInstance(useSQLiteContext())
     const requiredFieldRefs = useRef([])
     const refreshFieldRefs = useRef([])
     const formState = useRef(new Map())
@@ -65,31 +69,25 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
             requiredFieldRefs.current.forEach(ref => ref())
             return (new Err('Complete todos los campos obligatorios')).show()
         }
+        
 
         try {
-            const savedFormsString = await AsyncStorage.getItem('savedForms')
-            let storedForms = []
-
-            if (savedFormsString) {
-                storedForms = JSON.parse(savedFormsString)
-                if (!Array.isArray(storedForms)) 
-                    storedForms = []
-            }
-
+            
+            
             const newForm = {
-                id : new Date().getTime(),
+                fecha : new Date().getTime(),
                 plantilla: formData["nombre formulario"], 
                 umplantilla: formData["ultima modificacion"],
                 data: Object.fromEntries(formState.current), 
                 idDispositivo: identifier
             }
+            console.log(newForm)
+            db.insertAnswer(newForm)
 
+            
 
-            storedForms.push(newForm) 
-            await AsyncStorage.setItem('savedForms', JSON.stringify(storedForms))
             Alert.alert("Formulario guardado")
             formState.current.clear()
-            //Alert.alert("Formulario guardado")
             refreshFieldRefs.current.forEach(ref => ref())
         } catch (error) {
             console.error("Error al guardar el formulario:", error)
@@ -114,7 +112,7 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
                         key={`selector-${index}`}
                         type={OptionComponentType.DROPDOWN}
                         items={field.opciones}
-                        onSelect={(value) => handleInputChange(field.salida, value)}
+                        onSelect={(value) => handleInputChange(field.salida, [`selector`, value])}
                         requiredFieldRef={requiredFieldRef}
                         refreshFieldRef={refreshFieldRef}
                         optionalFeatures={OptionSelectorFeatures({
@@ -132,7 +130,7 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
                         key={`checkbox-${index}`}
                         type={OptionComponentType.CHECKBOX}
                         items={field.opciones}
-                        onSelect={(value) => handleInputChange(field.salida, value)}
+                        onSelect={(value) => handleInputChange(field.salida,['checkbox', value])}
                         requiredFieldRef={requiredFieldRef}
                         refreshFieldRef={refreshFieldRef}
                         optionalFeatures={OptionSelectorFeatures({
@@ -151,7 +149,7 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
                         key={`radio-${index}`}
                         type={OptionComponentType.RADIO}
                         items={field.opciones}
-                        onSelect={(value) => handleInputChange(field.salida, value)}
+                        onSelect={(value) => handleInputChange(field.salida,['radio',value])}
                         requiredFieldRef={requiredFieldRef}
                         refreshFieldRef={refreshFieldRef}
                         optionalFeatures={OptionSelectorFeatures({
@@ -169,7 +167,7 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
                     <DateSelector
                         key={`fecha-${index}`}
                         value={formState.current.get(field.salida)}
-                        onChange={(value) => handleInputChange(field.salida, value)}
+                        onChange={(value) => handleInputChange(field.salida,['fecha', value])}
                         requiredFieldRef={requiredFieldRef}
                         refreshFieldRef={refreshFieldRef}
                         optionalFeatures={OptionDateFeatures({
@@ -188,7 +186,7 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
                     <HourSelector
                         key={`hora-${index}`}
                         value={formState.current.get(field.salida)}
-                        onChange={(value) => handleInputChange(field.salida, value)}
+                        onChange={(value) => handleInputChange(field.salida, ["hora", value])}
                         requiredFieldRef={requiredFieldRef}
                         refreshFieldRef={refreshFieldRef}
                         optionalFeatures={OptionalTimeFeatures({
@@ -211,7 +209,7 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
                         refreshFieldRef = {refreshFieldRef}
                         disabled={disabledSave}
                         cameraConfiguration={new CameraConfiguration(
-                            (value) => handleInputChange(field.salida, value),
+                            (value) => handleInputChange(field.salida, ['camara',value]),
                             field['editable'],
                             field['relacion de aspecto']
                         )}
@@ -232,7 +230,7 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
                             QRfield:field.rellenarQR,
                             disabled:disabledSave
                         })}
-                        onSelect={(value) => handleInputChange(field.salida, value)}
+                        onSelect={(value) => handleInputChange(field.salida, ['texto',value])}
                     />
                 )
             default:
