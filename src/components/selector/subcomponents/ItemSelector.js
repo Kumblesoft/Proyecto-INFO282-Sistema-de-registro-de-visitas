@@ -27,7 +27,6 @@ const ItemSelector = forwardRef(({ items, onSelect, value,defaultOption, placeho
 
     if (onSelect) onSelect(selectedItem.valor) // Llama al callback con el valor seleccionado
   }
-
   useEffect(() => {
     const selectedItem = items.find(item => item.valor === value) // Encuentra el elemento por el valor
     setSelectedValue(selectedItem ? selectedItem.nombre : null) // Muestra el nombre si se encuentra, o null

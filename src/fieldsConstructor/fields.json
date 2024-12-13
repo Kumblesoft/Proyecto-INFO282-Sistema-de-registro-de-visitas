@@ -113,7 +113,6 @@
         "opcion predeterminada": null,
         "texto predeterminado": "",
         "cantidad de elecciones": 1,
-        "obligatorio": false,	
         "salida": ""
       },
       "camara": {

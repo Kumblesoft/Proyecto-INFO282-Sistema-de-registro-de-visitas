@@ -89,6 +89,7 @@
 				"nombre": "Comentarios adicionales",
 				"obligatorio": false,
 				"salida": "comentarios",
+				"rellenarQR":true,
 				"limitaciones": [
 				],
 				"formato": [
@@ -119,6 +120,7 @@
 			  "nombre": "Ingrese un mensaje",
 			  "obligatorio": true,
 			  "salida": "mensaje",
+			  "rellenarQR":true,
 			  "limitaciones": [
 				"solo letras"
 			  ],
@@ -131,6 +133,7 @@
 			  "nombre": "Ingrese su nombre",
 			  "obligatorio": true,
 			  "salida": "nombre",
+			  "rellenarQR":true,
 			  "limitaciones": [
 				"solo letras"
 			  ],
@@ -141,6 +144,7 @@
 			  "nombre": "Ingrese su edad",
 			  "obligatorio": true,
 			  "salida": "edad",
+			  "rellenarQR":true,
 			  "limitaciones": [
 				"solo numeros"
 			  ],
@@ -151,6 +155,7 @@
 			  "nombre": "Ingrese su dirección",
 			  "obligatorio": false,
 			  "salida": "direccion",
+			  "rellenarQR":true,
 			  "limitaciones": [],
 			  "formato": []
 			},
@@ -159,6 +164,7 @@
 			  "nombre": "Ingrese un mensaje de error",
 			  "obligatorio": true,
 			  "salida": "mensajeError",
+			  "rellenarQR":true,
 			  "limitaciones": [
 				"solo letras",
 				"no numeros"
@@ -172,6 +178,7 @@
 			  "nombre": "Ingrese una descripción",
 			  "obligatorio": false,
 			  "salida": "descripcion",
+			  "rellenarQR":true,
 			  "limitaciones": [],
 			  "formato": [
 				"solo minusculas"
@@ -182,6 +189,7 @@
 			  "nombre": "Ingrese un código",
 			  "obligatorio": true,
 			  "salida": "codigo",
+			  "rellenarQR":true,
 			  "limitaciones": [
 				"solo letras"
 			  ],

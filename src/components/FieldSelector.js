@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { View, StyleSheet, Alert, TouchableOpacity } from 'react-native'
 import {Text, Select, SelectItem, Button} from '@ui-kitten/components'
 
@@ -11,6 +11,8 @@ import DateConstructor from '../fieldsConstructor/DateConstructor'
 import CheckBoxConstructor from '../fieldsConstructor/CheckBoxConstructor'
 import CameraConstructor from '../fieldsConstructor/CameraConstructor'
 import DragList from 'react-native-draglist'
+import { useSQLiteContext } from 'expo-sqlite'
+import { getDatabaseInstance } from '../database/database'
 
 
 const constructors = new Map([
@@ -24,13 +26,17 @@ const constructors = new Map([
 ])
 let fieldNames = new Set()
 
-const FieldSelector = () => {
+const FieldSelector = ({onSave}) => {
     const [selectedField, setSelectedField] = useState('')
     const [selectedIndex, setSelectedIndex] = useState(null)
     const [fieldsToDisplay, setFieldsToDisplay] = useState([]) // Almacena los campos agregados
     const [miniFields, setMiniFields] = useState([]) // Almacena los campos agregados
     const [dragMode, setDragMode] = useState(false)
     const [form, setForm] = useState({})
+    const [fieldNames, setFieldNames] = useState(new Set())
+    useEffect(() => {
+        setFieldNames(new Set(miniFields))
+    }, [miniFields])
     
 
     // Obtiene los tipos de campos del JSON (keys del objeto)
@@ -122,8 +128,8 @@ const FieldSelector = () => {
     }
 
     const handleSave = () => {
-        setForm(fieldsToDisplay)
-        console.log(form)
+        console.log(fieldsToDisplay)
+        onSave(fieldsToDisplay)
     }
 
     const handleDragMode = () => {
@@ -196,7 +202,7 @@ const FieldSelector = () => {
                 </Button>
             </View>) : <></>}
             
-        
+        <Button onPress={() => handleSave()}>Guardar Formulario</Button>
     </View>
     </>
     )

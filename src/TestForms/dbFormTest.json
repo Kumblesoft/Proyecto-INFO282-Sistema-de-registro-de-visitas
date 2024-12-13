@@ -1,19 +1,56 @@
-{
-	"nombre formulario": "Formulario 1",
-	"formato salida": "JSON",
-	"nombre archivo salida": "respuestas formulario 1.json",
-	"ultima modificacion": "11/11/11",
-	"campos": [
-		{
-			"tipo": "texto",
-			"nombre": "Ingrese un mensaje",
-			"obligatorio": true,
-			"rellenarQR":true,
-			"salida": "mensaje",
-			"limitaciones": [
-			],
-			"formato": [
-			]
-		},
-	],
-}
+[
+	{
+		"nombre formulario": "Formulario 1",
+		"ultima modificacion": "11/11/2011",
+		"campos": [
+			{
+				"tipo": "selector",
+				"nombre": "Edad del participante",
+				"obligatorio": true,
+				"salida": "edad",
+				"opcion predeterminada": null,
+				"texto predeterminado": "Seleccione su edad",
+				"opciones": [
+					{
+						"nombre": "18 años",
+						"valor": "18"
+					},
+					{
+						"nombre": "19 años",
+						"valor": "19"
+					}
+				]
+			},
+			{
+				"tipo": "texto",
+				"nombre": "Ingrese un mensaje",
+				"obligatorio": true,
+				"rellenarQR":true,
+				"salida": "mensaje",
+				"limitaciones": [
+				],
+				"formato": [
+				]
+			},
+			{
+				"tipo": "fecha",
+				"nombre": "Fecha de Hoy",
+				"obligatorio": true,
+				"salida": "fecha",
+				"limitaciones": [
+					"no editable"
+				],
+				"formato": "dd/aaaa/mm",
+				"fecha predeterminada": "hoy"
+			},
+			{
+				"tipo": "camara",
+				"nombre": "Foto personal",
+				"obligatorio": true,
+				"salida": "foto",
+				"editable": true,
+				"relacion de aspecto": [16,9]
+			}
+		]
+	}
+]

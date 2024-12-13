@@ -2,38 +2,80 @@ import ChainInsertor from './ChainInsertor'
 import { useSQLiteContext } from 'expo-sqlite'
 
 export default class TextChainInsertor extends ChainInsertor {
-    insert(fieldObject, formID) {
-        console.log(fieldObject)
+    insert(fieldObject, fieldId, fieldTypeId, fieldTableName) {
         if (fieldObject.tipo != 'texto')
-            return this?.next && this.next.insert(fieldObject)
-        const db = useSQLiteContext()
-        const fieldID = db.getFirstSync('SELECT id FROM field_table_name WHERE field = ?', [fieldObject.tipo]).id
+            return this.next && this.next.insert(fieldObject, fieldId, fieldTypeId, fieldTableName)
 
-        db.runSync(
-            'INSERT INTO texto (fk_field, name, qr_refillable) VALUES (?,?,?)',
-            [fieldID, fieldObject.nombre, fieldObject.rellenarQR]
+        this.db.runSync(
+            'INSERT INTO text_properties (fk_field, qr_refillable) VALUES (?,?)',
+            [fieldId, fieldObject.rellenarQR]
         )
+        const idTextInserted = this.db.getFirstSync('SELECT last_insert_rowid() as id').id
 
-        fieldObject.limitaciones?.forEach((limitation) => {
-            console.log(limitation)
-            const limitationID = db.getFirstSync('SELECT id FROM limitations WHERE name = ?', [limitation]).id
-            console.log(limitationID)
-            db.runSync(
-                'INSERT INTO limitations_intermediary (fk_forms, fk_fields, fk_limitations) VALUES (?,?,?)',
-                [formID, fieldID, limitationID]
+        fieldObject.limitaciones?.forEach(limitation => {
+            const limitationID = this.db.getFirstSync('SELECT id FROM limitations WHERE name = ?', [limitation]).id
+            this.db.runSync(
+                'INSERT INTO limitations_intermediary (fk_field, fk_limitation) VALUES (?,?)',
+                [fieldId, limitationID]
             )
         })
 
         fieldObject.formato?.forEach((format) => {
-            console.log(format)
-            const formatID = db.getFirstSync('SELECT id FROM format WHERE name = ?', [format]).id
-            console.log(formatID)
-            db.runSync(
-                'INSERT INTO format_intermediary (fk_forms, fk_field,fk_format) VALUES (?,?,?)',
-                [formID, fieldID, formatID]
+            const formatID = this.db.getFirstSync('SELECT id_format FROM format WHERE name = ?', [format]).id_format
+            this.db.runSync(
+                'INSERT INTO is_formatted (fk_id_format,fk_id_text) VALUES (?,?)',
+                [formatID, idTextInserted]
             )
         })
 
         return true
     }
+
+    delete(fieldId, fieldTableName, fieldTypeName) {
+        if (fieldTypeName != 'texto')
+            return this.next && this.next.delete(fieldId, fieldTableName, fieldTypeName)
+
+        const id_formats = this.db.getFirstSync(`SELECT id_formats FROM ${fieldTableName} WHERE fk_field = ?`, [fieldId]).id_formats
+        
+        this.db.runSync(
+            'DELETE FROM is_formatted WHERE fk_id_text = ?',
+            [id_formats]
+        )
+
+        this.db.runSync(
+            'DELETE FROM limitations_intermediary WHERE fk_field = ?',
+            [fieldId]
+        )
+
+        this.db.runSync(
+            `DELETE FROM ${fieldTableName} WHERE fk_field = ?`,
+            [fieldId]
+        )
+
+        return true
+    }
+
+    getFieldProperties(fieldId, fieldTableName, fieldTypeName) {
+        if (fieldTypeName != 'texto')
+            return this.next && this.next.getFieldProperties(fieldId, fieldTableName, fieldTypeName)
+
+        const properties = this.db.getFirstSync(
+            `SELECT id_formats, qr_refillable FROM ${fieldTableName} WHERE fk_field = ?`,
+            [fieldId]
+        )
+        const limitations = this.db.getAllSync(
+            `SELECT name FROM limitations WHERE id IN (SELECT fk_limitation FROM limitations_intermediary WHERE fk_field = ?)`,
+            [fieldId]
+        )
+        const format = this.db.getAllSync(
+            `SELECT name FROM format WHERE id_format IN (SELECT fk_id_format FROM is_formatted WHERE fk_id_text = ?)`,
+            [properties.id_formats]
+        )
+        return {
+            rellenarQR: Boolean(properties.qr_refillable),
+            limitaciones: limitations.map(limitation => limitation.name),
+            formato: format.map(format => format.name)
+        }
+    }
+
 }
