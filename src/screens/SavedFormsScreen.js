@@ -29,13 +29,12 @@ const SavedForms = () => {
     const [range, setRange] = useState({})
     const [isRangeMode, setIsRangeMode] = useState(false)
     const [isLastsMode, setIsLastsMode] = useState(false)
-    const [isFilterVisible, setFilterVisible] = useState(false);
+    const [isFilterVisible, setFilterVisible] = useState(false)
     const [lasts, setLasts] = useState(0)
     const [confirmDelete, setConfirmDelete] = useState(false)
-    const [expandedTypes, setExpandedTypes] = useState({});
-    const [visible, setVisible] = useState(false);
+    const [expandedTypes, setExpandedTypes] = useState({})
+    const [visible, setVisible] = useState(false)
 
-    
     const database = getDatabaseInstance(useSQLiteContext())
 
     const optionBar = () => (
@@ -163,25 +162,12 @@ const SavedForms = () => {
         />
     )
 
-    const deleteIcon = (props) => (
-        <Icon name='trash' {...props} />
-    );
+    const deleteIcon = props => <Icon name='trash' {...props} />;
+    const shareIcon = props => <Icon name='share' {...props}/>;
+    const filterIcon = props => <Icon name='funnel-outline' fill="#fff" {...props}/>;;
+    const BackAction = () => <TopNavigationAction icon={BackIcon} onPress={() => navigation.goBack()} />;
+    const SelectionIcon = props => <Icon fill='#fff' name={isSelectionMode ? 'checkmark-square' : 'checkmark-square'} style={styles.backIcon} {...props} />;
     
-    const shareIcon = (props) => (
-        <Icon name='share' {...props}/>
-    );
-
-    const filterIcon = (props) => (
-        <Icon name='funnel-outline' fill="#fff" {...props}/>
-    );
-
-    const BackAction = () => (
-        <TopNavigationAction icon={BackIcon} onPress={() => navigation.goBack()} />
-    )
-
-    const SelectionIcon = (props) => (
-        <Icon fill='#fff' name={isSelectionMode ? 'checkmark-square' : 'checkmark-square'} style={styles.backIcon} {...props} />
-    )
 
     const selectAll = () => setSelectedForms(forms.map(form => form.fecha))
     const deselectAll = () => setSelectedForms([])
@@ -216,7 +202,24 @@ const SavedForms = () => {
         newForms.sort((a,b) => b.fecha - a.fecha)
         setForms(newForms.slice(newForms.length - value))
     }
-
+    const toggleSelectByFormName = formName => {
+        setIsSelectionMode(true)
+        const currentSelectedForms = new Set(selectedForms)
+        const formsToToggle = baseForms.filter(form => form.plantilla === formName)
+        
+        let allSelected = true
+        for (const form of formsToToggle) 
+            if (!currentSelectedForms.has(form.fecha)) {
+                allSelected = false
+                break
+            }
+        if (allSelected) 
+            formsToToggle.forEach(form => currentSelectedForms.delete(form.fecha))
+        else 
+            formsToToggle.forEach(form => currentSelectedForms.add(form.fecha))
+        
+        setSelectedForms([...currentSelectedForms])
+    }
     const renderTitle = () => (
         <View style={styles.titleContainer}>
             <Text style={styles.topNavigationText}>Formularios Guardados</Text>
@@ -258,7 +261,7 @@ const SavedForms = () => {
 
     const renderTypeItem = ({ item }) => (
         <View>
-            <TouchableOpacity onPress={() => toggleExpand(item)} >
+            <TouchableOpacity onLongPress={() => toggleSelectByFormName(item)} onPress={() => toggleExpand(item)} >
                 <Text style={styles.formType}>{item}</Text> {/* Mostrar el tipo de formulario */}
             </TouchableOpacity>
             {expandedTypes[item] && (
