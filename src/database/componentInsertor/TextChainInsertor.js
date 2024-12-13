@@ -35,7 +35,7 @@ export default class TextChainInsertor extends ChainInsertor {
         if (fieldTypeName != 'texto')
             return this.next && this.next.delete(fieldId, fieldTableName, fieldTypeName)
         console.log(this.db.getAllSync(`SELECT * FROM ${fieldTableName}`))
-        const id_formats = this.db.getFirstSync(`select id_formats from ${fieldTableName} where fk_field = ?`, [fieldId])["id_formats"]
+        const id_formats = this.db.getFirstSync(`SELECT id_formats FROM ${fieldTableName} WHERE fk_field = ?`, [fieldId])["id_formats"]
 
         this.db.runSync(
             'DELETE FROM text_properties WHERE fk_field = ?',
@@ -48,7 +48,7 @@ export default class TextChainInsertor extends ChainInsertor {
         )
 
         this.db.runSync(
-            'DELETE FROM format_intermediary WHERE fk_field = ?',
+            'DELETE FROM is_formatted WHERE fk_id_format = ?',
             [id_formats]
         )
         return true

@@ -209,8 +209,8 @@ export default class Database {
 
     deleteForm(formName) {
         try {
-            const formID = this.db.getFirstSync('SELECT id FROM forms WHERE name = ?', [formName]).id   
-            
+            const formID = this.db.getFirstSync('SELECT id FROM forms WHERE name = ?', [formName]).id
+
             const fieldsID = this.db.getAllSync('SELECT id, fk_field_table_name FROM fields WHERE fk_id_form = ?', [formID])
             console.log(fieldsID)
             fieldsID.forEach(field => {
