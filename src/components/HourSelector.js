@@ -64,7 +64,9 @@ export default function HourSelector ({onChange, optionalFeatures = {},requiredF
 
 
     const setNowTime = () => {
-        onChange((new Date().getHours()).toString().padStart(2,"0") + ":" + (new Date().getMinutes()).toString().padStart(2,"0"))
+        const now = (new Date().getHours()).toString().padStart(2, "0") + ":" + (new Date().getMinutes()).toString().padStart(2, "0")
+        onChange(now)
+        setHour(now)
         setIsRequiredAlert(false)
     }
     requiredFieldRef.current = () => {
