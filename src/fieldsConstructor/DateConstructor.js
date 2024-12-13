@@ -45,7 +45,7 @@ const DateConstructor = ({ field = {}, onSave }) => {
     })
 
     const handleSave = () => {
-        if (!fieldName.trim()) {
+        if (!fieldName === "") {
             Alert.alert("Error", "El nombre del campo no puede estar vacío.")
             return
         }
@@ -101,7 +101,7 @@ const DateConstructor = ({ field = {}, onSave }) => {
                 <Text style={styles.label}>Nombre del Campo</Text>
                 <Input
                     value={fieldName}
-                    onChange={setFieldName}
+                    onChangeText={nextName => setFieldName(nextName)}
                     placeholder="Nombre del campo"
                     style={styles.input}
                 />

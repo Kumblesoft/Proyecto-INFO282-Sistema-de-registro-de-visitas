@@ -100,8 +100,8 @@ const TextoConstructor = ({ field, onSave }) => {
         const field = {
             nombre: fieldName,
             salida: fieldName.toLowerCase().replace(/ /g, '_'),
-            limitaciones,
-            formato,
+            limitaciones : limitaciones ? limitaciones : null,
+            formato: formato ? [formato] : [],
             obligatorio: isRequired,
             rellenarQR: isRequiredQR,
         }
