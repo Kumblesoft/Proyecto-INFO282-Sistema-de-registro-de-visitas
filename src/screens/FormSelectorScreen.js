@@ -66,8 +66,14 @@ const FormSelectorScreen = () => {
           to: newPath,
         })
 
-        const content = await FileSystem.readAsStringAsync(newPath) // Now read the file from the cache
-        db.addForm(content)
+        let content = await FileSystem.readAsStringAsync(newPath) // Now read the file from the cache
+        content = JSON.parse(content)
+        content.forEach(form => {
+          db.addForm(form)
+          console.log(db.getForm(form["nombre formulario"]))
+        })
+
+        console.log("File Content:", content)
       }
       else if (result.canceled) { console.log("Action Canceled, no file selected.") }
       else { Alert.alert("Error", "Failed to pick a document. Please try again.") }

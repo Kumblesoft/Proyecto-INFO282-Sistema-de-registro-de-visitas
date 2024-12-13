@@ -56,7 +56,7 @@ export default class TextChainInsertor extends ChainInsertor {
     getFieldProperties(fieldId, fieldTableName, fieldTypeName) {
         if (fieldTypeName != 'texto')
             return this.next && this.next.getFieldProperties(fieldId, fieldTableName, fieldTypeName)
-        
+
         const properties = this.db.getFirstSync(
             `SELECT id_formats, qr_refillable FROM ${fieldTableName} WHERE fk_field = ?`,
             [fieldId]
@@ -70,7 +70,7 @@ export default class TextChainInsertor extends ChainInsertor {
             [properties.id_formats]
         )
         return {
-            rellenarQR: properties.qr_refillable,
+            rellenarQR: Boolean(properties.qr_refillable),
             limitaciones: limitations.map(limitation => limitation.name),
             formato: format.map(format => format.name)
         }

@@ -72,7 +72,7 @@ export function getDatabaseInstance(db) {
         instance = new Database(db)
         const testFroms = require('../TestForms/forms.json')
         testFroms.forEach(test => instance.addForm(test))
-        instance.getForm("Formulario 1")
+        //instance.getForm("Formulario 1")
     }
     return instance
 }
@@ -96,7 +96,7 @@ export default class Database {
         Database.instance = this // Cache the instance
     }
 
-    getAllForms(){
+    getAllForms() {
         try {
             const forms = this.db.getAllSync('SELECT name FROM forms')
             return forms.map(form => this.getForm(form.name))
@@ -185,9 +185,11 @@ export default class Database {
 
     addForm(newForm) {
         try {
-            const statement = this.db.prepareSync('INSERT INTO forms (name, last_modification) VALUES (?,?)')
-            statement.executeSync([newForm["nombre formulario"], newForm["ultima modificacion"]])
-            const formID = this.db.getFirstSync('select last_insert_rowid() as id').id
+            this.db.runSync(
+                'INSERT INTO forms (name, last_modification) VALUES (?,?)',
+                [newForm["nombre formulario"], newForm["ultima modificacion"]]
+            )
+            const formID = this.db.getFirstSync('SELECT last_insert_rowid() AS id').id
 
             newForm.campos.forEach((fieldObject, i) => {
                 const { id: typeOfField, table_name: fieldTableName } = this.db.getFirstSync('SELECT id, table_name FROM field_table_name WHERE field_type_name=?', [fieldObject.tipo])
@@ -199,7 +201,6 @@ export default class Database {
                 const lastFieldId = this.db.getFirstSync('SELECT id FROM fields ORDER BY id DESC LIMIT 1').id
                 if (!this.chainInsertors.insert(fieldObject, lastFieldId, typeOfField, fieldTableName))
                     throw new Error(`Tipo de campo desconocido ${fieldObject.tipo}`)
-                //this.db.getForms()
             })
         } catch (error) {
             console.log(error)

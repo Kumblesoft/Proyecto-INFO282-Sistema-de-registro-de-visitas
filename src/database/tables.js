@@ -29,7 +29,7 @@ export default initDatabaseScript = {
     CREATE TABLE IF NOT EXISTS text_properties (
     fk_field INTEGER REFERENCES fields(id) NOT NULL,
     id_formats INTEGER PRIMARY KEY AUTOINCREMENT,
-    qr_refillable INTEGER NOT NULL
+    qr_refillable INTEGER DEFAULT 0
     );
 
     CREATE TABLE IF NOT EXISTS selector_properties (
@@ -54,12 +54,14 @@ export default initDatabaseScript = {
    
     CREATE TABLE IF NOT EXISTS date_properties (
     fk_field INTEGER REFERENCES fields(id) NOT NULL,
+    id_limitations INTEGER PRIMARY KEY AUTOINCREMENT,
     date_format TEXT NOT NULL,
     default_date TEXT NOT NULL
     );
 
     CREATE TABLE IF NOT EXISTS hour_properties (
     fk_field INTEGER REFERENCES fields(id) NOT NULL,
+    id_limitations INTEGER PRIMARY KEY AUTOINCREMENT,
     default_time TEXT NOT NULL
     );
 

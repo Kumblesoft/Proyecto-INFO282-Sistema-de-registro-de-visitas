@@ -69,22 +69,22 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
             requiredFieldRefs.current.forEach(ref => ref())
             return (new Err('Complete todos los campos obligatorios')).show()
         }
-        
+
 
         try {
-            
-            
+
+
             const newForm = {
-                fecha : new Date().getTime(),
-                plantilla: formData["nombre formulario"], 
+                fecha: new Date().getTime(),
+                plantilla: formData["nombre formulario"],
                 umplantilla: formData["ultima modificacion"],
-                data: Object.fromEntries(formState.current), 
+                data: Object.fromEntries(formState.current),
                 idDispositivo: identifier
             }
             console.log(newForm)
             db.insertAnswer(newForm)
 
-            
+
 
             Alert.alert("Formulario guardado")
             formState.current.clear()
@@ -116,11 +116,11 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
                         requiredFieldRef={requiredFieldRef}
                         refreshFieldRef={refreshFieldRef}
                         optionalFeatures={OptionSelectorFeatures({
-                        title: field.nombre,
-                        defaultOption: field['opcion predeterminada'],
-                        placeholder: field['texto predeterminado'],
-                        required: field.obligatorio,
-                        disabled: disabledSave
+                            title: field.nombre,
+                            defaultOption: field['opcion predeterminada'],
+                            placeholder: field['texto predeterminado'],
+                            required: field.obligatorio,
+                            disabled: disabledSave
                         })}
                     />
                 )
@@ -130,16 +130,16 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
                         key={`checkbox-${index}`}
                         type={OptionComponentType.CHECKBOX}
                         items={field.opciones}
-                        onSelect={(value) => handleInputChange(field.salida,['checkbox', value])}
+                        onSelect={(value) => handleInputChange(field.salida, ['checkbox', value])}
                         requiredFieldRef={requiredFieldRef}
                         refreshFieldRef={refreshFieldRef}
                         optionalFeatures={OptionSelectorFeatures({
-                        title: field.nombre,
-                        defaultOption: field['opcion predeterminada'],
-                        placeholder: field['texto predeterminado'],
-                        maxChecked: field['cantidad de elecciones'],
-                        required: field['obligatorio'],
-                        disabled: disabledSave
+                            title: field.nombre,
+                            defaultOption: field['opcion predeterminada'],
+                            placeholder: field['texto predeterminado'],
+                            maxChecked: field['cantidad de elecciones'],
+                            required: field['obligatorio'],
+                            disabled: disabledSave
                         })}
                     />
                 )
@@ -149,34 +149,35 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
                         key={`radio-${index}`}
                         type={OptionComponentType.RADIO}
                         items={field.opciones}
-                        onSelect={(value) => handleInputChange(field.salida,['radio',value])}
+                        onSelect={(value) => handleInputChange(field.salida, ['radio', value])}
                         requiredFieldRef={requiredFieldRef}
                         refreshFieldRef={refreshFieldRef}
                         optionalFeatures={OptionSelectorFeatures({
-                        title: field.nombre,
-                        defaultOption: field['opcion predeterminada'],
-                        placeholder: field['texto predeterminado'],
-                        maxChecked: field['cantidad de elecciones'],
-                        required: field['obligatorio'],
-                        disabled: disabledSave
+                            title: field.nombre,
+                            defaultOption: field['opcion predeterminada'],
+                            placeholder: field['texto predeterminado'],
+                            maxChecked: field['cantidad de elecciones'],
+                            required: field['obligatorio'],
+                            disabled: disabledSave
                         })}
                     />
                 )
             case 'fecha':
+                console.log(field['limitaciones'])
                 return (
                     <DateSelector
                         key={`fecha-${index}`}
                         value={formState.current.get(field.salida)}
-                        onChange={(value) => handleInputChange(field.salida,['fecha', value])}
+                        onChange={(value) => handleInputChange(field.salida, ['fecha', value])}
                         requiredFieldRef={requiredFieldRef}
                         refreshFieldRef={refreshFieldRef}
                         optionalFeatures={OptionDateFeatures({
-                        title: field.nombre,
-                        placeholder: field['texto predeterminado'],
-                        defaultDate: field['fecha predeterminada'],
-                        dateFormat: field['formato'],
-                        disabled: field['limitaciones'].includes('no editable') || disabledSave,
-                        required: field['obligatorio']
+                            title: field.nombre,
+                            placeholder: field['texto predeterminado'],
+                            defaultDate: field['fecha predeterminada'],
+                            dateFormat: field['formato'],
+                            disabled: field['limitaciones'].includes('no editable') || disabledSave,
+                            required: field['obligatorio']
                         })}
                     />
                 )
@@ -190,10 +191,10 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
                         requiredFieldRef={requiredFieldRef}
                         refreshFieldRef={refreshFieldRef}
                         optionalFeatures={OptionalTimeFeatures({
-                        title: field.nombre,
-                        defaultTime: field['hora predeterminada'] === 'actual' ? now : field['hora predeterminada'],
-                        disabled: field['limitaciones'].includes('no editable') || disabledSave,
-                        required: field['obligatorio']
+                            title: field.nombre,
+                            defaultTime: field['hora predeterminada'] === 'actual' ? now : field['hora predeterminada'],
+                            disabled: field['limitaciones'].includes('no editable') || disabledSave,
+                            required: field['obligatorio']
                         })}
                     />
                 )
@@ -206,10 +207,10 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
                         title={field.nombre}
                         required={field['obligatorio']}
                         requiredFieldRef={requiredFieldRef}
-                        refreshFieldRef = {refreshFieldRef}
+                        refreshFieldRef={refreshFieldRef}
                         disabled={disabledSave}
                         cameraConfiguration={new CameraConfiguration(
-                            (value) => handleInputChange(field.salida, ['camara',value]),
+                            (value) => handleInputChange(field.salida, ['camara', value]),
                             field['editable'],
                             field['relacion de aspecto']
                         )}
@@ -227,10 +228,10 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
                             required: field.obligatorio,
                             limitations: field.limitaciones,
                             format: field.formato,
-                            QRfield:field.rellenarQR,
-                            disabled:disabledSave
+                            QRfield: field.rellenarQR,
+                            disabled: disabledSave
                         })}
-                        onSelect={(value) => handleInputChange(field.salida, ['texto',value])}
+                        onSelect={(value) => handleInputChange(field.salida, ['texto', value])}
                     />
                 )
             default:

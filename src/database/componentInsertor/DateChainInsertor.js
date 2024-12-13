@@ -9,11 +9,17 @@ export default class DateChainInsertor extends ChainInsertor {
             `INSERT INTO ${fieldTableName} (fk_field, date_format, default_date) VALUES (?,?,?)`,
             [fieldId, fieldObject.formato, fieldObject['fecha predeterminada']]
         )
+        fieldObject.limitatciones?.forEach(limitation => {
+            this.db.runSync(
+                'INSERT INTO limitations_intermediary (fk_field, fk_limitation) VALUES (?,?)',
+                [fieldId, this.db.getFirstSync('SELECT id FROM limitations WHERE name = ?', [limitation]).id]
+            )
+        })
         return true
         // Colocar formato.
     }
     delete(fieldId, fieldTableName, fieldTypeName) {
-        if(fieldTypeName != 'fecha')
+        if (fieldTypeName != 'fecha')
             return this.next && this.next.delete(fieldId, fieldTableName, fieldTypeName)
 
         this.db.runSync(
@@ -22,12 +28,17 @@ export default class DateChainInsertor extends ChainInsertor {
         )
     }
     getFieldProperties(fieldId, fieldTableName, fieldTypeName) {
-        if(fieldTypeName != 'fecha')
+        if (fieldTypeName != 'fecha')
             return this.next && this.next.getFieldProperties(fieldId, fieldTableName, fieldTypeName)
-        const properties =  this.db.getFirstSync(`SELECT date_format, default_date FROM ${fieldTableName} WHERE fk_field = ?`, [fieldId])
+        const properties = this.db.getFirstSync(`SELECT date_format, default_date FROM ${fieldTableName} WHERE fk_field = ?`, [fieldId])
+        const limitations = this.db.getAllSync(`SELECT fk_limitation FROM limitations_intermediary WHERE fk_field = ?`, [fieldId]).map(l => l.fk_limitation)
+        const outputLimitations = []
+        limitations.forEach(limitation => outputLimitations.push(this.db.getFirstSync(`SELECT name FROM limitations WHERE id = ?`, [limitation]).name))
+
         return {
             formato: properties.date_format,
-            "fecha predeterminada": properties.default_date
+            "fecha predeterminada": properties.default_date,
+            limitaciones: outputLimitations
         }
     }
 }
