@@ -14,7 +14,6 @@ export default class CameraChainInsertor extends ChainInsertor {
     getFieldProperties(fieldId, fieldTableName, fieldTypeName) {
         if (fieldTypeName != 'camara')
             return this.next && this.next.getFieldProperties(fieldId, fieldTableName, fieldTypeName)
-        console.log(this.db.getFirstSync(`SELECT aspect_relation FROM ${fieldTableName} WHERE fk_field = ?`, [fieldId]).aspect_relation)
         return {
             "relacion de aspecto": JSON.parse(this.db.getFirstSync(`SELECT aspect_relation FROM ${fieldTableName} WHERE fk_field = ?`, [fieldId]).aspect_relation)
         }
