@@ -35,8 +35,7 @@ const TextoConstructor = ({ field, onSave }) => {
         [1, 1], // "email"
         [1, 1], // "no números"
     ]
-    console.log(field)
-    const [fieldName, setFieldName] = useState(field.name?? '')
+    const [fieldName, setFieldName] = useState(field.nombre?? '')
     const [selectedLimitaciones, setSelectedLimitaciones] = useState([])
     const [selectedFormato, setSelectedFormato] = useState(field.formato?? null)
     const [isRequired, setIsRequired] = useState(field.isRequired ?? true)

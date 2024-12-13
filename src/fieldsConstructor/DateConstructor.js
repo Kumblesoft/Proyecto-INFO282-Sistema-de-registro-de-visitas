@@ -3,10 +3,11 @@ import { View, StyleSheet, Alert, TouchableOpacity } from 'react-native'
 import { Text, Input, Button, Toggle, Datepicker, NativeDateService } from '@ui-kitten/components'
 
 const DateConstructor = ({ field = {}, onSave }) => {
-    const [fieldName, setFieldName] = useState(field.name || "")
-    const [defaultDate, setDefaultDate] = useState(field.defaultDate || 'hoy')
+    console.log(field)
+    const [fieldName, setFieldName] = useState(field.nombre?? '')
+    const [defaultDate, setDefaultDate] = useState(field.defaultDate?? 'hoy')
     const [date, setDate] = useState(new Date())
-    const [isEditable, setIsEditable] = useState(field.isEditable || false)
+    const [isEditable, setIsEditable] = useState(field.isEditable?? false)
     const [dateFormat, setDateFormat] = useState("DD/MM/YYYY")
     const [isToday, setIsToday] = useState(defaultDate === 'hoy')
 

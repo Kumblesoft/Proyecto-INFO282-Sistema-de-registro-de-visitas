@@ -197,7 +197,8 @@ const FormSelectorScreen = () => {
   const OptionsModal = () => {
 
     const onShare = shareFormTemplate
-    const onEdit = () => navigation.navigate('FormEditor', { form: selectedItem })
+    const onEdit = () => {navigation.navigate('FormEditor', { form: selectedItem })
+                          setIsOptionModalVisible(false)}
     const onSelect = item => {
       setSelectedForm(item)
       navigation.goBack()

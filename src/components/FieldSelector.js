@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect} from 'react'
 import { View, StyleSheet, Alert, TouchableOpacity } from 'react-native'
 import {Text, Select, SelectItem, Button} from '@ui-kitten/components'
 
@@ -26,18 +26,26 @@ const constructors = new Map([
 ])
 let fieldNames = new Set()
 
-const FieldSelector = ({onSave}) => {
+const FieldSelector = ({onSave,form}) => {
+    
     const [selectedField, setSelectedField] = useState('')
     const [selectedIndex, setSelectedIndex] = useState(null)
     const [fieldsToDisplay, setFieldsToDisplay] = useState([]) // Almacena los campos agregados
     const [miniFields, setMiniFields] = useState([]) // Almacena los campos agregados
     const [dragMode, setDragMode] = useState(false)
-    const [form, setForm] = useState({})
+    //const [form, setForm] = useState({})
     
 
     // Obtiene los tipos de campos del JSON (keys del objeto)
     const fieldTypes = Object.keys(fields)
-
+    useEffect(() => {
+        if (form?.campos) {
+            setFieldsToDisplay(form.campos)
+            setMiniFields(form.campos.map((field) => field.nombre || ''))
+            fieldNames = new Set(form.campos.map((field) => field.nombre || ''))
+            console.log(fieldNames)
+        }
+    }, [form])
     const handleFieldSave = (field, index) => {
         if (fieldNames.has(field.nombre) && field.nombre !== miniFields[index]) {
             Alert.alert('Error', `El campo "${field.nombre}" ya existe en el formulario`)
