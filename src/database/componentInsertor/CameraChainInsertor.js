@@ -5,7 +5,7 @@ export default class CameraChainInsertor extends ChainInsertor {
         if (fieldObject.tipo != 'camara')
             return this.next && this.next.insert(fieldObject, fieldId, fieldTypeId, fieldTableName)
         this.db.runSync(
-            `INSERT INTO ${fieldTableName}(fk_field, aspect_relation) values (?,?)`, 
+            `INSERT INTO ${fieldTableName}(fk_field, aspect_relation) values (?,?)`,
             [fieldId, fieldObject['relacion de aspecto'].toString()]
         )
         return true

@@ -71,7 +71,10 @@ export function getDatabaseInstance(db) {
     if (!instance) {
         instance = new Database(db)
         const testFroms = require('../TestForms/forms.json')
+        const testForm = require('../TestForms/dbFormTest.json')
+        instance.addForm(testForm)
         testFroms.forEach(test => instance.addForm(test))
+        instance.getForm(1)
     }
     return instance
 }
@@ -97,19 +100,15 @@ export default class Database {
 
     getForm(formID) {
         try {
-            tables.forEach(table =>
-                console.log(`${table}:\n${JSON.stringify(this.db.getAllSync(`SELECT * FROM ${table}`))}`)
-
-            )
             const { name: nombreFormulario, last_modification: ultimaModificacion } = this.db.getFirstSync('SELECT name,last_modification FROM forms WHERE id = ?', [formID])
-            const fields = this.getAllSync('SELECT name,ordering,obligatory,output FROM fields WHERE fk_id_form = ?', [formID])
+            const fields = this.db.getAllSync('SELECT id,fk_field_table_name,name,ordering,obligatory,output FROM fields WHERE fk_id_form = ?', [formID])
 
             const outputForm = {
                 "nombre formulario": nombreFormulario,
                 "ultima modificacion": ultimaModificacion
             }
 
-            const outputFields = new Array(fields.length())
+            const outputFields = new Array(fields.length)
             fields.forEach((field) => {
                 const { id: fieldID, fk_field_table_name: typeID, name: fieldName, ordering: posicion, obligatory: obligatorio, output: salidaCampo } = field
                 const outputField = {
@@ -119,8 +118,8 @@ export default class Database {
                     "tipo": this.db.getFirstSync('SELECT field_type_name FROM field_table_name WHERE id = ?', [typeID]).field_type_name
                 }
 
-                const typeTableName = this.db.getFirstSync('SELECT table_name FROM field_table_name WHERE id = ?', [typeID]).table_name
-                const outputTypeFieldData = this.chainInsertors.get(fieldID, typeTableName)
+                const { table_name: typeTableName, field_type_name: fieldTypeName } = this.db.getFirstSync('SELECT table_name,field_type_name FROM field_table_name WHERE id = ?', [typeID])
+                const outputTypeFieldData = this.chainInsertors.getFieldProprties(fieldID, typeTableName, fieldTypeName)
                 Object.entries(outputTypeFieldData).forEach(([key, value]) =>
                     outputField[key] = value
                 )
@@ -128,6 +127,8 @@ export default class Database {
                 outputFields[posicion] = outputField
             })
             outputForm.campos = outputFields
+
+            console.log(outputForm)
 
         } catch (error) {
             console.log(error)
@@ -137,7 +138,7 @@ export default class Database {
     getAllAnswers() {
         try {
             const answers = this.db.getAllSync('SELECT ID_RESPUESTA FROM respuestas')
-            return answers.map(answer => this.getAnswer(answer['ID_RESPUESTA']))
+            return answers.map(answer => this.db.getAnswer(answer['ID_RESPUESTA']))
         } catch (error) {
             console.log(error)
         }
@@ -145,7 +146,7 @@ export default class Database {
     getAnswerFromFormTemplate(formName) {
         try {
             const answers = this.db.getAllSync('SELECT id FROM forms WHERE name = ?', [formName])
-            return answers.map(answer => this.getAnswer(answer['ID_RESPUESTA']))
+            return answers.map(answer => this.db.getAnswer(answer['ID_RESPUESTA']))
         } catch (error) {
             console.log(error)
         }
@@ -188,7 +189,7 @@ export default class Database {
                 const lastFieldId = this.db.getFirstSync('SELECT id FROM fields ORDER BY id DESC LIMIT 1').id
                 if (!this.chainInsertors.insert(fieldObject, lastFieldId, typeOfField, fieldTableName))
                     throw new Error(`Tipo de campo desconocido ${fieldObject.tipo}`)
-                //this.getForms()
+                //this.db.getForms()
             })
         } catch (error) {
             console.log(error)
@@ -204,7 +205,7 @@ export default class Database {
                 this.db.runSync('DELETE FROM fields WHERE id = ?', [field.id])
             })
             this.db.runSync('DELETE FROM forms WHERE id = ?', [formID])
-            //this.getForms()
+            //this.db.getForms()
         } catch (error) {
             console.log(error)
         }
@@ -217,11 +218,11 @@ export default class Database {
             form.fields.forEach((fieldObject, i) => {
                 this.db.runSync(
                     'INSERT INTO fields (fk_id_form, fk_field_table_name, name, order, obligatory, output) VALUES (?,?,?,?,?,?)',
-                    [id, this.getComponnentTypeId(field.tipo), field.nombre, i, field.obligatorio, field.salida]
+                    [id, this.db.getComponnentTypeId(field.tipo), field.nombre, i, field.obligatorio, field.salida]
                 )
                 if (!this.chainInsertors.insert(fieldObject)) throw new Error('Error al insertar')
             })
-            this.getForms()
+            this.db.getForms()
         } catch (error) {
             console.log(error)
         }
@@ -229,7 +230,7 @@ export default class Database {
         try {
             const statement = this.db.prepareSync('UPDATE forms SET name = ?, output_file_name = ?, last_modification = ?  WHERE id = ?')
             statement.executeSync([(form.name, form.output_file_name, form.last_modification, id])
-            this.getForms()
+            this.db.getForms()
         } catch (error) {
             console.log(error)
         }
@@ -246,11 +247,12 @@ export default class Database {
         console.log(lastAnswerID)
 
         Object.entries(answerObject.data).forEach(([fieldOutput, [typeOfField, value]]) => {
-            console.log(key,value)
+            console.log(key, value)
             this.db.runSync(
-                'INSERT INTO campo_respuesta (id_respuesta, enum_tipo_campo, nombre_campo, valor_campo) VALUES (?,?,?,?)',
-                [lastAnswerID, this.db.getFirstSync('SELECT id from field_table_name where field_type_name = ?', typeOfField).id, fieldOutput, value.toString()]
-        )})
+                'INSERT INTO campo_respuesta (id_respuesta, enum_tipo_campo, nombre_campo, valor_campo) VALUES (?,? ?,?)',
+                [lastAnswerID, this.db.getFirstSync('SELECT id from field_table_name where field_type_name = ?', typeOfField), fieldOutput, value.toString()]
+            )
+        })
     }
 
     deleteAnswers(formID, answerID) {

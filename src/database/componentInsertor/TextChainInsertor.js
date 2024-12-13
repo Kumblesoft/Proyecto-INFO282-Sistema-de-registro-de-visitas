@@ -36,7 +36,7 @@ export default class TextChainInsertor extends ChainInsertor {
             return this.next && this.next.delete(fieldId, fieldTableName, fieldTypeName)
 
         const id_formats = this.db.getFirstSync(`select id_formats from ${fieldTableName} where fk_field = ?`, [fieldId]).id_formats
-        
+
         this.db.runSync(
             'DELETE FROM text_properties WHERE fk_field = ?',
             [fieldId]
@@ -70,9 +70,9 @@ export default class TextChainInsertor extends ChainInsertor {
             [properties.id_formats]
         )
         return {
-            rellenarQR      : properties.qr_refillable,
-            limitaciones    : limitations.map(limitation => limitation.name),
-            formato         : format.map(format => format.name)
+            rellenarQR: properties.qr_refillable,
+            limitaciones: limitations.map(limitation => limitation.name),
+            formato: format.map(format => format.name)
         }
     }
 
