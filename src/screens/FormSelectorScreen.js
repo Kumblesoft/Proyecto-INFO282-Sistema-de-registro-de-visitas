@@ -294,13 +294,16 @@ const FormSelectorScreen = () => {
           />
         </Layout>
       </Layout>
-      <View style={styles.containerMenuBar}>
-
-        <Button style={styles.iconButton2} appearance="ghost" onPress={() => deleteSelectedForms()} accessoryLeft={deleteIcon} />
-
+      <View style={[styles.containerMenuBar,  !isSelectionMode && {justifyContent: 'center' , backgroundColor: 'transparent'}]}>
+        
+        {isSelectionMode &&
+         (selectedForms.length == 0 ? <Text category='h5'>Modo de</Text> : <Button style={styles.iconButton2} appearance="ghost" onPress={() => deleteSelectedForms()} accessoryLeft={deleteIcon} />)}
+        
         <Button style={styles.centerButton} onPress={() => navigation.navigate('FormEditor')} accessoryLeft={plusIcon} />
 
-        <Button style={styles.iconButton2} appearance="ghost" onPress={() => shareFormTemplate(selectedForms)} accessoryLeft={shareIcon} />
+        {isSelectionMode && 
+         (selectedForms.length == 0 ? <Text category='h5'>selección</Text> : <Button style={styles.iconButton2} appearance="ghost" onPress={() => shareFormTemplate(selectedForms)} accessoryLeft={shareIcon} />)}
+
       </View>
 
     </>
@@ -457,7 +460,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: '#00baa2',
-    paddingHorizontal: 10,
+    paddingHorizontal: '5%',
     paddingVertical: 0,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
