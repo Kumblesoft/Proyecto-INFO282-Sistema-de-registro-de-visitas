@@ -4,17 +4,21 @@ import { Text, Input, Layout, Icon, Button } from "@ui-kitten/components"
 import { LinearGradient } from "expo-linear-gradient"
 import { TopNavigation, TopNavigationAction, Divider } from "@ui-kitten/components"
 import { useNavigation } from "@react-navigation/native"
+import { useSQLiteContext } from "expo-sqlite"
+import { getDatabaseInstance } from "../database/database"
 
 import formTemplate from "../fieldsConstructor/fields.json" // Importar el JSON con los campos
 import FieldSelector from "../components/FieldSelector" 
 
 export default function FormEditor() {
+  const db = getDatabaseInstance(useSQLiteContext())
   const navigation = useNavigation()
   const [formFields, setFormFields] = useState(formTemplate)
   const [selectedField, setSelectedField] = useState("") // Estado para el FieldSelector
   const createdFields = [] 
   const formNames = new Set(require("../TestForms/forms.json").map(form => form["nombre formulario"]))
   const [isNameTaken, setIsNameTaken] = useState(false)
+  const [formName, setFormName] = useState("")
 
   const BackIcon = (props) => (
     <Icon
@@ -44,11 +48,25 @@ export default function FormEditor() {
     }))
   }
 
+  const handleSaveForm = (fields) => {
+    isNameTaken ? Alert.alert('Error', 'El nombre de la plantilla ya existe') : () => {
+      const newForm = {
+        "nombre formulario": formName,
+        "ultima modificacion": new Date().getTime(),
+        campos: fields,
+      }
+      // Guardar el nuevo formulario en el archivo JSON
+      console.log(newForm)
+
+
+
+    }
+  }
+
   const checkFormName = name => {
     console.log(name)
     console.log(formNames)
-    setIsNameTaken(formNames.has(name))
-    console.log(formNames.has(name))
+    setIsNameTaken(db.isFormNameRepeated(name) && name != formName  && name != "")
   }
   const renderField = (fieldKey, field) => {
     return (
@@ -100,10 +118,8 @@ export default function FormEditor() {
       <FieldSelector
         selectedValue={selectedField}
         onValueChange={setSelectedField} // Actualiza el estado cuando cambia el selector
+        onSave = {(fields) => handleSaveForm(fields)}
       />
-
-      {/* Renderizar campos del formulario */}
-      {selectedField && renderField(selectedField, formFields[selectedField])}
 
       {/* Botón para guardar cambios <Button onPress={handleFieldPos} margin='20' padding='20' title="Guardar" /> */}
       

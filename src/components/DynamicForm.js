@@ -48,8 +48,8 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
      * @param {string} field - The field name that is being updated.
      * @param {string} value - The new value for the field.
      */
-    const handleInputChange = (field, value) => {
-        formState.current.set(field, value)
+    const handleInputChange = (field, [typeOfField,value]) => {
+        formState.current.set(field, [typeOfField, value])
     }
 
     useImperativeHandle(ref, () => ({
@@ -111,7 +111,7 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
                         key={`selector-${index}`}
                         type={OptionComponentType.DROPDOWN}
                         items={field.opciones}
-                        onSelect={(value) => handleInputChange(field.salida, value)}
+                        onSelect={(value) => handleInputChange(field.salida, [`selector`, value])}
                         requiredFieldRef={requiredFieldRef}
                         refreshFieldRef={refreshFieldRef}
                         optionalFeatures={OptionSelectorFeatures({
@@ -129,7 +129,7 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
                         key={`checkbox-${index}`}
                         type={OptionComponentType.CHECKBOX}
                         items={field.opciones}
-                        onSelect={(value) => handleInputChange(field.salida, value)}
+                        onSelect={(value) => handleInputChange(field.salida,['checkbox', value])}
                         requiredFieldRef={requiredFieldRef}
                         refreshFieldRef={refreshFieldRef}
                         optionalFeatures={OptionSelectorFeatures({
@@ -148,7 +148,7 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
                         key={`radio-${index}`}
                         type={OptionComponentType.RADIO}
                         items={field.opciones}
-                        onSelect={(value) => handleInputChange(field.salida, value)}
+                        onSelect={(value) => handleInputChange(field.salida,['radio',value])}
                         requiredFieldRef={requiredFieldRef}
                         refreshFieldRef={refreshFieldRef}
                         optionalFeatures={OptionSelectorFeatures({
@@ -166,7 +166,7 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
                     <DateSelector
                         key={`fecha-${index}`}
                         value={formState.current.get(field.salida)}
-                        onChange={(value) => handleInputChange(field.salida, value)}
+                        onChange={(value) => handleInputChange(field.salida,['fecha', value])}
                         requiredFieldRef={requiredFieldRef}
                         refreshFieldRef={refreshFieldRef}
                         optionalFeatures={OptionDateFeatures({
@@ -185,7 +185,7 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
                     <HourSelector
                         key={`hora-${index}`}
                         value={formState.current.get(field.salida)}
-                        onChange={(value) => handleInputChange(field.salida, value)}
+                        onChange={(value) => handleInputChange(field.salida, ['hora',value])}
                         requiredFieldRef={requiredFieldRef}
                         refreshFieldRef={refreshFieldRef}
                         optionalFeatures={OptionalTimeFeatures({
@@ -208,7 +208,7 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
                         refreshFieldRef = {refreshFieldRef}
                         disabled={disabledSave}
                         cameraConfiguration={new CameraConfiguration(
-                            (value) => handleInputChange(field.salida, value),
+                            (value) => handleInputChange(field.salida, ['camara',value]),
                             field['editable'],
                             field['relacion de aspecto']
                         )}
@@ -229,7 +229,7 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
                             QRfield:field.rellenarQR,
                             disabled:disabledSave
                         })}
-                        onSelect={(value) => handleInputChange(field.salida, value)}
+                        onSelect={(value) => handleInputChange(field.salida, ['texto',value])}
                     />
                 )
             default:

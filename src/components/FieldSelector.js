@@ -11,6 +11,8 @@ import DateConstructor from '../fieldsConstructor/DateConstructor'
 import CheckBoxConstructor from '../fieldsConstructor/CheckBoxConstructor'
 import CameraConstructor from '../fieldsConstructor/CameraConstructor'
 import DragList from 'react-native-draglist'
+import { useSQLiteContext } from 'expo-sqlite'
+import { getDatabaseInstance } from '../database/database'
 
 
 const constructors = new Map([
@@ -24,7 +26,7 @@ const constructors = new Map([
 ])
 let fieldNames = new Set()
 
-const FieldSelector = () => {
+const FieldSelector = ({onSave}) => {
     const [selectedField, setSelectedField] = useState('')
     const [selectedIndex, setSelectedIndex] = useState(null)
     const [fieldsToDisplay, setFieldsToDisplay] = useState([]) // Almacena los campos agregados
@@ -122,8 +124,8 @@ const FieldSelector = () => {
     }
 
     const handleSave = () => {
-        setForm(fieldsToDisplay)
-        console.log(form)
+        console.log(fieldsToDisplay)
+        onSave(fieldsToDisplay)
     }
 
     const handleDragMode = () => {
@@ -196,7 +198,7 @@ const FieldSelector = () => {
                 </Button>
             </View>) : <></>}
             
-        
+        <Button onPress={() => handleSave()}>Guardar Formulario</Button>
     </View>
     </>
     )

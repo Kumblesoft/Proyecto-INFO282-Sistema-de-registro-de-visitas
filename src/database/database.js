@@ -246,9 +246,9 @@ export default class Database {
         console.log(lastAnswerID)
 
         Object.entries(answerObject.data).forEach(([fieldOutput, [typeOfField, value]]) => {
-            console.log(key,value)
+            console.log(this.db.getFirstSync('SELECT id from field_table_name where field_type_name = ?', typeOfField))
             this.db.runSync(
-                'INSERT INTO campo_respuesta (id_respuesta, enum_tipo_campo, nombre_campo, valor_campo) VALUES (?,? ?,?)',
+                'INSERT INTO campo_respuesta (id_respuesta, enum_tipo_campo, nombre_campo, valor_campo) VALUES (?,?,?,?)',
                 [lastAnswerID, this.db.getFirstSync('SELECT id from field_table_name where field_type_name = ?', typeOfField), fieldOutput, value.toString()]
         )})
     }
