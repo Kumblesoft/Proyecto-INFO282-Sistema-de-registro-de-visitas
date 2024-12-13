@@ -29,7 +29,7 @@ export default class RadioChainInsertor extends ChainInsertor {
         ).id_options
 
         this.db.runSync(
-            'DELETE FROM selector_options WHERE fk_selector_id IN (SELECT id FROM radio WHERE fk_field = ?)',
+            `DELETE FROM radio_options WHERE fk_radio_id = ?`,
             [id_options]
         )
 

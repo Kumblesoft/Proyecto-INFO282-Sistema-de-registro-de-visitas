@@ -214,12 +214,16 @@ export default class Database {
             const fieldsID = this.db.getAllSync('SELECT id, fk_field_table_name FROM fields WHERE fk_id_form = ?', [formID])
             console.log(fieldsID)
             fieldsID.forEach(field => {
+                console.log('iteration start')
                 const fieldTableName = this.db.getFirstSync('SELECT table_name FROM field_table_name WHERE id = ?', [field.fk_field_table_name]).table_name
+                console.log('first query')
                 const fieldTypeName = this.db.getFirstSync('SELECT field_type_name FROM field_table_name WHERE id = ?', [field.fk_field_table_name]).field_type_name
+                console.log('second query')	
                 //if (!this.chainInsertors.delete(field.id, fieldTableName)) throw new Error('Error al eliminar')
                 this.chainInsertors.delete(field.id, fieldTableName, fieldTypeName)
                 console.log("Outside")
                 this.db.runSync('DELETE FROM fields WHERE id = ?', [field.id])
+                console.log('iteration ended')
             })
             this.db.runSync('DELETE FROM forms WHERE id = ?', [formID])
             //this.db.getForms()

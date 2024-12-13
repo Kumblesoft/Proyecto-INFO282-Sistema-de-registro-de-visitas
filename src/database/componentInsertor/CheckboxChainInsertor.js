@@ -30,7 +30,7 @@ export default class CheckboxChainInsertor extends ChainInsertor {
         ).id_options
 
         this.db.runSync(
-            `DELETE FROM checkbox_options WHERE fk_selector_id IN (SELECT id FROM ${fieldTableName} WHERE fk_field = ?)`,
+            `DELETE FROM checkbox_options WHERE fk_checkbox_id = ?`,
             [id_options]
         )
 
