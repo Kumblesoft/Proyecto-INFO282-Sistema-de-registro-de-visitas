@@ -85,8 +85,8 @@ export default initDatabaseScript = {
     );
 
    CREATE TABLE IF NOT EXISTS is_formatted (
-   fk_id_format int references format(id_format),
-   fk_id_text int references text_properties(id_formats)
+   fk_id_format integer references format(id_format),
+   fk_id_text integer references text_properties(id_formats)
    );
    
     CREATE TABLE IF NOT EXISTS format (

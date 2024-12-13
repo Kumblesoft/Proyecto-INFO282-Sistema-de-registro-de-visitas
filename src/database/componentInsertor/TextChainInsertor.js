@@ -34,28 +34,24 @@ export default class TextChainInsertor extends ChainInsertor {
     delete(fieldId, fieldTableName, fieldTypeName) {
         if (fieldTypeName != 'texto')
             return this.next && this.next.delete(fieldId, fieldTableName, fieldTypeName)
-        console.log(this.db.getAllSync(`SELECT * FROM ${fieldTableName}`))
-        const id_formats = this.db.getFirstSync(`SELECT id_formats FROM ${fieldTableName} WHERE fk_field = ?`, [fieldId]).id_formats
 
-        console.log('tercer delete')
+        const id_formats = this.db.getFirstSync(`SELECT id_formats FROM ${fieldTableName} WHERE fk_field = ?`, [fieldId]).id_formats
+        
         this.db.runSync(
-            'DELETE FROM is_formatted WHERE fk_id_format = ?',
+            'DELETE FROM is_formatted WHERE fk_id_text = ?',
             [id_formats]
         )
 
-        console.log('segundo delete')
         this.db.runSync(
             'DELETE FROM limitations_intermediary WHERE fk_field = ?',
             [fieldId]
         )
-
-        console.log('primer delete')
+=
         this.db.runSync(
             `DELETE FROM ${fieldTableName} WHERE fk_field = ?`,
             [fieldId]
         )
 
-        console.log('deletes correctos!')
         return true
     }
 
