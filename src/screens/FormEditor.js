@@ -6,7 +6,7 @@ import { TopNavigation, TopNavigationAction, Divider } from "@ui-kitten/componen
 import { useNavigation } from "@react-navigation/native"
 import { useSQLiteContext } from "expo-sqlite"
 import { getDatabaseInstance } from "../database/database"
-
+import { useRoute } from "@react-navigation/native"
 import formTemplate from "../fieldsConstructor/fields.json" // Importar el JSON con los campos
 import FieldSelector from "../components/FieldSelector" 
 
@@ -19,7 +19,10 @@ export default function FormEditor() {
   const formNames = new Set(require("../TestForms/forms.json").map(form => form["nombre formulario"]))
   const [isNameTaken, setIsNameTaken] = useState(false)
   const [formName, setFormName] = useState("")
-
+  
+  const onEdit = () => navigation.navigate('FormEditor', { form: selectedItem })
+  const route = useRoute()
+  const { form } = route.params || {}
   const BackIcon = (props) => (
     <Icon
         name='arrow-ios-back-outline'
@@ -68,6 +71,8 @@ export default function FormEditor() {
     console.log(formNames)
     setIsNameTaken(db.isFormNameRepeated(name) && name != formName  && name != "")
   }
+
+  
   const renderField = (fieldKey, field) => {
     return (
       <Layout key={fieldKey} style={styles.fieldContainer}>
@@ -119,6 +124,7 @@ export default function FormEditor() {
         selectedValue={selectedField}
         onValueChange={setSelectedField} // Actualiza el estado cuando cambia el selector
         onSave = {(fields) => handleSaveForm(fields)}
+        form = {form}
       />
 
       {/* Botón para guardar cambios <Button onPress={handleFieldPos} margin='20' padding='20' title="Guardar" /> */}
