@@ -46,7 +46,7 @@ export default class TextChainInsertor extends ChainInsertor {
             'DELETE FROM limitations_intermediary WHERE fk_field = ?',
             [fieldId]
         )
-=
+
         this.db.runSync(
             `DELETE FROM ${fieldTableName} WHERE fk_field = ?`,
             [fieldId]
