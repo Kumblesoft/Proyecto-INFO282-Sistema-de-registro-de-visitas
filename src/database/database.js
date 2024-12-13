@@ -71,10 +71,8 @@ export function getDatabaseInstance(db) {
     if (!instance) {
         instance = new Database(db)
         const testFroms = require('../TestForms/forms.json')
-        const testForm = require('../TestForms/dbFormTest.json')
-        instance.addForm(testForm)
         testFroms.forEach(test => instance.addForm(test))
-        instance.getForm(1)
+        instance.getForm("Formulario 1")
     }
     return instance
 }
@@ -98,9 +96,9 @@ export default class Database {
         Database.instance = this // Cache the instance
     }
 
-    getForm(formID) {
+    getForm(nombreFormulario) {
         try {
-            const { name: nombreFormulario, last_modification: ultimaModificacion } = this.db.getFirstSync('SELECT name,last_modification FROM forms WHERE id = ?', [formID])
+            const { id: formID, last_modification: ultimaModificacion } = this.db.getFirstSync('SELECT id,last_modification FROM forms WHERE name = ?', [nombreFormulario])
             const fields = this.db.getAllSync('SELECT id,fk_field_table_name,name,ordering,obligatory,output FROM fields WHERE fk_id_form = ?', [formID])
 
             const outputForm = {
