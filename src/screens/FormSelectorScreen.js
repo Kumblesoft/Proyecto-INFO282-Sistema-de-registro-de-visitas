@@ -19,8 +19,6 @@ const { width, height } = Dimensions.get('window')
 const FormSelectorScreen = () => {
   const db = getDatabaseInstance(useSQLiteContext())
   const navigation = useNavigation()
-  const forms = require("../TestForms/forms.json")
-  const [localForms, setForms] = useState(forms)
   const [isOptionModalVisible, setIsOptionModalVisible] = useState(false)
   const [selectedItem, setSelectedItem] = useState({ "nombre formulario": "err" })
   const { setSelectedForm } = useFormContext()
@@ -157,10 +155,7 @@ const FormSelectorScreen = () => {
   const shareFormTemplate = formItems => {
     if (!formItems) return Alert.alert('Error', 'No se ha seleccionado un formulario')
     if (formItems.constructor === Array) {
-      console.log("FormItems:", formItems)
-      const formItemsSet = new Set(formItems)
-      formItems = formItemsSet.forEach(form => db.getForm(form))
-      formItems = forms.filter(form => formItemsSet.has(form["nombre formulario"]))
+      formItems = formItems.map(form => db.getForm(form))
     }
 
     const typeOfMedia = formItems.constructor === Array ? shareTypes.MULTIPLE_FORMS : shareTypes.SINGLE_FORM
@@ -286,7 +281,7 @@ const FormSelectorScreen = () => {
         <Divider />
         <Layout style={styles.container}>
           <FlatList
-            data={forms.filter((form) => form !== null)}
+            data={db.getAllForms()}
             renderItem={renderItem}
             keyExtractor={(item) => item["nombre formulario"]}
             contentContainerStyle={styles.listContainer}
