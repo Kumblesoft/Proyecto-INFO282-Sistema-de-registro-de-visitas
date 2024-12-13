@@ -8,6 +8,7 @@ export default initDatabaseScript = {
     name TEXT NOT NULL UNIQUE,
     last_modification TEXT NOT NULL
     );
+    CREATE INDEX idx_forms_name ON forms(name);
 
     CREATE TABLE IF NOT EXISTS fields (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
