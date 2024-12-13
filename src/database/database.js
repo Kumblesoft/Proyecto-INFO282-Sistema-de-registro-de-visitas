@@ -57,8 +57,8 @@ export async function initializeDataBase(db) {
 
     db.runSync('INSERT INTO format (name, value_enum_matrix) VALUES (?,?)', ["solo minusculas", 1])
     db.runSync('INSERT INTO format (name, value_enum_matrix) VALUES (?,?)', ["solo mayusculas", 0])
-    
-    ;[[1, 2], [1, 3], [2, 3]].forEach(pair => setCompatibility(db, pair[0], pair[1], "texto", 1, 0))
+
+        ;[[1, 2], [1, 3], [2, 3]].forEach(pair => setCompatibility(db, pair[0], pair[1], "texto", 1, 0))
 
 
 }
@@ -95,72 +95,40 @@ export default class Database {
         Database.instance = this // Cache the instance
     }
 
-    getForm(formID, fieldID) {
+    getForm(formID) {
         try {
             tables.forEach(table =>
                 console.log(`${table}:\n${JSON.stringify(this.db.getAllSync(`SELECT * FROM ${table}`))}`)
 
             )
-            const { name: nombreFormulario, table_name: fieldTableName } = this.db.getFirstSync('SELECT name,last_modification FROM forms WHERE id = ?', [formID])
-            const { name: fieldName, ordering: orden, obligatory: obligatorio, output: salida } = this.getAllSync('SELECT name,ordering,obligatory,output FROM fields WHERE fk_id_form = ?', [formID])
+            const { name: nombreFormulario, last_modification: ultimaModificacion } = this.db.getFirstSync('SELECT name,last_modification FROM forms WHERE id = ?', [formID])
+            const fields = this.getAllSync('SELECT name,ordering,obligatory,output FROM fields WHERE fk_id_form = ?', [formID])
 
-            const form =
-            {
-                "nombre formulario": "Formulario 1",
-                "formato salida": "JSON",
-                "nombre archivo salida": "respuestas formulario 1.json",
-                "ultima modificacion": "11/11/2011",
-                "campos": [
-                    {
-                        "tipo": "selector",
-                        "nombre": "Edad del participante",
-                        "obligatorio": true,
-                        "salida": "edad",
-                        "opcion predeterminada": null,
-                        "texto predeterminado": "Seleccione su edad",
-                        "opciones": [
-                            {
-                                "nombre": "18 años",
-                                "valor": "18"
-                            },
-                            {
-                                "nombre": "19 años",
-                                "valor": "19"
-                            }
-                        ]
-                    },
-                    {
-                        "tipo": "texto",
-                        "nombre": "Ingrese un mensaje",
-                        "obligatorio": true,
-                        "rellenarQR": true,
-                        "salida": "mensaje",
-                        "limitaciones": [
-                        ],
-                        "formato": [
-                        ]
-                    },
-                    {
-                        "tipo": "fecha",
-                        "nombre": "Fecha de Hoy",
-                        "obligatorio": true,
-                        "salida": "fecha",
-                        "limitaciones": [
-                            "no editable"
-                        ],
-                        "formato": "dd/aaaa/mm",
-                        "fecha predeterminada": "hoy"
-                    },
-                    {
-                        "tipo": "camara",
-                        "nombre": "Foto personal",
-                        "obligatorio": true,
-                        "salida": "foto",
-                        "editable": true,
-                        "relacion de aspecto": [16, 9]
-                    }
-                ]
+            const outputForm = {
+                "nombre formulario": nombreFormulario,
+                "ultima modificacion": ultimaModificacion
             }
+
+            const outputFields = new Array(fields.length())
+            fields.forEach((field) => {
+                const { id: fieldID, fk_field_table_name: typeID, name: fieldName, ordering: posicion, obligatory: obligatorio, output: salidaCampo } = field
+                const outputField = {
+                    "nombre": fieldName,
+                    "salida": salidaCampo,
+                    "obligatorio": obligatorio,
+                    "tipo": this.db.getFirstSync('SELECT field_type_name FROM field_table_name WHERE id = ?', [typeID]).field_type_name
+                }
+
+                const typeTableName = this.db.getFirstSync('SELECT table_name FROM field_table_name WHERE id = ?', [typeID]).table_name
+                const outputTypeFieldData = this.chainInsertors.get(fieldID, typeTableName)
+                Object.entries(outputTypeFieldData).forEach(([key, value]) =>
+                    outputField[key] = value
+                )
+
+                outputFields[posicion] = outputField
+            })
+            outputForm.campos = outputFields
+
         } catch (error) {
             console.log(error)
         }
@@ -174,20 +142,20 @@ export default class Database {
             console.log(error)
         }
     }
-    getAnswerFromFormTemplate(formName){
-        try{
+    getAnswerFromFormTemplate(formName) {
+        try {
             const answers = this.db.getAllSync('SELECT id FROM forms WHERE name = ?', [formName])
             return answers.map(answer => this.getAnswer(answer['ID_RESPUESTA']))
-        } catch(error) {
+        } catch (error) {
             console.log(error)
         }
     }
-    getAnswer(idRespuesta){
+    getAnswer(idRespuesta) {
         try {
             const answer = this.db.getFirstSync('SELECT * FROM respuestas WHERE ID_RESPUESTA = ?', [idRespuesta])
             const fields = this.db.getAllSync('select NOMBRE_CAMPO, VALOR_CAMPO from CAMPO_RESPUESTA where id_respuesta = ?', [idRespuesta])
             const formName = this.db.getFirstSync('select name from forms where id = ?', [answer.ID_PLANTILLA]).name
-            
+
             let data = {}
             fields.map(field => data[field.NOMBRE_CAMPO] = field.VALOR_CAMPO)
 
@@ -198,7 +166,7 @@ export default class Database {
                 'idDispositivo': answer.ID_DISPOSITIVO,
                 'data': data
             }
-            
+
         } catch (error) {
             console.log(error)
         }
@@ -212,13 +180,13 @@ export default class Database {
 
             newForm.campos.forEach((fieldObject, i) => {
                 const { id: typeOfField, table_name: fieldTableName } = this.db.getFirstSync('SELECT id, table_name FROM field_table_name WHERE field_type_name=?', [fieldObject.tipo])
-                
+
                 this.db.runSync(
                     'INSERT INTO fields (fk_id_form, fk_field_table_name, name, ordering, obligatory, output) VALUES (?,?,?,?,?,?)',
                     [formID, typeOfField, fieldObject.nombre, i, fieldObject.obligatorio, fieldObject.salida]
                 )
                 const lastFieldId = this.db.getFirstSync('SELECT id FROM fields ORDER BY id DESC LIMIT 1').id
-                if (!this.chainInsertors.insert(fieldObject, lastFieldId, typeOfField, fieldTableName)) 
+                if (!this.chainInsertors.insert(fieldObject, lastFieldId, typeOfField, fieldTableName))
                     throw new Error(`Tipo de campo desconocido ${fieldObject.tipo}`)
                 //this.getForms()
             })
@@ -280,7 +248,7 @@ export default class Database {
             this.db.runSync(
                 'INSERT INTO campo_respuesta (id_respuesta, nombre_campo, valor_campo) VALUES (?,?,?)',
                 [lastAnswerID, key, value]
-        ))
+            ))
     }
 
     deleteAnswers(formID, answerID) {
