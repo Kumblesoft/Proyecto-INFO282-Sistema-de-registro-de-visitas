@@ -183,6 +183,7 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
                 )
             case 'hora': {
                 const now = new Date().getHours().toString().padStart(2, '0') + ':' + new Date().getMinutes().toString().padStart(2, '0')
+                console.log(field)
                 return (
                     <HourSelector
                         key={`hora-${index}`}

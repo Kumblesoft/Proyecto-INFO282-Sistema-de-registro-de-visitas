@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { ScrollView, View, StyleSheet, SafeAreaView } from "react-native"
+import { ScrollView, View, StyleSheet, SafeAreaView, Alert } from "react-native"
 import { Text, Input, Layout, Icon, Button } from "@ui-kitten/components"
 import { LinearGradient } from "expo-linear-gradient"
 import { TopNavigation, TopNavigationAction, Divider } from "@ui-kitten/components"
@@ -7,15 +7,12 @@ import { useNavigation } from "@react-navigation/native"
 import { useSQLiteContext } from "expo-sqlite"
 import { getDatabaseInstance } from "../database/database"
 
-import formTemplate from "../fieldsConstructor/fields.json" // Importar el JSON con los campos
 import FieldSelector from "../components/FieldSelector" 
 
 export default function FormEditor() {
   const db = getDatabaseInstance(useSQLiteContext())
   const navigation = useNavigation()
-  const [formFields, setFormFields] = useState(formTemplate)
   const [selectedField, setSelectedField] = useState("") // Estado para el FieldSelector
-  const createdFields = [] 
   const formNames = new Set(require("../TestForms/forms.json").map(form => form["nombre formulario"]))
   const [isNameTaken, setIsNameTaken] = useState(false)
   const [formName, setFormName] = useState("")
@@ -38,65 +35,32 @@ export default function FormEditor() {
       </View>
   )
 
-  const handleFieldChange = (fieldKey, fieldProperty, value) => {
-    setFormFields(prevFields => ({
-      ...prevFields,
-      [fieldKey]: {
-        ...prevFields[fieldKey],
-        [fieldProperty]: value,
-      }
-    }))
-  }
-
-  const handleSaveForm = (fields) => {
+  const handleSaveForm = fields => {
     if (isNameTaken) {
       Alert.alert('Error', 'El nombre de la plantilla ya existe')
       return
+    } else if (formName === "") {
+      Alert.alert('Error', 'Ingrese un nombre para la plantilla')
+      return
+    } else if (fields.length === 0) {
+      Alert.alert('Error', 'Agregue al menos un campo al formulario')
+      return
     }
-      const newForm = {
-        "nombre formulario": formName,
-        "ultima modificacion": new Date().getTime(),
-        campos: fields,
-      }
-      // Guardar el nuevo formulario en el archivo JSON
-      db.addForm(newForm)
-      console.log(newForm)
-
-
-
-    
+    const newForm = {
+      "nombre formulario": formName,
+      "ultima modificacion": new Date().getTime(),
+      campos: fields,
+    }
+    // Guardar el nuevo formulario en el archivo JSON
+    db.addForm(newForm)
+    console.log(newForm)    
   }
 
   const checkFormName = name => {
     console.log(name)
     console.log(formNames)
-    setIsNameTaken(db.isFormNameRepeated(name) && name != formName  && name != "")
-    isNameTaken ? setFormName(name) : setFormName("")
-  }
-  const renderField = (fieldKey, field) => {
-    return (
-      <Layout key={fieldKey} style={styles.fieldContainer}>
-        <Text style={styles.label}>{field.nombre}</Text>
-        {field.tipo === "texto" && (
-          <Input
-            style={styles.input}
-            value={field.valor}
-            onChangeText={text => handleFieldChange(fieldKey, "valor", text)} // Cambiar el valor
-            placeholder={`Ingrese ${field.nombre}`}
-          />
-        )}
-        {/* Añadir más tipos de campos si es necesario */}
-        {/* Si el campo tiene opciones, se pueden mostrar aquí */}
-        {field.opciones && (
-          <View style={styles.optionContainer}>
-            <Text>Opciones:</Text>
-            {field.opciones.map((option, index) => (
-              <Text key={index}>{option.nombre}</Text>
-            ))}
-          </View>
-        )}
-      </Layout>
-    )
+    setIsNameTaken(formName != name && formNames.has(name))
+    !isNameTaken ? setFormName(name) : setFormName("")
   }
 
   return (

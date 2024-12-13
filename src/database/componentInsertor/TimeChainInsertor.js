@@ -34,7 +34,7 @@ export default class TimeChainInsertor extends ChainInsertor {
         limitations.forEach(limitation => outputLimitations.push(this.db.getFirstSync(`SELECT name FROM limitations WHERE id = ?`, [limitation]).name))
 
         return {
-            "hora predeterminada": this.db.getFirstSync(`SELECT default_time FROM ${fieldTableName} WHERE fk_field = ?`, [fieldId]),
+            "hora predeterminada": this.db.getFirstSync(`SELECT default_time FROM ${fieldTableName} WHERE fk_field = ?`, [fieldId]).default_time,
             limitaciones: outputLimitations
         }
     }

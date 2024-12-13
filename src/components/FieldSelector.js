@@ -136,7 +136,7 @@ const FieldSelector = ({onSave}) => {
         if (miniFields.filter((field) => field === '').length > 0 || miniFields.length === 0) {
             console.log('No se pueden dejar campos vacíos')
             Alert.alert('Error', 'Los campos deben tener nombre')
-        }else{
+        } else {
             setDragMode(!dragMode)
         }
     }
