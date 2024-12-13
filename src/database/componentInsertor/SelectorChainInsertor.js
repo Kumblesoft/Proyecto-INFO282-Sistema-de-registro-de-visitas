@@ -22,14 +22,14 @@ export default class SelectorChainInsertor extends ChainInsertor {
     delete(fieldId, fieldTableName, fieldTypeName) {
         if (fieldTypeName != 'selector')
             return this.next && this.next.delete(fieldId, fieldTableName, fieldTypeName)
-        console.log(this.db.getAllSync(`SELECT * FROM ${fieldTableName}`))
         const id_options = this.db.getFirstSync(
             `SELECT id_options FROM ${fieldTableName} WHERE fk_field = ?`,
             [fieldId]
         ).id_options
 
+        console.log(id_options)
         this.db.runSync(
-            'DELETE FROM selector_options WHERE fk_selector_id IN (SELECT id FROM selector WHERE fk_field = ?)',
+            'DELETE FROM selector_options WHERE fk_selector_id = ?',
             [id_options]
         )
 

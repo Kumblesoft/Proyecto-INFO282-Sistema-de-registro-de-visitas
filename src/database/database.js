@@ -211,14 +211,15 @@ export default class Database {
         try {
             const formID = this.db.getFirstSync('SELECT id FROM forms WHERE name = ?', [formName]).id   
             
-            const fieldsID = this.db.getAllSync('SELECT fk_field_table_name FROM fields WHERE fk_id_form = ?', [formID])
+            const fieldsID = this.db.getAllSync('SELECT id, fk_field_table_name FROM fields WHERE fk_id_form = ?', [formID])
             console.log(fieldsID)
             fieldsID.forEach(field => {
                 const fieldTableName = this.db.getFirstSync('SELECT table_name FROM field_table_name WHERE id = ?', [field.fk_field_table_name]).table_name
                 const fieldTypeName = this.db.getFirstSync('SELECT field_type_name FROM field_table_name WHERE id = ?', [field.fk_field_table_name]).field_type_name
                 //if (!this.chainInsertors.delete(field.id, fieldTableName)) throw new Error('Error al eliminar')
-                this.chainInsertors.delete(field.fk_field_table_name, fieldTableName, fieldTypeName)
-                this.db.runSync('DELETE FROM fields WHERE id = ?', [field.fk_field_table_name])
+                this.chainInsertors.delete(field.id, fieldTableName, fieldTypeName)
+                console.log("Outside")
+                this.db.runSync('DELETE FROM fields WHERE id = ?', [field.id])
             })
             this.db.runSync('DELETE FROM forms WHERE id = ?', [formID])
             //this.db.getForms()
