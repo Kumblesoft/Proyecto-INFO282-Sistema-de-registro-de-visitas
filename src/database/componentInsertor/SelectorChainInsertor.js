@@ -12,7 +12,7 @@ export default class SelectorChainInsertor extends ChainInsertor {
 
         const insertedRowId = this.db.getFirstSync('select last_insert_rowid() as id')
 
-        fieldObject.options?.forEach(option =>
+        fieldObject.opciones?.forEach(option =>
             this.db.runSync(
                 `INSERT INTO selector_options (fk_selector_id, name, value) VALUES (?, ?, ?)`,
                 [insertedRowId.id, option.nombre, option.valor]
@@ -50,12 +50,10 @@ export default class SelectorChainInsertor extends ChainInsertor {
             `SELECT name, value FROM selector_options WHERE fk_selector_id = ?`,
             [fieldProperties.id_options]
         )
-        const options = {}
-        optionsQuery.forEach(option => options[option.name] = option.value)
         return {
             "opcion predeterminada": fieldProperties.default_option,
             "texto predeterminada": fieldProperties.selector_placeholder,
-            opciones: options
+            opciones: optionsQuery.map(option => ({nombre: option.name, valor: option.value}))
         }
     }
 }
