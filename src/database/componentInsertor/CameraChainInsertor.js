@@ -11,9 +11,19 @@ export default class CameraChainInsertor extends ChainInsertor {
         return true
     }
 
-    getFieldProperties(fieldId, fieldTableName) {
+    getFieldProperties(fieldId, fieldTableName, fieldTypeName) {
+        if (fieldTypeName != 'camara')
+            return this.next && this.next.getFieldProperties(fieldId, fieldTableName, fieldTypeName)
         return {
             "relacion de aspecto": this.db.getFirstSync(`SELECT aspect_relation FROM ${fieldTableName} WHERE fk_field = ?`, [fieldId])
         }
+    }
+    delete(fieldId, fieldTableName, fieldTypeName) {
+        if (fieldTypeName != 'camara')
+            return this.next && this.next.delete(fieldId, fieldTableName, fieldTypeName)
+        this.db.runSync(
+            `DELETE FROM ${fieldTableName} WHERE fk_field = ?`,
+            [fieldId]
+        )
     }
 }

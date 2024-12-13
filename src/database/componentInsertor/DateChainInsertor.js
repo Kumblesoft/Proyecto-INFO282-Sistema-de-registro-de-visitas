@@ -12,13 +12,18 @@ export default class DateChainInsertor extends ChainInsertor {
         return true
         // Colocar formato.
     }
-    delete(fieldId, fieldTableName) {
+    delete(fieldId, fieldTableName, fieldTypeName) {
+        if(fieldTypeName != 'fecha')
+            return this.next && this.next.delete(fieldId, fieldTableName, fieldTypeName)
+
         this.db.runSync(
             `DELETE FROM ${fieldTableName} WHERE fk_field = ?`,
             [fieldId]
         )
     }
-    getFieldProperties(fieldId, fieldTableName) {
+    getFieldProperties(fieldId, fieldTableName, fieldTypeName) {
+        if(fieldTypeName != 'fecha')
+            return this.next && this.next.getFieldProperties(fieldId, fieldTableName, fieldTypeName)
         const properties =  this.db.getFirstSync(`SELECT date_format, default_date FROM ${fieldTableName} WHERE fk_field = ?`, [fieldId])
         return {
             formato: properties.date_format,

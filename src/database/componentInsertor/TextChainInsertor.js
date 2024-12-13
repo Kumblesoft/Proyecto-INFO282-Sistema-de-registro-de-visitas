@@ -31,8 +31,10 @@ export default class TextChainInsertor extends ChainInsertor {
         return true
     }
 
-    delete(fieldId, fieldTableName) {
-        
+    delete(fieldId, fieldTableName, fieldTypeName) {
+        if (fieldTypeName != 'texto')
+            return this.next && this.next.delete(fieldId, fieldTableName, fieldTypeName)
+
         const id_formats = this.db.getFirstSync(`select id_formats from ${fieldTableName} where fk_field = ?`, [fieldId]).id_formats
         
         this.db.runSync(
@@ -51,7 +53,10 @@ export default class TextChainInsertor extends ChainInsertor {
         )
     }
 
-    getFieldProperties(fieldId, fieldTableName) {
+    getFieldProperties(fieldId, fieldTableName, fieldTypeName) {
+        if (fieldTypeName != 'texto')
+            return this.next && this.next.getFieldProperties(fieldId, fieldTableName, fieldTypeName)
+        
         const properties = this.db.getFirstSync(
             `SELECT id_formats, qr_refillable FROM ${fieldTableName} WHERE fk_field = ?`,
             [fieldId]
