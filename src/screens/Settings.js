@@ -71,7 +71,7 @@ export default function Settings() {
                         onPress={handleChangeID}
                     />
                     { showIDWidget && <IDInputComponent /> }
-                    <MenuItem 
+                    {/*<MenuItem 
                         title={renderOption("Feddy?")}
                         accessoryLeft={StarIcon}
                         onPress={handleFeddy}
@@ -85,7 +85,7 @@ export default function Settings() {
                         title={renderOption("Inacap")}
                         accessoryLeft={InacapIcon}
                     />
-                    <Divider/>
+                    <Divider/>*/}
                 </Menu>
                 { mostrarFeddy && (<>
                     <Image 

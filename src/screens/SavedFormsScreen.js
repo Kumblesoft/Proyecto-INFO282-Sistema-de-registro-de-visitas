@@ -186,6 +186,9 @@ const SavedForms = () => {
     const SelectionIcon = (props) => (
         <Icon fill='#fff' name={isSelectionMode ? 'checkmark-square' : 'checkmark-square'} style={styles.backIcon} {...props} />
     )
+    const selectAll = () => setSelectedForms(forms.map(form => form.id))
+    const deselectAll = () => setSelectedForms([])
+
 
     const toggleSelectionMode = () => {
         setIsSelectionMode(!isSelectionMode)
