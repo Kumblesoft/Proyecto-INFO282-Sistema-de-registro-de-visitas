@@ -276,11 +276,13 @@ export default class Database {
         )
         const lastAnswerID = this.db.getFirstSync('SELECT ID_RESPUESTA FROM respuestas ORDER BY ID_RESPUESTA DESC LIMIT 1')['ID_RESPUESTA']
         console.log(lastAnswerID)
-        Object.entries(answerObject.data).forEach(([key, value]) =>
+
+        Object.entries(answerObject.data).forEach(([fieldOutput, [typeOfField, value]]) => {
+            console.log(key,value)
             this.db.runSync(
-                'INSERT INTO campo_respuesta (id_respuesta, nombre_campo, valor_campo) VALUES (?,?,?)',
-                [lastAnswerID, key, value]
-        ))
+                'INSERT INTO campo_respuesta (id_respuesta, enum_tipo_campo, nombre_campo, valor_campo) VALUES (?,?m ?,?)',
+                [lastAnswerID, this.db.getFirstSync('SELECT id from field_table_name where field_type_name = ?', typeOfField), fieldOutput, value.toString()]
+        )})
     }
 
     deleteAnswers(formID, answerID) {

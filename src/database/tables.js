@@ -128,6 +128,7 @@ export default initDatabaseScript = {
 
     CREATE TABLE IF NOT EXISTS campo_respuesta (
         ID_RESPUESTA INT REFERENCES respuestas(id_respuesta),
+        ENUM_TIPO_CAMPO INT REFERENCES field_table_name(id), 
         NOMBRE_CAMPO TEXT,
         VALOR_CAMPO TEXT
     );

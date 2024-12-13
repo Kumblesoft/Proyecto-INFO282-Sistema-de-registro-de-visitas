@@ -37,4 +37,21 @@ export default class CheckboxChainInsertor extends ChainInsertor {
             [fieldId]
         )
     }
+    getFieldProperties(fieldId, fieldTableName) {
+        const fieldProperties = this.db.getFirstSync(
+            `SELECT id_option, default_option, max_checked_options FROM ${fieldTableName} WHERE fk_field = ?`,
+            [fieldId]
+        )
+        const optionsQuery = this.db.getAllSync(
+            `SELECT name, value FROM select_options WHERE fk_selector_id = ?`,
+            [fieldProperties.id_option]
+        )
+        const options = {}
+        optionsQuery.forEach(option => options[option.name] = option.value)
+        return {
+            "opcion predeterminada"     : fieldProperties.default_option,
+            "cantidad de elecciones"    : fieldProperties.max_checked_options,
+            opciones                    : options
+        }
+    }
 }

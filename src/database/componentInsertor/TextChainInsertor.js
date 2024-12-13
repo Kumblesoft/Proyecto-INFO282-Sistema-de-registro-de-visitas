@@ -51,4 +51,24 @@ export default class TextChainInsertor extends ChainInsertor {
         )
     }
 
+    getFieldProperties(fieldId, fieldTableName) {
+        const properties = this.db.getFirstSync(
+            `SELECT id_formats, qr_refillable FROM ${fieldTableName} WHERE fk_field = ?`,
+            [fieldId]
+        )
+        const limitations = this.db.getAllSync(
+            `SELECT name FROM limitations WHERE id IN (SELECT fk_limitation FROM limitations_intermediary WHERE fk_field = ?)`,
+            [fieldId]
+        )
+        const format = this.db.getAllSync(
+            `SELECT name FROM format WHERE id_format IN (SELECT fk_id_format FROM is_formatted WHERE fk_id_text = ?)`,
+            [properties.id_formats]
+        )
+        return {
+            rellenarQR      : properties.qr_refillable,
+            limitaciones    : limitations.map(limitation => limitation.name),
+            formato         : format.map(format => format.name)
+        }
+    }
+
 }

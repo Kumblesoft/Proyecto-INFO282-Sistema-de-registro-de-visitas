@@ -16,5 +16,10 @@ export default class TimeChainInsertor extends ChainInsertor {
             [fieldId]
         )
     }
+    getFieldProperties(fieldId, fieldTableName) {
+        return {
+            "hora predeterminada": this.db.getFirstSync(`SELECT default_time FROM ${fieldTableName} WHERE fk_field = ?`,[fieldId])
+        }
+    }
 }
 //Prueba

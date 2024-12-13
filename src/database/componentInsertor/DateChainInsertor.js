@@ -18,4 +18,11 @@ export default class DateChainInsertor extends ChainInsertor {
             [fieldId]
         )
     }
+    getFieldProperties(fieldId, fieldTableName) {
+        const properties =  this.db.getFirstSync(`SELECT date_format, default_date FROM ${fieldTableName} WHERE fk_field = ?`, [fieldId])
+        return {
+            formato: properties.date_format,
+            "fecha predeterminada": properties.default_date
+        }
+    }
 }

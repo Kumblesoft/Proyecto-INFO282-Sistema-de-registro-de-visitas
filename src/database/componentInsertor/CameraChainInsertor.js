@@ -10,4 +10,10 @@ export default class CameraChainInsertor extends ChainInsertor {
         )
         return true
     }
+
+    getFieldProperties(fieldId, fieldTableName) {
+        return {
+            "relacion de aspecto": this.db.getFirstSync(`SELECT aspect_relation FROM ${fieldTableName} WHERE fk_field = ?`, [fieldId])
+        }
+    }
 }
