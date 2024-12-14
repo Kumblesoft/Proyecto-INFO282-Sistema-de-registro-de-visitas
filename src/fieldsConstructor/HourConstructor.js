@@ -62,7 +62,7 @@ const HourConstructor = ({ field = {}, onSave }) => {
                 <Text style={styles.label}>Nombre del Campo</Text>
                 <Input
                     value={fieldName}
-                    onChangeText={setFieldName}
+                    onChangeText={nextName => setFieldName(nextName)}
                     placeholder="Nombre del campo Hora"
                     style={styles.input}
                 />

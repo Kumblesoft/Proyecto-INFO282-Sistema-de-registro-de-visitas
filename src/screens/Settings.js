@@ -71,32 +71,10 @@ export default function Settings() {
                         onPress={handleChangeID}
                     />
                     { showIDWidget && <IDInputComponent /> }
-                    <MenuItem 
-                        title={renderOption("Feddy?")}
-                        accessoryLeft={StarIcon}
-                        onPress={handleFeddy}
-                    />
-                    <MenuItem 
-                        title={renderOption("¿Santo tomas?")}
-                        accessoryLeft={STIcon}
-                        onPress={handlePlaySound}
-                    />
-                    <MenuItem 
-                        title={renderOption("Inacap")}
-                        accessoryLeft={InacapIcon}
-                    />
+
                     <Divider/>
                 </Menu>
-                { mostrarFeddy && (<>
-                    <Image 
-                        style={{ alignSelf: 'center', width: "100%", height: undefined, aspectRatio: 750/1000}} 
-                        source={require('../assets/working.png')}
-                        resizeMode='contain'
-                    />
-                    <Text style={{ alignSelf: 'center', fontSize: 40, fontWeight: 'bold' }}>
-                        we are working
-                    </Text>
-                </>)}
+                
         </Layout>
     )
 }

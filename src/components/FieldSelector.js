@@ -24,7 +24,7 @@ const constructors = new Map([
     ['checkbox', CheckBoxConstructor],
     ['camara', CameraConstructor]
 ])
-let fieldNames = new Set()
+
 
 const FieldSelector = ({onSave}) => {
     const [selectedField, setSelectedField] = useState('')
