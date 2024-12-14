@@ -42,8 +42,8 @@ A continuación, te proporcionamos la información necesaria para ejecutar el pr
 4. Descargar expoGo en un dispositivo movil IOS o Android desde la correspondiente tienda de aplicaciones.
 
 Para ejecutar, solo hay que moverse al directorio src y ejecutar lo siguiente:
-> bun install
-> bun start
+$ bun install
+$ bun start
 De esa manera, el terminal ejecutará expo start y mostrará un codigo QR el cual al escanearlo desde un dispositivo movil,
 abrirá expo go y ejecutara el proyecto en modo desarrollador. Mas de un dispositivo puede abrir el proyecto simultaneamente.
 
