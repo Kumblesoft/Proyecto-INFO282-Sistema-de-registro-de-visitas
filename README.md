@@ -20,7 +20,7 @@ A continuación, se proporcionará la información necesaria para ejecutar el pr
 ### iOS
 
 1. **Descargar la Aplicación:**
-   - Descarga la ultima version del archivo `.tar.gz` desde el [repositorio de builds](https://github.com/Kumblesoft/Proyecto-INFO282-Sistema-de-registro-de-visitas/tree/prod/builds) o desde [releases](https://github.com/Kumblesoft/Proyecto-INFO282-Sistema-de-registro-de-visitas/releases.
+   - Descarga la ultima version del archivo `.tar.gz` desde el [repositorio de builds](https://github.com/Kumblesoft/Proyecto-INFO282-Sistema-de-registro-de-visitas/tree/prod/builds) o desde [releases](https://github.com/Kumblesoft/Proyecto-INFO282-Sistema-de-registro-de-visitas/releases).
 
 2. **Instalar y Usar:**
    - Extrae e instala el archivo en tu dispositivo iOS. 
