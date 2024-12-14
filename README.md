@@ -2,7 +2,7 @@
 
 Este proyecto es una **aplicación móvil** diseñada para gestionar y registrar las visitas a un lugar o instalación. El sistema permite a los usuarios registrar su entrada y salida, y facilita a los administradores gestionar las visitas en tiempo real.
 
-A continuación, te proporcionamos la información necesaria para ejecutar el proyecto tanto como **usuario final** como **desarrollador**. También encontrarás detalles sobre cómo contribuir y la licencia del proyecto.
+A continuación, se proporcionará la información necesaria para ejecutar el proyecto tanto como **usuario final** como **desarrollador**.
 
 ---
 
@@ -26,6 +26,7 @@ A continuación, te proporcionamos la información necesaria para ejecutar el pr
    - Extrae e instala el archivo en tu dispositivo iOS. 
    - Ten en cuenta que en dispositivos iOS, la instalación desde fuentes externas requiere ciertos permisos, lo que puede dificultar el proceso para usuarios sin experiencia técnica.
 
+[!IMPORTANT] 
 > **Nota:** Actualmente, iOS no admite directamente la instalación de aplicaciones por descarga de fuentes externas sin autorizar. Esto hace que sea imposible realizar la instalación en dispositivos base y sin conocimientos técnicos.
 
 ---
@@ -49,5 +50,5 @@ abrirá expo go y ejecutara el proyecto en modo desarrollador. Mas de un disposi
 
 ---
 
-📜 Licencia
+## 📜 Licencia
 Este proyecto está bajo la licencia Apache License 2.0. Puedes ver más detalles sobre la licencia en el archivo LICENSE.
