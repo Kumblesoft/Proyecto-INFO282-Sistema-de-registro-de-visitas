@@ -26,7 +26,7 @@ A continuación, se proporcionará la información necesaria para ejecutar el pr
    - Extrae e instala el archivo en tu dispositivo iOS. 
    - Ten en cuenta que en dispositivos iOS, la instalación desde fuentes externas requiere ciertos permisos, lo que puede dificultar el proceso para usuarios sin experiencia técnica.
 
-[!IMPORTANT] 
+> [!IMPORTANT] 
 > **Nota:** Actualmente, iOS no admite directamente la instalación de aplicaciones por descarga de fuentes externas sin autorizar. Esto hace que sea imposible realizar la instalación en dispositivos base y sin conocimientos técnicos.
 
 ---
