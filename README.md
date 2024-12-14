@@ -37,15 +37,17 @@ A continuación, se proporcionará la información necesaria para ejecutar el pr
 
 1. **Clonar el Repositorio**  
    Primero, clona el repositorio en tu máquina local utilizando el siguiente comando (se debe instalar un cliente de git):
+   ```bash
    git clone https://github.com/Kumblesoft/Proyecto-INFO282-Sistema-de-registro-de-visitas.git
-2. Instalar node.js para la ejecucion del proyecto: https://nodejs.org/en/
-3. Instalar Bun para la gestion de paquetes: https://bun.sh/docs/installation#installing
-4. Descargar expoGo en un dispositivo movil IOS o Android desde la correspondiente tienda de aplicaciones.
+   ```
+4. Instalar node.js para la ejecucion del proyecto: https://nodejs.org/en/
+5. Instalar Bun para la gestion de paquetes: https://bun.sh/docs/installation#installing
+6. Descargar expoGo en un dispositivo movil IOS o Android desde la correspondiente tienda de aplicaciones.
 
 Para ejecutar, solo hay que moverse al directorio src y ejecutar lo siguiente:
 ```bash
-$ bun install
-$ bun start
+bun install
+bun start
 ```
 De esa manera, el terminal ejecutará expo start y mostrará un codigo QR el cual al escanearlo desde un dispositivo movil,
 abrirá expo go y ejecutara el proyecto en modo desarrollador. Mas de un dispositivo puede abrir el proyecto simultaneamente.
