@@ -1,4 +1,4 @@
-# Proyecto INFO282 - Sistema de Registro de Visitas
+# Proyecto INFO282 - Aplicacion de creación y manejo de formularios.
 
 Este proyecto es una **aplicación móvil** diseñada para gestionar y registrar las visitas a un lugar o instalación. El sistema permite a los usuarios registrar su entrada y salida, y facilita a los administradores gestionar las visitas en tiempo real.
 
