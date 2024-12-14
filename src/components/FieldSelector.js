@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { View, StyleSheet, Alert, TouchableOpacity } from 'react-native'
-import {Text, Select, SelectItem, Button} from '@ui-kitten/components'
+import {Text, Select, SelectItem, Button, Icon} from '@ui-kitten/components'
 
 import fields from '../fieldsConstructor/fields' // Ajusta la ruta correctamente
 import SelectorConstructor from '../fieldsConstructor/SelectorConstructor'
@@ -38,6 +38,10 @@ const FieldSelector = ({onSave}) => {
         setFieldNames(new Set(miniFields))
     }, [miniFields])
     
+    const deleteIcon = props => <Icon name='trash-outline' {...props} fill="#fff" style={[props.style, { width: 20, height: 20 }]}/>
+    const saveIcon = props => <Icon name='save-outline' {...props} fill="#fff" style={[props.style, { width: 20, height: 20 }]}/>
+    const editIcon = props => <Icon name='edit-outline' {...props} fill="#fff" style={[props.style, { width: 25, height: 25 }]}/>
+    const closeIcon = props => <Icon name='close-outline' {...props} fill="#fff" style={[props.style, { width: 25, height: 25 }]}/>
 
     // Obtiene los tipos de campos del JSON (keys del objeto)
     const fieldTypes = Object.keys(fields)
@@ -145,14 +149,24 @@ const FieldSelector = ({onSave}) => {
     return (
         <>
         <View style={styles.container}>
-            <Button onPress={() => handleDragMode()}>{dragMode ? "Guardar Orden":"Editar Orden"}</Button>
+            <Button 
+                accessoryLeft={dragMode ? saveIcon : editIcon} 
+                style={styles.editButton} 
+                onPress={() => handleDragMode()}
+                
+            > 
+                {dragMode ? 
+                    <Text category='p2' > Guardar Orden </Text> : 
+                    <Text category='p2'> Editar Orden </Text>
+                } 
+            </Button>
             {dragMode ? 
                 <View style={styles.fieldContainer}>
                     <DragList
                         data={miniFields}
                         keyExtractor={keyExtractor}
                         onReordered={onReordered}
-                        renderItem={renderItem} 
+                        renderItem={renderItem}
                     />
             </View> 
             :
@@ -161,14 +175,16 @@ const FieldSelector = ({onSave}) => {
                 const FieldComponent = constructors.get(item.tipo)
                 return (
                     <View style={styles.fieldContainer}>
-                            <FieldComponent field={item} onSave={(field) => {handleFieldSave(field, index)}} />
+                        <View style={styles.buttonContainer}>
                             <Button
-                                title="Eliminar Campo"
                                 status="danger"
+                                style={styles.deleteButton}
                                 onPress={() => handleDeleteField(index)}
+                                accessoryLeft={closeIcon}
                             >
-                                Eliminar Campo
                             </Button>
+                        </View>                    
+                            <FieldComponent field={item} onSave={(field) => {handleFieldSave(field, index)}} />
                     </View>
                     )
                 })}
@@ -202,15 +218,16 @@ const FieldSelector = ({onSave}) => {
                 </Button>
             </View>) : <></>}
             
-        <Button onPress={() => handleSave()}>Guardar Formulario</Button>
+        <Button accessoryLeft={saveIcon} onPress={() => handleSave()}>Guardar Formulario</Button>
     </View>
     </>
     )
 }
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 16,
+        padding: "4%",
         backgroundColor: '#f5f5f5'
     },
     containerBox: {
@@ -230,10 +247,11 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
     fieldContainer: {
-        marginBottom: 16,
-        padding: 16,
+        marginTop: "1%",
+        marginBottom: "4%",
+        padding: "4%",
         borderWidth: 1,
-        borderColor: '#ddd',
+        borderColor: '#00b7ae',
         borderRadius: 8,
         backgroundColor: '#fff'
     },
@@ -241,9 +259,9 @@ const styles = StyleSheet.create({
         marginTop: 10,
         padding: 16,
         borderWidth: 2,
-        borderColor: '#6200ea',
+        borderColor: '#00b7ae',
         borderRadius: 12,
-        backgroundColor: '#e8eaf6',
+        backgroundColor: '#e8f6ee',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,
@@ -254,7 +272,7 @@ const styles = StyleSheet.create({
     selectionTitle: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#6200ea',
+        color: '#00b7ae',
         marginBottom: 12,
         textAlign: 'center'
     },
@@ -266,9 +284,28 @@ const styles = StyleSheet.create({
     addButton: {
         marginTop: 16,
         borderRadius: 8,
-        backgroundColor: '#6200ea',
         paddingVertical: 10
-    }
+    },
+    buttonContainer: {
+        backgroundColor: 'transparent',
+        width: '100%',
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        alignSelf: 'center',
+        marginBottom: "4%",
+        marginTop: "2%",
+        zIndex: 1000,
+        position: 'absolute',
+    },
+    deleteButton: {
+        width: 40,
+        height: 40,
+        borderRadius: 5,
+    },
+    editButton: {
+        borderRadius: 5,
+        marginBottom: '2%',
+    },
 })
 
 

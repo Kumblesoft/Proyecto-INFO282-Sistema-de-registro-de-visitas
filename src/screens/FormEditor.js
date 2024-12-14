@@ -75,8 +75,11 @@ export default function FormEditor() {
             </LinearGradient>
             <Divider />
     <ScrollView style={styles.container} nestedScrollEnabled>
-      <Text style={styles.label}>Nombre del Formulario</Text>
-      <Input placeholder="Nombre del Formulario" style={styles.input} textStyle={{ color: isNameTaken ? 'red' : 'black' }} onChangeText={checkFormName}/>
+      <Layout style={styles.containerBox}>
+        <Text style={styles.label}>Nombre del Formulario</Text>
+        <Input placeholder="Nombre del Formulario" style={styles.input} textStyle={{ color: isNameTaken ? 'red' : 'black' }} onChangeText={checkFormName}/>
+      </Layout>
+      <Divider />
       {isNameTaken && 
         <Layout size='small' style={styles.alert}>
           <Icon status='danger' fill='#FF0000' name='alert-circle' style={styles.icon} />
@@ -100,7 +103,6 @@ export default function FormEditor() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
   },
   backIcon: {
     width: 25,
@@ -124,14 +126,28 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   label: {
+    flex: 1,
+    alignSelf: "flex-start",
     fontWeight: "bold",
     marginBottom: 5,
   },
   input: {
+    flex: 1,
+    alignSelf: 'flex-start',
     borderWidth: 1,
     borderColor: "#ccc",
-    padding: 10,
     borderRadius: 5
+  },
+  containerBox: {
+    padding: "4%",
+    marginBottom: "0%",
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+    borderLeftWidth: 0,
+    borderRightWidth: 0,
+    alignItems: 'flex-start',
+    height: 'auto',
+    width: '100%',
   },
   optionContainer: {
     marginBottom: 10,

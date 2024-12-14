@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { View, StyleSheet, Alert, TouchableOpacity } from 'react-native'
-import { Text, Input, Button, Toggle, Datepicker, NativeDateService } from '@ui-kitten/components'	
+import { Text, Input, Button, Toggle, Datepicker, NativeDateService, Icon, CheckBox, Divider } from '@ui-kitten/components'	
 
 const DateConstructor = ({ field = {}, onSave }) => {
     const [fieldName, setFieldName] = useState(field.name || "")
@@ -8,6 +8,8 @@ const DateConstructor = ({ field = {}, onSave }) => {
     const [date, setDate] = useState(new Date())
     const [isEditable, setIsEditable] = useState(field.isEditable || false)
     const [dateFormat, setDateFormat] = useState("DD/MM/YYYY") // Formato por defecto
+
+    const saveIcon = props => <Icon name='save-outline' {...props} fill="#fff" style={[props.style, { width: 25, height: 25 }]}/>
 
     // Obtiene la fecha actual en el formato solicitado
     const formatCurrentDate = (format) => {
@@ -97,9 +99,11 @@ const DateConstructor = ({ field = {}, onSave }) => {
         <View style={styles.container}>
             <Text style={styles.title}>Configurar Campo de Fecha</Text>
 
+            <Divider/>
+
             <View style={styles.field}>
-                <Text style={styles.label}>Nombre del Campo</Text>
                 <Input
+                    label={"Nombre del Campo"}
                     value={fieldName}
                     onChangeText={nextName => setFieldName(nextName)}
                     placeholder="Nombre del campo"
@@ -107,8 +111,10 @@ const DateConstructor = ({ field = {}, onSave }) => {
                 />
             </View>
 
+            <Divider/>
+
             <View style={styles.field}>
-                <Text style={styles.label}>Formato de Fecha</Text>
+                <Text style={styles.subtitle}>Formato de Fecha</Text>
                 <View style={styles.buttonGroup}>
                     {[
                         "DD/MM/YYYY",
@@ -138,8 +144,11 @@ const DateConstructor = ({ field = {}, onSave }) => {
                     ))}
                 </View>
             </View>
+            
+            <Divider />
 
             <Datepicker
+                style={{marginBottom: "4%"}}
                 date={date}
                 onSelect={nextDate => {
                     setDate(nextDate);
@@ -150,16 +159,28 @@ const DateConstructor = ({ field = {}, onSave }) => {
                 dateService={configureDDateService}
             />
 
+            <Divider/>
+
             <View style={styles.field}>
-                <Text style={styles.label}>¿Editable?</Text>
-                <Toggle
+                <Text style={styles.subtitle}>Características opcionales</Text>
+                <CheckBox
+                    style={{
+                        alignSelf: "flex-start",
+                        margin: "2%",
+                        marginTop: "4%",
+                    }}
+                    status='success'
                     checked={isEditable}
                     onChange={setIsEditable}
-                />
+                >
+                    Editable
+                </CheckBox>
             </View>
 
+            <Divider/>
+
             <View style={styles.saveButtonContainer}>
-                <Button title="Guardar Campo" onPress={handleSave} >Guardar Campo</Button>
+                <Button accessoryLeft={saveIcon} title="Guardar Campo" onPress={handleSave} >Guardar Campo</Button>
             </View>
         </View>
     )
@@ -168,16 +189,22 @@ const DateConstructor = ({ field = {}, onSave }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 16,
+        padding: "1%",
         backgroundColor: '#ffffff',
+
     },
     title: {
         marginBottom: 16,
         fontWeight: 'bold',
         fontSize: 18,
     },
+    subtitle: {
+        fontSize: 16,
+        marginBottom: 8,
+    },
     field: {
-        marginBottom: 16,
+        marginTop: "4%",
+        marginBottom: "4%",
     },
     label: {
         fontSize: 14,
@@ -186,7 +213,7 @@ const styles = StyleSheet.create({
     input: {
         borderWidth: 1,
         borderColor: '#cccccc',
-        paDDing: 8,
+        padding: 0,
         borderRadius: 4,
     },
     buttonGroup: {
@@ -195,7 +222,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
     },
     formatButton: {
-        paDDing: 8,
+        padding: "1%",
         borderRadius: 4,
         borderWidth: 1,
         borderColor: '#cccccc',

@@ -1,6 +1,6 @@
 import React, { use, useState } from 'react'
-import { Dimensions, Platform, View, StyleSheet, FlatList, TouchableOpacity, Alert, Image } from 'react-native'
-import { ButtonGroup, Button, Text, TopNavigation, TopNavigationAction, Divider, Layout, Modal, Card, Icon } from '@ui-kitten/components'
+import { Animated, Dimensions, Platform, View, StyleSheet, FlatList, TouchableOpacity, Alert, Image } from 'react-native'
+import { ButtonGroup, CheckBox, Button, Text, TopNavigation, TopNavigationAction, Divider, Layout, Modal, Card, Icon } from '@ui-kitten/components'
 import { useFormContext } from '../context/SelectedFormContext'
 import { useNavigation } from '@react-navigation/native'
 import { LinearGradient } from 'expo-linear-gradient'
@@ -39,6 +39,8 @@ const FormSelectorScreen = () => {
       <TopNavigationAction icon={importIcon} onPress={() => pickDocument()} />
     </Layout>
   )
+
+  
 
 
   //File picker function
@@ -146,7 +148,21 @@ const FormSelectorScreen = () => {
       onPress={() => handlePress(item)}
       onLongPress={toggleSelectionMode}
     >
-      <Text style={styles.itemText}>{item["nombre formulario"]}</Text>
+      {isSelectionMode ? 
+        (
+          <View style={styles.selectionRow}>
+            <CheckBox 
+              status='success'
+              checked={selectedForms.includes(item["nombre formulario"])}
+              onChange={() => handlePress(item)}
+              style={styles.checkbox}
+
+            /> 
+            <Text style={{flex:1, fontSize: 20, fontWeight: 'bold'}}>{item["nombre formulario"]}</Text>
+          </View>
+        ):( 
+        <Text style={styles.itemText}>{item["nombre formulario"]}</Text>
+      )}
       <Button
         accessoryLeft={
           <Icon name='menu-outline' style={{ width: 25, height: 25 }} fill='#000' />
@@ -297,17 +313,21 @@ const FormSelectorScreen = () => {
           />
         </Layout>
       </Layout>
-      <View style={[styles.containerMenuBar,  !isSelectionMode && {justifyContent: 'center' , backgroundColor: 'transparent'}]}>
-        
-        {isSelectionMode &&
-         (selectedForms.length == 0 ? <Text category='h5'>Modo de</Text> : <Button style={styles.iconButton2} appearance="ghost" onPress={() => deleteSelectedForms()} accessoryLeft={deleteIcon} />)}
-        
-        <Button style={styles.centerButton} onPress={() => navigation.navigate('FormEditor')} accessoryLeft={plusIcon} />
 
-        {isSelectionMode && 
-         (selectedForms.length == 0 ? <Text category='h5'>selección</Text> : <Button style={styles.iconButton2} appearance="ghost" onPress={() => shareFormTemplate(selectedForms)} accessoryLeft={shareIcon} />)}
+      {isSelectionMode &&
+        (selectedForms.length == 0 ?
+          <></>
+          :
+          <View style={styles.containerMenuBar}>
+            
+            <Button style={styles.iconButton2} appearance="ghost" onPress={() => deleteSelectedForms()} accessoryLeft={deleteIcon} />
 
-      </View>
+            <Button style={styles.iconButton2} appearance="ghost" onPress={() => shareFormTemplate(selectedForms)} accessoryLeft={shareIcon} />
+            
+          </View> 
+        )
+      }
+      <Button style={styles.centerButton} onPress={() => navigation.navigate('FormEditor')} accessoryLeft={plusIcon} />
 
     </>
   )
@@ -316,6 +336,13 @@ const FormSelectorScreen = () => {
 const styles = StyleSheet.create({
   safeArea: {
     backgroundColor: '#00baa4'
+  },
+  selectionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  checkbox: {
+    marginRight: '2%',
   },
   container: {
     flex: 1,
@@ -463,7 +490,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: '#00baa2',
-    paddingHorizontal: '5%',
+    paddingHorizontal: '4%',
     paddingVertical: 0,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
@@ -485,6 +512,9 @@ const styles = StyleSheet.create({
     marginTop: width * 0.9
   },
   centerButton: {
+    alignSelf: 'center',
+    position: 'absolute',
+    margin: height*0.9,
     top: -25,
     width: 75,
     height: 75,

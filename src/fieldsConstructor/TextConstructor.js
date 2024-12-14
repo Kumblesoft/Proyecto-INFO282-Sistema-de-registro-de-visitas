@@ -1,8 +1,11 @@
 import React, { useState } from 'react'
 import { View, Text, StyleSheet } from 'react-native'
-import { Input, Button, List, ListItem, CheckBox,Toggle } from '@ui-kitten/components'
+import { Input, Button, List, ListItem, CheckBox,Toggle, Icon, Divider } from '@ui-kitten/components'
 
 const TextoConstructor = ({ field, onSave }) => {
+
+    const saveIcon = props => <Icon name='save-outline' {...props} fill="#fff" style={[props.style, { width: 25, height: 25 }]}/>
+
     const enumLimitaciones = {
         "solo letras": 0,
         "solo números": 1,
@@ -117,12 +120,14 @@ const TextoConstructor = ({ field, onSave }) => {
             title={item}
             accessoryLeft={() => (
                 <CheckBox
+                    status='success'
                     checked={selectedLimitaciones.includes(index)}
                     onChange={() => toggleLimitacion(index)}
                     disabled={isLimitacionDisabled(index)}
+                    style={{marginTop: '1%'}}
                 />
             )}
-            style={isLimitacionDisabled(index) ? styles.disabledOption : null}
+            style={isLimitacionDisabled(index) ? null : null}
         />
     )
 
@@ -131,12 +136,14 @@ const TextoConstructor = ({ field, onSave }) => {
             title={item}
             accessoryLeft={() => (
                 <CheckBox
+                    status='success'
                     checked={selectedFormato === index}
                     onChange={() => handleSelectFormato(index)}
                     disabled={isFormatoDisabled(index)}
+                    style={{ marginTop: '1%'}}
                 />
             )}
-            style={isFormatoDisabled(index) ? styles.disabledOption : null}
+            style={isFormatoDisabled(index) ? null : null}
         />
     )
 
@@ -144,61 +151,99 @@ const TextoConstructor = ({ field, onSave }) => {
         <View style={styles.container}>
             <Text style={styles.title}>Nombre del Campo Texto</Text>
 
-            <Input
-                style={styles.input}
-                placeholder="Nombre del campo Texto"
-                value={fieldName}
-                onChangeText={setFieldName}
-            />
+            <Divider />
 
-            <Text style={styles.subtitle}>Limitaciones:</Text>
-            <List
-                data={Object.keys(enumLimitaciones)}
-                renderItem={renderLimitacionItem}
-            />
-
-            <Text style={styles.subtitle}>Formato:</Text>
-            <List
-                data={Object.keys(enumFormato)}
-                renderItem={renderFormatoItem}
-            />
-
-            {/* Respuesta por QR */}
             <View style={styles.field}>
-                    <Text>¿Aceptar Respuesta por QR?</Text>
-                    <Toggle checked={isRequiredQR} onChange={setIsRequiredQR} />
+                <Input
+                    label={"Nombre del Campo"}
+                    style={styles.input}
+                    placeholder="Nombre del campo Texto"
+                    value={fieldName}
+                    onChangeText={setFieldName}
+                />
             </View>
 
-            {/* Obligatorio */}
+            <Divider />
+
             <View style={styles.field}>
-                    <Text>¿Es Obligatorio?</Text>
-                    <Toggle checked={isRequired} onChange={setIsRequired} />
+                <Text style={styles.subtitle}>Limitaciones</Text>
+                <List
+                    data={Object.keys(enumLimitaciones)}
+                    renderItem={renderLimitacionItem}
+                />
             </View>
 
+            <Divider />
+
+            <View style={styles.field}>
+                <Text style={styles.subtitle}>Formato</Text>
+                <List
+                    data={Object.keys(enumFormato)}
+                    renderItem={renderFormatoItem}
+                />
+            </View>
+
+            <Divider />   
+
+            <View style={styles.field}>
+                <Text style={styles.subtitle}>Características opcionales</Text>
+
+                {/* Respuesta por QR */}
+                <CheckBox 
+                    status='success'
+                    style={{margin: '2%', flex: 1, alignSelf: 'flex-start', marginTop: '4%'}} 
+                    checked={isRequiredQR} onChange={setIsRequiredQR}
+                >
+                    ¿Aceptar respuesta por QR?
+                </CheckBox>
+
+                {/* Respuesta por QR & Obligatorio*/}
+                <CheckBox 
+                    status='success'
+                    style={{margin: '2%', flex: 1, alignSelf: 'flex-start', marginTop: '4%'}} 
+                    checked={isRequired} 
+                    onChange={setIsRequired}
+                >
+                    Obligatorio
+                </CheckBox>
+            </View>
+
+            <Divider/>
              {/* Guardar */}
-             <Button onPress={handleSave} style={styles.saveButton}>
+            <View style={styles.saveButtonContainer}>
+                <Button accessoryLeft={saveIcon} title="Guardar Campo" onPress={handleSave}>
                     Guardar Campo
-            </Button>
+                </Button>        
+            </View>
         </View>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
-        padding: 16,
-        backgroundColor: '#fff',
+        flex: 1,
+        padding: "1%",
+        backgroundColor: '#ffffff',
     },
     title: {
-        fontSize: 18,
+        marginBottom: 16,
         fontWeight: 'bold',
-        marginBottom: 8,
+        fontSize: 18,
     },
     subtitle: {
         fontSize: 16,
         marginBottom: 8,
     },
     input: {
-        marginBottom: 8,
+        borderWidth: 1,
+        borderColor: '#cccccc',
+        padding: 0,
+        borderRadius: 4,
+    },
+    label: {
+        fontSize: 14,
+        marginBottom: "3%",
+
     },
     saveButton: {
         marginTop: 16,
@@ -207,7 +252,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#f0d0d0',
     },
     field: {
-        marginBottom: 0,
+        marginTop: "4%",
+        marginBottom: "4%",
     },
     saveButtonContainer: {
         marginTop: 20,

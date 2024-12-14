@@ -12,6 +12,7 @@ import SavedForms from "./screens/SavedFormsScreen"
 import Settings from "./screens/Settings"
 import { SQLiteProvider, useSQLiteContext, SQLiteDatabase } from 'expo-sqlite'
 import { initializeDataBase } from './database/database'
+import { SafeAreaView } from "react-native-safe-area-context"
 
 import { FormProvider } from './context/SelectedFormContext'
 import { IdentifierProvider } from './context/IdentifierContext'
@@ -54,14 +55,14 @@ export default function App() {
           <NavigationContainer>
             <FormProvider>
               <IdentifierProvider>
-                <Stack.Navigator initialRouteName="Menu">
-                  <Stack.Screen name="Menu" component={Menu} options={{ headerShown: false }} />
-                  <Stack.Screen name="FormSelector" component={FormSelectorScreen} options={{ headerShown: false }} />
-                  <Stack.Screen name="SavedForms" component={SavedForms} options={{ headerShown: false }} />
-                  <Stack.Screen name="FormFiller" component={FormFiller} options={{ headerShown: false }} />
-                  <Stack.Screen name="Settings" component={Settings} options={{ headerShown: false }} />
-                  <Stack.Screen name="FormEditor" component={FormEditor} options={{ headerShown: false }} />
-                </Stack.Navigator>
+                  <Stack.Navigator initialRouteName="Menu">
+                    <Stack.Screen name="Menu" component={Menu} options={{ headerShown: false }} />
+                    <Stack.Screen name="FormSelector" component={FormSelectorScreen} options={{ headerShown: false }} />
+                    <Stack.Screen name="SavedForms" component={SavedForms} options={{ headerShown: false }} />
+                    <Stack.Screen name="FormFiller" component={FormFiller} options={{ headerShown: false }} />
+                    <Stack.Screen name="Settings" component={Settings} options={{ headerShown: false }} />
+                    <Stack.Screen name="FormEditor" component={FormEditor} options={{ headerShown: false }} />
+                  </Stack.Navigator>
               </IdentifierProvider>
             </FormProvider>
           </NavigationContainer>
