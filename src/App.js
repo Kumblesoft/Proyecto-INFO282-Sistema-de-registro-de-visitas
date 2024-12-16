@@ -15,16 +15,7 @@ import FormSelectorScreen from "./screens/FormSelectorScreen" // Importa tu pant
 import FormFiller from "./screens/FormFiller"
 import SavedForms from "./screens/SavedFormsScreen"
 import Settings from "./screens/Settings"
-import { SQLiteProvider } from 'expo-sqlite'
-import { initializeDataBase } from './database/database'
-
-import { FormProvider } from './context/SelectedFormContext'
-import { IdentifierProvider } from './context/IdentifierContext'
 import FormEditor from './screens/FormEditor'
-
-
-
-
 
 const myTheme = {
   ...eva.light,
