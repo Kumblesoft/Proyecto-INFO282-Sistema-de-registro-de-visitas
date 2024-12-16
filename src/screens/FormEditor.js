@@ -1,13 +1,13 @@
 import React, { useState } from "react"
-import { ScrollView, View, StyleSheet, SafeAreaView, Alert } from "react-native"
-import { Text, Input, Layout, Icon, Button } from "@ui-kitten/components"
+import { ScrollView, View, StyleSheet, Alert, SafeAreaView } from "react-native"
+import { Text, Input, Layout, Icon } from "@ui-kitten/components"
 import { LinearGradient } from "expo-linear-gradient"
 import { TopNavigation, TopNavigationAction, Divider } from "@ui-kitten/components"
 import { useNavigation } from "@react-navigation/native"
 import { useSQLiteContext } from "expo-sqlite"
 import { getDatabaseInstance } from "../database/database"
 
-import FieldSelector from "../components/FieldSelector" 
+import FieldSelector from "../components/FormGenerator/FieldSelector" 
 
 export default function FormEditor() {
   const db = getDatabaseInstance(useSQLiteContext())
@@ -45,6 +45,9 @@ export default function FormEditor() {
     } else if (fields.length === 0) {
       Alert.alert('Error', 'Agregue al menos un campo al formulario')
       return
+    }  else if (fields.some(field => field.nombre === "")) {
+      Alert.alert('Error', 'Ingrese un nombre para todos los campos')
+      return
     }
     const newForm = {
       "nombre formulario": formName,
@@ -53,19 +56,21 @@ export default function FormEditor() {
     }
     // Guardar el nuevo formulario en el archivo JSON
     db.addForm(newForm)
-    console.log(newForm)    
+    // console.log(newForm)    
   }
 
   const checkFormName = name => {
-    console.log(name)
-    console.log(formNames)
+    //console.log(name)
+    //console.log(formNames)
     setIsNameTaken(formName != name && formNames.has(name))
     !isNameTaken ? setFormName(name) : setFormName("")
   }
 
   return (
-    <>
-    <LinearGradient colors={['#2dafb9', '#17b2b6', '#00b4b2', '#00b7ad', '#00b9a7', '#00bba0', '#00bd98', '#00bf8f', '#00c185', '#00c27b']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+    <Layout style={styles.layoutContainer}>
+      <SafeAreaView style={styles.safeArea}>
+        <Layout style={styles.backgroundPage}>
+          <LinearGradient colors={['#2dafb9', '#17b2b6', '#00b4b2', '#00b7ad', '#00b9a7', '#00bba0', '#00bd98', '#00bf8f', '#00c185', '#00c27b']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
                 <TopNavigation
                     title={renderTitle}
                     style={styles.topNavigation}
@@ -74,33 +79,40 @@ export default function FormEditor() {
                 />
             </LinearGradient>
             <Divider />
-    <ScrollView style={styles.container} nestedScrollEnabled>
-      <Layout style={styles.containerBox}>
-        <Text style={styles.label}>Nombre del Formulario</Text>
-        <Input placeholder="Nombre del Formulario" style={styles.input} textStyle={{ color: isNameTaken ? 'red' : 'black' }} onChangeText={checkFormName}/>
-      </Layout>
-      <Divider />
-      {isNameTaken && 
-        <Layout size='small' style={styles.alert}>
-          <Icon status='danger' fill='#FF0000' name='alert-circle' style={styles.icon} />
-          <Text style={{ color: 'red' }}>Este nombre de plantilla ya existe</Text>
-        </Layout>
-      }
-      {/* Campo Selector */}
-      <FieldSelector
-        selectedValue={selectedField}
-        onValueChange={setSelectedField} // Actualiza el estado cuando cambia el selector
-        onSave = {(fields) => handleSaveForm(fields)}
-      />
+          <ScrollView style={styles.container} nestedScrollEnabled>
+            <Layout style={styles.containerBox}>
+              <Text style={styles.label}>Nombre del Formulario</Text>
+              <Input placeholder="Nombre del Formulario" style={styles.input} textStyle={{ color: isNameTaken ? 'red' : 'black' }} onChangeText={checkFormName}/>
+            </Layout>
+            
+            {isNameTaken && 
+              <Layout size='small' style={styles.alert}>
+                <Icon status='danger' fill='#FF0000' name='alert-circle' style={styles.icon} />
+                <Text style={{ color: 'red' }}>Este nombre de plantilla ya existe</Text>
+              </Layout>
+            }
+            
+            {/* Campo Selector */}
+            <FieldSelector
+              selectedValue={selectedField}
+              onValueChange={setSelectedField} // Actualiza el estado cuando cambia el selector
+              onSave = {fields => handleSaveForm(fields)}
+            />
 
-      {/* Botón para guardar cambios <Button onPress={handleFieldPos} margin='20' padding='20' title="Guardar" /> */}
-      
-    </ScrollView>
-    </>
+            {/* Botón para guardar cambios <Button onPress={handleFieldPos} margin='20' padding='20' title="Guardar" /> */}
+            
+          </ScrollView>
+        </Layout>
+      </SafeAreaView>
+    </Layout>
   )
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    backgroundColor: '#00baa4',
+    flex: 1,
+  },
   container: {
     flex: 1,
   },
@@ -108,7 +120,7 @@ const styles = StyleSheet.create({
     width: 25,
     height: 25,
     paddingRight: 10,
-},
+  },
   titleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -121,7 +133,7 @@ const styles = StyleSheet.create({
     fontSize: 24,   
     fontWeight: 'bold',
     color: '#fff',
-},
+  },
   fieldContainer: {
     marginBottom: 20,
   },
@@ -140,11 +152,11 @@ const styles = StyleSheet.create({
   },
   containerBox: {
     padding: "4%",
-    marginBottom: "0%",
     backgroundColor: 'transparent',
     borderWidth: 0,
     borderLeftWidth: 0,
     borderRightWidth: 0,
+    paddingBottom: 0,
     alignItems: 'flex-start',
     height: 'auto',
     width: '100%',
@@ -171,5 +183,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'left',
+  },
+  layoutContainer: {
+    backgroundColor: '#fff',
+    flex: 1
+  },
+  backgroundPage: {
+    backgroundColor: '#f5f5f5',
+    flex: 1,
   },
 })
