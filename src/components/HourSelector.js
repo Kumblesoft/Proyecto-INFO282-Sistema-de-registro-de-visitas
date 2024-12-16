@@ -1,6 +1,6 @@
-import React, { useState} from 'react'
-import { Button, Text, Layout, Icon, IconElement, View } from '@ui-kitten/components'
-import { Platform, StyleSheet} from 'react-native'
+import React, { useState } from 'react'
+import { Button, Text, Layout, Icon } from '@ui-kitten/components'
+import { Platform, StyleSheet } from 'react-native'
 import { TimerPickerModal } from "react-native-timer-picker"
 import { LinearGradient } from "expo-linear-gradient"
 import * as Haptics from "expo-haptics" // for haptic feedback
@@ -28,13 +28,6 @@ export const OptionalTimeFeatures = options => {
     }
 }
 
-const StarIcon = (props) => (
-    <Icon
-        {...props}
-        name='reset'
-    />
-)
-
 export const IconSimpleUsageShowcase = () => (
     <Icon
         style={styles.icon}
@@ -51,20 +44,21 @@ export const IconSimpleUsageShowcase = () => (
  * @param {Object} OptionalTimeFeatures - options for the hour selector,
 * @returns {Layout} - The Layout that displays the whole HourSelector.
  **/
-export default function HourSelector ({onChange, optionalFeatures = {},requiredFieldRef, refreshFieldRef}) {
+export default function HourSelector({ onChange, optionalFeatures = {}, requiredFieldRef, refreshFieldRef }) {
     const [showPicker, setShowPicker] = useState(false)
-    const {title, defaultTime, disabled, required} = optionalFeatures
-    const [hour,setHour] = useState(defaultTime)
+    const { title, defaultTime, disabled, required } = optionalFeatures
+    const [hour, setHour] = useState(defaultTime)
     const [isRequiredAlert, setIsRequiredAlert] = useState(null)
     onChange(defaultTime)
 
 
 
-    const formatTime = ({hours, minutes}) => `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`
+    const formatTime = ({ hours, minutes }) => `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`
 
 
     const setNowTime = () => {
-        onChange((new Date().getHours()).toString().padStart(2,"0") + ":" + (new Date().getMinutes()).toString().padStart(2,"0"))
+        setHour(defaultTime)
+        onChange(defaultTime)
         setIsRequiredAlert(false)
     }
     requiredFieldRef.current = () => {
@@ -73,14 +67,14 @@ export default function HourSelector ({onChange, optionalFeatures = {},requiredF
         } else {
             setIsRequiredAlert(false)
         }
-      }
+    }
     refreshFieldRef.current = () => {
         setHour(defaultTime)
         onChange(defaultTime)
     }
     return (
         <Layout style={styles.container}>
-            
+
             <Layout style={styles.text}>
                 <Text style={styles.text} category={"p2"}>
                     {title}
@@ -90,47 +84,47 @@ export default function HourSelector ({onChange, optionalFeatures = {},requiredF
                     {required ? "*": " "} 
                 </Text>  
                  */}
-            </Layout>   
-            <Layout style={styles.buttonContainer }>
-                <Button disabled={disabled} status='success' onPress={()=>setShowPicker(true)} appearance='outline' style={disabled ? styles.disabledHour : styles.hour} size='large'>{hour}</Button>    
-                { isRequiredAlert ?
+            </Layout>
+            <Layout style={styles.buttonContainer}>
+                <Button disabled={disabled} status='success' onPress={() => setShowPicker(true)} appearance='outline' style={disabled ? styles.disabledHour : styles.hour} size='large'>{hour}</Button>
+                {isRequiredAlert ?
                     <Layout size='small' style={styles.alert}>
-                        <Icon status='danger' fill='#FF0000' name='alert-circle'style={styles.icon}/> 
+                        <Icon status='danger' fill='#FF0000' name='alert-circle' style={styles.icon} />
                         <Text style={styles.alert} category="p2">
                             Por favor seleccione una hora
-                        </Text> 
+                        </Text>
                     </Layout>
                     :
-                    <></>               
+                    <></>
                 }
-                { disabled ? 
-                    <></> : 
-                    <Button style={styles.button} accessoryLeft={resetIcon} onPress={()=>setNowTime()}></Button>
+                {disabled ?
+                    <></> :
+                    <Button style={styles.button} accessoryLeft={resetIcon} onPress={() => setNowTime()}></Button>
                 }
-            <TimerPickerModal
-                visible={showPicker}
-                setIsVisible={setShowPicker}
-                onConfirm={(pickedDuration) => {
-                    onChange(formatTime(pickedDuration))
-                    setHour(formatTime(pickedDuration))
-                    setShowPicker(false)
-                }}
-                modalTitle="Selecciona una hora"
-                onCancel={() => setShowPicker(false)}
-                closeOnOverlayPress
-                LinearGradient={LinearGradient}
-                Haptics={Haptics}
-                styles={{
-                    theme: "light",
-                }}
-                modalProps={{
-                    overlayOpacity: 0.2,
-                }}
-                hideSeconds={true}
-                agressivelyGetLatestDuretion={true}
-            />
+                <TimerPickerModal
+                    visible={showPicker}
+                    setIsVisible={setShowPicker}
+                    onConfirm={(pickedDuration) => {
+                        onChange(formatTime(pickedDuration))
+                        setHour(formatTime(pickedDuration))
+                        setShowPicker(false)
+                    }}
+                    modalTitle="Selecciona una hora"
+                    onCancel={() => setShowPicker(false)}
+                    closeOnOverlayPress
+                    LinearGradient={LinearGradient}
+                    Haptics={Haptics}
+                    styles={{
+                        theme: "light",
+                    }}
+                    modalProps={{
+                        overlayOpacity: 0.2,
+                    }}
+                    hideSeconds={true}
+                    agressivelyGetLatestDuretion={true}
+                />
             </Layout>
-        </Layout>   
+        </Layout>
     )
 }
 
@@ -183,9 +177,9 @@ const styles = StyleSheet.create({
     hour: {
         paddingVertical: 12,
         paddingHorizontal: 'auto',
-        width: '80%' 
+        width: '80%'
     },
-    disabledHour:{
+    disabledHour: {
         paddingVertical: 12,
         paddingHorizontal: 'auto',
         width: '100%'
@@ -194,12 +188,12 @@ const styles = StyleSheet.create({
         margin: 2,
         fontWeight: 'bold',
         fontSize: 10,
-        width:'15%'
-        
+        width: '15%'
+
     },
     buttonContainer: {
-        flexDirection: 'row',  
-        justifyContent: 'space-between', 
+        flexDirection: 'row',
+        justifyContent: 'space-between',
         width: '100%',
         backgroundColor: '#ffffff',
     },

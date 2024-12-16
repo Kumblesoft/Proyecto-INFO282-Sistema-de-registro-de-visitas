@@ -1,7 +1,7 @@
-import { Result, Err, Ok } from '../commonStructures/resultEnum'
+import { Err, Ok } from '../commonStructures/resultEnum'
 import React, { useState } from 'react'
 import { Image, View, StyleSheet, Alert, Linking, TouchableOpacity, Modal, Text } from 'react-native'
-import {Button, Layout} from '@ui-kitten/components'
+import { Button, Layout } from '@ui-kitten/components'
 import * as ImagePicker from 'expo-image-picker'
 import * as MediaLibrary from 'expo-media-library'
 import * as FileSystem from 'expo-file-system'
@@ -19,14 +19,14 @@ class CameraConfiguration {
    * @param {Array<number>} [aspect=[4, 3]] - The aspect ratio for the camera.
    * @param {number} [quality=1] - The quality of the image (0 to 1).
    */
-  constructor(setImage = img => {}, allowsEditing = true, aspect = [4, 3], quality = 1) {
+  constructor(setImage = img => { }, allowsEditing = true, aspect = [4, 3], quality = 1) {
     this.setImage = setImage
     this.allowsEditing = allowsEditing
     this.aspect = aspect
     this.quality = quality
   }
 
-  
+
 
   /**
    * Get the camera configuration settings.
@@ -55,7 +55,7 @@ class CameraConfiguration {
  * 
  * @returns {JSX.Element} Rendered camera component.
  */
-export const Camera = ({ title, required, cameraConfiguration, requiredFieldRef , refreshFieldRef, disabled}) => {
+export const Camera = ({ title, required, cameraConfiguration, requiredFieldRef, refreshFieldRef, disabled }) => {
   const [image, setImage] = useState(null)
   const [isMenuVisible, setMenuVisible] = useState(false)
   const [isRequiredAlert, setIsRequiredAlert] = useState(false)
@@ -63,9 +63,9 @@ export const Camera = ({ title, required, cameraConfiguration, requiredFieldRef 
   async function openMedia(cameraConfiguration, launchFunction) {
     if (disabled) return new Err('Camera is disabled').show();
     let mediaPermissions = await ImagePicker.requestMediaLibraryPermissionsAsync()
-    let cameraPermissions = await ImagePicker.requestCameraPermissionsAsync()    
+    let cameraPermissions = await ImagePicker.requestCameraPermissionsAsync()
     let permissionsGranted = mediaPermissions.status === 'granted' && cameraPermissions.status === 'granted'
-    
+
     if (!permissionsGranted) {
       setMenuVisible(false)
       Alert.alert(
@@ -79,13 +79,13 @@ export const Camera = ({ title, required, cameraConfiguration, requiredFieldRef 
     }
     setMenuVisible(true)
     mediaPermissions = await ImagePicker.requestMediaLibraryPermissionsAsync()
-    cameraPermissions = await ImagePicker.requestCameraPermissionsAsync()    
+    cameraPermissions = await ImagePicker.requestCameraPermissionsAsync()
     permissionsGranted = mediaPermissions.status === 'granted' && cameraPermissions.status === 'granted'
     if (!permissionsGranted) return (new Err('Permissions not granted by user')).show()
 
     const result = await launchFunction(cameraConfiguration.getSettings())
     if (result.canceled) return new Err('Operation cancelled')
-    
+
     const imageUri = result.assets[0].uri
     const base64 = await FileSystem.readAsStringAsync(imageUri, { encoding: FileSystem.EncodingType.Base64 })
     if (launchFunction === ImagePicker.launchCameraAsync) {
@@ -123,9 +123,9 @@ export const Camera = ({ title, required, cameraConfiguration, requiredFieldRef 
 
   requiredFieldRef.current = () => {
     if (required) {
-        setIsRequiredAlert(true)
+      setIsRequiredAlert(true)
     } else {
-        setIsRequiredAlert(false)
+      setIsRequiredAlert(false)
     }
   }
   refreshFieldRef.current = () => {
@@ -140,15 +140,15 @@ export const Camera = ({ title, required, cameraConfiguration, requiredFieldRef 
           {required ? <Text style={{ color: 'red' }}>*</Text> : ""}
         </Text>
       )}
-      
+
       {/* Contenedor que muestra el icono o imagen seleccionada */}
-      <TouchableOpacity onPress={toggleMenu} 
-      disabled= {disabled}
-      style={[
-        styles.imageContainer, 
-        isRequiredAlert && { backgroundColor: '#FFCCCC' } // Change background to red if isRequiredAlert is true
-      ]}
-      activeOpacity={0.7}>
+      <TouchableOpacity onPress={toggleMenu}
+        disabled={disabled}
+        style={[
+          styles.imageContainer,
+          isRequiredAlert && { backgroundColor: '#FFCCCC' } // Change background to red if isRequiredAlert is true
+        ]}
+        activeOpacity={0.7}>
         {image ? (
           <Image source={{ uri: image }} style={styles.selectedImage} />
         ) : (
@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
     marginBottom: 20, // Espacio inferior
     shadowColor: '#000', // Sombra para dar efecto de botón
     borderColor: '#00b7ae',
-    borderWidth: 1, 
+    borderWidth: 1,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,

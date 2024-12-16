@@ -6,8 +6,7 @@ import TextEntry, { OptionalTextFeatures } from './TextEntry'
 import DateSelector, { OptionDateFeatures } from './DateSelector'
 import HourSelector, { OptionalTimeFeatures } from './HourSelector'
 import CameraConfiguration, { Camera } from './Camera'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { Err, Ok } from '../commonStructures/resultEnum'
+import { Err } from '../commonStructures/resultEnum'
 import { useIdentifierContext } from '../context/IdentifierContext'
 import { StyleSheet } from "react-native"
 import { useFormContext } from '../context/SelectedFormContext'
@@ -72,8 +71,6 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
 
 
         try {
-
-
             const newForm = {
                 fecha: new Date().getTime(),
                 plantilla: formData["nombre formulario"],
@@ -83,8 +80,6 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
             }
             console.log(newForm)
             db.insertAnswer(newForm)
-
-
 
             Alert.alert("Formulario guardado")
             formState.current.clear()

@@ -15,7 +15,7 @@ export default class CheckboxChainInsertor extends ChainInsertor {
 
         fieldObject.opciones?.forEach(option =>
             this.db.runSync(
-                `INSERT INTO selector_options (fk_selector_id, name, value) VALUES (?, ?, ?)`,
+                `INSERT INTO checkbox_options (fk_checkbox_id, name, value) VALUES (?, ?, ?)`,
                 [insertedRowId.id, option.nombre, option.valor]
             ))
         return true
@@ -49,7 +49,7 @@ export default class CheckboxChainInsertor extends ChainInsertor {
             [fieldId]
         )
         const optionsQuery = this.db.getAllSync(
-            `SELECT name, value FROM selector_options WHERE fk_selector_id = ?`,
+            `SELECT name, value FROM checkbox_options WHERE fk_checkbox_id = ?`,
             [fieldProperties.id_options]
         )
 

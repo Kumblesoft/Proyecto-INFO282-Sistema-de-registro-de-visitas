@@ -1,6 +1,6 @@
-import React, { use, useState } from 'react'
-import { Animated, Dimensions, Platform, View, StyleSheet, FlatList, TouchableOpacity, Alert, Image } from 'react-native'
-import { ButtonGroup, CheckBox, Button, Text, TopNavigation, TopNavigationAction, Divider, Layout, Modal, Card, Icon } from '@ui-kitten/components'
+import React, { useState } from 'react'
+import { Dimensions, Platform, View, StyleSheet, FlatList, TouchableOpacity, Alert, Image } from 'react-native'
+import { CheckBox, Button, Text, TopNavigation, TopNavigationAction, Divider, Layout, Modal, Card, Icon } from '@ui-kitten/components'
 import { useFormContext } from '../context/SelectedFormContext'
 import { useNavigation } from '@react-navigation/native'
 import { LinearGradient } from 'expo-linear-gradient'
@@ -40,7 +40,7 @@ const FormSelectorScreen = () => {
     </Layout>
   )
 
-  
+
 
 
   //File picker function
@@ -87,11 +87,11 @@ const FormSelectorScreen = () => {
 
   const deleteSelectedForms = async () => {
     try {
-      selectedForms.forEach(formID => 
-          db.deleteForm(formID)
-          
+      selectedForms.forEach(formID =>
+        db.deleteForm(formID)
+
       )
-      
+
       setSelectedForms([])
       setIsSelectionMode(false)
 
@@ -142,27 +142,26 @@ const FormSelectorScreen = () => {
 
 
   const renderItem = ({ item }) => (
-
     <TouchableOpacity
       style={[styles.containerBox, selectedForms.includes(item["nombre formulario"]) && styles.selectedItem]}
       onPress={() => handlePress(item)}
       onLongPress={toggleSelectionMode}
     >
-      {isSelectionMode ? 
+      {isSelectionMode ?
         (
           <View style={styles.selectionRow}>
-            <CheckBox 
+            <CheckBox
               status='success'
               checked={selectedForms.includes(item["nombre formulario"])}
               onChange={() => handlePress(item)}
               style={styles.checkbox}
 
-            /> 
-            <Text style={{flex:1, fontSize: 20, fontWeight: 'bold'}}>{item["nombre formulario"]}</Text>
+            />
+            <Text style={{ flex: 1, fontSize: 20, fontWeight: 'bold' }}>{item["nombre formulario"]}</Text>
           </View>
-        ):( 
-        <Text style={styles.itemText}>{item["nombre formulario"]}</Text>
-      )}
+        ) : (
+          <Text style={styles.itemText}>{item["nombre formulario"]}</Text>
+        )}
       <Button
         accessoryLeft={
           <Icon name='menu-outline' style={{ width: 25, height: 25 }} fill='#000' />
@@ -319,12 +318,12 @@ const FormSelectorScreen = () => {
           <></>
           :
           <View style={styles.containerMenuBar}>
-            
+
             <Button style={styles.iconButton2} appearance="ghost" onPress={() => deleteSelectedForms()} accessoryLeft={deleteIcon} />
 
             <Button style={styles.iconButton2} appearance="ghost" onPress={() => shareFormTemplate(selectedForms)} accessoryLeft={shareIcon} />
-            
-          </View> 
+
+          </View>
         )
       }
       <Button style={styles.centerButton} onPress={() => navigation.navigate('FormEditor')} accessoryLeft={plusIcon} />
@@ -514,7 +513,7 @@ const styles = StyleSheet.create({
   centerButton: {
     alignSelf: 'center',
     position: 'absolute',
-    margin: height*0.9,
+    margin: height * 0.9,
     top: -25,
     width: 75,
     height: 75,

@@ -11,7 +11,7 @@ export default initDatabaseScript = {
     CREATE INDEX idx_forms_name ON forms(name);
 
     CREATE TABLE IF NOT EXISTS fields (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
     fk_id_form INTEGER REFERENCES forms(id) NOT NULL,
     fk_field_table_name INTEGER REFERENCES field_table_name(id) NOT NULL,
     name TEXT NOT NULL,
@@ -21,7 +21,7 @@ export default initDatabaseScript = {
     );
 
     CREATE TABLE IF NOT EXISTS field_table_name (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
     table_name TEXT UNIQUE,
     field_type_name TEXT NOT NULL UNIQUE
     );
@@ -40,18 +40,18 @@ export default initDatabaseScript = {
     selector_placeholder TEXT
     );
 
-   	CREATE TABLE IF NOT EXISTS checkbox_properties (
-   	fk_field integer references fields(id) not null,
-   	id_options integer primary key autoincrement,
-   	default_option TEXT,
-   	max_checked_options integer
-   	);
-   
-   	create table if not exists radio_properties (
-   	fk_field integer references fields(id) not null,
-   	default_option TEXT,
-   	id_options integer primary key autoincrement
-   	);
+    CREATE TABLE IF NOT EXISTS checkbox_properties (
+    fk_field integer references fields(id) not null,
+    id_options INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+    default_option TEXT,
+    max_checked_options integer
+    );
+
+    CREATE TABLE IF NOT EXISTS radio_properties (
+    fk_field integer references fields(id) not null,
+    default_option TEXT,
+    id_options INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE
+    );
    
     CREATE TABLE IF NOT EXISTS date_properties (
     fk_field INTEGER REFERENCES fields(id) NOT NULL,
@@ -127,7 +127,7 @@ export default initDatabaseScript = {
     FECHA_RESPUESTA INT,
     UM_PLANTILLA INT,
     ID_DISPOSITIVO TEXT
-	);
+    );
 
     CREATE TABLE IF NOT EXISTS campo_respuesta (
         ID_RESPUESTA INT REFERENCES respuestas(id_respuesta),

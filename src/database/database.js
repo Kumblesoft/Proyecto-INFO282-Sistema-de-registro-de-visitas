@@ -72,7 +72,6 @@ export function getDatabaseInstance(db) {
         instance = new Database(db)
         const testFroms = require('../TestForms/forms.json')
         testFroms.forEach(test => instance.addForm(test))
-        //instance.getForm("Formulario 1")
     }
     return instance
 }
@@ -218,7 +217,7 @@ export default class Database {
                 const fieldTableName = this.db.getFirstSync('SELECT table_name FROM field_table_name WHERE id = ?', [field.fk_field_table_name]).table_name
                 console.log('first query')
                 const fieldTypeName = this.db.getFirstSync('SELECT field_type_name FROM field_table_name WHERE id = ?', [field.fk_field_table_name]).field_type_name
-                console.log('second query')	
+                console.log('second query')
                 //if (!this.chainInsertors.delete(field.id, fieldTableName)) throw new Error('Error al eliminar')
                 this.chainInsertors.delete(field.id, fieldTableName, fieldTypeName)
                 console.log("Outside")
@@ -274,9 +273,10 @@ export default class Database {
         })
     }
 
-    deleteAnswers(formID, answerID) {
-        this.db.runSync('DELETE FROM respuestas WHERE id_plantilla = ?', [formID])
-        this.db.runSync('DELETE FROM campo_respuesta WHERE id_respuesta = ?', [answerID])
+    deleteAnswers(formName, answerDate) {
+        formID = this.db.getFirstSync('SELECT id FROM forms WHERE name = ?', [formName]).id
+        this.db.runSync('DELETE FROM campo_respuesta WHERE id_respuesta = ?', [this.db.getFirstSync('SELECT id_respuesta FROM respuestas WHERE fecha_respuesta = ? AND id_plantilla = ?', [answerDate, formID]).id_respuesta])
+        this.db.runSync('DELETE FROM respuestas WHERE fecha_respuesta = ?', [answerDate])
     }
 
     getComponnentTypeId(fieldType) {

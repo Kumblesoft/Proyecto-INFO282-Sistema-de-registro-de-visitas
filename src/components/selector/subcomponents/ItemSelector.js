@@ -4,16 +4,17 @@ import { StyleSheet } from 'react-native'
 
 
 
-const ItemSelector = forwardRef(({ items, onSelect, value,defaultOption, placeholder,error,disabled }, ref) => {
+const ItemSelector = forwardRef(({ items, onSelect, value, defaultOption, placeholder, error, disabled }, ref) => {
   const [selectedIndex, setSelectedIndex] = useState(null) // Índice seleccionado
   const [selectedValue, setSelectedValue] = useState(null) // Valor inicial
 
 
-  function refreshSelector(){
-    if (defaultOption!= null )onSelect(defaultOption)
-    else{
+  function refreshSelector() {
+    if (defaultOption != null) onSelect(defaultOption)
+    else {
       setSelectedIndex(null)
-      setSelectedValue(null)}
+      setSelectedValue(null)
+    }
   }
   useImperativeHandle(ref, () => ({
     refreshSelector,
@@ -27,6 +28,7 @@ const ItemSelector = forwardRef(({ items, onSelect, value,defaultOption, placeho
 
     if (onSelect) onSelect(selectedItem.valor) // Llama al callback con el valor seleccionado
   }
+
   useEffect(() => {
     const selectedItem = items.find(item => item.valor === value) // Encuentra el elemento por el valor
     setSelectedValue(selectedItem ? selectedItem.nombre : null) // Muestra el nombre si se encuentra, o null
@@ -36,14 +38,14 @@ const ItemSelector = forwardRef(({ items, onSelect, value,defaultOption, placeho
     <Select
       selectedIndex={selectedIndex}
       onSelect={handleSelect}
-      status={error? 'danger':'primary'}
+      status={error ? 'danger' : 'primary'}
       disabled={disabled}
       placeholder={placeholder} // Placeholder para el Select
       value={selectedValue} // Muestra el nombre seleccionado o el placeholder
       style={styles.select} // Aplica estilo para el ancho mínimo 
     >
       {items.map(item => (
-        <SelectItem key={item.valor} title={item.nombre} style={styles.colorItem}/> // Crea las opciones del dropdown
+        <SelectItem key={item.valor} title={item.nombre} style={styles.colorItem} /> // Crea las opciones del dropdown
       ))}
     </Select>
   )
