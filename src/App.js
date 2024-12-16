@@ -4,19 +4,21 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { ApplicationProvider, IconRegistry } from "@ui-kitten/components"
 import * as eva from "@eva-design/eva"
 import { EvaIconsPack } from '@ui-kitten/eva-icons'
-import Menu from "./screens/Menu"
-import FormSelectorScreen from "./screens/FormSelectorScreen" // Importa tu pantalla de selección de formularios
-import CreateTemplate from './screens/CreateTemplate'
-import FormFiller from "./screens/FormFiller"
-import SavedForms from "./screens/SavedFormsScreen"
-import Settings from "./screens/Settings"
-import { SQLiteProvider, useSQLiteContext, SQLiteDatabase } from 'expo-sqlite'
-import { initializeDataBase } from './database/database'
-import { SafeAreaView } from "react-native-safe-area-context"
 
 import { FormProvider } from './context/SelectedFormContext'
 import { IdentifierProvider } from './context/IdentifierContext'
+import { SQLiteProvider } from 'expo-sqlite'
+import { initializeDataBase } from './database/database'
+
+import Menu from "./screens/Menu"
+import FormSelectorScreen from "./screens/FormSelectorScreen" // Importa tu pantalla de selección de formularios
+import FormFiller from "./screens/FormFiller"
+import SavedForms from "./screens/SavedFormsScreen"
+import Settings from "./screens/Settings"
 import FormEditor from './screens/FormEditor'
+
+
+
 
 
 const myTheme = {

@@ -1,18 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import { View, StyleSheet, Alert, TouchableOpacity } from 'react-native'
 import {Text, Select, SelectItem, Button, Icon} from '@ui-kitten/components'
-
-import fields from '../fieldsConstructor/fields' // Ajusta la ruta correctamente
-import SelectorConstructor from '../fieldsConstructor/SelectorConstructor'
-import RadioSelectorConstructor from '../fieldsConstructor/RadioConstructor'
-import TextoConstructor from '../fieldsConstructor/TextConstructor'
-import HourConstructor from '../fieldsConstructor/HourConstructor'
-import DateConstructor from '../fieldsConstructor/DateConstructor'
-import CheckBoxConstructor from '../fieldsConstructor/CheckBoxConstructor'
-import CameraConstructor from '../fieldsConstructor/CameraConstructor'
 import DragList from 'react-native-draglist'
-import { useSQLiteContext } from 'expo-sqlite'
-import { getDatabaseInstance } from '../database/database'
+
+import fields from './FieldsConstructor/fields' 
+import SelectorConstructor from './FieldsConstructor/SelectorConstructor'
+import RadioSelectorConstructor from './FieldsConstructor/RadioConstructor'
+import TextoConstructor from './FieldsConstructor/TextConstructor'
+import HourConstructor from './FieldsConstructor/HourConstructor'
+import DateConstructor from './FieldsConstructor/DateConstructor'
+import CheckBoxConstructor from './FieldsConstructor/CheckBoxConstructor'
+import CameraConstructor from './FieldsConstructor/CameraConstructor'
 
 
 const constructors = new Map([
@@ -32,13 +30,8 @@ const FieldSelector = ({onSave}) => {
     const [fieldsToDisplay, setFieldsToDisplay] = useState([]) // Almacena los campos agregados
     const [miniFields, setMiniFields] = useState([]) // Almacena los campos agregados
     const [dragMode, setDragMode] = useState(false)
-    const [form, setForm] = useState({})
     const [fieldNames, setFieldNames] = useState(new Set())
-    useEffect(() => {
-        setFieldNames(new Set(miniFields))
-    }, [miniFields])
     
-    const deleteIcon = props => <Icon name='trash-outline' {...props} fill="#fff" style={[props.style, { width: 20, height: 20 }]}/>
     const saveIcon = props => <Icon name='save-outline' {...props} fill="#fff" style={[props.style, { width: 20, height: 20 }]}/>
     const editIcon = props => <Icon name='edit-outline' {...props} fill="#fff" style={[props.style, { width: 25, height: 25 }]}/>
     const closeIcon = props => <Icon name='close-outline' {...props} fill="#fff" style={[props.style, { width: 25, height: 25 }]}/>
@@ -47,10 +40,15 @@ const FieldSelector = ({onSave}) => {
     const fieldTypes = Object.keys(fields)
 
     const handleFieldSave = (field, index) => {
+        
         if (fieldNames.has(field.nombre) && field.nombre !== miniFields[index]) {
-            Alert.alert('Error', `El campo "${field.nombre}" ya existe en el formulario`)
+            // Alert.alert('Error', `El campo "${field.nombre}" ya existe en el formulario`)
+            return
+        } if (field.nombre === '') {
+            // Alert.alert('Error', 'Por favor escoja un nombre para el campo')
             return
         }
+        
         fieldsToDisplay[index] = field
         fieldNames.delete(miniFields[index])
         miniFields[index] = field.nombre
@@ -58,65 +56,50 @@ const FieldSelector = ({onSave}) => {
     }
 
     function renderItem(info) {
-        const {item, onDragStart, onDragEnd, isActive} = info
-        
+        const { item, onDragStart, onDragEnd } = info
         return (
-        <TouchableOpacity 
-            key={item}
-            onPressIn={onDragStart} 
-            onPressOut={onDragEnd}
-            style={styles.containerBox}>
-                    <Text>{item}</Text>
-        </TouchableOpacity>
+            <TouchableOpacity 
+                key={item}
+                onPressIn={onDragStart} 
+                onPressOut={onDragEnd}
+                style={styles.containerBox}>
+                <Text>{item}</Text>
+            </TouchableOpacity>
         )
     }
 
     async function onReordered(fromIndex, toIndex) {
-        const copy = [...fieldsToDisplay]; // Don't modify react data in-place
-        const removed = copy.splice(fromIndex, 1);
+        const copy = [...fieldsToDisplay] // Don't modify react data in-place
+        const removed = copy.splice(fromIndex, 1)
 
-        copy.splice(toIndex, 0, removed[0]); // Now insert at the new pos
-        setFieldsToDisplay(copy);
+        copy.splice(toIndex, 0, removed[0]) // Now insert at the new pos
+        setFieldsToDisplay(copy)
         // Mini fields
         const copyMini = [...miniFields]; // Don't modify react data in-place
-        const removedMini = copyMini.splice(fromIndex, 1);
+        const removedMini = copyMini.splice(fromIndex, 1)
 
-        copyMini.splice(toIndex, 0, removedMini[0]); // Now insert at the new pos
-        setMiniFields(copyMini);
-
+        copyMini.splice(toIndex, 0, removedMini[0]) // Now insert at the new pos
+        setMiniFields(copyMini)
     }
 
     // Agregar un nuevo campo
     const handleNewField = () => {
-        if (fields[selectedField]) {
-            const copy = [...fieldsToDisplay]
-            copy.push({ ...fields[selectedField], tipo: selectedField })
+        if (!fields[selectedField])
+            return console.error('Field type not implemented:', selectedField)
 
-            const miniCopy = [...miniFields]
-            miniCopy.push(fields[selectedField].nombre)
-            setFieldsToDisplay(copy)
-            setMiniFields(miniCopy)
-            console.log(fieldNames)
-        } else {
-            console.log('Tipo de campo no implementado:', selectedField)
-        }
+        setFieldsToDisplay([...fieldsToDisplay, { ...fields[selectedField], tipo: selectedField }])
+        setMiniFields([...miniFields, fields[selectedField].nombre])
     }
 
-    function keyExtractor(str, _index) {
-        return str;
-    }
     // Eliminar un campo específico con confirmación
-    const handleDeleteField = (indexToDelete) => {
+    const handleDeleteField = indexToDelete => {
         const fieldName = fieldsToDisplay[indexToDelete]?.nombre || fieldsToDisplay[indexToDelete]?.tipo || "este campo"
     
         Alert.alert(
             'Confirmación de Eliminación', // Título del mensaje
             `¿Estás seguro de que quieres eliminar el campo "${fieldName}"?`, // Mensaje con el nombre del campo
             [
-                {
-                    text: 'Cancelar',
-                    style: 'cancel',
-                },
+                { text: 'Cancelar', style: 'cancel' },
                 {
                     text: 'Eliminar',
                     onPress: () => {
@@ -124,101 +107,98 @@ const FieldSelector = ({onSave}) => {
                         setMiniFields(miniFields.filter((_, index) => index !== indexToDelete))
                         fieldNames.delete(fieldName)
                     },
-                    style: 'destructive', // Estilo rojo en iOS
+                    style: 'destructive'
                 },
             ],
             { cancelable: true } // Permite cerrar el diálogo tocando fuera de él
         )
     }
 
-    const handleSave = () => {
-        console.log(fieldsToDisplay)
-        onSave(fieldsToDisplay)
-    }
-
     const handleDragMode = () => {
-        if (miniFields.filter((field) => field === '').length > 0 || miniFields.length === 0) {
-            console.log('No se pueden dejar campos vacíos')
-            Alert.alert('Error', 'Los campos deben tener nombre')
-        } else {
-            setDragMode(!dragMode)
-        }
+        if (!miniFields.some(name => name === ''))
+            return setDragMode(!dragMode)
+        // console.log(miniFields)
+        Alert.alert('Error', 'Los campos deben tener nombre')
     }
     
+    useEffect(() => {setFieldNames(new Set(miniFields))}, [miniFields])
     
     return (
         <>
         <View style={styles.container}>
-            <Button 
-                accessoryLeft={dragMode ? saveIcon : editIcon} 
-                style={styles.editButton} 
-                onPress={() => handleDragMode()}
-                
-            > 
-                {dragMode ? 
-                    <Text category='p2' > Guardar Orden </Text> : 
-                    <Text category='p2'> Editar Orden </Text>
-                } 
-            </Button>
             {dragMode ? 
                 <View style={styles.fieldContainer}>
                     <DragList
                         data={miniFields}
-                        keyExtractor={keyExtractor}
+                        keyExtractor={(name, i) => name}
                         onReordered={onReordered}
                         renderItem={renderItem}
                     />
-            </View> 
-            :
-            fieldsToDisplay.map((item, index) => {
-                
-                const FieldComponent = constructors.get(item.tipo)
-                return (
-                    <View style={styles.fieldContainer}>
-                        <View style={styles.buttonContainer}>
-                            <Button
-                                status="danger"
-                                style={styles.deleteButton}
-                                onPress={() => handleDeleteField(index)}
-                                accessoryLeft={closeIcon}
-                            >
-                            </Button>
-                        </View>                    
-                            <FieldComponent field={item} onSave={(field) => {handleFieldSave(field, index)}} />
-                    </View>
-                    )
-                })}
+                </View> :
+                fieldsToDisplay.map((item, index) => {
+                    
+                    const FieldComponent = constructors.get(item.tipo)
+                    return (
+                        <View style={styles.fieldContainer}>
+                            <View style={styles.buttonContainer}>
+                                <Button
+                                    status="danger"
+                                    style={styles.deleteButton}
+                                    onPress={() => handleDeleteField(index)}
+                                    accessoryLeft={closeIcon}
+                                >
+                                </Button>
+                            </View>                    
+                            <FieldComponent field={item} onSave={field => handleFieldSave(field, index)} />
+                        </View>
+                        )
+                })
+            }
             
         
             {/* Sección destacada */}
-            {!dragMode ?(<View style={styles.selectionContainer}>
-                <Text style={styles.selectionTitle}>Crear un nuevo campo</Text>
-                <Select
-                    selectedIndex={selectedIndex}
-                    value={selectedField}
-                    onSelect={(itemValue) => {
-                        setSelectedIndex(itemValue)
-                        setSelectedField(fieldTypes[itemValue - 1])
-                    }}
-                    placeholder="Seleccione un tipo de campo"
-                >
-                    {fieldTypes.map((fieldType) => (
-                        <SelectItem title={fieldType} key={fieldType} />
-                    ))}
-                </Select>
-        
-                <Button
-                    title="Agregar nuevo campo"
-                    onPress={handleNewField}
-                    disabled={!selectedIndex}
-                    style={selectedIndex ? styles.addButton : styles.disButton}
-                    status={selectedIndex ? 'primary' : 'basic'}
-                >
-                    Agregar nuevo campo
-                </Button>
-            </View>) : <></>}
+            {!dragMode ?
+                <View style={styles.selectionContainer}>
+                    <Text style={styles.selectionTitle}>Crear un nuevo campo</Text>
+                    <Select
+                        selectedIndex={selectedIndex}
+                        value={selectedField}
+                        onSelect={(itemValue) => {
+                            setSelectedIndex(itemValue)
+                            setSelectedField(fieldTypes[itemValue - 1])
+                        }}
+                        placeholder="Seleccione un tipo de campo"
+                    >
+                        { fieldTypes.map(fieldType => <SelectItem title={fieldType} key={fieldType} />) }
+                    </Select>
             
-        <Button accessoryLeft={saveIcon} onPress={() => handleSave()}>Guardar Formulario</Button>
+                    <Button
+                        title="Agregar nuevo campo"
+                        onPress={handleNewField}
+                        disabled={!selectedIndex}
+                        style={selectedIndex ? styles.addButton : styles.disButton}
+                        status={selectedIndex ? 'primary' : 'basic'}
+                    >
+                        Agregar nuevo campo
+                    </Button>
+                </View> :
+                <></>
+            }
+        
+        { fieldsToDisplay.length > 0 &&
+            <Button 
+                accessoryLeft={dragMode ? saveIcon : editIcon} 
+                style={styles.editButton} 
+                onPress={() => handleDragMode()}
+            > 
+                {dragMode ? 
+                    <Text category='p2'> Guardar Orden </Text> : 
+                    <Text category='p2'> Editar Orden </Text>
+                } 
+            </Button>
+        }
+        <Button accessoryLeft={saveIcon} onPress={() => onSave(fieldsToDisplay)}>Guardar Formulario</Button>
+
     </View>
     </>
     )
@@ -239,7 +219,7 @@ const styles = StyleSheet.create({
         borderColor: '#00b7ae',
         shadowColor: "#000",
         shadowOffset: { width: 0, height: "10%" },
-        shadowOpacity: 0.9,
+        //shadowOpacity: 0.9,
         shadowRadius: 2,
         elevation: 3,
         alignItems: 'flex-start',
