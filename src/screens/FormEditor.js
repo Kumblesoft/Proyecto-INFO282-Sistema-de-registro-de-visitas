@@ -13,7 +13,7 @@ export default function FormEditor() {
   const db = getDatabaseInstance(useSQLiteContext())
   const navigation = useNavigation()
   const [selectedField, setSelectedField] = useState("") // Estado para el FieldSelector
-  const formNames = new Set(require("../TestForms/forms.json").map(form => form["nombre formulario"]))
+  const formNames = new Set(db.getAllFormNames())
   const [isNameTaken, setIsNameTaken] = useState(false)
   const [formName, setFormName] = useState("")
 
@@ -56,12 +56,11 @@ export default function FormEditor() {
     }
     // Guardar el nuevo formulario en el archivo JSON
     db.addForm(newForm)
-    // console.log(newForm)    
+    navigation.goBack()
+    navigation.replace('FormSelector')
   }
 
   const checkFormName = name => {
-    //console.log(name)
-    //console.log(formNames)
     setIsNameTaken(formName != name && formNames.has(name))
     !isNameTaken ? setFormName(name) : setFormName("")
   }

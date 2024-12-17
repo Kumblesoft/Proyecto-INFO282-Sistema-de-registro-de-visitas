@@ -4,7 +4,6 @@ import { Input, Button, List, ListItem, Icon,Toggle, Layout, Divider, CheckBox} 
 
 const SelectorConstructor = ({ field, onSave }) => {
     const [options, setOptions] = useState(field.opciones || [])
-    const [newOptionName, setNewOptionName] = useState('')
     const [fieldName, setFieldName] = useState(field.nombre || '')
     const [isRequired, setIsRequired] = useState(field.isRequired ?? true)
 
@@ -25,6 +24,7 @@ const SelectorConstructor = ({ field, onSave }) => {
     const handleSave = () => {
         // Crear el objeto `field` con los datos
         const field = {
+            tipo: 'selector',
             nombre: fieldName,
             salida : fieldName.toLowerCase().replace(/ /g, '_'),
             "opcion predeterminada" : null,  // no se que es

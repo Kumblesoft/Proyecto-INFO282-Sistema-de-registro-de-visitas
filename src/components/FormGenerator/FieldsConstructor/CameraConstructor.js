@@ -5,11 +5,10 @@ import {
     StyleSheet
 } from 'react-native'
 
-import { Text, Input, Button, Toggle, Icon, Divider, CheckBox } from '@ui-kitten/components'
+import { Text, Input, Button, Icon, Divider, CheckBox } from '@ui-kitten/components'
 
 const CameraConstructor = ({ onSave, field = {} }) => {
     const [fieldName, setFieldName] = useState(field.nombre || '')
-    const [isEditable, setIsEditable] = useState(field.editable || false)
     const [isRequired, setIsRequired] = useState(field.isRequired ?? true) // Por defecto, true
 
     const saveIcon = props => <Icon name='save-outline' {...props} fill="#fff" style={[props.style, { width: 25, height: 25 }]}/>
@@ -22,9 +21,10 @@ const CameraConstructor = ({ onSave, field = {} }) => {
         }
 
         const field = {
+            tipo: 'camara',
             nombre: fieldName,
             salida: fieldName.toLowerCase().replace(/ /g, '_'),
-            editable: isEditable,
+            editable: true,
             obligatorio: isRequired // Agregar valor al objeto field
         }
 

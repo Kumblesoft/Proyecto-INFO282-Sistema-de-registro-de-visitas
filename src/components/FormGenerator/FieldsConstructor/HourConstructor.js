@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { View, Alert, StyleSheet } from 'react-native'
-import { Text, Input, Button, Toggle, Layout, Divider, Icon, CheckBox, RadioGroup, Radio } from '@ui-kitten/components'
+import { Text, Input, Button, Layout, Divider, CheckBox, RadioGroup, Radio } from '@ui-kitten/components'
 import { TimerPickerModal } from 'react-native-timer-picker'
 import * as Haptics from 'expo-haptics'
 import { LinearGradient } from 'expo-linear-gradient'
@@ -21,8 +21,6 @@ const HourConstructor = ({ field = {}, onSave }) => {
 
     const [selectedIndex, setSelectedIndex] = useState(0)
 
-    const saveIcon = props => <Icon name='save-outline' {...props} fill="#fff" style={[props.style, { width: 25, height: 25 }]}/>
-
     const formatTime = ({ hours, minutes }) =>
         `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
 
@@ -38,9 +36,11 @@ const HourConstructor = ({ field = {}, onSave }) => {
         }
 
         const field = {
+            tipo: 'hora',
             nombre: fieldName,
             'hora predeterminada': defaultHour,
             salida: fieldName.toLowerCase().replace(/ /g, '_'),
+            obligatorio: false,
             limitaciones: {
                 tipo: 'ArregloFecha',
                 compatibilidadLimitaciones: [

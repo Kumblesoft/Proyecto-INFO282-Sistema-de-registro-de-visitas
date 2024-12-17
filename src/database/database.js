@@ -78,9 +78,8 @@ export function getDatabaseInstance(db) {
 
 export default class Database {
     constructor(db) {
-        if (Database.instance) {
-            return Database.instance // Return the existing instance if it already exists
-        }
+        if (Database.instance) return Database.instance 
+        
 
         this.db = db
         this.chainInsertors = new TextChainInsertor(this.db)
@@ -95,12 +94,22 @@ export default class Database {
         Database.instance = this // Cache the instance
     }
 
+    getAllFormNames() {
+        try {
+            return this.db.getAllSync('SELECT name FROM forms').map(form => form.name)
+        } catch (error) {
+            console.error('getAllFormNames:', error)
+            console.error('trace:', error.stack)
+        }
+    }
+
     getAllForms() {
         try {
             const forms = this.db.getAllSync('SELECT name FROM forms')
             return forms.map(form => this.getForm(form.name))
         } catch (error) {
-            console.log(error)
+            console.error('getAllForms', error)
+            console.error('trace:', error.stack)
         }
     }
 
@@ -115,20 +124,27 @@ export default class Database {
             }
 
             const outputFields = new Array(fields.length)
-            fields.forEach((field) => {
-                const { id: fieldID, fk_field_table_name: typeID, name: fieldName, ordering: posicion, obligatory: obligatorio, output: salidaCampo } = field
+            fields.forEach(field => {
+                const {
+                    id          : fieldID,
+                    fk_field_table_name : typeID,
+                    name        : fieldName,
+                    ordering    : posicion,
+                    obligatory  : obligatorio,
+                    output      : salidaCampo 
+                } = field
+
                 const outputField = {
-                    "nombre": fieldName,
-                    "salida": salidaCampo,
-                    "obligatorio": obligatorio,
-                    "tipo": this.db.getFirstSync('SELECT field_type_name FROM field_table_name WHERE id = ?', [typeID]).field_type_name
+                    "nombre"    : fieldName,
+                    "salida"    : salidaCampo,
+                    "obligatorio"   : obligatorio,
+                    "tipo"      : this.db.getFirstSync('SELECT field_type_name FROM field_table_name WHERE id = ?', [typeID]).field_type_name
                 }
 
                 const { table_name: typeTableName, field_type_name: fieldTypeName } = this.db.getFirstSync('SELECT table_name,field_type_name FROM field_table_name WHERE id = ?', [typeID])
-                const outputTypeFieldData = this.chainInsertors.getFieldProperties(fieldID, typeTableName, fieldTypeName)
-                Object.entries(outputTypeFieldData).forEach(([key, value]) =>
-                    outputField[key] = value
-                )
+                const fieldTypeProperties = this.chainInsertors.getFieldProperties(fieldID, typeTableName, fieldTypeName)
+                
+                Object.assign(outputField, fieldTypeProperties)
 
                 outputFields[posicion] = outputField
             })
@@ -137,7 +153,9 @@ export default class Database {
             return outputForm
 
         } catch (error) {
-            console.log(error)
+            console.error('getForm: ', error)
+            console.error('trace:', error.stack)
+            console.error('input:', nombreFormulario)
         }
     }
 
@@ -146,7 +164,8 @@ export default class Database {
             const answers = this.db.getAllSync('SELECT ID_RESPUESTA FROM respuestas')
             return answers.map(answer => this.getAnswer(answer['ID_RESPUESTA']))
         } catch (error) {
-            console.log(error)
+            console.error('getAllAnswers:', error)
+            console.error('trace:', error.stack)
         }
     }
     getAnswerFromFormTemplate(formName) {
@@ -154,7 +173,9 @@ export default class Database {
             const answers = this.db.getAllSync('SELECT id FROM forms WHERE name = ?', [formName])
             return answers.map(answer => this.getAnswer(answer['ID_RESPUESTA']))
         } catch (error) {
-            console.log(error)
+            console.error('getAnswerFromFormTemplate:', error)
+            console.error('trace:', error.stack)
+            console.error('input:', formName)
         }
     }
     getAnswer(idRespuesta) {
@@ -178,7 +199,9 @@ export default class Database {
             }
 
         } catch (error) {
-            console.log(error)
+            console.error('getAnswer:', error)
+            console.error('trace:', error.stack)
+            console.error('input:', idRespuesta)
         }
     }
 
@@ -197,12 +220,18 @@ export default class Database {
                     'INSERT INTO fields (fk_id_form, fk_field_table_name, name, ordering, obligatory, output) VALUES (?,?,?,?,?,?)',
                     [formID, typeOfField, fieldObject.nombre, i, fieldObject.obligatorio, fieldObject.salida]
                 )
-                const lastFieldId = this.db.getFirstSync('SELECT id FROM fields ORDER BY id DESC LIMIT 1').id
-                if (!this.chainInsertors.insert(fieldObject, lastFieldId, typeOfField, fieldTableName))
+                const lastFieldId = this.db.getFirstSync('SELECT last_insert_rowid() AS id').id
+                const tryInsert = this.chainInsertors.insert(fieldObject, lastFieldId, typeOfField, fieldTableName)
+                
+                if (tryInsert === false) {
+                    /* Aqui hay que borrar de la tabla de forms hasta este campo, luego, seleccionar todos los campos de la tabla fields que tengan el id del form y borrarlos de la tabla fields */
                     throw new Error(`Tipo de campo desconocido ${fieldObject.tipo}`)
+                }
             })
         } catch (error) {
-            console.log(error)
+            console.error('addForm:', error)
+            console.error('trace:', error.stack)
+            console.error('input:', newForm)
         }
     }
 
@@ -227,7 +256,9 @@ export default class Database {
             this.db.runSync('DELETE FROM forms WHERE id = ?', [formID])
             //this.db.getForms()
         } catch (error) {
-            console.log(error)
+            console.error('deleteForm:', error)
+            console.error('trace:', error.stack)
+            console.error('input:', formName)
         }
     }
 
@@ -274,7 +305,7 @@ export default class Database {
     }
 
     deleteAnswers(formName, answerDate) {
-        formID = this.db.getFirstSync('SELECT id FROM forms WHERE name = ?', [formName]).id
+        const formID = this.db.getFirstSync('SELECT id FROM forms WHERE name = ?', [formName]).id
         this.db.runSync('DELETE FROM campo_respuesta WHERE id_respuesta = ?', [this.db.getFirstSync('SELECT id_respuesta FROM respuestas WHERE fecha_respuesta = ? AND id_plantilla = ?', [answerDate, formID]).id_respuesta])
         this.db.runSync('DELETE FROM respuestas WHERE fecha_respuesta = ?', [answerDate])
     }

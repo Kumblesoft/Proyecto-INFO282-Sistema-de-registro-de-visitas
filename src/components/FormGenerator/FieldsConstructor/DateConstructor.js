@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { View, StyleSheet, Alert, TouchableOpacity } from 'react-native'
-import { Text, Input, Button, Toggle, Datepicker, NativeDateService, Icon, CheckBox, Divider } from '@ui-kitten/components'	
+import { Text, Input, Button, Datepicker, NativeDateService, Icon, CheckBox, Divider } from '@ui-kitten/components'	
 
 const DateConstructor = ({ field = {}, onSave }) => {
     const [fieldName, setFieldName] = useState(field.name || "")
@@ -72,8 +72,10 @@ const DateConstructor = ({ field = {}, onSave }) => {
         }
 
         const field = {
+            tipo: 'fecha',
             nombre: fieldName,
             salida: fieldName.toLowerCase().replace(/ /g, "_"),
+            obligatorio: false,
             limitaciones: {
                 tipo: "ArregloFecha",
                 compatibilidadLimitaciones: [

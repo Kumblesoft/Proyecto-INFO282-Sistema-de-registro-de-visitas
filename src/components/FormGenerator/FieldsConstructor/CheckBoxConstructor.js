@@ -1,22 +1,6 @@
 import React, { useState } from 'react'
-import {
-    View,
-    FlatList,
-    KeyboardAvoidingView,
-    Platform,
-    StyleSheet,
-    Alert,
-} from 'react-native'
-import {
-    Layout,
-    Text,
-    Input,
-    Button,
-    Toggle,
-    Icon,
-    CheckBox,
-    Divider
-} from '@ui-kitten/components'
+import { View, FlatList, KeyboardAvoidingView, Platform, StyleSheet, Alert } from 'react-native'
+import { Layout, Text, Input, Button, Icon, CheckBox, Divider } from '@ui-kitten/components'
 
 const CheckBoxConstructor = ({ onSave, field = {} }) => {
     const [fieldName, setFieldName] = useState(field.nombre || '')
@@ -63,6 +47,7 @@ const CheckBoxConstructor = ({ onSave, field = {} }) => {
         }
 
         const field = {
+            tipo: 'checkbox',
             nombre: fieldName,
             opciones: options,
             salida: fieldName.toLowerCase().replace(/ /g, '_'),

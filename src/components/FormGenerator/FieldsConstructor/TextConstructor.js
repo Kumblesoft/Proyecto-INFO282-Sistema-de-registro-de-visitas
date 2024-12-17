@@ -68,21 +68,13 @@ const TextoConstructor = ({ field, onSave }) => {
     }
 
     const isLimitacionDisabled = index => selectedLimitaciones.length > 0 && !isLimitacionCompatible(index, selectedLimitaciones)
-    
-
-    const isFormatoDisabled = index => {
-        if (selectedLimitaciones.length === 0) return false
-        return !isFormatoCompatibleWithLimitaciones(index, selectedLimitaciones)
-    }
+    const isFormatoDisabled = index => selectedLimitaciones.length === 0 && !isFormatoCompatibleWithLimitaciones(index, selectedLimitaciones)
+    const isFormatoCompatibleWithLimitaciones = (formatoIndex, limitaciones) => limitaciones.length !== 0 && limitaciones.every(limitacion => compatibilidadFormato[limitacion][formatoIndex])
 
     const isLimitacionCompatible = (newLimitacion, currentLimitaciones) =>  (
         currentLimitaciones.every(existing => compatibilidadesLimitaciones[existing][newLimitacion])
     )
 
-    const isFormatoCompatibleWithLimitaciones = (formatoIndex, limitaciones) => {
-        if (limitaciones.length === 0) return true
-        return limitaciones.every(limitacion => compatibilidadFormato[limitacion][formatoIndex])
-    }
 
     const handleSave = () => {
         const limitaciones = selectedLimitaciones.map(index =>
@@ -92,8 +84,8 @@ const TextoConstructor = ({ field, onSave }) => {
         const formato = Object.keys(enumFormato).find(key => enumFormato[key] === selectedFormato)
 
         const field = {
-            nombre: fieldName,
-            tipo: 'texto',	
+            tipo: 'texto',
+            nombre: fieldName,	
             salida: fieldName.toLowerCase().replace(/ /g, '_'),
             limitaciones : limitaciones ? limitaciones : null,
             formato: formato ? [formato] : [],
@@ -141,7 +133,7 @@ const TextoConstructor = ({ field, onSave }) => {
         />
     )
 
-    React.useEffect(() => {handleSave()}, [fieldName, selectedLimitaciones, selectedFormato, isRequired, isRequiredQR])
+    React.useEffect(() => { handleSave() }, [fieldName, selectedLimitaciones, selectedFormato, isRequired, isRequiredQR])
 
     return (
         <View style={styles.container}>
@@ -151,9 +143,9 @@ const TextoConstructor = ({ field, onSave }) => {
 
             <View style={styles.field}>
                 <Input
-                    label={"Nombre del Campo"}
+                    label="Nombre del Campo de texto"
                     style={styles.input}
-                    placeholder="Nombre del campo Texto"
+                    placeholder="Ingrese un nombre"
                     value={fieldName}
                     onChangeText={setFieldName}
                 />
@@ -234,15 +226,7 @@ const TextoConstructor = ({ field, onSave }) => {
                     />
                 </View>
             }
-
-            <Divider/>
             
-            {/* Guardar */}
-            <View style={styles.saveButtonContainer}>
-                <Button accessoryLeft={saveIcon} title="Guardar Campo" onPress={handleSave}>
-                    Guardar Campo
-                </Button>        
-            </View>
         </View>
     )
 }

@@ -1,14 +1,11 @@
 import React, { useState } from 'react'
 import { View, Text, StyleSheet,FlatList } from 'react-native'
-import { Input, Button, List, ListItem, Icon,Toggle, Layout, Divider, CheckBox} from '@ui-kitten/components'
+import { Input, Button, Icon, Layout, Divider, CheckBox} from '@ui-kitten/components'
 
 const RadioConstructor = ({ field, onSave }) => {
     const [options, setOptions] = useState(field.opciones || [])
-    const [newOptionName, setNewOptionName] = useState('')
     const [fieldName, setFieldName] = useState(field.nombre || '')
     const [isRequired, setIsRequired] = useState(field.isRequired ?? true)
-
-    const saveIcon = props => <Icon name='save-outline' {...props} fill="#fff" style={[props.style, { width: 25, height: 25 }]}/>
 
     const handleAddOption = () => {
         setOptions((prevOptions) => [
@@ -17,14 +14,12 @@ const RadioConstructor = ({ field, onSave }) => {
         ])
     }
 
-
-    const removeOption = (index) => {
-        setOptions(options.filter((_, i) => i !== index))
-    }
+    const removeOption = index => setOptions(options.filter((_, i) => i !== index))    
 
     const handleSave = () => {
         // Crear el objeto `field` con los datos
         const field = {
+            tipo: 'radio',
             nombre: fieldName,
             salida : fieldName.toLowerCase().replace(/ /g, '_'),
             "opcion predeterminada" : null,  // no se que es
@@ -39,17 +34,6 @@ const RadioConstructor = ({ field, onSave }) => {
             onSave(field)
         }
     }
-
-    const renderOption = ({ item, index }) => (
-        <ListItem
-            title={item.nombre}
-            accessoryRight={() => (
-                <Button size="tiny" status="danger" onPress={() => removeOption(index)}>
-                    Eliminar
-                </Button>
-            )}
-        />
-    )
 
     return (
         <Layout style={styles.container}>
