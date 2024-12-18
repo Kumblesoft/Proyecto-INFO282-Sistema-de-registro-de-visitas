@@ -68,8 +68,9 @@ const FormSelectorScreen = () => {
           to: newPath,
         })
 
-        let content = await FileSystem.readAsStringAsync(newPath) // Now read the file from the cache
-        content = JSON.parse(content)
+        let buffer = await FileSystem.readAsStringAsync(newPath) // Now read the file from the cache
+        buffer = JSON.parse(buffer)
+        Array.isArray(buffer.content) ? buffer = buffer.content : buffer = [buffer.content]
         content.forEach(form => {
           db.addForm(form)
           console.log(db.getForm(form["nombre formulario"]))
