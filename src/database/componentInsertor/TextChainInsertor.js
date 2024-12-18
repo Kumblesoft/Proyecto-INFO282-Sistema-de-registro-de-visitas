@@ -36,7 +36,7 @@ export default class TextChainInsertor extends ChainInsertor {
             return this.next && this.next.delete(fieldId, fieldTableName, fieldTypeName)
 
         const id_formats = this.db.getFirstSync(`SELECT id_formats FROM ${fieldTableName} WHERE fk_field = ?`, [fieldId]).id_formats
-        
+
         this.db.runSync(
             'DELETE FROM is_formatted WHERE fk_id_text = ?',
             [id_formats]
