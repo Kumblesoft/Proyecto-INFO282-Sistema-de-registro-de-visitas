@@ -101,6 +101,7 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
         refreshFieldRefs.current.push(() => refreshFieldRef.current())
         requiredFieldRefs.current.push(() => requiredFieldRef.current())  // Añadir la referencia al array
         console.log(field)
+        
         switch (field.tipo) {
             case 'selector':
                 console.log('selector')
@@ -208,13 +209,13 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
                     <Camera
                         key={`camara-${index}`}
                         title={field.nombre}
-                        required={field['obligatorio']}
+                        required={field.obligatorio}
                         requiredFieldRef={requiredFieldRef}
                         refreshFieldRef={refreshFieldRef}
                         disabled={disabledSave}
                         cameraConfiguration={new CameraConfiguration(
-                            (value) => handleInputChange(field.salida, ['camara', value]),
-                            field['editable'],
+                            value => handleInputChange(field.salida, ['camara', value]),
+                            field.editable,
                             field['relacion de aspecto']
                         )}
                     />

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import { View, Alert, StyleSheet } from 'react-native'
-import { Text, Input, Button, Layout, Divider, CheckBox, RadioGroup, Radio } from '@ui-kitten/components'
+import { View, Alert, StyleSheet, TouchableOpacity } from 'react-native'
+import { Text, Input, Button, Layout, Divider, CheckBox, Radio, Icon, RadioGroup } from '@ui-kitten/components'
 import { TimerPickerModal } from 'react-native-timer-picker'
 import * as Haptics from 'expo-haptics'
 import { LinearGradient } from 'expo-linear-gradient'
@@ -15,47 +15,45 @@ const HourConstructor = ({ field = {}, onSave }) => {
     // Estados
     const [fieldName, setFieldName] = useState(typeof field.nombre === 'string' ? field.nombre : '')
     const [defaultHour, setDefaultHour] = useState(field.hora_predeterminada || 'actual')
-    const [isEditable, setIsEditable] = useState(field.isEditable || false)
+    const [isNotEditable, setIsNotEditable] = useState(field.isEditable || false)
     const [showPicker, setShowPicker] = useState(false)
-    const [isActual, setIsActual] = useState(defaultHour === 'actual' || !field.hora_predeterminada)
 
-    const [selectedIndex, setSelectedIndex] = useState(0)
+    const [showDefaultHour, setShowDefaultHour] = useState(false)
+    const [selectedDefaultHourIndex, setSelectedDefaultHourIndex] = useState(0)
+    const [showOptionalFeatures, setShowOptionalFeatures] = useState(false)
 
     const formatTime = ({ hours, minutes }) =>
         `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
 
     const handleSave = () => {
-        if (!fieldName || typeof fieldName !== 'string' || !fieldName.trim()) {
-            Alert.alert('Error', 'El nombre del campo no puede estar vacío.')
-            return
-        }
-
-        if (defaultHour !== 'actual' && !/^\d{2}:\d{2}$/.test(defaultHour)) {
-            Alert.alert('Error', "La hora predeterminada debe ser 'actual' o estar en formato hh:mm.")
-            return
-        }
 
         const field = {
             tipo: 'hora',
             nombre: fieldName,
             'hora predeterminada': defaultHour,
-            salida: fieldName.toLowerCase().replace(/ /g, '_'),
-            obligatorio: false,
-            limitaciones: {
-                tipo: 'ArregloFecha',
-                compatibilidadLimitaciones: [
-                    [1, 0],
-                    [0, 1]
-                ],
-                enumLimitaciones: isEditable ? 'editable' : 'no editable'
-            }
+            salida: fieldName.toLowerCase(),
+            limitaciones: [isNotEditable ? 'no editable' : 'editable'],
+            //obligatorio: false,
         }
+
+        console.log(selectedDefaultHourIndex)
 
         if (onSave) {
             console.log(field)
             onSave(field)
         }
     }
+
+    const handleRadioSelectionChange = index => {
+        console.log('index:', index)
+        setSelectedDefaultHourIndex(index)
+        setDefaultHour(index === 0 ? 'actual' : (() => {
+            const date = new Date()
+            return formatTime({ hours: date.getHours(), minutes: date.getMinutes()})
+        })())
+    }
+
+    React.useEffect(() => { handleSave() }, [fieldName, defaultHour, isNotEditable])
 
     return (
         <View style={styles.container}>
@@ -78,99 +76,102 @@ const HourConstructor = ({ field = {}, onSave }) => {
 
             {/* Hora Predeterminada */}
             <View style={styles.field}>
-                <Text style={styles.subtitle}>Hora Predeterminada</Text>
-                <Layout style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    {/* Botón Actual */}
-                    <RadioGroup
-                            style={{ flexDirection: 'row', justifyContent: 'space-around', width: '100%', marginBottom: '4%', marginTop: '1%' }}
-                            selectedIndex={selectedIndex}
-                            onChange={(index) => {
-                                setSelectedIndex(index);
-
-                                if (index === 0) {
-                                // Acción para Hora Actual
-                                setIsActual(true);
-                                setDefaultHour(getCurrentTime());
-                                } else {
-                                // Acción para Hora Personalizada
-                                setIsActual(false);
-                                setDefaultHour('00:00');
-                                }
-                            }}
-                    >
-                        <Radio 
-                            style={{ marginVertical: 8 }}
-                        >
-                            Hora Actual
-                        </Radio>
-                        <Radio 
-                            style={{ marginVertical: 8 }}
-                        >
-                            Hora Personalizada
-                        </Radio>
-                    </RadioGroup>
-                </Layout>
-
-                {/* Selector de hora personalizada */}
-                {!isActual ? (
+                <TouchableOpacity style={styles.headerRow} onPress={() => setShowDefaultHour(!showDefaultHour)}>
+                    <Text style={styles.subtitle}>Hora predeterminada</Text>
                     <Button
-                        status="success"
-                        onPress={() => setShowPicker(true)}
-                        appearance="outline"
-                        size="large"
-                    >
-                        {defaultHour}
-                    </Button>
-                ) : (
-                    <Button
-                        status= "success"
-                        disabled={true}
-                        appearance="outline"
-                        size="large"
-                        style={{ opacity: 0.9, borderColor: '#cccccc'}}
-                    >
-                        {"La hora será definida al momento de llenar el formulario"}
-                    </Button>
+                        appearance='ghost'
+                        accessoryLeft={props => <Icon name='arrow-ios-downward-outline' {...props} />}
+                        onPress={() => setShowDefaultHour(!showDefaultHour)}
+                        style={styles.toggleButton}
+                    />
+                </TouchableOpacity>
+                
+                {showDefaultHour && (
+                        <Layout style={styles.submenu}>
+                            <RadioGroup
+                                selectedIndex={selectedDefaultHourIndex}
+                                onChange={handleRadioSelectionChange}
+                            >
+                            
+                                <Radio value={0} style={{ padding: 10 }}>
+                                    Hora Actual
+                                </Radio>
+                                <Radio value={1} style={{ padding: 10 }}>
+                                    Hora Personalizada
+                                </Radio>
+                                
+                            </RadioGroup>
+                        
+                        
+                        {selectedDefaultHourIndex === 1 && (
+                            <>
+                                <Button
+                                    status="success"
+                                    onPress={() => setShowPicker(true)}
+                                    appearance="outline"
+                                    size="large"
+                                    style={{marginLeft: 40}}
+                                >
+                                    {defaultHour}
+                                </Button>
+                            
+
+                                <TimerPickerModal
+                                    visible={showPicker}
+                                    setIsVisible={setShowPicker}
+                                    onConfirm={(pickedDuration) => {
+                                        setDefaultHour(formatTime(pickedDuration))
+                                        setShowPicker(false)
+                                    }}
+                                    modalTitle="Selecciona una hora"
+                                    onCancel={() => setShowPicker(false)}
+                                    closeOnOverlayPress
+                                    LinearGradient={LinearGradient}
+                                    Haptics={Haptics}
+                                    styles={{
+                                        theme: 'light'
+                                    }}
+                                    modalProps={{
+                                        overlayOpacity: 0.2
+                                    }}
+                                    hideSeconds={true}
+                                    agressivelyGetLatestDuretion={true}
+                                />
+                            </>
+                            
+                        )}
+                        </Layout>
                 )}
-
-                <TimerPickerModal
-                    visible={showPicker}
-                    setIsVisible={setShowPicker}
-                    onConfirm={(pickedDuration) => {
-                        setDefaultHour(formatTime(pickedDuration))
-                        setShowPicker(false)
-                    }}
-                    modalTitle="Selecciona una hora"
-                    onCancel={() => setShowPicker(false)}
-                    closeOnOverlayPress
-                    LinearGradient={LinearGradient}
-                    Haptics={Haptics}
-                    styles={{
-                        theme: 'light'
-                    }}
-                    modalProps={{
-                        overlayOpacity: 0.2
-                    }}
-                    hideSeconds={true}
-                    agressivelyGetLatestDuretion={true}
-                />
+                
             </View>
 
             <Divider />
 
-            {/* Editable */}
+
             <View style={styles.field}>
-                <Text style={styles.subtitle}>Características opcionales</Text>
-                <CheckBox style={{margin: '2%', alignSelf: 'flex-start', marginTop: '4%'}} checked={isEditable} onChange={setIsEditable}>Obligatorio</CheckBox>
+                <TouchableOpacity style={styles.headerRow} onPress={() => setShowOptionalFeatures(!showOptionalFeatures)}>
+                    <Text style={styles.subtitle}>Características opcionales</Text>
+                    <Button
+                        appearance='ghost'
+                        accessoryLeft={props => <Icon name='arrow-ios-downward-outline' {...props} />}
+                        onPress={() => setShowOptionalFeatures(!showOptionalFeatures)}
+                        style={styles.toggleButton}
+                    />
+                </TouchableOpacity>
+                
+                {showOptionalFeatures && (
+                    <Layout style={[styles.submenu, {padding:5}]} onPress={() => setIsNotEditable(!isNotEditable)}>
+                        <CheckBox
+                            style={{ margin: '2%', alignSelf: 'flex-start', marginTop: '4%' }}
+                            checked={isNotEditable}
+                            onChange={setIsNotEditable}
+                        >
+                            No editable
+                        </CheckBox>
+                    </Layout>
+                )}
             </View>
                 
-            <Divider />
-            {/* Botón Guardar */}
-            <View style={styles.saveButtonContainer}>
-                <Button title="Guardar Campo" onPress={handleSave}>
-                    Guardar Campo
-                </Button>
-            </View>
         </View>
     )
 }
@@ -187,10 +188,6 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         marginBottom: 16,
-    },
-    subtitle: {
-        fontSize: 16,
-        marginBottom: 8,
     },
     field: {
         marginTop: "4%",
@@ -210,6 +207,25 @@ const styles = StyleSheet.create({
     saveButtonContainer: {
         marginTop: 20,
         alignSelf: 'center',
+    },
+
+    headerRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between', // Para que el botón esté a la derecha
+        borderRadius: 4, // Bordes redondeados
+    },
+    subtitle: {
+        fontSize: 16,
+        marginBottom: 8,
+        fontWeight: 'bold',
+        padding: 8,
+    },
+    submenu: {
+        marginLeft: "4%", // Mover los elementos levemente a la derecha
+        marginBottom: "4%", // Mover los elementos levemente hacia abajo
+        borderLeftWidth: 4, // Solo el borde izquierdo
+        borderLeftColor: '#cccccc', // Color del borde izquierdo
     },
 })
 

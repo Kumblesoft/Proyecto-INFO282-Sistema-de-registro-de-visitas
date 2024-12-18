@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Dimensions, Platform, View, StyleSheet, FlatList, TouchableOpacity, Alert, Image } from 'react-native'
 import { CheckBox, Button, Text, TopNavigation, TopNavigationAction, Divider, Layout, Modal, Card, Icon } from '@ui-kitten/components'
 import { useFormContext } from '../context/SelectedFormContext'
-import { useNavigation } from '@react-navigation/native'
+import { StackActions, useNavigation } from '@react-navigation/native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as FileSystem from 'expo-file-system'
@@ -20,7 +20,7 @@ const FormSelectorScreen = () => {
   const navigation = useNavigation()
   const [isOptionModalVisible, setIsOptionModalVisible] = useState(false)
   const [selectedItem, setSelectedItem] = useState({ "nombre formulario": "err" })
-  const { setSelectedForm } = useFormContext()
+  const {selectedForm, setSelectedForm } = useFormContext()
   const [isSelectionMode, setIsSelectionMode] = useState(false) // Modo de selección
   const [selectedForms, setSelectedForms] = useState([]) // Formularios seleccionados
   const [file, setFile] = useState(null) // File picker function
@@ -32,7 +32,7 @@ const FormSelectorScreen = () => {
   const shareIcon = props => <Icon name='share-outline' {...props} fill="#fff" animationConfig={{ cycles: Infinity }} animation='zoom' style={[props.style, { width: 30, height: 30 }]} />
   const plusIcon = props => <Icon name='plus-outline' {...props} fill="#fff" animationConfig={{ cycles: Infinity }} animation='zoom' style={[props.style, { width: 40, height: 40 }]} />
   const BackAction = () => <TopNavigationAction icon={backIcon} onPress={() => navigation.goBack()} />
-  const importAction = () => <TopNavigationAction icon={importIcon} onPress={() => pickDocument()} />
+  const SelectionIcon = props => <Icon name={isSelectionMode ? 'checkmark-square' : 'checkmark-square'} style={styles.backIcon} fill='#fff' {...props} />
   const optionBar = () => (
     <Layout style={styles.iconContainer}>
       <TopNavigationAction icon={SelectionIcon} onPress={toggleSelectionMode} />
@@ -88,22 +88,19 @@ const FormSelectorScreen = () => {
 
   const deleteSelectedForms = async () => {
     try {
+      // Quitar el seleccionado del contexto si se elimina
+      if (selectedForm && selectedForms.includes(selectedForm["nombre formulario"]))
+        setSelectedForm(null)
+      // Borrarlos de la base de datos
       selectedForms.forEach(formID => db.deleteForm(formID))
+      // Quitarlos de la pantalla
       setSelectedForms([])
       setIsSelectionMode(false)
-
+      navigation.replace('FormSelector', {}, {animation: 'none', animationEnabled: false})
     } catch (error) {
       Alert.alert("Error", "Debe seleccionar uno o varios formularios para eliminarlos")
     }
   }
-
-  const SelectionIcon = (props) => (
-    <Icon name={isSelectionMode ? 'checkmark-square' : 'checkmark-square'} style={styles.backIcon} fill='#fff' {...props} />
-  )
-
-  const SelectionAction = () => (
-    <TopNavigationAction icon={SelectionIcon} onPress={toggleSelectionMode} />
-  )
 
   const toggleSelectionMode = () => {
     setIsSelectionMode(!isSelectionMode)
@@ -121,9 +118,8 @@ const FormSelectorScreen = () => {
   }
 
   const handlePress = form => {
-    if (isSelectionMode) {
+    if (isSelectionMode) 
       handleSelection(form)
-    }
     else {
       setSelectedForm(form)
       navigation.navigate('Menu')
@@ -285,7 +281,6 @@ const FormSelectorScreen = () => {
 
   return (
     <>
-
       {OptionsModal()}
       <Layout style={styles.layoutContainer}>
         <SafeAreaView style={styles.safeArea}>
@@ -324,7 +319,6 @@ const FormSelectorScreen = () => {
         )
       }
       <Button style={styles.centerButton} onPress={() => navigation.navigate('FormEditor')} accessoryLeft={plusIcon} />
-
     </>
   )
 }
