@@ -5,16 +5,17 @@ import { StyleSheet } from 'react-native'
 
 
 const ItemSelector = forwardRef(({ items, onSelect, value, defaultOption, placeholder, error, disabled }, ref) => {
+  console.log(defaultOption)
   
   const [selectedOptionIndex, setSelectedOptionIndex] = useState(new IndexPath(defaultOption)) // Índice seleccionado
-  const [selectedValue, setSelectedValue] = useState(items[defaultOption].nombre) // Valor inicial
+  const [selectedValue, setSelectedValue] = useState(defaultOption ? items[defaultOption].nombre : placeholder) // Valor inicial
 
   function refreshSelector() {
     
     setSelectedOptionIndex(new IndexPath(defaultOption))
-    setSelectedValue(items[defaultOption].nombre)
-    if (onSelect) onSelect(items[defaultOption].valor)
-    return items[defaultOption].valor
+    setSelectedValue(defaultOption ? items[defaultOption].nombre: placeholder)
+    if (onSelect) onSelect(defaultOption ? items[defaultOption].valor : null)
+    return defaultOption ? items[defaultOption].valor : null
   }
   useImperativeHandle(ref, () => ({
     refreshSelector,
