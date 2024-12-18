@@ -1,12 +1,14 @@
 import React, { useState } from 'react'
-import { View, Text, StyleSheet,FlatList } from 'react-native'
+import { View, Text, StyleSheet,FlatList, TouchableOpacity } from 'react-native'
 import { Input, Button, Icon, Layout, Divider, CheckBox} from '@ui-kitten/components'
 
 const RadioConstructor = ({ field, onSave }) => {
     const [options, setOptions] = useState(field.opciones || [])
     const [fieldName, setFieldName] = useState(field.nombre || '')
-    const [isRequired, setIsRequired] = useState(field.isRequired ?? true)
+    const [isRequired, setIsRequired] = useState(field.obligatorio ?? true)   
 
+    const [showOptions, setShowOptions] = useState(false)
+    const [showOptionalFeatures, setShowOptionalFeatures] = useState(false)  
     const handleAddOption = () => {
         setOptions((prevOptions) => [
             ...prevOptions,
@@ -22,8 +24,6 @@ const RadioConstructor = ({ field, onSave }) => {
             tipo: 'radio',
             nombre: fieldName,
             salida : fieldName.toLowerCase().replace(/ /g, '_'),
-            "opcion predeterminada" : null,  // no se que es
-            "texto predeterminado" :  fieldName, // no se que es  
             tipo: 'radio',
             opciones: options,
             obligatorio: isRequired,
@@ -34,10 +34,12 @@ const RadioConstructor = ({ field, onSave }) => {
             onSave(field)
         }
     }
+    React.useEffect(() => { handleSave() }, [options, fieldName, isRequired])
+    
 
     return (
         <Layout style={styles.container}>
-            <Text style={styles.title}>Nombre del Campo Radio</Text>
+            <Text style={styles.title}>{fieldName || 'Nuevo campo selector'}</Text>
 
             <Divider />
             <View style={styles.field}>
@@ -53,51 +55,68 @@ const RadioConstructor = ({ field, onSave }) => {
             <Divider />
 
             <View style={styles.field}>
-                <Text style={styles.subtitle}>Opciones</Text>
-                <FlatList
-                    data={options}
-                    renderItem={({ item, index }) => (
-                        <Layout style={styles.optionRow}>
-                            <Input
-                                value={item.nombre}
-                                onChangeText={(text) => {
-                                    const updatedOptions = [...options]
-                                    updatedOptions[index].nombre = text
-                                    setOptions(updatedOptions)
-                                }}
-                                style={styles.optionInput}
-                            />
-                            <Button
-                                size="medium"
-                                status="danger"
-                                onPress={() => removeOption(index)}
-                                accessoryLeft={<Icon name={'trash-outline'}/>}
-                            />
-                        </Layout>
-                    )}
-                    keyExtractor={(_, index) => index.toString()}
-                    scrollEnabled={false}
-                    ListFooterComponent={() => (
-                        <Button onPress={handleAddOption} style={styles.addButton} accessoryRight={<Icon name={'plus-outline'}/>}>
-                        </Button>
-                    )}
-                />
-            </View>
+                            <TouchableOpacity style={styles.headerRow} onPress={() => setShowOptions(!showOptions)}>
+                                <Text style={[styles.subtitle, options.length || {color: 'red'}]}>Opciones</Text>
+                                <Button
+                                    appearance='ghost'
+                                    accessoryLeft={props => <Icon name={showOptions ? 'arrow-ios-upward-outline' : 'arrow-ios-downward-outline'} {...props} />}
+                                    onPress={() => setShowOptions(!showOptions)}
+                                    style={styles.toggleButton}
+                                />
+                            </TouchableOpacity>
+                            {showOptions && (
+                                <FlatList
+                                    data={options}
+                                    renderItem={({ item, index }) => (
+                                        <Layout key={index} style={styles.optionRow}>
+                                            <Input
+                                                value={item.nombre}
+                                                onChangeText={text => {
+                                                    const updatedOptions = [...options]
+                                                    updatedOptions[index].nombre = text;
+                                                    setOptions(updatedOptions)
+                                                }}
+                                                style={styles.optionInput}
+                                            />
+                                            <Button
+                                                size="small"
+                                                status="danger"
+                                                onPress={() => removeOption(index)}
+                                            >
+                                                Eliminar
+                                            </Button>
+                                        </Layout>
+                                    )}
+                                    keyExtractor={(item, index) => item.valor}
+                                    scrollEnabled={false}
+                                    ListFooterComponent={() => (
+                                        <Button onPress={handleAddOption} style={styles.addButton} accessoryRight={<Icon name={'plus-outline'} />}>
+                                            Agregar opción
+                                        </Button>
+                                    )}
+                                />
+                            )}
+                        </View>
             <Divider />
                 {/* Obligatorio */}
                 <View style={styles.field}>
-                    <Text style={styles.subtitle}>Características opcionales</Text>
-                    <CheckBox style={{margin: '2%', alignSelf: 'flex-start', marginTop: '4%', flex: 1,}} checked={isRequired} onChange={setIsRequired}>Obligatorio</CheckBox>
+                    <TouchableOpacity style={styles.headerRow} onPress={() => setShowOptionalFeatures(!showOptionalFeatures)}>
+                        <Text style={styles.subtitle}>Características opcionales</Text>
+                        <Button
+                            appearance='ghost'
+                            accessoryLeft={props => <Icon name={showOptionalFeatures ? 'arrow-ios-upward-outline' : 'arrow-ios-downward-outline'} {...props} />}
+                            onPress={() => setShowOptionalFeatures(!showOptionalFeatures)}
+                            style={styles.toggleButton}
+                        />
+                    </TouchableOpacity>
+                    {showOptionalFeatures && (
+                        <View style={styles.submenu}>
+                            <CheckBox style={{ margin: '2%', alignSelf: 'flex-start', marginTop: '4%' }} checked={isRequired} onChange={setIsRequired}>
+                                Obligatorio
+                            </CheckBox>
+                        </View>
+                    )}
                 </View>
-                    
-            <Divider />
-
-            {/* Guardar */}
-            <View style={styles.saveButtonContainer}>
-                <Button onPress={handleSave} style={styles.saveButton}>
-                        Guardar Campo
-                </Button>
-            </View>
         </Layout>
     )
 }
@@ -156,6 +175,24 @@ const styles = StyleSheet.create({
     saveButtonContainer: {
         marginTop: 20,
         alignSelf: 'center',
+    },
+    headerRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between', // Para que el botón esté a la derecha
+        borderRadius: 4, // Bordes redondeados
+    },
+    subtitle: {
+        fontSize: 16,
+        marginBottom: 8,
+        fontWeight: 'bold',
+        padding: 8,
+    },
+    submenu: {
+        marginLeft: "4%", // Mover los elementos levemente a la derecha
+        marginBottom: "4%", // Mover los elementos levemente hacia abajo
+        borderLeftWidth: 4, // Solo el borde izquierdo
+        borderLeftColor: '#cccccc', // Color del borde izquierdo
     },
 })
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import { View, FlatList, KeyboardAvoidingView, Platform, StyleSheet, Alert } from 'react-native'
-import { Layout, Text, Input, Button, Icon, CheckBox, Divider } from '@ui-kitten/components'
+import { View, FlatList, TouchableOpacity, Platform, StyleSheet, Alert } from 'react-native'
+import { Layout, Text, Input, Button, Icon, CheckBox, Divider, Select, SelectItem } from '@ui-kitten/components'
 
 const CheckBoxConstructor = ({ onSave, field = {} }) => {
     const [fieldName, setFieldName] = useState(field.nombre || '')
@@ -8,6 +8,11 @@ const CheckBoxConstructor = ({ onSave, field = {} }) => {
     const [maxSelections, setMaxSelections] = useState(field['cantidad de elecciones'] || 1)
     const [isRequired, setIsRequired] = useState(field.isRequired ?? true)
 
+    const [showOptions, setShowOptions] = useState(false)
+    const [showOptionalFeatures, setShowOptionalFeatures] = useState(false)    
+
+
+    const [showMaxSelections, setShowMaxSelections] = useState(field['cantidad de elecciones'] ? true : false)
     const saveIcon = props => <Icon name='save-outline' {...props} fill="#fff" style={[props.style, { width: 25, height: 25 }]}/>
 
     const handleAddOption = () => {
@@ -17,42 +22,19 @@ const CheckBoxConstructor = ({ onSave, field = {} }) => {
         ])
     }
 
-    const handleRemoveOption = (index) => {
-        const updatedOptions = options.filter((_, idx) => idx !== index)
-        setOptions(updatedOptions)
-        if (maxSelections > updatedOptions.length) {
-            setMaxSelections(updatedOptions.length)
-        }
+    const removeOption = index => {
+        setOptions(options.filter((_, i) => i !== index))
+        setMaxSelections(null)
     }
 
     const handleSave = () => {
-        if (!fieldName.trim()) {
-            Alert.alert("Error", "El nombre del campo no puede estar vacío.")
-            return
-        }
-
-        if (options.length === 0) {
-            Alert.alert("Error", "Debe haber al menos una opción.")
-            return
-        }
-
-        if (maxSelections <= 0 || maxSelections > options.length) {
-            Alert.alert(
-                "Error",
-                maxSelections <= 0
-                    ? "La cantidad máxima de selecciones debe ser al menos 1."
-                    : "La cantidad máxima de selecciones no puede ser mayor que el número de opciones."
-            )
-            return
-        }
+       
 
         const field = {
             tipo: 'checkbox',
             nombre: fieldName,
             opciones: options,
             salida: fieldName.toLowerCase().replace(/ /g, '_'),
-            "opcion predeterminada": null,
-            "texto predeterminado": fieldName,
             "cantidad de elecciones": maxSelections,
             obligatorio: isRequired,
         }
@@ -62,115 +44,111 @@ const CheckBoxConstructor = ({ onSave, field = {} }) => {
             onSave(field)
         }
     }
+    React.useEffect(() => { handleSave() }, [options, fieldName, isRequired, maxSelections])
+    
 
     return (
-        <KeyboardAvoidingView
-            style={{ flex: 1 }}
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-        >
-            <Layout category='h5' style={styles.container}>
-                <Text style={styles.title}> Configurar Campo CheckBox </Text>
-                
-                <Divider/>
-                {/* Nombre del Campo */}
-                <View style={styles.field}>
-                    <Input
-                        label={"Nombre del Campo"}
-                        style={styles.input}
-                        placeholder="Nombre del campo Checkbox"
-                        value={fieldName}
-                        onChangeText={setFieldName}
-                    />
-                </View>
+        <Layout category='h5' style={styles.container}>
+            <Text style={styles.title}>{fieldName || 'Nuevo campo selector'}</Text>
+            
+            <Divider/>
+            {/* Nombre del Campo */}
+            <View style={styles.field}>
+                <Input
+                    label={"Nombre del Campo"}
+                    style={styles.input}
+                    placeholder="Nombre del campo Checkbox"
+                    value={fieldName}
+                    onChangeText={setFieldName}
+                />
+            </View>
 
-                <Divider/>
+            <Divider/>
 
-                {/* Opciones */}
-                <View style={styles.field}>
-                    <Text category="s1" style={styles.subtitle}>
-                        Opciones
-                    </Text>
-                    <FlatList
-                        data={options}
-                        renderItem={({ item, index }) => (
-                            <Layout style={styles.optionRow}>
-                                <Input
-                                    value={item.nombre}
-                                    onChangeText={(text) => {
-                                        const updatedOptions = [...options]
-                                        updatedOptions[index].nombre = text
-                                        setOptions(updatedOptions)
-                                    }}
-                                    style={styles.optionInput}
-                                />
+            {/* Opciones */}
+            <View style={styles.field}>
+                            <TouchableOpacity style={styles.headerRow} onPress={() => setShowOptions(!showOptions)}>
+                                <Text style={[styles.subtitle, options.length || {color: 'red'}]}>Opciones</Text>
                                 <Button
-                                    size="small"
-                                    status="danger"
-                                    onPress={() => handleRemoveOption(index)}
-                                >
-                                    Eliminar
-                                </Button>
-                            </Layout>
-                        )}
-                        keyExtractor={(_, index) => index.toString()}
-                        scrollEnabled={false}
-                        ListFooterComponent={() => (
-                            <Button onPress={handleAddOption} style={styles.addButton} accessoryRight={<Icon name={'plus-outline'}/>}>
-                            </Button>
-                        )}
-                    />
-                </View>
+                                    appearance='ghost'
+                                    accessoryLeft={props => <Icon name={showOptions ? 'arrow-ios-upward-outline' : 'arrow-ios-downward-outline'} {...props} />}
+                                    onPress={() => setShowOptions(!showOptions)}
+                                    style={styles.toggleButton}
+                                />
+                            </TouchableOpacity>
+                            {showOptions && (
+                                <FlatList
+                                    data={options}
+                                    renderItem={({ item, index }) => (
+                                        <Layout key={index} style={styles.optionRow}>
+                                            <Input
+                                                value={item.nombre}
+                                                onChangeText={text => {
+                                                    const updatedOptions = [...options]
+                                                    updatedOptions[index].nombre = text;
+                                                    setOptions(updatedOptions)
+                                                }}
+                                                style={styles.optionInput}
+                                            />
+                                            <Button
+                                                size="small"
+                                                status="danger"
+                                                onPress={() => removeOption(index)}
+                                            >
+                                                Eliminar
+                                            </Button>
+                                        </Layout>
+                                    )}
+                                    keyExtractor={(item, index) => item.valor}
+                                    scrollEnabled={false}
+                                    ListFooterComponent={() => (
+                                        <Button onPress={handleAddOption} style={styles.addButton} accessoryRight={<Icon name={'plus-outline'} />}>
+                                            Agregar opción
+                                        </Button>
+                                    )}
+                                />
+                            )}
+                        </View>
 
-                <Divider/>
-
-                {/* Cantidad de Elecciones */}
-                <View style={styles.field}>
-                    <Input
-                        label="Cantidad de Elecciones"
-                        placeholder="Número de elecciones"
-                        value={String(maxSelections)}
-                        onChangeText={(text) => {
-                            const value = Number(text)
-                            if (!isNaN(value) && value >= 0) {
-                                setMaxSelections(value)
-                            } else {
-                                Alert.alert("Error", "Por favor ingrese un número válido.")
-                            }
-                        }}
-                        keyboardType="numeric"
-                        style={styles.input}
-                    />
-                </View>
+            <Divider/>
 
 
-                <Divider/>
 
-                {/* Obligatorio */}
-                <View style={styles.field}>
-                    <Text style={styles.subtitle}>Características opcionales</Text>
-                    <CheckBox
-                        style={{
-                            alignSelf: "flex-start",
-                            margin: "2%",
-                            marginTop: "4%",
-                        }}
-                        status='success'
-                        checked={isRequired}
-                        onChange={setIsRequired}
-                    >
-                        Obligatorio
-                    </CheckBox>
-                </View>
-                    
-                <Divider/>
-                {/* Guardar */}
-                <View style={styles.saveButtonContainer}>
-                    <Button accessoryLeft={saveIcon} onPress={handleSave}>
-                        Guardar Campo
-                    </Button>
-                </View>
-            </Layout>
-        </KeyboardAvoidingView>
+            <Divider/>
+
+            {/* Obligatorio */}
+            <View style={styles.field}>
+                            <TouchableOpacity style={styles.headerRow} onPress={() => setShowOptionalFeatures(!showOptionalFeatures)}>
+                                <Text style={styles.subtitle}>Características opcionales</Text>
+                                <Button
+                                    appearance='ghost'
+                                    accessoryLeft={props => <Icon name={showOptionalFeatures ? 'arrow-ios-upward-outline' : 'arrow-ios-downward-outline'} {...props} />}
+                                    onPress={() => setShowOptionalFeatures(!showOptionalFeatures)}
+                                    style={styles.toggleButton}
+                                />
+                            </TouchableOpacity>
+                            {showOptionalFeatures && (
+                                <View style={styles.submenu}>
+                                    <CheckBox style={{ margin: '2%', alignSelf: 'flex-start', marginTop: '4%' }} checked={isRequired} onChange={setIsRequired}>
+                                        Obligatorio
+                                    </CheckBox>
+                                    <CheckBox disabled={options.length<=1} style={{ margin: '2%', alignSelf: 'flex-start', marginTop: '4%' }} checked={options.length && showMaxSelections} onChange={v => setShowMaxSelections(v)}>
+                                        <Text>Máxima cantidad de elecciones</Text>
+                                    </CheckBox>
+                                        {showMaxSelections && options.length>1&& 
+                                            <Select style={{paddingLeft: '10%', flex:1}} placeholder='Seleccione una opcion...' value={maxSelections !== null ? maxSelections.toString() : ''} onSelect={index => {
+                                                const selectedOption = index.row
+                                                console.log(selectedOption)
+                                                if (selectedOption !== maxSelections) setMaxSelections(selectedOption)
+                                            }}>
+                                                {options.map((option, i) =>  i != 0 ? <SelectItem key={i} title={i.toString()} value={i} /> : <></>)}
+                                            </Select>
+                                        }
+                                    
+                                </View>
+                            )}
+                        </View>
+        </Layout>
     )
 }
 
@@ -230,6 +208,24 @@ const styles = StyleSheet.create({
     saveButtonContainer: {
         marginTop: 20,
         alignSelf: 'center',
+    },
+    headerRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between', // Para que el botón esté a la derecha
+        borderRadius: 4, // Bordes redondeados
+    },
+    subtitle: {
+        fontSize: 16,
+        marginBottom: 8,
+        fontWeight: 'bold',
+        padding: 8,
+    },
+    submenu: {
+        marginLeft: "4%", // Mover los elementos levemente a la derecha
+        marginBottom: "4%", // Mover los elementos levemente hacia abajo
+        borderLeftWidth: 4, // Solo el borde izquierdo
+        borderLeftColor: '#cccccc', // Color del borde izquierdo
     },
 })
 

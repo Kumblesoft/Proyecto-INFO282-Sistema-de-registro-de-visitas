@@ -5,15 +5,15 @@ import { Input, Button, Icon, Layout, Divider, CheckBox, Select, SelectItem } fr
 const SelectorConstructor = ({ field, onSave }) => {
     const [options, setOptions] = useState(field.opciones || [])
     const [fieldName, setFieldName] = useState(field.nombre || '')
-    const [isRequired, setIsRequired] = useState(field.isRequired ?? true)
-    const [defaultOption, setDefaultOption] = useState(field.opcionPredeterminada || null) 
-    const [defaultText, setDefaultText] = useState(field.textoPredeterminado || null)
+    const [isRequired, setIsRequired] = useState(field.obligatorio ?? true)
+    const [defaultOption, setDefaultOption] = useState(field["opcion predeterminada"] != null ? field["opcion predeterminada"] : null) 
+    const [defaultText, setDefaultText] = useState(field["texto predeterminado"] != null ? field["texto predeterminado"] : null)
 
     const [showOptions, setShowOptions] = useState(false)
     const [showOptionalFeatures, setShowOptionalFeatures] = useState(false)
 
-    const [showDefaultText, setShowDefaultText] = useState(false)
-    const [showDefaultOption, setShowDefautlOption] = useState(false)
+    const [showDefaultText, setShowDefaultText] = useState(field["texto predeterminado"] ? true : false)
+    const [showDefaultOption, setShowDefautlOption] = useState(field["opcion predeterminada"] !=null ? true : false)
 
     const handleAddOption = () => {
         setOptions((prevOptions) => [
@@ -22,7 +22,10 @@ const SelectorConstructor = ({ field, onSave }) => {
         ])
     }
 
-    const removeOption = index => setOptions(options.filter((_, i) => i !== index))
+    const removeOption = index => {
+        setOptions(options.filter((_, i) => i !== index))
+        setDefaultOption(null)
+    }
 
     const handleSave = () => {
         // Crear el objeto `field` con los datos
@@ -30,8 +33,8 @@ const SelectorConstructor = ({ field, onSave }) => {
             tipo: 'selector',
             nombre: fieldName,
             salida : fieldName.toLowerCase().replace(/ /g, '_'),
-            "opcion predeterminada" : defaultOption,  // no se que es
-            "texto predeterminado" :  fieldName, // no se que es  
+            'opcion predeterminada' : defaultOption,  // no se que es
+            "texto predeterminado" :  defaultText, // no se que es  
             tipo: 'selector',
             opciones: options,
             obligatorio: isRequired,
@@ -82,7 +85,7 @@ const SelectorConstructor = ({ field, onSave }) => {
                                     value={item.nombre}
                                     onChangeText={text => {
                                         const updatedOptions = [...options]
-                                        updatedOptions[index].nombre = text
+                                        updatedOptions[index].nombre = text;
                                         setOptions(updatedOptions)
                                     }}
                                     style={styles.optionInput}
@@ -127,12 +130,12 @@ const SelectorConstructor = ({ field, onSave }) => {
                         <CheckBox style={{ margin: '2%', alignSelf: 'flex-start', marginTop: '4%' }} checked={showDefaultText} onChange={setShowDefaultText}>
                             <Text>Texto predeterminado</Text>
                         </CheckBox>
-                            {showDefaultText && <Input style={{paddingLeft: '10%', flex:1}} placeholder='Seleccione una opcion...' onChangeText={setDefaultText}></Input>}
+                            {showDefaultText && <Input style={{paddingLeft: '10%', flex:1}} value={defaultText} placeholder='Seleccione una opcion...' onChangeText={setDefaultText}></Input>}
                         <CheckBox disabled={!options.length} style={{ margin: '2%', alignSelf: 'flex-start', marginTop: '4%' }} checked={options.length && showDefaultOption} onChange={v => setShowDefautlOption(v)}>
                             <Text>Opción predeterminada</Text>
                         </CheckBox>
                             {showDefaultOption && !!options.length && 
-                                <Select style={{paddingLeft: '10%', flex:1}} placeholder='Seleccione una opcion...' value={defaultOption !== null ? options[defaultOption].valor : ''} onSelect={index => {
+                                <Select style={{paddingLeft: '10%', flex:1}} placeholder='Seleccione una opcion...' value={defaultOption !== null ? options[defaultOption].nombre : ''} onSelect={index => {
                                     const selectedOption = index.row
                                     console.log(selectedOption)
                                     if (selectedOption !== defaultOption) setDefaultOption(selectedOption)
