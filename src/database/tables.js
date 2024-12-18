@@ -122,18 +122,18 @@ export default initDatabaseScript = {
     );
 
     CREATE TABLE IF NOT EXISTS respuestas (
-    ID_RESPUESTA INTEGER PRIMARY KEY AUTOINCREMENT,
-    ID_PLANTILLA INT REFERENCES forms(id),
-    FECHA_RESPUESTA INT,
-    UM_PLANTILLA INT,
-    ID_DISPOSITIVO TEXT
+    id_respuesta INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_plantilla INTEGER REFERENCES forms(id),
+    fecha_respuesta INTEGER,
+    um_plantilla INTEGER,
+    id_dispositivo TEXT
     );
 
     CREATE TABLE IF NOT EXISTS campo_respuesta (
-        ID_RESPUESTA INT REFERENCES respuestas(id_respuesta),
-        ENUM_TIPO_CAMPO INT REFERENCES field_table_name(id), 
-        NOMBRE_CAMPO TEXT,
-        VALOR_CAMPO TEXT
+        id_respuesta INTEGER REFERENCES respuestas(id_respuesta),
+        enum_tipo_campo INTEGER REFERENCES field_table_name(id), 
+        nombre_campo TEXT,
+        valor_campo TEXT
     );
 
     CREATE INDEX idx_fila_columna ON compatibility_matrix (fila, columna);

@@ -6,7 +6,6 @@ import CameraChainInsertor from './componentInsertor/CameraChainInsertor'
 import CheckboxChainInsertor from './componentInsertor/CheckboxChainInsertor'
 import RadioChainInsertor from './componentInsertor/RadiusChainInsertor'
 import initDatabaseScript from './tables'
-import { useSQLiteContext } from 'expo-sqlite'
 
 
 const { dbInit } = initDatabaseScript
@@ -78,8 +77,8 @@ export function getDatabaseInstance(db) {
 
 export default class Database {
     constructor(db) {
-        if (Database.instance) return Database.instance 
-        
+        if (Database.instance) return Database.instance
+
 
         this.db = db
         this.chainInsertors = new TextChainInsertor(this.db)
@@ -126,24 +125,24 @@ export default class Database {
             const outputFields = new Array(fields.length)
             fields.forEach(field => {
                 const {
-                    id          : fieldID,
-                    fk_field_table_name : typeID,
-                    name        : fieldName,
-                    ordering    : posicion,
-                    obligatory  : obligatorio,
-                    output      : salidaCampo 
+                    id: fieldID,
+                    fk_field_table_name: typeID,
+                    name: fieldName,
+                    ordering: posicion,
+                    obligatory: obligatorio,
+                    output: salidaCampo
                 } = field
 
                 const outputField = {
-                    "nombre"    : fieldName,
-                    "salida"    : salidaCampo,
-                    "obligatorio"   : obligatorio,
-                    "tipo"      : this.db.getFirstSync('SELECT field_type_name FROM field_table_name WHERE id = ?', [typeID]).field_type_name
+                    "nombre": fieldName,
+                    "salida": salidaCampo,
+                    "obligatorio": obligatorio,
+                    "tipo": this.db.getFirstSync('SELECT field_type_name FROM field_table_name WHERE id = ?', [typeID]).field_type_name
                 }
 
                 const { table_name: typeTableName, field_type_name: fieldTypeName } = this.db.getFirstSync('SELECT table_name,field_type_name FROM field_table_name WHERE id = ?', [typeID])
                 const fieldTypeProperties = this.chainInsertors.getFieldProperties(fieldID, typeTableName, fieldTypeName)
-                
+
                 Object.assign(outputField, fieldTypeProperties)
 
                 outputFields[posicion] = outputField
@@ -161,8 +160,8 @@ export default class Database {
 
     getAllAnswers() {
         try {
-            const answers = this.db.getAllSync('SELECT ID_RESPUESTA FROM respuestas')
-            return answers.map(answer => this.getAnswer(answer['ID_RESPUESTA']))
+            const answers = this.db.getAllSync('SELECT id_respuesta FROM respuestas')
+            return answers.map(answer => this.getAnswer(answer['id_respuesta']))
         } catch (error) {
             console.error('getAllAnswers:', error)
             console.error('trace:', error.stack)
@@ -171,7 +170,7 @@ export default class Database {
     getAnswerFromFormTemplate(formName) {
         try {
             const answers = this.db.getAllSync('SELECT id FROM forms WHERE name = ?', [formName])
-            return answers.map(answer => this.getAnswer(answer['ID_RESPUESTA']))
+            return answers.map(answer => this.getAnswer(answer['id_respuesta']))
         } catch (error) {
             console.error('getAnswerFromFormTemplate:', error)
             console.error('trace:', error.stack)
@@ -180,21 +179,21 @@ export default class Database {
     }
     getAnswer(idRespuesta) {
         try {
-            const answer = this.db.getFirstSync('SELECT * FROM respuestas WHERE ID_RESPUESTA = ?', [idRespuesta])
-            const fields = this.db.getAllSync('select ENUM_TIPO_CAMPO, NOMBRE_CAMPO, VALOR_CAMPO from CAMPO_RESPUESTA where id_respuesta = ?', [idRespuesta])
-            const formName = this.db.getFirstSync('select name from forms where id = ?', [answer.ID_PLANTILLA]).name
+            const answer = this.db.getFirstSync('SELECT * FROM respuestas WHERE id_respuesta = ?', [idRespuesta])
+            const fields = this.db.getAllSync('SELECT enum_tipo_campo, nombre_campo, valor_campo FROM campo_respuesta WHERE id_respuesta = ?', [idRespuesta])
+            const formName = this.db.getFirstSync('SELECT name FROM forms WHERE id = ?', [answer.id_plantilla]).name
 
             let data = {}
             fields.map(field => {
-                const tipoCampo = this.db.getFirstSync('select field_type_name from field_table_name where id = ?', [field.ENUM_TIPO_CAMPO]).field_type_name
-                data[field.NOMBRE_CAMPO] = [tipoCampo, field.VALOR_CAMPO]
+                const tipoCampo = this.db.getFirstSync('select field_type_name from field_table_name where id = ?', [field.enum_tipo_campo]).field_type_name
+                data[field.nombre_campo] = [tipoCampo, field.valor_campo]
             })
 
             return {
                 'plantilla': formName,
-                'fecha': answer.FECHA_RESPUESTA,
-                'um plantilla': answer.UM_PLANTILLA,
-                'idDispositivo': answer.ID_DISPOSITIVO,
+                'fecha': answer.fecha_respuesta,
+                'um plantilla': answer.um_plantilla,
+                'idDispositivo': answer.id_dispositivo,
                 'data': data
             }
 
@@ -222,7 +221,7 @@ export default class Database {
                 )
                 const lastFieldId = this.db.getFirstSync('SELECT last_insert_rowid() AS id').id
                 const tryInsert = this.chainInsertors.insert(fieldObject, lastFieldId, typeOfField, fieldTableName)
-                
+
                 if (tryInsert === false) {
                     /* Aqui hay que borrar de la tabla de forms hasta este campo, luego, seleccionar todos los campos de la tabla fields que tengan el id del form y borrarlos de la tabla fields */
                     throw new Error(`Tipo de campo desconocido ${fieldObject.tipo}`)
@@ -262,39 +261,13 @@ export default class Database {
         }
     }
 
-    /* async updateForm(formName, formObject) {
-        try {
-            const statement = this.db.prepareSync('UPDATE forms SET name = ?, output_file_name = ?, last_modification = ? WHERE name = ?')
-            const id = statement.executeSync([form["nombre formulario"], newForm["nombre archivo salida"], newForm["ultima modificacion"]]).getFirstSync().id
-            form.fields.forEach((fieldObject, i) => {
-                this.db.runSync(
-                    'INSERT INTO fields (fk_id_form, fk_field_table_name, name, order, obligatory, output) VALUES (?,?,?,?,?,?)',
-                    [id, this.db.getComponnentTypeId(field.tipo), field.nombre, i, field.obligatorio, field.salida]
-                )
-                if (!this.chainInsertors.insert(fieldObject)) throw new Error('Error al insertar')
-            })
-            this.db.getForms()
-        } catch (error) {
-            console.log(error)
-        }
-
-        try {
-            const statement = this.db.prepareSync('UPDATE forms SET name = ?, output_file_name = ?, last_modification = ?  WHERE id = ?')
-            statement.executeSync([(form.name, form.output_file_name, form.last_modification, id])
-            this.db.getForms()
-        } catch (error) {
-            console.log(error)
-        }
-    } */
-
-
     insertAnswer(answerObject) {
         const formID = this.db.getFirstSync('SELECT id FROM forms WHERE name = ?', [answerObject.plantilla]).id
         this.db.runSync(
             'INSERT INTO respuestas (id_plantilla, fecha_respuesta, um_plantilla, id_dispositivo) VALUES (?,?,?,?)',
             [formID, answerObject.fecha, answerObject["um plantilla"], answerObject["idDispositivo"]]
         )
-        const lastAnswerID = this.db.getFirstSync('SELECT ID_RESPUESTA FROM respuestas ORDER BY ID_RESPUESTA DESC LIMIT 1')['ID_RESPUESTA']
+        const lastAnswerID = this.db.getFirstSync('SELECT id_respuesta FROM respuestas ORDER BY id_respuesta DESC LIMIT 1')['id_respuesta']
 
         Object.entries(answerObject.data).forEach(([fieldOutput, [typeOfField, value]]) => {
             this.db.runSync(
@@ -304,9 +277,8 @@ export default class Database {
         })
     }
 
-    deleteAnswers(formName, answerDate) {
-        const formID = this.db.getFirstSync('SELECT id FROM forms WHERE name = ?', [formName]).id
-        this.db.runSync('DELETE FROM campo_respuesta WHERE id_respuesta = ?', [this.db.getFirstSync('SELECT id_respuesta FROM respuestas WHERE fecha_respuesta = ? AND id_plantilla = ?', [answerDate, formID]).id_respuesta])
+    deleteAnswers(answerDate) {
+        this.db.runSync('DELETE FROM campo_respuesta WHERE id_respuesta = ?', [this.db.getFirstSync('SELECT id_respuesta FROM respuestas WHERE fecha_respuesta = ?', [answerDate]).id_respuesta])
         this.db.runSync('DELETE FROM respuestas WHERE fecha_respuesta = ?', [answerDate])
     }
 

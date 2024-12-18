@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Platform, Dimensions, StyleSheet, View, Text, FlatList, Alert, TouchableOpacity, Image, ScrollView } from 'react-native'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { Menu, MenuItem, Modal, Card, TopNavigation, TopNavigationAction, Divider, Layout, Button, Icon, Select, SelectItem, RangeCalendar, NativeDateService, Input } from '@ui-kitten/components'
+import { Menu, MenuItem, Modal, Card, TopNavigation, TopNavigationAction, Layout, Button, Icon, RangeCalendar, NativeDateService, Input } from '@ui-kitten/components'
 import { useNavigation } from '@react-navigation/native'
 import { LinearGradient } from 'expo-linear-gradient'
 import shareTypes from '../commonStructures/shareTypes'
@@ -225,6 +224,7 @@ const SavedForms = () => {
         </View>
     )
     const groupedForms = forms.reduce((acc, form) => {
+        console.log(form)
         if (!acc[form.plantilla])
             acc[form.plantilla] = []
         acc[form.plantilla].push(form)
