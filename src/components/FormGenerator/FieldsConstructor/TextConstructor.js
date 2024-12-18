@@ -39,15 +39,23 @@ const TextoConstructor = ({ field, onSave }) => {
         [1, 1], // "no números"
     ]
 
-    const [fieldName, setFieldName] = useState('')
-    const [selectedLimitaciones, setSelectedLimitaciones] = useState([])
-    const [selectedFormato, setSelectedFormato] = useState(null)
-    const [isRequired, setIsRequired] = useState(field.isRequired ?? true)
-    const [isRequiredQR, setIsRequiredQR] = useState(field.isRequiredQR ?? false)
+    console.log(field)
+    console.log(Array.isArray(field.limitaciones))
+    const [fieldName, setFieldName] = useState(field.nombre ?? '')
+    const [selectedLimitaciones, setSelectedLimitaciones] = useState(Array.isArray(field.limitaciones) ? 
+    field.limitaciones.map(limitacion => enumLimitaciones[limitacion])
+    : 
+    [])
+    const [selectedFormato, setSelectedFormato] = useState(Array.isArray(field.formato)?
+    field.formato.map(formato => enumFormato[formato])
+    :  
+    [])
+    const [isRequired, setIsRequired] = useState(field.obligatorio ?? true)
+    const [isRequiredQR, setIsRequiredQR] = useState(field.rellenarQR ?? false)
     const [showLimitations, setShowLimitations] = useState(false)
     const [showFormat, setShowFormat] = useState(false)
     const [showOptional, setShowOptional] = useState(false)
-
+    console.log(selectedFormato)
     const toggleLimitacion = index => {
         const newLimitaciones = selectedLimitaciones.includes(index)
             ? selectedLimitaciones.filter(i => i !== index)
@@ -55,21 +63,19 @@ const TextoConstructor = ({ field, onSave }) => {
 
         setSelectedLimitaciones(newLimitaciones)
 
-        if (selectedFormato !== null && !isFormatoCompatibleWithLimitaciones(selectedFormato, newLimitaciones)) 
-            setSelectedFormato(null)
     }
 
     const handleSelectFormato = index => {
-        return selectedFormato === index ? 
-            setSelectedFormato(null) :
+        selectedFormato.includes(index) ? 
+            setSelectedFormato([]) :
             isFormatoCompatibleWithLimitaciones(index, selectedLimitaciones) ?
-            setSelectedFormato(index) : 
+            setSelectedFormato([index]) : 
             null
     }
 
-    const isLimitacionDisabled = index => selectedLimitaciones.length > 0 && !isLimitacionCompatible(index, selectedLimitaciones)
-    const isFormatoDisabled = index => selectedLimitaciones.length === 0 && !isFormatoCompatibleWithLimitaciones(index, selectedLimitaciones)
-    const isFormatoCompatibleWithLimitaciones = (formatoIndex, limitaciones) => limitaciones.length !== 0 && limitaciones.every(limitacion => compatibilidadFormato[limitacion][formatoIndex])
+    const isLimitacionDisabled = index => selectedLimitaciones.length > 0 && !isLimitacionCompatible(index, selectedLimitaciones) || compatibilidadFormato[index][selectedFormato[0]] === 0
+    const isFormatoDisabled = index => !isFormatoCompatibleWithLimitaciones(index, selectedLimitaciones)
+    const isFormatoCompatibleWithLimitaciones = (formatoIndex, limitaciones) => limitaciones.every(limitacion => compatibilidadFormato[limitacion][formatoIndex])
 
     const isLimitacionCompatible = (newLimitacion, currentLimitaciones) =>  (
         currentLimitaciones.every(existing => compatibilidadesLimitaciones[existing][newLimitacion])
@@ -81,8 +87,9 @@ const TextoConstructor = ({ field, onSave }) => {
             Object.keys(enumLimitaciones).find(key => enumLimitaciones[key] === index)
         )
 
-        const formato = Object.keys(enumFormato).find(key => enumFormato[key] === selectedFormato)
-
+        const formato = selectedFormato.map(index =>
+            Object.keys(enumFormato).find(key => enumFormato[key] === index)
+        )
         const field = {
             tipo: 'texto',
             nombre: fieldName,	
@@ -93,10 +100,7 @@ const TextoConstructor = ({ field, onSave }) => {
             rellenarQR: isRequiredQR,
         }
 
-        if (onSave) {
-            console.log(field)
-            onSave(field)
-        }
+        onSave(field)
     }
 
     const renderLimitacionItem = ({ item, index }) => (
@@ -119,15 +123,14 @@ const TextoConstructor = ({ field, onSave }) => {
     const renderFormatoItem = ({ item, index }) => (
         <ListItem
             title={item[0].toUpperCase() + item.slice(1)}
-            onPress={() => handleSelectFormato(index)}
             disabled={isFormatoDisabled(index)}
             accessoryLeft={() => (
                 <CheckBox
                     status='success'
-                    checked={selectedFormato === index}
+                    checked={selectedFormato.includes(index)}	
                     disabled={isFormatoDisabled(index)}
                     style={{ marginTop: '1%'}}
-                    onChange={() => toggleFormato(index)}
+                    onChange={() => handleSelectFormato(index)}
                 />
             )}
         />
