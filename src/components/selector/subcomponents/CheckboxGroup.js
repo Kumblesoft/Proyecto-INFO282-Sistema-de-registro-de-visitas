@@ -8,11 +8,10 @@ export default CheckboxGroup = forwardRef(({ items, onSelect, value, maxChecked,
   if (value) [value].flat().map(value => selectedValues.add(value)) // Setear los valores iniciales
 
   const refreshSelector = () =>{
-    items.map(item => (
-      selectedValues.has(item.valor) ? handleSelect(item.valor) : null
-    ))
+    items.map(item => selectedValues.has(item.valor) ? handleSelect(item.valor) : null)
     selectedValues.clear()
-    if (defaultOption != null ) onSelect(Array.from(defaultOption))
+    if (onSelect) onSelect(null)
+    return null
   }
   useImperativeHandle(ref, () => ({
     refreshSelector,
@@ -21,7 +20,7 @@ export default CheckboxGroup = forwardRef(({ items, onSelect, value, maxChecked,
   const handleSelect = itemValue => {
     if (selectedValues.has(itemValue)) selectedValues.delete(itemValue) // Eliminar si ya estaba seleccionado
     else if (selectedValues.size < (maxChecked || items.length)) selectedValues.add(itemValue) // Añadir si no está seleccionado y no excede el límite
-    
+
 		if (onSelect) onSelect(Array.from(selectedValues)) // Llamar al callback con los valores seleccionados
   }
   return (

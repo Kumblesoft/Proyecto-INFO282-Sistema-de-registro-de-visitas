@@ -33,8 +33,11 @@ export default class TimeChainInsertor extends ChainInsertor {
         const outputLimitations = []
         limitations.forEach(limitation => outputLimitations.push(this.db.getFirstSync(`SELECT name FROM limitations WHERE id = ?`, [limitation]).name))
 
+        const horaPredeterminada = this.db.getFirstSync(`SELECT default_time FROM ${fieldTableName} WHERE fk_field = ?`, [fieldId]).default_time
+
         return {
-            "hora predeterminada": this.db.getFirstSync(`SELECT default_time FROM ${fieldTableName} WHERE fk_field = ?`, [fieldId]).default_time,
+            tipo: 'hora',
+            "hora predeterminada": horaPredeterminada,
             limitaciones: outputLimitations
         }
     }

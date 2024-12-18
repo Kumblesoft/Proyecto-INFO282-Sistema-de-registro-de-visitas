@@ -31,24 +31,16 @@ export default function FormEditor() {
 
   const renderTitle = () => (
       <View style={styles.titleContainer}>
-          <Text style={styles.topNavigationText}>Creador de formularios</Text>
+          <Text style={styles.topNavigationText}>{formName || "Nuevo formulario"}</Text>
       </View>
   )
 
   const handleSaveForm = fields => {
-    if (isNameTaken) {
-      Alert.alert('Error', 'El nombre de la plantilla ya existe')
-      return
-    } else if (formName === "") {
-      Alert.alert('Error', 'Ingrese un nombre para la plantilla')
-      return
-    } else if (fields.length === 0) {
-      Alert.alert('Error', 'Agregue al menos un campo al formulario')
-      return
-    }  else if (fields.some(field => field.nombre === "")) {
-      Alert.alert('Error', 'Ingrese un nombre para todos los campos')
-      return
-    }
+    if (isNameTaken) return Alert.alert('Error', 'El nombre de la plantilla ya existe')
+    else if (formName === "") return Alert.alert('Error', 'Ingrese un nombre para la plantilla')
+    else if (fields.length === 0) return Alert.alert('Error', 'Agregue al menos un campo al formulario')
+    else if (fields.some(field => field.nombre === "")) return Alert.alert('Error', 'Ingrese un nombre para todos los campos')
+    
     const newForm = {
       "nombre formulario": formName,
       "ultima modificacion": new Date().getTime(),
@@ -80,9 +72,10 @@ export default function FormEditor() {
             <Divider />
           <ScrollView style={styles.container} nestedScrollEnabled>
             <Layout style={styles.containerBox}>
-              <Text style={styles.label}>Nombre del Formulario</Text>
+              <Text category="h5">Nombre del Formulario</Text>
               <Input placeholder="Nombre del Formulario" style={styles.input} textStyle={{ color: isNameTaken ? 'red' : 'black' }} onChangeText={checkFormName}/>
             </Layout>
+            
             
             {isNameTaken && 
               <Layout size='small' style={styles.alert}>
@@ -90,6 +83,14 @@ export default function FormEditor() {
                 <Text style={{ color: 'red' }}>Este nombre de plantilla ya existe</Text>
               </Layout>
             }
+            {formName === '' && 
+              <Layout size='small' style={styles.alert}>
+                <Icon status='danger' fill='#FF0000' name='alert-circle' style={styles.icon} />
+                <Text style={{ color: 'red' }}>Por favor escriba un nombre de formulario</Text>
+              </Layout>
+            }
+
+            <Divider/>
             
             {/* Campo Selector */}
             <FieldSelector
@@ -147,7 +148,8 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     borderWidth: 1,
     borderColor: "#ccc",
-    borderRadius: 5
+    borderRadius: 5,
+    marginBottom: 10
   },
   containerBox: {
     padding: "4%",

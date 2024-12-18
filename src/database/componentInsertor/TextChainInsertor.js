@@ -1,5 +1,5 @@
 import ChainInsertor from './ChainInsertor'
-import { useSQLiteContext } from 'expo-sqlite'
+
 
 export default class TextChainInsertor extends ChainInsertor {
     insert(fieldObject, fieldId, fieldTypeId, fieldTableName) {
@@ -72,6 +72,7 @@ export default class TextChainInsertor extends ChainInsertor {
             [properties.id_formats]
         )
         return {
+            tipo: 'texto',
             rellenarQR: Boolean(properties.qr_refillable),
             limitaciones: limitations.map(limitation => limitation.name),
             formato: format.map(format => format.name)

@@ -6,7 +6,6 @@ import CameraChainInsertor from './componentInsertor/CameraChainInsertor'
 import CheckboxChainInsertor from './componentInsertor/CheckboxChainInsertor'
 import RadioChainInsertor from './componentInsertor/RadiusChainInsertor'
 import initDatabaseScript from './tables'
-import { useSQLiteContext } from 'expo-sqlite'
 
 
 const { dbInit } = initDatabaseScript
@@ -137,8 +136,7 @@ export default class Database {
                 const outputField = {
                     "nombre"    : fieldName,
                     "salida"    : salidaCampo,
-                    "obligatorio"   : obligatorio,
-                    "tipo"      : this.db.getFirstSync('SELECT field_type_name FROM field_table_name WHERE id = ?', [typeID]).field_type_name
+                    "obligatorio"   : !!obligatorio,
                 }
 
                 const { table_name: typeTableName, field_type_name: fieldTypeName } = this.db.getFirstSync('SELECT table_name,field_type_name FROM field_table_name WHERE id = ?', [typeID])

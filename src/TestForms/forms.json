@@ -53,8 +53,7 @@
 				"editable": true,
 				"relacion de aspecto": [16,9]
 			}
-		],
-		"accion personalizada": "()=>{console.log('Hacer algo')}"
+		]
 	},
 	{
 		"nombre formulario": "Formulario 2",
@@ -106,8 +105,7 @@
 				"formato": "dd/mm/aaaa",
 				"fecha predeterminada": "2024-10-01"
 			}
-		],
-		"accion personalizada": "()=>{console.log('Formulario 2 enviado')}"
+		]
 	},
 	{
 		"nombre formulario": "Prueba texto",
@@ -197,8 +195,7 @@
 				"solo mayusculas"
 			  ]
 			}
-		  ],
-		"accion personalizada": "()=>{console.log('Prueba texto enviado')}"
+		  ]
 	},
 	{
 		"nombre formulario": "Prueba fechas",
@@ -320,7 +317,7 @@
 				{ "nombre": "19 años", "valor": "19" },
 				{ "nombre": "20 años", "valor": "20" }
 			  ],
-			  "opcion predeterminada": "18",
+			  "opcion predeterminada": 1,
 			  "texto predeterminado": "Selecciona tu edad",
 			  "obligatorio": true,
 			  "salida": "edadSeleccionada"
@@ -333,7 +330,6 @@
 				{ "nombre": "Diseño", "valor": "diseno" },
 				{ "nombre": "Marketing", "valor": "marketing" }
 			  ],
-			  "opcion predeterminada": ["programacion", "diseno"],	
 			  "texto predeterminado": "Selecciona tus habilidades",
 			  "cantidad de elecciones": 2,
 			  "obligatorio": true,
@@ -347,7 +343,6 @@
 				{ "nombre": "Intermedio", "valor": "intermedio" },
 				{ "nombre": "Avanzado", "valor": "avanzado" }
 			  ],
-			  "opcion predeterminada": "principiante",
 			  "texto predeterminado": "Selecciona tu nivel",
 			  "cantidad de elecciones": 1,
 			  "obligatorio": true,

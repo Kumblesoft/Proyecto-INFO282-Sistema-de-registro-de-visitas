@@ -52,6 +52,7 @@ export default class SelectorChainInsertor extends ChainInsertor {
             [fieldProperties.id_options]
         )
         return {
+            tipo: 'selector',
             "opcion predeterminada": fieldProperties.default_option,
             "texto predeterminada": fieldProperties.selector_placeholder,
             opciones: optionsQuery.map(option => ({nombre: option.name, valor: option.value}))

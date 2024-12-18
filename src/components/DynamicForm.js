@@ -78,7 +78,7 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
                 data: Object.fromEntries(formState.current),
                 idDispositivo: identifier
             }
-            console.log(newForm)
+            console.log(JSON.stringify(newForm, null, 2))
             db.insertAnswer(newForm)
 
             Alert.alert("Formulario guardado")
@@ -100,8 +100,10 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
         const refreshFieldRef = useRef(null)
         refreshFieldRefs.current.push(() => refreshFieldRef.current())
         requiredFieldRefs.current.push(() => requiredFieldRef.current())  // Añadir la referencia al array
+        console.log(field)
         switch (field.tipo) {
             case 'selector':
+                console.log('selector')
                 return (
                     <OptionSelector
                         key={`selector-${index}`}
@@ -120,6 +122,7 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
                     />
                 )
             case 'checkbox':
+                console.log('checkbox')
                 return (
                     <OptionSelector
                         key={`checkbox-${index}`}
@@ -139,6 +142,7 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
                     />
                 )
             case 'radio':
+                console.log('radio')
                 return (
                     <OptionSelector
                         key={`radio-${index}`}
@@ -158,7 +162,8 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
                     />
                 )
             case 'fecha':
-                console.log(field['limitaciones'])
+                //console.log(field['limitaciones'])
+                console.log('fecha')
                 return (
                     <DateSelector
                         key={`fecha-${index}`}
@@ -178,7 +183,8 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
                 )
             case 'hora': {
                 const now = new Date().getHours().toString().padStart(2, '0') + ':' + new Date().getMinutes().toString().padStart(2, '0')
-                console.log(field)
+                console.log('hora')
+                //console.log(field)
                 return (
                     <HourSelector
                         key={`hora-${index}`}
@@ -197,6 +203,7 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
             }
             case 'camara':
                 requiredFieldRefs.current.push(() => requiredFieldRef.current())  // Añadir la referencia al array
+                console.log('camara:', field)
                 return (
                     <Camera
                         key={`camara-${index}`}
@@ -214,6 +221,7 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
                 )
             case 'texto':
                 requiredFieldRefs.current.push(() => requiredFieldRef.current())  // Añadir la referencia al array
+                console.log('texto:', field)
                 return (
                     <TextEntry
                         key={`texto-${index}`}
@@ -231,6 +239,7 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
                     />
                 )
             default:
+                console.error(`Unsupported field type: ${field.tipo}`)
                 return null
         }
     }
