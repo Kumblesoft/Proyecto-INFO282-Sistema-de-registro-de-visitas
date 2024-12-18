@@ -134,10 +134,9 @@ export default class Database {
                 } = field
 
                 const outputField = {
-                    "nombre": fieldName,
-                    "salida": salidaCampo,
-                    "obligatorio": obligatorio,
-                    "tipo": this.db.getFirstSync('SELECT field_type_name FROM field_table_name WHERE id = ?', [typeID]).field_type_name
+                    "nombre"    : fieldName,
+                    "salida"    : salidaCampo,
+                    "obligatorio"   : !!obligatorio,
                 }
 
                 const { table_name: typeTableName, field_type_name: fieldTypeName } = this.db.getFirstSync('SELECT table_name,field_type_name FROM field_table_name WHERE id = ?', [typeID])

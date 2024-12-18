@@ -36,20 +36,18 @@ export default initDatabaseScript = {
     CREATE TABLE IF NOT EXISTS selector_properties (
     fk_field INTEGER REFERENCES fields(id) NOT NULL,
     id_options INTEGER PRIMARY KEY AUTOINCREMENT,
-    default_option TEXT,
+    default_option INTEGER,
     selector_placeholder TEXT
     );
 
     CREATE TABLE IF NOT EXISTS checkbox_properties (
     fk_field integer references fields(id) not null,
     id_options INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
-    default_option TEXT,
     max_checked_options integer
     );
 
     CREATE TABLE IF NOT EXISTS radio_properties (
     fk_field integer references fields(id) not null,
-    default_option TEXT,
     id_options INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE
     );
    

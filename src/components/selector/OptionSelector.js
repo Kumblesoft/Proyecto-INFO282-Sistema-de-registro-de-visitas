@@ -54,38 +54,40 @@ export default function OptionSelector({ type, items, onSelect, requiredFieldRef
     type ??= OptionComponentType.DROPDOWN
     optionalFeatures ??= {}
 
-    const { title, placeholder, defaultOption, required, maxChecked, disabled} = optionalFeatures
-    const [selectedValue, setSelectedValue] = useState(defaultOption || null) // Usar la opción predeterminada como estado inicial
-    const [isRequiredAlert, setIsRequiredAlert] = useState(false)
+    const { title, placeholder, defaultOption, required, maxChecked, disabled } = optionalFeatures
+    const [ selectedValue, setSelectedValue ] = useState(null) // Usar la opción predeterminada como estado inicial
+    const [ isRequiredAlert, setIsRequiredAlert ] = useState(false)
 
 
-    if (selectedValue){
-        onSelect(selectedValue)
-    }
+    // if (selectedValue) onSelect(selectedValue) 
+    
     const optionRef = useRef()
     // Lógica para manejar la selección
     const handleSelect = selectedValue => {
         setSelectedValue(selectedValue) // Actualizar el estado con el valor seleccionado
         setIsRequiredAlert(false) // Limpiar error cuando el usuario selecciona algo
-        if (onSelect) onSelect(selectedValue) // Ejecutar la función de selección pasada como prop
+        if (onSelect) 
+            onSelect(selectedValue) // Ejecutar la función de selección pasada como prop
     }
 
     // Lógica para verificar si el campo es obligatorio y está vacío al enviar el formulario
     requiredFieldRef.current = () => {
-        if (required && !selectedValue) {
-            setIsRequiredAlert(true)
-        } else {
-            setIsRequiredAlert(false)
-        }
-      }
+        if (required && !selectedValue) setIsRequiredAlert(true)
+        else setIsRequiredAlert(false)
+    }
     
 
     // Renderizar el componente correcto basado en `type`
     const SelectedComponent = Selectors[type] // Selecciona el componente correspondiente según `type`
+    
+    
     refreshFieldRef.current = () => {
-        optionRef.current.refreshSelector()
-        setSelectedValue(defaultOption)
+        setSelectedValue(optionRef.current.refreshSelector())
+        // setSelectedValue(defaultOption)
     }
+
+    useEffect(() => {optionRef.current.refreshSelector()}, [])
+    
     return (
         <>
             <Layout style={styles.containerBox}>

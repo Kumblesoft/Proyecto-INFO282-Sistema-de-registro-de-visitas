@@ -37,6 +37,7 @@ export default class DateChainInsertor extends ChainInsertor {
         limitations.forEach(limitation => outputLimitations.push(this.db.getFirstSync(`SELECT name FROM limitations WHERE id = ?`, [limitation]).name))
 
         return {
+            tipo: 'fecha',
             formato: properties.date_format,
             "fecha predeterminada": properties.default_date,
             limitaciones: outputLimitations

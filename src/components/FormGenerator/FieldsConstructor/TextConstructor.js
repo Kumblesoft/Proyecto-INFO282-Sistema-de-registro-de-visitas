@@ -4,8 +4,6 @@ import { Input, Button, List, ListItem, CheckBox, Icon, Divider } from '@ui-kitt
 
 const TextoConstructor = ({ field, onSave }) => {
 
-    const saveIcon = props => <Icon name='save-outline' {...props} fill="#fff" style={[props.style, { width: 25, height: 25 }]}/>
-
     const enumLimitaciones = {
         "solo letras": 0,
         "solo números": 1,
@@ -275,8 +273,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between', // Para que el botón esté a la derecha
-        //backgroundColor: '#f7f7f7', // Color de fondo levemente distinto
-        // padding: "2%",
         borderRadius: 4, // Bordes redondeados
     },
     saveButtonContainer: {
