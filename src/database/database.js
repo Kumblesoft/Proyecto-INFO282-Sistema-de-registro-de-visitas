@@ -7,7 +7,6 @@ import CheckboxChainInsertor from './componentInsertor/CheckboxChainInsertor'
 import RadioChainInsertor from './componentInsertor/RadiusChainInsertor'
 import initDatabaseScript from './tables'
 
-
 const { dbInit } = initDatabaseScript
 const tables = ['forms', 'fields', 'field_table_name', 'text_properties', 'selector_properties', 'checkbox_properties', 'radio_properties', 'date_properties', 'hour_properties', 'camera_properties', 'limitations',
     'format', 'is_formatted', 'limitations_intermediary', 'selector_options', 'radio_options', 'checkbox_options', 'compatibility_matrix', 'respuestas', 'campo_respuesta']
@@ -45,14 +44,14 @@ export async function initializeDataBase(db) {
         db.runSync('INSERT INTO field_table_name (table_name, field_type_name) VALUES (?,?)', type)
     )
 
-    db.runSync('INSERT INTO limitations (name, regex, value_enum_matrix) VALUES (?,?,?)', ["solo letras", "((/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/))", 0])
-    db.runSync('INSERT INTO limitations (name, regex, value_enum_matrix) VALUES (?,?,?)', ["solo numeros", "/^-?\d+([.,]\d+)?$/", 1])
-    db.runSync('INSERT INTO limitations (name, regex, value_enum_matrix) VALUES (?,?,?)', ["solo enteros", "/^-?\d+$/", 2])
-    db.runSync('INSERT INTO limitations (name, regex, value_enum_matrix) VALUES (?,?,?)', ["solo enteros positivos y cero", "/^\d+$/", 3])
-    db.runSync('INSERT INTO limitations (name, regex, value_enum_matrix) VALUES (?,?,?)', ["email", "/^(([^<>()[\]\.,:\s@\"]+(\.[^<>()[\]\.,:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,:\s@\"]+\.)+[^<>()[\]\.,:\s@\"]{2,})$/i", 4])
-    db.runSync('INSERT INTO limitations (name, regex, value_enum_matrix) VALUES (?,?,?)', ["no numeros", "/^[^\d]*$/", 5])
-    db.runSync('INSERT INTO limitations (name, value_enum_matrix) VALUES (?,?)', ["editable", 0])
-    db.runSync('INSERT INTO limitations (name, value_enum_matrix) VALUES (?,?)', ["no editable", 1])
+    db.runSync('INSERT INTO limitations (name, regex, keyboard_type, value_enum_matrix) VALUES (?,?,?,?)', ["solo letras", String.raw`/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/`, "default", 0])
+    db.runSync('INSERT INTO limitations (name, regex, keyboard_type, value_enum_matrix) VALUES (?,?,?,?)', ["solo numeros", String.raw`/^-?\d+([.,]\d+)?$/`, "numeric", 1])
+    db.runSync('INSERT INTO limitations (name, regex, keyboard_type, value_enum_matrix) VALUES (?,?,?,?)', ["solo enteros", String.raw`/^-?\d+$/`, "numeric", 2])
+    db.runSync('INSERT INTO limitations (name, regex, keyboard_type, value_enum_matrix) VALUES (?,?,?,?)', ["solo enteros positivos y cero", String.raw`/^\d+$/`, "numeric", 3])
+    db.runSync('INSERT INTO limitations (name, regex, keyboard_type, value_enum_matrix) VALUES (?,?,?,?)', ["email", String.raw`/^(([^<>()[\]\.,:\s@\"]+(\.[^<>()[\]\.,:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,:\s@\"]+\.)+[^<>()[\]\.,:\s@\"]{2,})$/i`, "default", 4])
+    db.runSync('INSERT INTO limitations (name, regex, keyboard_type, value_enum_matrix) VALUES (?,?,?,?)', ["no numeros", String.raw`/^[^\d]*$/`, "default", 5])
+    db.runSync('INSERT INTO limitations (name, keyboard_type, value_enum_matrix) VALUES (?,?,?)', ["editable", "default", 0])
+    db.runSync('INSERT INTO limitations (name, keyboard_type, value_enum_matrix) VALUES (?,?,?)', ["no editable", "default", 1])
 
     db.runSync('INSERT INTO format (name, value_enum_matrix) VALUES (?,?)', ["solo minusculas", 1])
     db.runSync('INSERT INTO format (name, value_enum_matrix) VALUES (?,?)', ["solo mayusculas", 0])
@@ -252,7 +251,6 @@ export default class Database {
                 console.log('iteration ended')
             })
             this.db.runSync('DELETE FROM forms WHERE id = ?', [formID])
-            //this.db.getForms()
         } catch (error) {
             console.error('deleteForm:', error)
             console.error('trace:', error.stack)
@@ -288,5 +286,13 @@ export default class Database {
     isFormNameRepeated(formName) {
         const result = this.db.getFirstSync('SELECT 1 FROM forms WHERE name = ? LIMIT 1', [formName])
         return result === undefined
+    }
+
+    getRegexFromLimitation(limitationName) {
+        return this.db.getFirstSync('SELECT regex FROM limitations WHERE name = ?', [limitationName]).regex
+    }
+
+    getKeyboardFromLimitation(limitationName) {
+        return this.db.getFirstSync('SELECT keyboard_type FROM limitations WHERE name = ?', [limitationName]).keyboard_type
     }
 }
