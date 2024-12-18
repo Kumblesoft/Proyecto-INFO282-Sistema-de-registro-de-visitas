@@ -158,7 +158,7 @@ const TextoConstructor = ({ field, onSave }) => {
                 <Text style={styles.subtitle}>Limitaciones</Text>
                 <Button
                     appearance='ghost'
-                    accessoryLeft={(props) => <Icon name='arrow-ios-downward-outline' {...props} />}
+                    accessoryLeft={props => <Icon name='arrow-ios-downward-outline' {...props} />}
                     onPress={() => setShowLimitations(!showLimitations)}
                     style={styles.toggleButton}
                 />
