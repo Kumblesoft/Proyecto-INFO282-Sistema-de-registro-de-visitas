@@ -24,7 +24,7 @@ const constructors = new Map([
 ])
 
 
-const FieldSelector = ({ onSave }) => {
+const FieldSelector = ({ onSave, scrollCheck }) => {
     const [selectedField, setSelectedField] = useState('')
     const [selectedIndex, setSelectedIndex] = useState(null)
     const [fieldsToDisplay, setFieldsToDisplay] = useState([]) // Almacena los campos agregados
@@ -115,8 +115,11 @@ const FieldSelector = ({ onSave }) => {
     }
 
     const handleDragMode = () => {
-        if (!miniFields.some(name => name === ''))
-            return setDragMode(!dragMode)
+        if (!miniFields.some(name => name === '')){
+            scrollCheck(!dragMode)
+            setDragMode(!dragMode)
+            return
+        }
         // console.log(miniFields)
         Alert.alert('Error', 'Los campos deben tener nombre')
     }

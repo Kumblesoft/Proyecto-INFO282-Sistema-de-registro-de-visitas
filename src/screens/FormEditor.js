@@ -16,6 +16,7 @@ export default function FormEditor() {
   const formNames = new Set(db.getAllFormNames())
   const [isNameTaken, setIsNameTaken] = useState(false)
   const [formName, setFormName] = useState("")
+  const [dragMode, setDragMode] = useState(false)
 
   const BackIcon = (props) => (
     <Icon
@@ -57,6 +58,10 @@ export default function FormEditor() {
     !isNameTaken ? setFormName(name) : setFormName("")
   }
 
+  const handleScroll = event => {
+    setDragMode(event)
+    console.log(dragMode)
+  }
   return (
     <Layout style={styles.layoutContainer}>
       <SafeAreaView style={styles.safeArea}>
@@ -70,7 +75,7 @@ export default function FormEditor() {
                 />
             </LinearGradient>
             <Divider />
-          <ScrollView style={styles.container} nestedScrollEnabled>
+          <ScrollView style={styles.container} scrollEnabled={!dragMode}>
             <Layout style={styles.containerBox}>
               <Text category="h5">Nombre del Formulario</Text>
               <Input placeholder="Nombre del Formulario" style={styles.input} textStyle={{ color: isNameTaken ? 'red' : 'black' }} onChangeText={checkFormName}/>
@@ -97,6 +102,7 @@ export default function FormEditor() {
               selectedValue={selectedField}
               onValueChange={setSelectedField} // Actualiza el estado cuando cambia el selector
               onSave = {fields => handleSaveForm(fields)}
+              scrollCheck={event => handleScroll(event)}
             />
 
             {/* Botón para guardar cambios <Button onPress={handleFieldPos} margin='20' padding='20' title="Guardar" /> */}
