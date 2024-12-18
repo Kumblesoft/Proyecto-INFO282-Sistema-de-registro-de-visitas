@@ -25,10 +25,10 @@ const FormFillerScreen = ({ route }) => {
 
     function handleBack() {
         const dataMap = formRef.current.getMap()
-    
-        const ignoreDefault = form.campos.filter(field => 
+
+        const ignoreDefault = form.campos.filter(field =>
             field.tipo === 'fecha' || field.tipo === 'hora' || field['opcion predeterminada'] || field.tipo === 'checkbox').length
-        if ((dataMap.size - ignoreDefault) > 0 ) setBackAlert(true)
+        if ((dataMap.size - ignoreDefault) > 0) setBackAlert(true)
         else navigation.goBack()
     }
     const renderTitle = () => (
@@ -56,14 +56,14 @@ const FormFillerScreen = ({ route }) => {
                     <DynamicForm formData={form} disabledSave={disabledSave} ref={formRef} />
                 </View>
             </ScrollView>
-            <Modal visible = {backAlert} backdropStyle={styles.backdrop}>
-                <Layout style = {styles.containerBox}>
-                    <Text style={styles.modalTitle}> ¿Seguro que quiere salir?</Text>
-                    {disabledSave ||(<Text style={{fontSize: 18, marginBottom: 15}}> Se perderán los datos sin guardar</Text>)}
-                        <Layout style={styles.buttonContainer}>
-                            <Button style = {{flex : 1, marginRight: '10%'}} status='danger' onPress={() => navigation.goBack()}>Si</Button>
-                            <Button style = {{flex : 1, marginLeft: '10%'}}  onPress={() => setBackAlert(false)}>No</Button>
-                        </Layout>
+            <Modal visible={backAlert} backdropStyle={styles.backdrop}>
+                <Layout style={styles.containerBox}>
+                    <Text style={styles.modalTitle}> ¿Seguro que quiere volver al menu principal?</Text>
+                    {disabledSave || (<Text style={{ fontSize: 18, marginBottom: 15 }}> Se perderán los datos sin guardar</Text>)}
+                    <Layout style={styles.buttonContainer}>
+                        <Button style={{ flex: 1, marginRight: '10%' }} status='danger' onPress={() => navigation.goBack()}>Si</Button>
+                        <Button style={{ flex: 1, marginLeft: '10%' }} onPress={() => setBackAlert(false)}>No</Button>
+                    </Layout>
                 </Layout>
             </Modal>
         </Layout>
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     safeArea: {
         backgroundColor: '#00baa4'
     },
-    topNavigation:{
+    topNavigation: {
         backgroundColor: 'transparent'
     },
     titleContainer: {

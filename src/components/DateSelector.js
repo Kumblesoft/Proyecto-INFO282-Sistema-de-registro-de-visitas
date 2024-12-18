@@ -31,7 +31,7 @@ const manageDateFormat = (format) => {
  * @param {boolean} [options.required=false] - Whether the field is required.
  * @returns {Object} An object containing the defined optional features.
  */
-export const OptionDateFeatures = (options ={}) => {
+export const OptionDateFeatures = (options = {}) => {
   return {
     title: options.title ?? "",
     defaultDate: options.defaultDate === "hoy" ? new Date() : new Date(options.defaultDate),
@@ -48,7 +48,7 @@ export const OptionDateFeatures = (options ={}) => {
  * @param {Object} optionalFeatures - Configuration options for the DateSelector.
  * @returns {JSX.Element} The rendered DateSelector component.
  */
-const DateSelector = ({value, onChange, optionalFeatures,requiredFieldRef, refreshFieldRef}) => {
+const DateSelector = ({ value, onChange, optionalFeatures, requiredFieldRef, refreshFieldRef }) => {
   const hasInitialized = useRef(false)
   const {
     title = "",
@@ -61,12 +61,12 @@ const DateSelector = ({value, onChange, optionalFeatures,requiredFieldRef, refre
   const [selectedDate, setSelectedDate] = useState(null)
   const [isRequiredAlert, setIsRequiredAlert] = useState(null)
   const configuredDateService = new NativeDateService('en', {
-    startDayOfWeek:1,
+    startDayOfWeek: 1,
     format: dateFormat
   })
   useEffect(() => {
     if (defaultDate && !hasInitialized.current) {
-      setSelectedDate(defaultDate) 
+      setSelectedDate(defaultDate)
       const formattedDate = configuredDateService.format(defaultDate, dateFormat)
       onChange(formattedDate)
       setIsRequiredAlert(false)
@@ -88,9 +88,9 @@ const DateSelector = ({value, onChange, optionalFeatures,requiredFieldRef, refre
 
   requiredFieldRef.current = () => {
     if (required && !selectedDate) {
-        setIsRequiredAlert(true)
+      setIsRequiredAlert(true)
     } else {
-        setIsRequiredAlert(false)
+      setIsRequiredAlert(false)
     }
   }
   refreshFieldRef.current = () => {
@@ -105,7 +105,7 @@ const DateSelector = ({value, onChange, optionalFeatures,requiredFieldRef, refre
         <View style={styles.text}>
           <Text style={styles.text} category={"p2"}>
             {title}
-          </Text> 
+          </Text>
           {/*
           <Text status='danger'> 
             {required ? "*": " "} 
@@ -118,13 +118,13 @@ const DateSelector = ({value, onChange, optionalFeatures,requiredFieldRef, refre
         dateService={configuredDateService}
         onSelect={handleDateChange}
         disabled={disabled}
-        min ={new Date(1900, 0, 1)}
-        max = {new Date(2100,0,1)}
-        style={disabled? styles.disabledDate: styles.datepicker}
+        min={new Date(1900, 0, 1)}
+        max={new Date(2100, 0, 1)}
+        style={disabled ? styles.disabledDate : styles.datepicker}
       />
-      { isRequiredAlert ?
+      {isRequiredAlert ?
         <Layout size='small' style={styles.alert}>
-          <Icon status='danger' fill='#FF0000' name='alert-circle'style={styles.icon}/> 
+          <Icon status='danger' fill='#FF0000' name='alert-circle' style={styles.icon} />
           <Text style={styles.alert} category="p2">
             Por favor seleccione una fecha
           </Text>
@@ -157,9 +157,9 @@ const styles = StyleSheet.create({
     height: 20,
   },
   titles: {
-        fontWeight: 'bold',
-        marginBottom: 10,
-        margin: 2,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    margin: 2,
   },
   containerBox: {
     padding: 10,

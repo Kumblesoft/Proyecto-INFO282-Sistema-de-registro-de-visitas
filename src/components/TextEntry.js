@@ -4,6 +4,8 @@ import { Text, Input, Button, Layout, Icon } from '@ui-kitten/components'
 import { Err, Ok } from '../commonStructures/resultEnum'
 import { useCameraPermissions } from 'expo-camera'
 import { CameraView } from "expo-camera"
+import { getDatabaseInstance } from '../database/database'
+import { useSQLiteContext } from 'expo-sqlite'
 
 /**
  * Represents optional features for the TextEntry component.
@@ -32,50 +34,6 @@ export const OptionalTextFeatures = (options = {}) => {
 }
 
 /**
- * Map that defines the validator functions and behaviour of each limitation 
- */
-const limitationBehaviour = new Map([
-  ["solo letras", {
-    regex: ((/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/)),
-    keyboardType: "default"
-  }],
-  ["no numeros", {
-    regex: /^[^\d]*$/,
-    keyboardType: "default"
-  }],
-  ["solo numeros", {
-    regex: /^-?\d+([.,]\d+)?$/,
-    keyboardType: "numeric"
-  }],
-  ["solo enteros", {
-    regex: /^-?\d+$/,
-    keyboardType: "numeric"
-  }],
-  ["solo enteros positivos y cero", {
-    regex: /^\d+$/,
-    keyboardType: "numeric"
-  }],
-  ["email", {
-    regex: /^(([^<>()[\]\.,:\s@\"]+(\.[^<>()[\]\.,:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,:\s@\"]+\.)+[^<>()[\]\.,:\s@\"]{2,})$/i,
-    keyboardType: "default"
-  }]
-])
-
-/**
- * Debug version of get method for limitationBehaviour
- * @param {string} name 
- * @returns 
- */
-limitationBehaviour.dGet = function(name) {
-  const exists = this.has(name)
-  if (!exists) {
-    console.log(`No se encontro (${name}) en limitationBehaviour`)
-    return { regex: /$/, keyboardType: "default" }
-  }
-  return this.get(name)
-}
-
-/**
  * Map that defines transformation functions as formatting for the fields
  */
 const formatMap = new Map([
@@ -93,12 +51,26 @@ const formatMap = new Map([
  * @returns {JSX.Element} The rendered TextEntry component.
  */
 const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldRef }) => {
+  const db = getDatabaseInstance(useSQLiteContext())
   const { title, required, limitations, format, QRfield, disabled } = optionalFeatures
   const [inputValue, setInputValue] = useState('')
   const [invalidLimitations, setInvalidLimitations] = useState([])
   const [isRequiredAlert, setIsRequiredAlert] = useState(false)
   const [permission, requestPermission] = useCameraPermissions()
   const [isScanning, setIsScanning] = useState(false)
+
+
+  const limitationBehaviour = limitations.reduce((acc, limName) => {
+    // Usamos una expresión regular para separar el patrón de los modificadores
+    const match = db.getRegexFromLimitation(limName).match(/^\/(.*)\/([a-z]*)$/)
+    const pattern = match[1]     // El patrón de la expresión regular
+    const modifiers = match[2]   // Los modificadores (g, i, m, etc.)
+
+    // Creamos el objeto RegExp
+    const regex = new RegExp(pattern, modifiers)
+    return (acc.set(limName, regex))
+  }, new Map())
+
 
   const isPermissionGranted = Boolean(permission?.granted)
 
@@ -120,14 +92,13 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldR
     // Limitations
     setInvalidLimitations(!text.length ? [] : limitations.reduce(
       (acc, limName) => {
-        const limitationOk = limitationBehaviour.get(limName).regex.test(text)
-        //console.log(limitationOk, limitationBehaviour.get(limName).regex, text)
+        const limitationOk = limitationBehaviour.get(limName).test(text)
+
         if (!limitationOk) {
           const limitationName = String.fromCharCode(limName.charCodeAt(0) - 32) + limName.substr(1)
           acc.push(limitationName)
           text = text.slice(0, -1)
         }
-
         return acc
       }, []))
 
@@ -191,7 +162,7 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldR
         value={inputValue}
         disabled={disabled}
         onChangeText={handleChange}
-        keyboardType={limitations.length ? limitationBehaviour.dGet(limitations.at(0)).keyboardType : "default"} />
+        keyboardType={limitations.length ? db.getKeyboardFromLimitation(limitations.at(0)) : "default"} />
       {QRfield && (
         <TouchableOpacity style={styles.qrButton} onPress={() => setIsScanning(true)}>
           <Image source={require('../assets/qr-code.png')} style={{ width: 40, height: 40 }} />

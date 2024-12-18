@@ -73,6 +73,7 @@ export default initDatabaseScript = {
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL UNIQUE,
     regex TEXT,
+    keyboard_type TEXT NOT NULL,
     value_enum_matrix INTEGER NOT NULL
     );
     CREATE INDEX name_limitation ON limitations(name);

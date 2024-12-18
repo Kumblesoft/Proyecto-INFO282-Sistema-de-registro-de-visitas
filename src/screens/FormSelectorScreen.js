@@ -87,11 +87,7 @@ const FormSelectorScreen = () => {
 
   const deleteSelectedForms = async () => {
     try {
-      selectedForms.forEach(formID =>
-        db.deleteForm(formID)
-
-      )
-
+      selectedForms.forEach(formID => db.deleteForm(formID))
       setSelectedForms([])
       setIsSelectionMode(false)
 
