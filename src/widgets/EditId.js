@@ -33,6 +33,7 @@ export const IDInputComponent = () => {
     try {
       await SecureStore.setItemAsync('last_deviceid', originalIdentifier) // Restaurar el identificador original
       setIdentifier(originalIdentifier)
+      setIsIDChanged(true)
     } catch (error) {
       console.error("Error al restaurar el ID original en SecureStore:", error)
     }
@@ -80,14 +81,14 @@ export const IDInputComponent = () => {
           <Card disabled={true} style={{ borderRadius: 10 }}>
             <Text>¿Desea cambiar el ID de las respuestas anteriores?</Text>
             <Layout style={styles.buttonContainer}>
-              <Button style={{ flex: 1, marginRight: '10%' }} status='danger' onPress={() => {
-                  db.setIdToAnswers(id);
-                  setIsIDChanged(false);
+              <Button style={{ flex: 1, marginRight: '10%' }} status='danger' onPress={setIsIDChanged(false)}>
+                No
+              </Button>
+              <Button style={{ flex: 1, marginLeft: '10%' }} onPress={() => {
+                  db.setIdToAnswers(id)
+                  setIsIDChanged(false)
                 }}>
                 Sí
-              </Button>
-              <Button style={{ flex: 1, marginLeft: '10%' }} onPress={() => setIsIDChanged(false)}>
-                No
               </Button>
             </Layout>
           </Card>
