@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, use } from 'react'
 import { View, StyleSheet, Platform, TouchableOpacity, Modal, SafeAreaView, StatusBar, Alert, Image } from 'react-native'
 import { Text, Input, Button, Layout, Icon } from '@ui-kitten/components'
 import { Err, Ok } from '../commonStructures/resultEnum'
@@ -73,7 +73,9 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldR
 
 
   const isPermissionGranted = Boolean(permission?.granted)
-
+  useEffect(() => {
+    onSelect(null)
+  })
   useEffect(() => {
     if (QRfield && !isPermissionGranted) {
       requestPermission()
