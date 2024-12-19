@@ -1,13 +1,12 @@
 import React, { useState } from "react"
 import { ScrollView, View, StyleSheet, Alert, SafeAreaView } from "react-native"
-import { Text, Input, Layout, Icon } from "@ui-kitten/components"
+import { TopNavigation, TopNavigationAction, Divider, Text, Input, Layout, Icon } from "@ui-kitten/components"
 import { LinearGradient } from "expo-linear-gradient"
-import { TopNavigation, TopNavigationAction, Divider } from "@ui-kitten/components"
 import { useNavigation } from "@react-navigation/native"
 import { useSQLiteContext } from "expo-sqlite"
 import { getDatabaseInstance } from "../database/database"
 
-import FieldSelector from "../components/FormGenerator/FieldSelector" 
+import FieldSelector from "../components/FormGenerator/FieldSelector"
 
 export default function FormEditor() {
   const db = getDatabaseInstance(useSQLiteContext())
@@ -20,20 +19,20 @@ export default function FormEditor() {
 
   const BackIcon = (props) => (
     <Icon
-        name='arrow-ios-back-outline'
-        style={styles.backIcon}
-        fill='#fff'
-        {...props}
+      name='arrow-ios-back-outline'
+      style={styles.backIcon}
+      fill='#fff'
+      {...props}
     />
   )
   const BackAction = () => (
-      <TopNavigationAction icon={BackIcon} onPress={() => navigation.goBack()} />
+    <TopNavigationAction icon={BackIcon} onPress={() => navigation.goBack()} />
   )
 
   const renderTitle = () => (
-      <View style={styles.titleContainer}>
-          <Text style={styles.topNavigationText}>{formName || "Nuevo formulario"}</Text>
-      </View>
+    <View style={styles.titleContainer}>
+      <Text style={styles.topNavigationText}>{formName || "Nuevo formulario"}</Text>
+    </View>
   )
 
   const handleSaveForm = fields => {
@@ -41,7 +40,7 @@ export default function FormEditor() {
     else if (formName === "") return Alert.alert('Error', 'Ingrese un nombre para la plantilla')
     else if (fields.length === 0) return Alert.alert('Error', 'Agregue al menos un campo al formulario')
     else if (fields.some(field => field.nombre === "")) return Alert.alert('Error', 'Ingrese un nombre para todos los campos')
-    
+
     const newForm = {
       "nombre formulario": formName,
       "ultima modificacion": new Date().getTime(),
@@ -67,46 +66,46 @@ export default function FormEditor() {
       <SafeAreaView style={styles.safeArea}>
         <Layout style={styles.backgroundPage}>
           <LinearGradient colors={['#2dafb9', '#17b2b6', '#00b4b2', '#00b7ad', '#00b9a7', '#00bba0', '#00bd98', '#00bf8f', '#00c185', '#00c27b']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
-                <TopNavigation
-                    title={renderTitle}
-                    style={styles.topNavigation}
-                    accessoryLeft={BackAction}
-                    alignment='center'
-                />
-            </LinearGradient>
-            <Divider />
+            <TopNavigation
+              title={renderTitle}
+              style={styles.topNavigation}
+              accessoryLeft={BackAction}
+              alignment='center'
+            />
+          </LinearGradient>
+          <Divider />
           <ScrollView style={styles.container} scrollEnabled={!dragMode}>
             <Layout style={styles.containerBox}>
               <Text category="h5">Nombre del Formulario</Text>
-              <Input placeholder="Nombre del Formulario" style={styles.input} textStyle={{ color: isNameTaken ? 'red' : 'black' }} onChangeText={checkFormName}/>
+              <Input placeholder="Nombre del Formulario" style={styles.input} textStyle={{ color: isNameTaken ? 'red' : 'black' }} onChangeText={checkFormName} />
             </Layout>
-            
-            
-            {isNameTaken && 
+
+
+            {isNameTaken &&
               <Layout size='small' style={styles.alert}>
                 <Icon status='danger' fill='#FF0000' name='alert-circle' style={styles.icon} />
                 <Text style={{ color: 'red' }}>Este nombre de plantilla ya existe</Text>
               </Layout>
             }
-            {formName === '' && 
+            {formName === '' &&
               <Layout size='small' style={styles.alert}>
                 <Icon status='danger' fill='#FF0000' name='alert-circle' style={styles.icon} />
                 <Text style={{ color: 'red' }}>Por favor escriba un nombre de formulario</Text>
               </Layout>
             }
 
-            <Divider/>
-            
+            <Divider />
+
             {/* Campo Selector */}
             <FieldSelector
               selectedValue={selectedField}
               onValueChange={setSelectedField} // Actualiza el estado cuando cambia el selector
-              onSave = {fields => handleSaveForm(fields)}
+              onSave={fields => handleSaveForm(fields)}
               scrollCheck={event => handleScroll(event)}
             />
 
             {/* Botón para guardar cambios <Button onPress={handleFieldPos} margin='20' padding='20' title="Guardar" /> */}
-            
+
           </ScrollView>
         </Layout>
       </SafeAreaView>
@@ -134,9 +133,9 @@ const styles = StyleSheet.create({
   topNavigation: {
     backgroundColor: 'transparent',
   },
-  topNavigationText:{
+  topNavigationText: {
     marginRight: 0,
-    fontSize: 24,   
+    fontSize: 24,
     fontWeight: 'bold',
     color: '#fff',
   },

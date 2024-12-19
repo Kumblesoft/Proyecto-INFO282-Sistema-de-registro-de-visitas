@@ -89,7 +89,7 @@ export default initDatabaseScript = {
    );
    
     CREATE TABLE IF NOT EXISTS format (
-    id_format INTEGER PRIMARY KEY,
+    id_format INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL UNIQUE,
     value_enum_matrix INTEGER NOT NULL
     );

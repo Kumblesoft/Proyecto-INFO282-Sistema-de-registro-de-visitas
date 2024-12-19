@@ -209,12 +209,13 @@ const styles = StyleSheet.create({
     justifyContent: 'left',
   },
   label: {
-    fontSize: 10,
+    fontSize: 12,
     color: '#333',
     alignSelf: 'flex-start',
     marginBottom: 12,
   },
   text: {
+    fontSize: 18,
     marginHorizontal: '2%',
     flexDirection: 'row',
     flexWrap: 'wrap',

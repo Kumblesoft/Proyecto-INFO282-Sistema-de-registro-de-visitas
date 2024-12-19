@@ -6,16 +6,16 @@ const TextoConstructor = ({ field, onSave }) => {
 
     const enumLimitaciones = {
         "solo letras": 0,
-        "solo números": 1,
+        "solo numeros": 1,
         "solo enteros": 2,
         "solo enteros positivos y cero": 3,
         "email": 4,
-        "no números": 5,
+        "no numeros": 5,
     }
 
     const enumFormato = {
-        "solo mayúsculas": 0,
-        "solo minúsculas": 1,
+        "solo mayusculas": 0,
+        "solo minusculas": 1,
     }
 
     const compatibilidadesLimitaciones = [
@@ -26,28 +26,28 @@ const TextoConstructor = ({ field, onSave }) => {
         [0, 0, 0, 0, 1, 0],
         [0, 0, 0, 0, 0, 1],
     ]
-    
+
 
     const compatibilidadFormato = [
         [1, 1], // "solo letras"
-        [0, 0], // "solo números" (ambos formatos deshabilitados)
+        [0, 0], // "solo numeros" (ambos formatos deshabilitados)
         [0, 0], // "solo enteros" (ambos formatos deshabilitados)
         [0, 0], // "solo enteros positivos y cero" (ambos formatos deshabilitados)
         [1, 1], // "email"
-        [1, 1], // "no números"
+        [1, 1], // "no numeros"
     ]
 
     console.log(field)
     console.log(Array.isArray(field.limitaciones))
     const [fieldName, setFieldName] = useState(field.nombre ?? '')
-    const [selectedLimitaciones, setSelectedLimitaciones] = useState(Array.isArray(field.limitaciones) ? 
-    field.limitaciones.map(limitacion => enumLimitaciones[limitacion])
-    : 
-    [])
-    const [selectedFormato, setSelectedFormato] = useState(Array.isArray(field.formato)?
-    field.formato.map(formato => enumFormato[formato])
-    :  
-    [])
+    const [selectedLimitaciones, setSelectedLimitaciones] = useState(Array.isArray(field.limitaciones) ?
+        field.limitaciones.map(limitacion => enumLimitaciones[limitacion])
+        :
+        [])
+    const [selectedFormato, setSelectedFormato] = useState(Array.isArray(field.formato) ?
+        field.formato.map(formato => enumFormato[formato])
+        :
+        [])
     const [isRequired, setIsRequired] = useState(field.obligatorio ?? true)
     const [isRequiredQR, setIsRequiredQR] = useState(field.rellenarQR ?? false)
     const [showLimitations, setShowLimitations] = useState(false)
@@ -64,18 +64,18 @@ const TextoConstructor = ({ field, onSave }) => {
     }
 
     const handleSelectFormato = index => {
-        selectedFormato.includes(index) ? 
+        selectedFormato.includes(index) ?
             setSelectedFormato([]) :
             isFormatoCompatibleWithLimitaciones(index, selectedLimitaciones) ?
-            setSelectedFormato([index]) : 
-            null
+                setSelectedFormato([index]) :
+                null
     }
 
     const isLimitacionDisabled = index => selectedLimitaciones.length > 0 && !isLimitacionCompatible(index, selectedLimitaciones) || compatibilidadFormato[index][selectedFormato[0]] === 0
     const isFormatoDisabled = index => !isFormatoCompatibleWithLimitaciones(index, selectedLimitaciones)
     const isFormatoCompatibleWithLimitaciones = (formatoIndex, limitaciones) => limitaciones.every(limitacion => compatibilidadFormato[limitacion][formatoIndex])
 
-    const isLimitacionCompatible = (newLimitacion, currentLimitaciones) =>  (
+    const isLimitacionCompatible = (newLimitacion, currentLimitaciones) => (
         currentLimitaciones.every(existing => compatibilidadesLimitaciones[existing][newLimitacion])
     )
 
@@ -90,10 +90,10 @@ const TextoConstructor = ({ field, onSave }) => {
         )
         const field = {
             tipo: 'texto',
-            nombre: fieldName,	
+            nombre: fieldName,
             salida: fieldName.toLowerCase().replace(/ /g, '_'),
-            limitaciones : limitaciones ? limitaciones : null,
-            formato: formato ? [formato] : [],
+            limitaciones: limitaciones ? limitaciones : null,
+            formato: formato ? formato : [],
             obligatorio: isRequired,
             rellenarQR: isRequiredQR,
         }
@@ -110,7 +110,7 @@ const TextoConstructor = ({ field, onSave }) => {
                     status='success'
                     checked={selectedLimitaciones.includes(index)}
                     disabled={isLimitacionDisabled(index)}
-                    style={{marginTop: '1%'}}
+                    style={{ marginTop: '1%' }}
                     onChange={() => toggleLimitacion(index)}
                 />
             )}
@@ -125,9 +125,9 @@ const TextoConstructor = ({ field, onSave }) => {
             accessoryLeft={() => (
                 <CheckBox
                     status='success'
-                    checked={selectedFormato.includes(index)}	
+                    checked={selectedFormato.includes(index)}
                     disabled={isFormatoDisabled(index)}
-                    style={{ marginTop: '1%'}}
+                    style={{ marginTop: '1%' }}
                     onChange={() => handleSelectFormato(index)}
                 />
             )}
@@ -192,7 +192,7 @@ const TextoConstructor = ({ field, onSave }) => {
                 </View>
             }
 
-            <Divider />   
+            <Divider />
 
             <TouchableOpacity style={styles.headerRow} onPress={() => setShowOptional(!showOptional)}>
                 <Text style={styles.subtitle}>Características opcionales</Text>
@@ -218,7 +218,7 @@ const TextoConstructor = ({ field, onSave }) => {
                                         status='success'
                                         checked={item.checked}
                                         onChange={item.onPress}
-                                        style={{ marginTop: '1%'} }
+                                        style={{ marginTop: '1%' }}
                                     />
                                 )}
                                 onPress={item.onPress}
@@ -227,7 +227,7 @@ const TextoConstructor = ({ field, onSave }) => {
                     />
                 </View>
             }
-            
+
         </View>
     )
 }

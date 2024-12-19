@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { View, StyleSheet, Alert, TouchableOpacity } from 'react-native'
-import { Text, Select, SelectItem, Button, Icon } from '@ui-kitten/components'
+import { Text, Select, SelectItem, Button, Icon, Layout } from '@ui-kitten/components'
 import DragList from 'react-native-draglist'
 
-import fields from './FieldsConstructor/fields' 
+import fields from './FieldsConstructor/fields'
 import SelectorConstructor from './FieldsConstructor/SelectorConstructor'
 import RadioSelectorConstructor from './FieldsConstructor/RadioConstructor'
 import TextoConstructor from './FieldsConstructor/TextConstructor'
@@ -31,16 +31,16 @@ const FieldSelector = ({ onSave, scrollCheck }) => {
     const [miniFields, setMiniFields] = useState([]) // Almacena los campos agregados
     const [dragMode, setDragMode] = useState(false)
     const [fieldNames, setFieldNames] = useState(new Set())
-    
-    const saveIcon = props => <Icon name='save-outline' {...props} fill="#fff" style={[props.style, { width: 20, height: 20 }]}/>
-    const editIcon = props => <Icon name='edit-outline' {...props} fill="#fff" style={[props.style, { width: 25, height: 25 }]}/>
-    const closeIcon = props => <Icon name='close-outline' {...props} fill="#fff" style={[props.style, { width: 25, height: 25 }]}/>
+
+    const saveIcon = props => <Icon name='save-outline' {...props} fill="#fff" style={[props.style, { width: 20, height: 20 }]} />
+    const editIcon = props => <Icon name='edit-outline' {...props} fill="#fff" style={[props.style, { width: 25, height: 25 }]} />
+    const closeIcon = props => <Icon name='close-outline' {...props} fill="#fff" style={[props.style, { width: 25, height: 25 }]} />
 
     // Obtiene los tipos de campos del JSON (keys del objeto)
     const fieldTypes = Object.keys(fields)
 
     const handleFieldSave = (field, index) => {
-        
+
         if (fieldNames.has(field.nombre) && field.nombre !== miniFields[index]) {
             // Alert.alert('Error', `El campo "${field.nombre}" ya existe en el formulario`)
             return
@@ -48,7 +48,7 @@ const FieldSelector = ({ onSave, scrollCheck }) => {
             // Alert.alert('Error', 'Por favor escoja un nombre para el campo')
             return
         }
-        
+
         fieldsToDisplay[index] = field
         fieldNames.delete(miniFields[index])
         miniFields[index] = field.nombre
@@ -58,9 +58,9 @@ const FieldSelector = ({ onSave, scrollCheck }) => {
     function renderItem(info) {
         const { item, onDragStart, onDragEnd } = info
         return (
-            <TouchableOpacity 
+            <TouchableOpacity
                 key={item}
-                onPressIn={onDragStart} 
+                onPressIn={onDragStart}
                 onPressOut={onDragEnd}
                 style={styles.containerBox}>
                 <Text>{item}</Text>
@@ -73,7 +73,7 @@ const FieldSelector = ({ onSave, scrollCheck }) => {
 
         const updateOrder = arr => {
             const updatedArr = [...arr]
-            const [ removed ] = updatedArr.splice(fromIndex, 1)
+            const [removed] = updatedArr.splice(fromIndex, 1)
             updatedArr.splice(toIndex, 0, removed)
             return updatedArr
         }
@@ -94,7 +94,7 @@ const FieldSelector = ({ onSave, scrollCheck }) => {
     // Eliminar un campo específico con confirmación
     const handleDeleteField = indexToDelete => {
         const fieldName = fieldsToDisplay[indexToDelete]?.nombre || fieldsToDisplay[indexToDelete]?.tipo || "este campo"
-    
+
         Alert.alert(
             'Confirmación de Eliminación', // Título del mensaje
             `¿Estás seguro de que quieres eliminar el campo "${fieldName}"?`, // Mensaje con el nombre del campo
@@ -115,7 +115,7 @@ const FieldSelector = ({ onSave, scrollCheck }) => {
     }
 
     const handleDragMode = () => {
-        if (!miniFields.some(name => name === '')){
+        if (!miniFields.some(name => name === '')) {
             scrollCheck(!dragMode)
             setDragMode(!dragMode)
             return
@@ -123,87 +123,87 @@ const FieldSelector = ({ onSave, scrollCheck }) => {
         // console.log(miniFields)
         Alert.alert('Error', 'Los campos deben tener nombre')
     }
-    
-    useEffect(() => {setFieldNames(new Set(miniFields))}, [miniFields])
-    
+
+    useEffect(() => { setFieldNames(new Set(miniFields)) }, [miniFields])
+
     return (
         <>
-        <View style={styles.container}>
-            {dragMode ? 
-                <View style={styles.fieldContainer}>
-                    <DragList
-                        data={miniFields}
-                        keyExtractor={(name, i) => name}
-                        onReordered={onReordered}
-                        renderItem={renderItem}
-                    />
-                </View> :
-                fieldsToDisplay.map((item, index) => {
-                    
-                    const FieldComponent = constructors.get(item.tipo)
-                    return (
-                        <View style={styles.fieldContainer}>
-                            <View style={styles.buttonContainer}>
-                                <Button
-                                    status="danger"
-                                    style={styles.deleteButton}
-                                    onPress={() => handleDeleteField(index)}
-                                    accessoryLeft={closeIcon}
-                                >
-                                </Button>
-                            </View>                    
-                            <FieldComponent field={item} onSave={field => handleFieldSave(field, index)} />
-                        </View>
-                        )
-                })
-            }
-            
-        
-            {/* Sección destacada */}
-            {!dragMode ?
-                <View style={styles.selectionContainer}>
-                    <Text style={styles.selectionTitle}>Crear un nuevo campo</Text>
-                    <Select
-                        selectedIndex={selectedIndex}
-                        value={selectedField}
-                        onSelect={(itemValue) => {
-                            setSelectedIndex(itemValue)
-                            setSelectedField(fieldTypes[itemValue - 1])
-                        }}
-                        placeholder="Seleccione un tipo de campo"
-                    >
-                        { fieldTypes.map(fieldType => <SelectItem title={fieldType} key={fieldType} />) }
-                    </Select>
-            
-                    <Button
-                        title="Agregar nuevo campo"
-                        onPress={handleNewField}
-                        disabled={!selectedIndex}
-                        style={selectedIndex ? styles.addButton : styles.disButton}
-                        status={selectedIndex ? 'primary' : 'basic'}
-                    >
-                        Agregar nuevo campo
-                    </Button>
-                </View> :
-                <></>
-            }
-        
-        { fieldsToDisplay.length > 0 &&
-            <Button 
-                accessoryLeft={dragMode ? saveIcon : editIcon} 
-                style={styles.editButton} 
-                onPress={() => handleDragMode()}
-            > 
-                {dragMode ? 
-                    <Text category='p2'> Guardar Orden </Text> : 
-                    <Text category='p2'> Editar Orden </Text>
-                } 
-            </Button>
-        }
-        <Button accessoryLeft={saveIcon} onPress={() => onSave(fieldsToDisplay)}>Guardar y salir</Button>
+            <View style={styles.container}>
+                {dragMode ?
+                    <View style={styles.fieldContainer}>
+                        <DragList
+                            data={miniFields}
+                            keyExtractor={(name, i) => name}
+                            onReordered={onReordered}
+                            renderItem={renderItem}
+                        />
+                    </View> :
+                    fieldsToDisplay.map((item, index) => {
 
-    </View>
-    </>
+                        const FieldComponent = constructors.get(item.tipo)
+                        return (
+                            <Layout style={styles.fieldContainer}>
+                                <View style={styles.buttonContainer}>
+                                    <Button
+                                        status="danger"
+                                        style={styles.deleteButton}
+                                        onPress={() => handleDeleteField(index)}
+                                        accessoryLeft={closeIcon}
+                                    >
+                                    </Button>
+                                </View>
+                                <FieldComponent field={item} onSave={field => handleFieldSave(field, index)} />
+                            </Layout>
+                        )
+                    })
+                }
+
+
+                {/* Sección destacada */}
+                {!dragMode ?
+                    <View style={styles.selectionContainer}>
+                        <Text style={styles.selectionTitle}>Crear un nuevo campo</Text>
+                        <Select
+                            selectedIndex={selectedIndex}
+                            value={selectedField}
+                            onSelect={(itemValue) => {
+                                setSelectedIndex(itemValue)
+                                setSelectedField(fieldTypes[itemValue - 1])
+                            }}
+                            placeholder="Seleccione un tipo de campo"
+                        >
+                            {fieldTypes.map(fieldType => <SelectItem title={fieldType} key={fieldType} />)}
+                        </Select>
+
+                        <Button
+                            title="Agregar nuevo campo"
+                            onPress={handleNewField}
+                            disabled={!selectedIndex}
+                            style={selectedIndex ? styles.addButton : styles.disButton}
+                            status={selectedIndex ? 'primary' : 'basic'}
+                        >
+                            Agregar nuevo campo
+                        </Button>
+                    </View> :
+                    <></>
+                }
+
+                {fieldsToDisplay.length > 0 &&
+                    <Button
+                        accessoryLeft={dragMode ? saveIcon : editIcon}
+                        style={styles.editButton}
+                        onPress={() => handleDragMode()}
+                    >
+                        {dragMode ?
+                            <Text category='p2'> Guardar Orden </Text> :
+                            <Text category='p2'> Editar Orden </Text>
+                        }
+                    </Button>
+                }
+                <Button accessoryLeft={saveIcon} onPress={() => onSave(fieldsToDisplay)}>Guardar y salir</Button>
+
+            </View>
+        </>
     )
 }
 

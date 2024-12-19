@@ -79,11 +79,6 @@ export default function HourSelector({ onChange, optionalFeatures = {}, required
                 <Text style={styles.text} category={"p2"}>
                     {title}
                 </Text>
-                {/* 
-                <Text status='danger'>
-                    {required ? "*": " "} 
-                </Text>  
-                 */}
             </Layout>
             <Layout style={styles.buttonContainer}>
                 <Button disabled={disabled} status='success' onPress={() => setShowPicker(true)} appearance='outline' style={disabled ? styles.disabledHour : styles.hour} size='large'>{hour}</Button>
@@ -158,12 +153,7 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         marginHorizontal: 5,
     },
-    selectedText: {
-        fontWeight: 'bold',
-        fontSize: 24,
-        color: '#3366FF', // Color para el texto seleccionado
-    },
-    periodContainer: {
+    ontainer: {
         flexDirection: 'row',
         marginTop: 20,
     },
@@ -175,6 +165,7 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     hour: {
+        fontSize: 18,
         paddingVertical: 12,
         paddingHorizontal: 'auto',
         width: '80%'
@@ -202,6 +193,7 @@ const styles = StyleSheet.create({
         height: 32,
     },
     text: {
+        fontSize: 18,
         marginHorizontal: '1%',
         flexDirection: 'row',
         flexWrap: 'wrap',
