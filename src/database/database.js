@@ -293,4 +293,8 @@ export default class Database {
     getKeyboardFromLimitation(limitationName) {
         return this.db.getFirstSync('SELECT keyboard_type FROM limitations WHERE name = ?', [limitationName]).keyboard_type
     }
-}
+
+    setIdToAnswers(newID){
+        return this.db.getFirstSync('UPDATE respuestas SET id_dispositivo = ?',[newID])
+    }
+}   

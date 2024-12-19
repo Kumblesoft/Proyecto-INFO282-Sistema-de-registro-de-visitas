@@ -1,10 +1,13 @@
 import React, { useState } from 'react'
-import { Layout, Input, Button, Text, Modal, Card } from '@ui-kitten/components'
+import { Layout, Input, Button, Text, Modal, Card} from '@ui-kitten/components'
 import * as SecureStore from 'expo-secure-store'
 import { useIdentifierContext } from '../context/IdentifierContext'
-import { StyleSheet } from 'react-native'
+import { StyleSheet, View } from 'react-native'
+import { useSQLiteContext } from 'expo-sqlite'
+import { getDatabaseInstance } from '../database/database'
 
 export const IDInputComponent = () => {
+  const db = getDatabaseInstance(useSQLiteContext())
   const [id, setId] = useState('')
   const [isEditing, setIsEditing] = useState(false)
   const [isIDChanged, setIsIDChanged] = useState(false)
@@ -13,7 +16,7 @@ export const IDInputComponent = () => {
   const handleSave = async () => {
     try {
       await setIdentifier(id) // Guarda el nuevo ID como el último en SecureStore
-      await setIsIDChanged(true)
+      setIsIDChanged(true)
       setIsEditing(false)
     } catch (error) {
       console.error("Error al guardar el ID en SecureStore:", error)
@@ -29,6 +32,7 @@ export const IDInputComponent = () => {
     try {
       await SecureStore.setItemAsync('last_deviceid', originalIdentifier) // Restaurar el identificador original
       setIdentifier(originalIdentifier)
+      setIsIDChanged(true)
     } catch (error) {
       console.error("Error al restaurar el ID original en SecureStore:", error)
     }
@@ -74,11 +78,19 @@ export const IDInputComponent = () => {
           animationType='slide'
         >
           <Card disabled={true} style={{ borderRadius: 10 }}>
-            <Button onPress={() => setIsIDChanged(false)}>
-              <Text>
-                DISMISS
-              </Text>
-            </Button>
+            <Text>¿Desea cambiar el ID de las respuestas anteriores?</Text>
+            <Layout style={styles.buttonContainer}>
+              <Button style={{ flex: 1, marginRight: '10%' }} onPress={() => {
+                  const newID = id || originalIdentifier
+                  db.setIdToAnswers(newID)
+                  setIsIDChanged(false)
+                }}>
+                Sí
+              </Button>
+              <Button style={{ flex: 1, marginLeft: '10%' }} status ='danger' onPress={() => setIsIDChanged(false)}>
+                No
+              </Button>
+            </Layout>
           </Card>
         </Modal>
       )}
@@ -88,7 +100,13 @@ export const IDInputComponent = () => {
 
 const styles = StyleSheet.create({
   changeIDWindowModal: {
-    margin: 0,
-    justifyContent: 'flex-end',
-  }
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 20,
+  },
 })
+export default IDInputComponent
