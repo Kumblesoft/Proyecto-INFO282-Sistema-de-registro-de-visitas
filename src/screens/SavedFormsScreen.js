@@ -393,7 +393,10 @@ const SavedForms = () => {
                                             <MenuItem
                                                 key={item.value}
                                                 title={item.value}
-                                                onPress={() => handleFilter({ row: index })} // Pasa un objeto con el índice
+                                                onPress={() => {
+                                                    setFilterVisible(false)
+                                                    handleFilter({ row: index })
+                                                }} // Pasa un objeto con el índice
                                             />
                                         ) : null
                                     ))}
