@@ -114,7 +114,7 @@ export default class Database {
     getForm(nombreFormulario) {
         try {
             const { id: formID, last_modification: ultimaModificacion } = this.db.getFirstSync('SELECT id,last_modification FROM forms WHERE name = ?', [nombreFormulario])
-            const fields = this.db.getAllSync('SELECT id,fk_field_table_name,name,ordering,obligatory,output FROM fields WHERE fk_id_form = ?', [formID])
+            const fields = this.db.getAllSync('SELECT id,fk_field_table_name,name,ordering,output FROM fields WHERE fk_id_form = ?', [formID])
 
             const outputForm = {
                 "nombre formulario": nombreFormulario,
@@ -128,14 +128,12 @@ export default class Database {
                     fk_field_table_name: typeID,
                     name: fieldName,
                     ordering: posicion,
-                    obligatory: obligatorio,
                     output: salidaCampo
                 } = field
 
                 const outputField = {
                     "nombre"    : fieldName,
                     "salida"    : salidaCampo,
-                    "obligatorio"   : !!obligatorio,
                 }
 
                 const { table_name: typeTableName, field_type_name: fieldTypeName } = this.db.getFirstSync('SELECT table_name,field_type_name FROM field_table_name WHERE id = ?', [typeID])
@@ -214,8 +212,8 @@ export default class Database {
                 const { id: typeOfField, table_name: fieldTableName } = this.db.getFirstSync('SELECT id, table_name FROM field_table_name WHERE field_type_name=?', [fieldObject.tipo])
 
                 this.db.runSync(
-                    'INSERT INTO fields (fk_id_form, fk_field_table_name, name, ordering, obligatory, output) VALUES (?,?,?,?,?,?)',
-                    [formID, typeOfField, fieldObject.nombre, i, fieldObject.obligatorio, fieldObject.salida]
+                    'INSERT INTO fields (fk_id_form, fk_field_table_name, name, ordering, output) VALUES (?,?,?,?,?)',
+                    [formID, typeOfField, fieldObject.nombre, i, fieldObject.salida]
                 )
                 const lastFieldId = this.db.getFirstSync('SELECT last_insert_rowid() AS id').id
                 const tryInsert = this.chainInsertors.insert(fieldObject, lastFieldId, typeOfField, fieldTableName)
@@ -228,7 +226,7 @@ export default class Database {
         } catch (error) {
             console.error('addForm:', error)
             console.error('trace:', error.stack)
-            console.error('input:', newForm)
+            console.error('input:', JSON.stringify(newForm, undefined, 2))
         }
     }
 

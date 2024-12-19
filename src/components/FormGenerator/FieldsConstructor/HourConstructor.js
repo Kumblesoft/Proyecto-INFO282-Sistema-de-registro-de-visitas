@@ -32,11 +32,8 @@ const HourConstructor = ({ field = {}, onSave }) => {
             nombre: fieldName,
             'hora predeterminada': defaultHour,
             salida: fieldName.toLowerCase(),
-            limitaciones: [isNotEditable ? 'no editable' : 'editable'],
-            //obligatorio: false,
+            limitaciones: [isNotEditable ? 'no editable' : 'editable']
         }
-
-        console.log(selectedDefaultHourIndex)
 
         if (onSave) {
             console.log(field)

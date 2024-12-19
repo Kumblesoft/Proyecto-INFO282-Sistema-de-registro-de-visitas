@@ -33,11 +33,10 @@ const SelectorConstructor = ({ field, onSave }) => {
             tipo: 'selector',
             nombre: fieldName,
             salida : fieldName.toLowerCase().replace(/ /g, '_'),
-            'opcion predeterminada' : defaultOption,  // no se que es
-            "texto predeterminado" :  defaultText, // no se que es  
-            tipo: 'selector',
             opciones: options,
             obligatorio: isRequired,
+            'opcion predeterminada' : showDefaultOption ? defaultOption : null, 
+            'texto predeterminado' :  showDefaultText ? defaultText: null,
         }
 
         if (onSave) {

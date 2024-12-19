@@ -16,7 +16,6 @@ export default initDatabaseScript = {
     fk_field_table_name INTEGER REFERENCES field_table_name(id) NOT NULL,
     name TEXT NOT NULL,
     ordering INTEGER NOT NULL,
-    obligatory INTEGER NOT NULL,
     output TEXT NOT NULL
     );
 
@@ -30,25 +29,29 @@ export default initDatabaseScript = {
     CREATE TABLE IF NOT EXISTS text_properties (
     fk_field INTEGER REFERENCES fields(id) NOT NULL,
     id_formats INTEGER PRIMARY KEY AUTOINCREMENT,
-    qr_refillable INTEGER DEFAULT 0
+    qr_refillable INTEGER DEFAULT 0,
+    is_required INTEGER DEFAULT 0
     );
 
     CREATE TABLE IF NOT EXISTS selector_properties (
     fk_field INTEGER REFERENCES fields(id) NOT NULL,
     id_options INTEGER PRIMARY KEY AUTOINCREMENT,
     default_option INTEGER,
-    selector_placeholder TEXT
+    selector_placeholder TEXT,
+    is_required INTEGER DEFAULT 0
     );
 
     CREATE TABLE IF NOT EXISTS checkbox_properties (
     fk_field integer references fields(id) not null,
     id_options INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
-    max_checked_options integer
+    max_checked_options integer,
+    is_required integer default 0
     );
 
     CREATE TABLE IF NOT EXISTS radio_properties (
     fk_field integer references fields(id) not null,
-    id_options INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE
+    id_options INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+    is_required integer default 0
     );
    
     CREATE TABLE IF NOT EXISTS date_properties (
@@ -66,7 +69,8 @@ export default initDatabaseScript = {
 
     CREATE TABLE IF NOT EXISTS camera_properties (
     fk_field INTEGER REFERENCES fields(id) NOT NULL,
-    aspect_relation TEXT NOT NULL
+    aspect_relation TEXT NOT NULL,
+    is_required INTEGER DEFAULT 0
     );
 
     CREATE TABLE IF NOT EXISTS limitations (

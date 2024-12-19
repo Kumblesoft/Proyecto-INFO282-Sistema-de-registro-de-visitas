@@ -8,8 +8,8 @@ export default class CheckboxChainInsertor extends ChainInsertor {
 
         //console.log(fieldObject)
         this.db.runSync(
-            `INSERT INTO ${fieldTableName} (fk_field, max_checked_options) VALUES (?,?)`,
-            [fieldId, fieldObject["cantidad de elecciones"]]
+            `INSERT INTO ${fieldTableName} (fk_field, max_checked_options, is_required) VALUES (?,?,?)`,
+            [fieldId, fieldObject["cantidad de elecciones"], fieldObject.obligatorio]
         )
         const insertedRowId = this.db.getFirstSync('select last_insert_rowid() as id')
         //console.log('insertedRowId', insertedRowId)
@@ -46,7 +46,7 @@ export default class CheckboxChainInsertor extends ChainInsertor {
             return this.next && this.next.getFieldProperties(fieldId, fieldTableName, fieldTypeName)
 
         const fieldProperties = this.db.getFirstSync(
-            `SELECT id_options, max_checked_options FROM ${fieldTableName} WHERE fk_field = ?`,
+            `SELECT id_options, max_checked_options, is_required FROM ${fieldTableName} WHERE fk_field = ?`,
             [fieldId]
         )
         const optionsQuery = this.db.getAllSync(
@@ -55,9 +55,10 @@ export default class CheckboxChainInsertor extends ChainInsertor {
         )
 
         return {
-            tipo: 'checkbox',
+            tipo        : 'checkbox',
+            obligatorio : !!fieldProperties.is_required,
+            opciones    : optionsQuery.map(option => ({ nombre: option.name, valor: option.value })),
             "cantidad de elecciones": fieldProperties.max_checked_options,
-            opciones: optionsQuery.map(option => ({ nombre: option.name, valor: option.value }))
         }
     }
 }

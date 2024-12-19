@@ -11,9 +11,8 @@ const CheckBoxConstructor = ({ onSave, field = {} }) => {
     const [showOptions, setShowOptions] = useState(false)
     const [showOptionalFeatures, setShowOptionalFeatures] = useState(false)    
 
-
     const [showMaxSelections, setShowMaxSelections] = useState(field['cantidad de elecciones'] ? true : false)
-    const saveIcon = props => <Icon name='save-outline' {...props} fill="#fff" style={[props.style, { width: 25, height: 25 }]}/>
+    
 
     const handleAddOption = () => {
         setOptions((prevOptions) => [

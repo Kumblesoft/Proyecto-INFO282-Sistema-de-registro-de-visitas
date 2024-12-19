@@ -55,48 +55,48 @@ const RadioConstructor = ({ field, onSave }) => {
             <Divider />
 
             <View style={styles.field}>
-                            <TouchableOpacity style={styles.headerRow} onPress={() => setShowOptions(!showOptions)}>
-                                <Text style={[styles.subtitle, options.length || {color: 'red'}]}>Opciones</Text>
-                                <Button
-                                    appearance='ghost'
-                                    accessoryLeft={props => <Icon name={showOptions ? 'arrow-ios-upward-outline' : 'arrow-ios-downward-outline'} {...props} />}
-                                    onPress={() => setShowOptions(!showOptions)}
-                                    style={styles.toggleButton}
-                                />
-                            </TouchableOpacity>
-                            {showOptions && (
-                                <FlatList
-                                    data={options}
-                                    renderItem={({ item, index }) => (
-                                        <Layout key={index} style={styles.optionRow}>
-                                            <Input
-                                                value={item.nombre}
-                                                onChangeText={text => {
-                                                    const updatedOptions = [...options]
-                                                    updatedOptions[index].nombre = text;
-                                                    setOptions(updatedOptions)
-                                                }}
-                                                style={styles.optionInput}
-                                            />
-                                            <Button
-                                                size="small"
-                                                status="danger"
-                                                onPress={() => removeOption(index)}
-                                            >
-                                                Eliminar
-                                            </Button>
-                                        </Layout>
-                                    )}
-                                    keyExtractor={(item, index) => item.valor}
-                                    scrollEnabled={false}
-                                    ListFooterComponent={() => (
-                                        <Button onPress={handleAddOption} style={styles.addButton} accessoryRight={<Icon name={'plus-outline'} />}>
-                                            Agregar opción
-                                        </Button>
-                                    )}
-                                />
+                    <TouchableOpacity style={styles.headerRow} onPress={() => setShowOptions(!showOptions)}>
+                        <Text style={[styles.subtitle, options.length || {color: 'red'}]}>Opciones</Text>
+                        <Button
+                            appearance='ghost'
+                            accessoryLeft={props => <Icon name={showOptions ? 'arrow-ios-upward-outline' : 'arrow-ios-downward-outline'} {...props} />}
+                            onPress={() => setShowOptions(!showOptions)}
+                            style={styles.toggleButton}
+                        />
+                    </TouchableOpacity>
+                    {showOptions && (
+                        <FlatList
+                            data={options}
+                            renderItem={({ item, index }) => (
+                                <Layout key={index} style={styles.optionRow}>
+                                    <Input
+                                        value={item.nombre}
+                                        onChangeText={text => {
+                                            const updatedOptions = [...options]
+                                            updatedOptions[index].nombre = text;
+                                            setOptions(updatedOptions)
+                                        }}
+                                        style={styles.optionInput}
+                                    />
+                                    <Button
+                                        size="small"
+                                        status="danger"
+                                        onPress={() => removeOption(index)}
+                                    >
+                                        Eliminar
+                                    </Button>
+                                </Layout>
                             )}
-                        </View>
+                            keyExtractor={(item, index) => item.valor}
+                            scrollEnabled={false}
+                            ListFooterComponent={() => (
+                                <Button onPress={handleAddOption} style={styles.addButton} accessoryRight={<Icon name={'plus-outline'} />}>
+                                    Agregar opción
+                                </Button>
+                            )}
+                        />
+                    )}
+                </View>
             <Divider />
                 {/* Obligatorio */}
                 <View style={styles.field}>

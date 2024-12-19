@@ -7,8 +7,8 @@ export default class TextChainInsertor extends ChainInsertor {
             return this.next && this.next.insert(fieldObject, fieldId, fieldTypeId, fieldTableName)
 
         this.db.runSync(
-            'INSERT INTO text_properties (fk_field, qr_refillable) VALUES (?,?)',
-            [fieldId, fieldObject.rellenarQR]
+            'INSERT INTO text_properties (fk_field, qr_refillable, is_required) VALUES (?,?,?)',
+            [fieldId, fieldObject.rellenarQR, fieldObject.obligatorio]
         )
         const idTextInserted = this.db.getFirstSync('SELECT last_insert_rowid() as id').id
 
@@ -60,7 +60,7 @@ export default class TextChainInsertor extends ChainInsertor {
             return this.next && this.next.getFieldProperties(fieldId, fieldTableName, fieldTypeName)
 
         const properties = this.db.getFirstSync(
-            `SELECT id_formats, qr_refillable FROM ${fieldTableName} WHERE fk_field = ?`,
+            `SELECT id_formats, qr_refillable, is_required FROM ${fieldTableName} WHERE fk_field = ?`,
             [fieldId]
         )
         const limitations = this.db.getAllSync(
@@ -74,6 +74,7 @@ export default class TextChainInsertor extends ChainInsertor {
         return {
             tipo: 'texto',
             rellenarQR: Boolean(properties.qr_refillable),
+            obligatorio: !!properties.is_required,
             limitaciones: limitations.map(limitation => limitation.name),
             formato: format.map(format => format.name)
         }
