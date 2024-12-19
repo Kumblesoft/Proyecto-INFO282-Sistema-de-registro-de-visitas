@@ -27,7 +27,7 @@ const FormFillerScreen = ({ route }) => {
         const dataMap = formRef.current.getMap()
 
         const ignoreDefault = form.campos.filter(field =>
-            field.tipo === 'fecha' || field.tipo === 'hora' || field['opcion predeterminada'] || field.tipo === 'checkbox').length
+            field.tipo === 'fecha' || field.tipo === 'hora' || field['opcion predeterminada']).length
         if ((dataMap.size - ignoreDefault) > 0) setBackAlert(true)
         else navigation.goBack()
     }
