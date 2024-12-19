@@ -70,7 +70,7 @@ export default function FormEditor() {
               title={renderTitle}
               style={styles.topNavigation}
               accessoryLeft={BackAction}
-              alignment='center'
+              alignment='start'
             />
           </LinearGradient>
           <Divider />
@@ -134,7 +134,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   topNavigationText: {
-    marginRight: 0,
     fontSize: 24,
     fontWeight: 'bold',
     color: '#fff',
