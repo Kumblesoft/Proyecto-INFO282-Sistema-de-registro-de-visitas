@@ -17,7 +17,6 @@ export const IDInputComponent = () => {
     try {
       await setIdentifier(id) // Guarda el nuevo ID como el último en SecureStore
       setIsIDChanged(true)
-      console.log(isIDChanged)
       setIsEditing(false)
     } catch (error) {
       console.error("Error al guardar el ID en SecureStore:", error)
@@ -81,14 +80,15 @@ export const IDInputComponent = () => {
           <Card disabled={true} style={{ borderRadius: 10 }}>
             <Text>¿Desea cambiar el ID de las respuestas anteriores?</Text>
             <Layout style={styles.buttonContainer}>
-              <Button style={{ flex: 1, marginRight: '10%' }} status='danger' onPress={setIsIDChanged(false)}>
-                No
-              </Button>
-              <Button style={{ flex: 1, marginLeft: '10%' }} onPress={() => {
-                  db.setIdToAnswers(id)
+              <Button style={{ flex: 1, marginRight: '10%' }} onPress={() => {
+                  const newID = id || originalIdentifier
+                  db.setIdToAnswers(newID)
                   setIsIDChanged(false)
                 }}>
                 Sí
+              </Button>
+              <Button style={{ flex: 1, marginLeft: '10%' }} status ='danger' onPress={() => setIsIDChanged(false)}>
+                No
               </Button>
             </Layout>
           </Card>
