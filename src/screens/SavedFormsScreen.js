@@ -9,7 +9,8 @@ import * as Sharing from 'expo-sharing'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { getDatabaseInstance } from '../database/database'
 import { useSQLiteContext } from 'expo-sqlite'
-
+import { ScrollViewIndicator} from '@fanchenbao/react-native-scroll-indicator'
+ 
 const { height } = Dimensions.get('window')
 const { width } = Dimensions.get('window')
 
@@ -180,6 +181,7 @@ const SavedForms = () => {
     const SelectionIcon = props => <Icon fill='#fff' name={isSelectionMode ? 'checkmark-square' : 'checkmark-square'} style={styles.backIcon} {...props} />
     const ClearSelectionIcon = props => <Icon name='close-circle-outline' fill='#fff' {...props} />; // Icono para limpiar selección
     const SelectAllIcon = props => <Icon name='checkmark-circle-outline' fill='#fff' {...props} />; // Icono para seleccionar todo
+    const closeIcon = props => (<Icon {...props} name='close-outline' fill="#F32013" style={{width: 30, height: 30}} />)
 
     const selectAll = () => setSelectedForms(forms.map(form => form.fecha))
     const deselectAll = () => setSelectedForms([])
@@ -420,7 +422,7 @@ const SavedForms = () => {
                                     </Text>
                                 </Layout>
                             </TouchableOpacity>
-                            <Button appearance='ghost' accessoryRight={(<Icon name='close-outline' fill="#F32013" />)} onPress={() => {setIsRangeMode(false) 
+                            <Button appearance='ghost' accessoryRight={closeIcon} onPress={() => {setIsRangeMode(false) 
                                 setRange({}) 
                                 setForms(baseForms)}}/>
                         </Layout> : <></>
@@ -428,7 +430,7 @@ const SavedForms = () => {
                     {isLastsMode ? 
                     <Layout style={{flexDirection: 'row', alignItems: 'center', maxWidth: '90%', justifyContent: 'center', backgroundColor:'#f3f3f3', paddingEnd: '10%'}}>
                         <Input placeholder='¿Cuantas respuestas desea?' value={lasts} onChangeText={nextValue => {setLasts(nextValue)}} style={{width : '100%'}} keyboardType='numeric' />
-                        <Button appearance='ghost' accessoryRight={(<Icon name='close-outline' fill="#F32013" />)} onPress={() => (setIsLastsMode(false), setLasts(null))}/>
+                        <Button appearance='ghost' accessoryRight={closeIcon} onPress={() => (setIsLastsMode(false), setLasts(null))}/>
                     </Layout>: <></>}
                 </Layout>
                 {lasts != 0 ? <FlatList
@@ -516,8 +518,12 @@ const SavedForms = () => {
                 >
                     <Layout style={styles.modalContainer}>
                         <Card style={styles.modalCard} disabled={true} >
-                            <ScrollView style={{ maxHeight: height * 0.8 }} nestedScrollEnabled={true} >
-                                <Text style={styles.modalTitle}>{selectedForm?.plantilla}</Text>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between',  alignItems: 'center', maxWidth: '100%'}}>
+                                    <Text style={styles.modalTitle}>{selectedForm?.plantilla}</Text>
+                                    <Button appearance='ghost' accessoryRight={closeIcon} onPress={closeModal} style={{alignContent:'center'}}/>
+                                </View>
+                                <View style={{maxHeight: height * 0.5}}>
+                                <ScrollViewIndicator>
                                 {selectedForm && Object.entries(selectedForm.data).map(([key, value]) => (
                                     <Layout style={styles.containerRespuestas}>
                                         <Text style={styles.key} key={key}>{`${key}`}</Text>
@@ -530,7 +536,9 @@ const SavedForms = () => {
                                         </ScrollView>
                                     </Layout>
                                 ))}
-
+                                </ScrollViewIndicator>
+                                </View>
+                                <Layout style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 10}}>
                                 <Button accessoryLeft={deleteIcon} status='danger' onPress={() => { setConfirmDelete([true, true]); setModalVisible(false) }}>
                                     <Text>
                                         Eliminar
@@ -541,12 +549,7 @@ const SavedForms = () => {
                                         Compartir
                                     </Text>
                                 </Button>
-                                <Button onPress={closeModal}>
-                                    <Text>
-                                        Cerrar
-                                    </Text>
-                                </Button>
-                            </ScrollView>
+                                </Layout>
                         </Card>
                     </Layout>
                 </Modal>
@@ -635,7 +638,7 @@ const styles = StyleSheet.create({
     },
     formTitle: {
         fontSize: 18,
-        maxWidth: '80%',
+        width: '80%',
     },
     backdrop: {
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -711,8 +714,9 @@ const styles = StyleSheet.create({
     },
     modalTitle: {
         fontSize: 20,
-        marginBottom: 32,
-        fontWeight: 'bold'
+        alignContent: 'center',
+        fontWeight: 'bold',
+        width: '90%',
     },
     topNavigation: {
         backgroundColor: 'transparent',
@@ -739,6 +743,7 @@ const styles = StyleSheet.create({
     formType: {
         fontSize: 23,
         fontWeight: 'bold',
+        width: '90%',
         marginVertical: 10,
         paddingHorizontal: 10,
         borderRadius: 5,

@@ -150,7 +150,7 @@ const FormSelectorScreen = () => {
             <Text style={{ flex: 1, fontSize: 20, fontWeight: 'bold' }}>{item["nombre formulario"]}</Text>
           </View>
         ) : (
-          <Text style={styles.itemText}>{item["nombre formulario"]}</Text>
+          <Text numberOfLines={1} style={styles.itemText}>{item["nombre formulario"]}</Text>
         )}
       <Button
         accessoryLeft={
@@ -367,6 +367,7 @@ const styles = StyleSheet.create({
   itemText: {
     fontSize: 20,
     fontWeight: 'bold',
+    width: '80%',
   },
   optionsButton: {
     margin: 2,
@@ -538,6 +539,7 @@ const newModalStyles = StyleSheet.create({
     fontWeight: '600',
     color: '#333',
     marginBottom: 20,
+    maxWidth: '80%',
     textAlign: 'center',
   },
   buttonGroup: {
