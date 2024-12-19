@@ -19,7 +19,7 @@ import FormEditor from './screens/FormEditor'
 
 const myTheme = {
   ...eva.light,
-  'color-primary-default': '#00e798',
+  'color-primary-default': '#28a745',
   'color-primary-active': '#00c17f',
   'color-primary-hover': '#60e0b5',
 

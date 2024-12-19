@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Platform, Dimensions, StyleSheet, View, Text, FlatList, Alert, TouchableOpacity, Image, ScrollView } from 'react-native'
-import { Menu, MenuItem, Modal, Card, TopNavigation, TopNavigationAction, Layout, Button, Icon, RangeCalendar, NativeDateService, Input } from '@ui-kitten/components'
+import { Menu, MenuItem, Modal, Card, TopNavigation, TopNavigationAction, Layout, Button, Icon, RangeCalendar, NativeDateService, Input, CheckBox } from '@ui-kitten/components'
 import { useNavigation } from '@react-navigation/native'
 import { LinearGradient } from 'expo-linear-gradient'
 import shareTypes from '../commonStructures/shareTypes'
@@ -12,6 +12,18 @@ import { useSQLiteContext } from 'expo-sqlite'
 
 const { height } = Dimensions.get('window')
 const { width } = Dimensions.get('window')
+
+const highlightColors = ['lightgreen', 'orange', 'lightcoral', 'purple', 'cyan', 'magenta', 'deepskyblue', 'mediumseagreen', 'tomato', 'gold']
+const highlightColorsSoft = ['#ccffcc', '#ffcc99', '#ffcccc', '#e0b3ff', '#ccffff', '#ffccff', '#b3e0ff', '#ccffcc', '#ffb3b3', '#ffeb99']
+const getHighlightColor = index => highlightColors[Math.abs(index) % highlightColors.length]
+const getHighlightColorSoft = index => highlightColorsSoft[Math.abs(index) % highlightColorsSoft.length]
+
+const hash = function(s) {
+    return s.split("").reduce(function(a, b) {
+        a = ((a << 5) - a) + b.charCodeAt(0)
+        return a & a
+    }, 0);
+}
 
 const SavedForms = () => {
     const navigation = useNavigation()
@@ -80,7 +92,7 @@ const SavedForms = () => {
         const filePath = `${FileSystem.cacheDirectory}respuestasFormularios.json`
         const copy = form.map(({ id, ...form }) => form)
 
-        const objectStringified = form.lenght === 1 ? JSON.stringify({
+        const objectStringified = form.length === 1 ? JSON.stringify({
             share_content_type: shareTypes.SINGLE_ANSWER,
             content: copy
         }) : JSON.stringify({
@@ -160,12 +172,13 @@ const SavedForms = () => {
         />
     )
 
-    const deleteIcon = props => <Icon name='trash' {...props} />;
-    const shareIcon = props => <Icon name='share' {...props} />;
-    const filterIcon = props => <Icon name='funnel-outline' fill="#fff" {...props} />;;
-    const BackAction = () => <TopNavigationAction icon={BackIcon} onPress={() => navigation.goBack()} />;
-    const SelectionIcon = props => <Icon fill='#fff' name={isSelectionMode ? 'checkmark-square' : 'checkmark-square'} style={styles.backIcon} {...props} />;
-
+    const deleteIcon = props => <Icon name='trash' {...props} />
+    const shareIcon = props => <Icon name='share' {...props} />
+    const filterIcon = props => <Icon name='funnel-outline' fill="#fff" {...props} />
+    const BackAction = () => <TopNavigationAction icon={BackIcon} onPress={() => navigation.goBack()} />
+    const SelectionIcon = props => <Icon fill='#fff' name={isSelectionMode ? 'checkmark-square' : 'checkmark-square'} style={styles.backIcon} {...props} />
+    const ClearSelectionIcon = props => <Icon name='close-circle-outline' fill='#fff' {...props} />; // Icono para limpiar selección
+    const SelectAllIcon = props => <Icon name='checkmark-circle-outline' fill='#fff' {...props} />; // Icono para seleccionar todo
 
     const selectAll = () => setSelectedForms(forms.map(form => form.fecha))
     const deselectAll = () => setSelectedForms([])
@@ -230,7 +243,8 @@ const SavedForms = () => {
         return acc
     }, {})
 
-    const renderFormItem = ({ item }) => {
+    const renderFormItem = ({ item, highlightColor }) => {
+        
         const dateString = new Date(item.fecha).toLocaleString(undefined, {
             hour12: false, weekday:'long', year:'numeric', month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit', second: '2-digit'})
 
@@ -239,15 +253,18 @@ const SavedForms = () => {
             <TouchableOpacity
                 style={[
                     styles.containerBox,
-                    selectedForms.includes(item.fecha) && styles.selectedItem
+                    {borderLeftColor: highlightColor},
+                    selectedForms.includes(item.fecha) && styles.selectedItem,
                 ]}
                 onPress={() => handleSelection(item.fecha)}
                 onLongPress={toggleSelectionMode}
             >
+
+                {!isSelectionMode || <CheckBox checked={selectedForms.includes(item.fecha)} onChange={() => handleSelection(item.fecha)}></CheckBox>}
                 <Text style={styles.formTitle}>{dateString}</Text>
-                {isSelectionMode ? null : (
+                {isSelectionMode ||
                     <Button style={styles.button} onPress={() => exportForm([item])} accessoryLeft={shareIcon} />
-                )}
+                }
             </TouchableOpacity>
         )
     }
@@ -259,20 +276,37 @@ const SavedForms = () => {
         }))
     }
 
-    const renderTypeItem = ({ item }) => (
-        <View>
-            <TouchableOpacity onLongPress={() => toggleSelectByFormName(item)} onPress={() => toggleExpand(item)} >
-                <Text style={styles.formType}>{item}</Text> {/* Mostrar el tipo de formulario */}
+    const renderTypeItem = ({ item }) => {
+
+        const hashedItem = hash(item)
+        const highlightColor = getHighlightColor(hashedItem)
+        const highlightColorSoft = getHighlightColorSoft(hashedItem)
+        
+        return (<View>
+            <TouchableOpacity
+            style={{ backgroundColor: highlightColorSoft, borderRadius: 10, marginTop: 10, borderWidth: 2, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 5 }}
+            onLongPress={toggleSelectionMode}
+            onPress={() => toggleExpand(item)}
+            >
+                {isSelectionMode && (
+                    <CheckBox
+                        checked={groupedForms[item].every(form => selectedForms.includes(form.fecha))}
+                        onChange={() => toggleSelectByFormName(item)}
+                        style={{ padding: 8 }}
+                    />
+                )}
+                <Text style={styles.formType}>{item}</Text>
+                <Icon name='arrow-ios-downward-outline' style={styles.icon} fill='#000' />
             </TouchableOpacity>
             {expandedTypes[item] && (
                 <FlatList
                     data={groupedForms[item]}
-                    renderItem={renderFormItem}
+                    renderItem={item => renderFormItem({item: item.item, highlightColor: highlightColor})}
                     keyExtractor={form => form.fecha.toString()}
                 />
             )}
         </View>
-    )
+    )}
 
 
     return (
@@ -327,20 +361,6 @@ const SavedForms = () => {
                         </Layout> : <></>
                     }
                     {index && index.row === 3 ? <Input style={styles.inputUltimos} placeholder='¿Cuantas respuestas desea?' value={lasts} OnChange={handleLasts} keyboardType='numeric' /> : <></>}
-                    {isSelectionMode && (
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 10, paddingTop: 10 }}>
-                            <Button onPress={deselectAll} accessoryLeft={deleteIcon} style={{ width: '40%', marginRight: '10%' }}>
-                                <Text>
-                                    Limpiar selección
-                                </Text>
-                            </Button>
-                            <Button onPress={selectAll} accessoryLeft={SelectionIcon} style={{ width: '40%', marginLeft: "10%" }}>
-                                <Text>
-                                    Seleccionar todo
-                                </Text>
-                            </Button>
-                        </View>
-                    )}
                 </Layout>
                 <FlatList
                     data={Object.keys(groupedForms)}
@@ -352,7 +372,9 @@ const SavedForms = () => {
                     <Layout style={styles.containerCalendar}>
                         <RangeCalendar range={range} onSelect={nextrange => setRange(nextrange)} />
                         <View style={styles.buttonRangeContainer}>
-                            <Button style={{ marginRight: "3%" }} status='info' onPress={() => setIsRangeMode(false)}><Text>Volver</Text></Button>
+                            <Button style={{ marginRight: "3%" }} status='info' onPress={() => setIsRangeMode(false)}>
+                                <Text>Volver</Text>
+                            </Button>
                             <Button style={{ marginLeft: "3%" }}
                                 onPress={() => {
                                     setIsRangeMode(false)
@@ -390,9 +412,17 @@ const SavedForms = () => {
                             </ScrollView>
                         </Layout>
                         <Layout style={styles.buttonContainer}>
+                            <Button
+                                accessoryLeft={BackIcon}
+                                style={{flex: 1, borderRadius: 0, borderTopLeftRadius: 10, borderBottomLeftRadius: 10}}
+                                onPress={() => confirmDelete[1] ? (setConfirmDelete([false, false]), setModalVisible(true)) : setConfirmDelete([false, false])}>
+                                <Text>
+                                    Cancelar
+                                </Text>
+                            </Button>
                             <Button accessoryLeft={deleteIcon}
                                 status='danger'
-                                style={styles.deleteButton}
+                                style={{flex: 1, borderRadius: 0, borderTopRightRadius: 10, borderBottomRightRadius: 10}}
                                 onPress={() => {
                                     deleteSelectedForms()
                                     setConfirmDelete([false, false])
@@ -401,33 +431,57 @@ const SavedForms = () => {
                                     Eliminar
                                 </Text>
                             </Button>
-                            <Button
-                                accessoryLeft={BackIcon}
-                                style={styles.deleteButton}
-                                onPress={() => confirmDelete[1] ? (setConfirmDelete([false, false]), setModalVisible(true)) : setConfirmDelete([false, false])}>
-                                <Text>
-                                    Cancelar
-                                </Text>
-                            </Button>
+
                         </Layout>
                     </Layout>
                 </Modal>
 
+
                 {isSelectionMode && (
                     <Layout style={styles.buttonContainer}>
-                        <Button status='danger' style={styles.deleteButton} onPress={() => setConfirmDelete([true, false])} accessoryLeft={deleteIcon}>
-                            <Text>
-                                Eliminar
-                            </Text>
+                        <Button
+                        status='danger'
+                        style={styles.deleteButton}
+                        onPress={() => setConfirmDelete([true, false])}
+                        accessoryLeft={deleteIcon}
+                        disabled={selectedForms.length === 0}
+                        >
+                            <Text style={styles.buttonText}>Eliminar</Text>
                         </Button>
-                        <Button status='info' style={styles.shareButton} accessoryLeft={shareIcon} onPress={() => exportForm(
-                            forms.filter(form => selectedForms.includes(form.fecha)))}>
-                            <Text>
-                                Compartir
-                            </Text>
+                        <Button
+                        status='info'
+                        style={styles.shareButton}
+                        accessoryLeft={shareIcon}
+                        onPress={() => exportForm(forms.filter(form => selectedForms.includes(form.fecha)))}
+                        disabled={selectedForms.length === 0}
+                        >
+                            <Text style={styles.buttonText}>Compartir</Text>
                         </Button>
                     </Layout>
+                    )}
+                
+                {isSelectionMode && (
+                    <View style={styles.buttonContainer}>
+                        <Button
+                        onPress={deselectAll}
+                        accessoryLeft={ClearSelectionIcon}
+                        style={styles.selectionButton}
+                        disabled={selectedForms.length === 0}
+                        >
+                            <Text style={styles.buttonText}>Limpiar selección</Text>
+                        </Button>
+                        <Button
+                        status='warning'
+                        onPress={selectAll}
+                        style={styles.selectAllButton}
+                        accessoryLeft={SelectAllIcon}
+                        disabled={selectedForms.length === forms.length}
+                        >
+                            <Text style={styles.buttonText}>Seleccionar todo</Text>
+                        </Button>
+                    </View>
                 )}
+
 
                 <Modal
                     visible={modalVisible}
@@ -546,7 +600,8 @@ const styles = StyleSheet.create({
         paddingBottom: 100,
     },
     button: {
-        margin: 2,
+        marginVertical: 0,
+        marginRight: 0,
         paddingVertical: 5,
         paddingHorizontal: 5,
         fontWeight: 'bold',
@@ -560,17 +615,14 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     containerBox: {
-        padding: 10,
-        marginBottom: 15,
-        borderRadius: 8,
+        padding: 12,
+        marginLeft: 25,
+        marginRight: 5,
+        borderLeftColor: '#00ff00',
         backgroundColor: '#ffffff',
-        borderWidth: 1,
-        borderColor: '#00b7ae',
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: "10%" },
-        shadowOpacity: 0.9,
-        shadowRadius: 2,
-        elevation: 3,
+        borderWidth: 0,
+        borderTopWidth: 1,
+        borderLeftWidth: 5,
         alignItems: 'flex-start',
         justifyContent: 'space-between',
         flexDirection: 'row',
@@ -659,11 +711,10 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
     },
     formType: {
-        fontSize: 20,
+        fontSize: 23,
         fontWeight: 'bold',
         marginVertical: 10,
         paddingHorizontal: 10,
-        backgroundColor: '#e0e0e0',
         borderRadius: 5,
     },
     buttonRangeContainer: {
@@ -671,8 +722,35 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignSelf: 'center',
-        marginBottom: "2%",
-        marginTop: "2%",
+    },
+    icon: {
+        width: 24,
+        height: 24,
+    },
+    deleteButton: {
+        flex: 1,
+        borderRadius: 0, // Botones cuadrados
+        borderTopLeftRadius: 20
+    },
+    shareButton: {
+        flex: 1,
+        borderRadius: 0, // Botones cuadrados
+        borderTopRightRadius: 20
+    },
+    buttonText: {
+        color: '#fff',
+        fontWeight: 'bold',
+    },
+    selectionButton: {
+        flex: 1,
+        borderRadius: 0, // Botones cuadrados
+        borderBottomLeftRadius: 20
+    },
+    selectAllButton: {
+        flex: 1,
+        borderRadius: 0, // Botones cuadrados
+        borderWidth: 0,
+        borderBottomRightRadius: 20
     },
     responseContainer: {
         backgroundColor: '#f2f2f2',

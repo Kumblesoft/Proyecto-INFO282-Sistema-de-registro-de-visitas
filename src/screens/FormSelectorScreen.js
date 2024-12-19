@@ -40,9 +40,6 @@ const FormSelectorScreen = () => {
     </Layout>
   )
 
-
-
-
   //File picker function
   const pickDocument = async () => {
     try {

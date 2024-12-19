@@ -7,8 +7,8 @@ export default class RadioChainInsertor extends ChainInsertor {
             return this.next && this.next.insert(fieldObject, fieldId, fieldTypeId, fieldTableName)
         
         this.db.runSync(
-            `INSERT INTO ${fieldTableName} (fk_field) VALUES (?)`,
-            [fieldId]
+            `INSERT INTO ${fieldTableName} (fk_field, is_required) VALUES (?,?)`,
+            [fieldId, fieldObject.obligatorio]
         )
         const insertedRowId = this.db.getFirstSync('select last_insert_rowid() as id')
 
@@ -45,7 +45,7 @@ export default class RadioChainInsertor extends ChainInsertor {
             return this.next && this.next.getFieldProperties(fieldId, fieldTableName, fieldTypeName)
 
         const fieldProperties = this.db.getFirstSync(
-            `SELECT id_options FROM ${fieldTableName} WHERE fk_field = ?`,
+            `SELECT id_options, is_required FROM ${fieldTableName} WHERE fk_field = ?`,
             [fieldId]
         )
         const optionsQuery = this.db.getAllSync(
@@ -55,6 +55,7 @@ export default class RadioChainInsertor extends ChainInsertor {
 
         return {
             tipo: 'radio',
+            obligatorio: !!fieldProperties.is_required,
             opciones: optionsQuery.map(option => ({ nombre: option.name, valor: option.value }))
         }
     }

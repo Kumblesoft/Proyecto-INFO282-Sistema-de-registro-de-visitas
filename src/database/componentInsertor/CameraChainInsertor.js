@@ -5,8 +5,8 @@ export default class CameraChainInsertor extends ChainInsertor {
         if (fieldObject.tipo != 'camara')
             return this.next && this.next.insert(fieldObject, fieldId, fieldTypeId, fieldTableName)
         this.db.runSync(
-            `INSERT INTO ${fieldTableName}(fk_field, aspect_relation) values (?,?)`,
-            [fieldId, JSON.stringify(fieldObject['relacion de aspecto'])]
+            `INSERT INTO ${fieldTableName}(fk_field, aspect_relation, is_required) values (?,?,?)`,
+            [fieldId, JSON.stringify(fieldObject['relacion de aspecto']), fieldObject.obligatorio]
         )
         return true
     }
@@ -14,9 +14,11 @@ export default class CameraChainInsertor extends ChainInsertor {
     getFieldProperties(fieldId, fieldTableName, fieldTypeName) {
         if (fieldTypeName != 'camara')
             return this.next && this.next.getFieldProperties(fieldId, fieldTableName, fieldTypeName)
+        const properties = this.db.getFirstSync(`SELECT is_required, aspect_relation FROM ${fieldTableName} WHERE fk_field = ?`, [fieldId])
         return {
             tipo: 'camara',
-            "relacion de aspecto": JSON.parse(this.db.getFirstSync(`SELECT aspect_relation FROM ${fieldTableName} WHERE fk_field = ?`, [fieldId]).aspect_relation)
+            obligatorio: !!properties.is_required,
+            "relacion de aspecto": JSON.parse(properties.aspect_relation)
         }
     }
     delete(fieldId, fieldTableName, fieldTypeName) {
