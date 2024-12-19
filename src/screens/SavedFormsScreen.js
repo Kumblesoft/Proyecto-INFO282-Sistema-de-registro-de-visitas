@@ -59,17 +59,15 @@ const SavedForms = () => {
         format: 'DD/MM/YYYY'
     })
 
-    const handleRange = (isOn) => {
+    const handleRange = () => {
         const startInt = range.startDate ? range.startDate.getTime() : null
         const endInt = range.endDate ? range.endDate.getTime() : null
-        if (startInt && isOn) {
+        if (startInt) {
             endInt ? setForms(baseForms.filter((data) => {
                 return data.fecha >= startInt && data.fecha <= endInt + 86399999
             })) : setForms(baseForms.filter((data) => {
                 return data.fecha >= startInt
             }))
-        }else{
-            setForms(baseForms)
         }
     }
 
@@ -424,7 +422,7 @@ const SavedForms = () => {
                             </TouchableOpacity>
                             <Button appearance='ghost' accessoryRight={(<Icon name='close-outline' fill="#F32013" />)} onPress={() => {setIsRangeMode(false) 
                                 setRange({}) 
-                                handleRange(false)}}/>
+                                setForms(baseForms)}}/>
                         </Layout> : <></>
                     }
                     {isLastsMode ? 
@@ -450,7 +448,7 @@ const SavedForms = () => {
                                 onPress={() => {
                                     setRangeModal(false)
                                     setIsRangeMode(true)
-                                    handleRange(true)
+                                    handleRange()
                                 }}>
                                 <Text>
                                     Confirmar
