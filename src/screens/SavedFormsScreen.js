@@ -517,7 +517,10 @@ const SavedForms = () => {
                     <Layout style={styles.modalContainer}>
                         <Card style={styles.modalCard} disabled={true} >
                             <ScrollView style={{ maxHeight: height * 0.8 }} nestedScrollEnabled={true} >
-                                <Text style={styles.modalTitle}>{selectedForm?.plantilla}</Text>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between',  alignItems: 'center', maxWidth: '100%'}}>
+                                    <Text style={styles.modalTitle}>{selectedForm?.plantilla}</Text>
+                                    <Button appearance='ghost' accessoryRight={(<Icon name='close-outline' fill="#F32013" />)} onPress={closeModal} style={{alignContent:'center'}}/>
+                                </View>
                                 {selectedForm && Object.entries(selectedForm.data).map(([key, value]) => (
                                     <Layout style={styles.containerRespuestas}>
                                         <Text style={styles.key} key={key}>{`${key}`}</Text>
@@ -541,11 +544,7 @@ const SavedForms = () => {
                                         Compartir
                                     </Text>
                                 </Button>
-                                <Button onPress={closeModal}>
-                                    <Text>
-                                        Cerrar
-                                    </Text>
-                                </Button>
+                                
                             </ScrollView>
                         </Card>
                     </Layout>
@@ -711,7 +710,7 @@ const styles = StyleSheet.create({
     },
     modalTitle: {
         fontSize: 20,
-        marginBottom: 32,
+        alignContent: 'center',
         fontWeight: 'bold'
     },
     topNavigation: {
