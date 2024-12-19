@@ -50,6 +50,7 @@ const ItemSelector = forwardRef(({ items, onSelect, value, defaultOption, placeh
 const styles = StyleSheet.create({
   select: {
     minWidth: 300, // Establece un ancho mínimo
+    fontSize: 17,
     borderColor: '#fff'
   }
 })

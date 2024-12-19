@@ -251,8 +251,8 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
             {formData.campos.map((field, index) => renderField(field, index))}
             {
                 disabledSave ||
-                <Button onPress={handleSubmit} style={styles.button} accessoryRight={tickIcon}>
-                    <Text category='h5' style={styles.buttonText}>Guardar</Text>
+                <Button onPress={handleSubmit} style={styles.button} accessoryLeft={tickIcon}>
+                    <Text style={styles.buttonText}>Guardar</Text>
                 </Button>
             }
         </Layout>
@@ -263,11 +263,14 @@ const styles = StyleSheet.create({
     button: {
         borderRadius: 10,
         borderColor: "#53a75f",
+        height: 60,
+        marginBottom:10,
+        padding:10
     },
     buttonText: {
         color: 'black',
         fontWeight: "bold",
-
+        fontSize: 18
     },
     layoutContainer: {
         backgroundColor: "#ffffff"
