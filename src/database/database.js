@@ -32,44 +32,61 @@ export const setCompatibility = (db, firstElement, secondElement, typenameOfFiel
 
 export async function initializeDataBase(db) {
     try {
-        tables.forEach(table =>
-            db.runSync(`DROP TABLE IF EXISTS ${table}`))
+
         db.execSync(dbInit)
         console.log('Database initialized')
     } catch (error) {
         console.log(error)
     }
+    if (!tableExists(db, 'field_table_name')) {
+        table_types.forEach(type =>
+            db.runSync('INSERT INTO field_table_name (table_name, field_type_name) VALUES (?,?)', type)
+        );
+    }
 
-    table_types.forEach(type =>
-        db.runSync('INSERT INTO field_table_name (table_name, field_type_name) VALUES (?,?)', type)
-    )
+    if(!tableExists(db, 'limitations')){
+        db.runSync('INSERT INTO limitations (name, regex, keyboard_type, value_enum_matrix) VALUES (?,?,?,?)', ["solo letras", String.raw`/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/`, "default", 0])
+        db.runSync('INSERT INTO limitations (name, regex, keyboard_type, value_enum_matrix) VALUES (?,?,?,?)', ["solo numeros", String.raw`/^-?\d+([.,]\d+)?$/`, "numeric", 1])
+        db.runSync('INSERT INTO limitations (name, regex, keyboard_type, value_enum_matrix) VALUES (?,?,?,?)', ["solo enteros", String.raw`/^-?\d+$/`, "numeric", 2])
+        db.runSync('INSERT INTO limitations (name, regex, keyboard_type, value_enum_matrix) VALUES (?,?,?,?)', ["solo enteros positivos y cero", String.raw`/^\d+$/`, "numeric", 3])
+        db.runSync('INSERT INTO limitations (name, regex, keyboard_type, value_enum_matrix) VALUES (?,?,?,?)', ["email", String.raw`/^(([^<>()[\]\.,:\s@\"]+(\.[^<>()[\]\.,:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,:\s@\"]+\.)+[^<>()[\]\.,:\s@\"]{2,})$/i`, "default", 4])
+        db.runSync('INSERT INTO limitations (name, regex, keyboard_type, value_enum_matrix) VALUES (?,?,?,?)', ["no numeros", String.raw`/^[^\d]*$/`, "default", 5])
+        db.runSync('INSERT INTO limitations (name, keyboard_type, value_enum_matrix) VALUES (?,?,?)', ["editable", "default", 0])
+        db.runSync('INSERT INTO limitations (name, keyboard_type, value_enum_matrix) VALUES (?,?,?)', ["no editable", "default", 1])
+    }
 
-    db.runSync('INSERT INTO limitations (name, regex, keyboard_type, value_enum_matrix) VALUES (?,?,?,?)', ["solo letras", String.raw`/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/`, "default", 0])
-    db.runSync('INSERT INTO limitations (name, regex, keyboard_type, value_enum_matrix) VALUES (?,?,?,?)', ["solo numeros", String.raw`/^-?\d+([.,]\d+)?$/`, "numeric", 1])
-    db.runSync('INSERT INTO limitations (name, regex, keyboard_type, value_enum_matrix) VALUES (?,?,?,?)', ["solo enteros", String.raw`/^-?\d+$/`, "numeric", 2])
-    db.runSync('INSERT INTO limitations (name, regex, keyboard_type, value_enum_matrix) VALUES (?,?,?,?)', ["solo enteros positivos y cero", String.raw`/^\d+$/`, "numeric", 3])
-    db.runSync('INSERT INTO limitations (name, regex, keyboard_type, value_enum_matrix) VALUES (?,?,?,?)', ["email", String.raw`/^(([^<>()[\]\.,:\s@\"]+(\.[^<>()[\]\.,:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,:\s@\"]+\.)+[^<>()[\]\.,:\s@\"]{2,})$/i`, "default", 4])
-    db.runSync('INSERT INTO limitations (name, regex, keyboard_type, value_enum_matrix) VALUES (?,?,?,?)', ["no numeros", String.raw`/^[^\d]*$/`, "default", 5])
-    db.runSync('INSERT INTO limitations (name, keyboard_type, value_enum_matrix) VALUES (?,?,?)', ["editable", "default", 0])
-    db.runSync('INSERT INTO limitations (name, keyboard_type, value_enum_matrix) VALUES (?,?,?)', ["no editable", "default", 1])
-
-    db.runSync('INSERT INTO format (name, value_enum_matrix) VALUES (?,?)', ["solo minusculas", 1])
-    db.runSync('INSERT INTO format (name, value_enum_matrix) VALUES (?,?)', ["solo mayusculas", 0])
+    if (!tableExists(db, 'format')) {
+        db.runSync('INSERT INTO format (name, value_enum_matrix) VALUES (?,?)', ["solo minusculas", 1])
+        db.runSync('INSERT INTO format (name, value_enum_matrix) VALUES (?,?)', ["solo mayusculas", 0])
+    }
 
         ;[[1, 2], [1, 3], [2, 3]].forEach(pair => setCompatibility(db, pair[0], pair[1], "texto", 1, 0))
 
 
 }
 
+function tableExists(db, tableName) {
+    const result = db.getFirstSync("SELECT name FROM sqlite_master WHERE type='table' AND name=?", [tableName]);
+    return result !== undefined;
+}
+
 // Singleton factory method to get the instance
 let instance = null
 
+function formExists(db, formName) {
+    const result = db.getFirstSync("SELECT name FROM forms WHERE name=?", [formName]);
+    return result !== undefined;
+}
 
 export function getDatabaseInstance(db) {
     if (!instance) {
         instance = new Database(db)
-        const testFroms = require('../TestForms/forms.json')
-        testFroms.forEach(test => instance.addForm(test))
+        const testForms = require('../TestForms/forms.json')
+        testForms.forEach(test => {
+            if (!formExists(db, test["nombre formulario"])) {
+                instance.addForm(test);
+            }
+        })
     }
     return instance
 }
