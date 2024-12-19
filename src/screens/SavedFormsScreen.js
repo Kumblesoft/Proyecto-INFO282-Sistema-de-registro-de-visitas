@@ -538,6 +538,7 @@ const SavedForms = () => {
                                 ))}
                                 </ScrollViewIndicator>
                                 </View>
+                                <Layout style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 10}}>
                                 <Button accessoryLeft={deleteIcon} status='danger' onPress={() => { setConfirmDelete([true, true]); setModalVisible(false) }}>
                                     <Text>
                                         Eliminar
@@ -548,7 +549,7 @@ const SavedForms = () => {
                                         Compartir
                                     </Text>
                                 </Button>
-                                
+                                </Layout>
                         </Card>
                     </Layout>
                 </Modal>
