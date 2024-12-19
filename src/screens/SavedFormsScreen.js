@@ -207,12 +207,6 @@ const SavedForms = () => {
         selectedItem.func(newForms)
         setForms(newForms)
     }
-    const handleLasts = value => {
-        setLasts(value)
-        const newForms = baseForms
-        newForms.sort((a, b) => b.fecha - a.fecha)
-        setForms(newForms.slice(newForms.length - value))
-    }
     const toggleSelectByFormName = formName => {
         setIsSelectionMode(true)
         const currentSelectedForms = new Set(selectedForms)
@@ -300,7 +294,7 @@ const SavedForms = () => {
             </TouchableOpacity>
             {expandedTypes[item] && (
                 <FlatList
-                    data={groupedForms[item]}
+                    data={isLastsMode ? groupedForms[item].reverse().slice(0,lasts) : groupedForms[item].reverse()}
                     renderItem={item => renderFormItem({item: item.item, highlightColor: highlightColor})}
                     keyExtractor={form => form.fecha.toString()}
                 />
@@ -308,6 +302,66 @@ const SavedForms = () => {
         </View>
     )}
 
+    const renderDeleteModal = () => {
+        const selectedGroup = forms.reduce((acc, form) => {
+            if (selectedForms.includes(form.fecha)) {
+                if (!acc[form.plantilla])
+                    acc[form.plantilla] = []
+                acc[form.plantilla].push(form)
+                return acc
+            }
+            return acc
+        }, {})
+
+
+        return (                    
+        <Layout style={styles.container}>
+            <Text>¿Está seguro/a de que desea eliminar los siguientes formularios?</Text>
+
+            <Layout style={styles.responseContainer}>
+                <ScrollView style={{ maxHeight: height * 0.5 }}>
+                    {Object.keys(selectedGroup).map(key => {
+                        return (
+                            <Layout style={styles.containerRespuestas}>
+                                <Text style={styles.key}>{key}</Text>
+                                {selectedGroup[key].map((item) => 
+                                    {const dateString = new Date(item.fecha).toLocaleString({}, {
+                                        hour12: false, weekday:'long', year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', second: '2-digit'})
+                                    return (
+                                        <Layout style={styles.containerBox}>
+                                            <Text>{dateString}</Text>
+                                        </Layout>
+                                    )})}
+                            </Layout>
+                        )
+                    })}
+                </ScrollView>
+            </Layout>
+            <Layout style={styles.buttonContainer}>
+                <Button
+                    accessoryLeft={BackIcon}
+                    style={{flex: 1, borderRadius: 0, borderTopLeftRadius: 10, borderBottomLeftRadius: 10}}
+                    onPress={() => confirmDelete[1] ? (setConfirmDelete([false, false]), setModalVisible(true)) : setConfirmDelete([false, false])}>
+                    <Text>
+                        Cancelar
+                    </Text>
+                </Button>
+                <Button accessoryLeft={deleteIcon}
+                    status='danger'
+                    style={{flex: 1, borderRadius: 0, borderTopRightRadius: 10, borderBottomRightRadius: 10}}
+                    onPress={() => {
+                        deleteSelectedForms()
+                        setConfirmDelete([false, false])
+                    }}>
+                    <Text>
+                        Eliminar
+                    </Text>
+                </Button>
+
+            </Layout>
+        </Layout>
+        )
+    }
 
     return (
         <>
@@ -360,7 +414,11 @@ const SavedForms = () => {
                             </Text>
                         </Layout> : <></>
                     }
-                    {index && index.row === 3 ? <Input style={styles.inputUltimos} placeholder='¿Cuantas respuestas desea?' value={lasts} OnChange={handleLasts} keyboardType='numeric' /> : <></>}
+                    {isLastsMode ? 
+                    <Layout style={{flexDirection: 'row', alignItems: 'center', maxWidth: '90%', justifyContent: 'center', backgroundColor:'#ededed', paddingEnd: '10%'}}>
+                        <Input placeholder='¿Cuantas respuestas desea?' value={lasts} onChangeText={nextValue => {setLasts(nextValue)}} style={{width : '100%'}} keyboardType='numeric' />
+                        <Button accessoryRight={(<Icon name='close-outline' fill="#fff" />)} onPress={() => setIsLastsMode(false)}/>
+                    </Layout>: <></>}
                 </Layout>
                 <FlatList
                     data={Object.keys(groupedForms)}
@@ -388,52 +446,7 @@ const SavedForms = () => {
                     </Layout>
                 </Modal>
                 <Modal visible={confirmDelete[0]} backdropStyle={styles.backdrop}>
-                    <Layout style={styles.container}>
-                        <Text>¿Está seguro/a de que desea eliminar los siguientes formularios?</Text>
-
-                        <Layout style={styles.responseContainer}>
-                            <ScrollView style={{ maxHeight: height * 0.5 }}>
-                                {Object.keys(groupedForms).map(key => {
-                                    const selectedSet = new Set(selectedForms)
-                                    return (
-                                        <Layout style={styles.containerRespuestas}>
-                                            <Text style={styles.key}>{key}</Text>
-                                            {groupedForms[key].filter((value) => 
-                                                selectedSet.has(value.fecha)).map((item) => {const dateString = new Date(item.fecha).toLocaleString(undefined, {
-                                                    hour12: false, weekday:'long', year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', second: '2-digit'})
-                                                return (
-                                                    <Layout style={styles.containerBox}>
-                                                        <Text>{dateString}</Text>
-                                                    </Layout>
-                                                )})}
-                                        </Layout>
-                                    )
-                                })}
-                            </ScrollView>
-                        </Layout>
-                        <Layout style={styles.buttonContainer}>
-                            <Button
-                                accessoryLeft={BackIcon}
-                                style={{flex: 1, borderRadius: 0, borderTopLeftRadius: 10, borderBottomLeftRadius: 10}}
-                                onPress={() => confirmDelete[1] ? (setConfirmDelete([false, false]), setModalVisible(true)) : setConfirmDelete([false, false])}>
-                                <Text>
-                                    Cancelar
-                                </Text>
-                            </Button>
-                            <Button accessoryLeft={deleteIcon}
-                                status='danger'
-                                style={{flex: 1, borderRadius: 0, borderTopRightRadius: 10, borderBottomRightRadius: 10}}
-                                onPress={() => {
-                                    deleteSelectedForms()
-                                    setConfirmDelete([false, false])
-                                }}>
-                                <Text>
-                                    Eliminar
-                                </Text>
-                            </Button>
-
-                        </Layout>
-                    </Layout>
+                    {renderDeleteModal()}
                 </Modal>
 
 
@@ -558,6 +571,7 @@ const styles = StyleSheet.create({
         margin: 0,
         height: height,
         justifyContent: 'flex-end',
+        zIndex: 10,
     },
     safeArea: {
         backgroundColor: '#00baa4'
