@@ -41,7 +41,7 @@ const SavedForms = () => {
         </Layout>
     )
 
-    const configuredDateService = new NativeDateService('en', {
+    const configuredDateService = new NativeDateService('es', {
         startDayOfWeek: 1,
         format: 'DD/MM/YYYY'
     })
@@ -224,7 +224,6 @@ const SavedForms = () => {
         </View>
     )
     const groupedForms = forms.reduce((acc, form) => {
-        console.log(form)
         if (!acc[form.plantilla])
             acc[form.plantilla] = []
         acc[form.plantilla].push(form)
@@ -232,8 +231,9 @@ const SavedForms = () => {
     }, {})
 
     const renderFormItem = ({ item }) => {
-        const dateString = `${new Date(item.fecha)}`
-        const lenght = dateString.length
+        const dateString = new Date(item.fecha).toLocaleString(undefined, {
+            hour12: false, weekday:'long', year:'numeric', month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit', second: '2-digit'})
+
 
         return (
             <TouchableOpacity
@@ -244,7 +244,7 @@ const SavedForms = () => {
                 onPress={() => handleSelection(item.fecha)}
                 onLongPress={toggleSelectionMode}
             >
-                <Text style={styles.formTitle}>{dateString.substring(0, lenght - 8)}</Text>
+                <Text style={styles.formTitle}>{dateString}</Text>
                 {isSelectionMode ? null : (
                     <Button style={styles.button} onPress={() => exportForm([item])} accessoryLeft={shareIcon} />
                 )}
@@ -312,7 +312,7 @@ const SavedForms = () => {
                                 </Menu>
                                 <Button onPress={() => setFilterVisible(false)}>
                                     <Text>
-                                        DISMISS
+                                        Cerrar
                                     </Text>
                                 </Button>
                             </Card>
@@ -365,9 +365,30 @@ const SavedForms = () => {
                         </View>
                     </Layout>
                 </Modal>
-                <Modal visible={confirmDelete[0]}>
+                <Modal visible={confirmDelete[0]} backdropStyle={styles.backdrop}>
                     <Layout style={styles.container}>
-                        <Text>¿Está seguro que desea eliminar el/los formulario?</Text>
+                        <Text>¿Está seguro/a de que desea eliminar los siguientes formularios?</Text>
+
+                        <Layout style={styles.responseContainer}>
+                            <ScrollView style={{ maxHeight: height * 0.5 }}>
+                                {Object.keys(groupedForms).map(key => {
+                                    const selectedSet = new Set(selectedForms)
+                                    return (
+                                        <Layout style={styles.containerRespuestas}>
+                                            <Text style={styles.key}>{key}</Text>
+                                            {groupedForms[key].filter((value) => 
+                                                selectedSet.has(value.fecha)).map((item) => {const dateString = new Date(item.fecha).toLocaleString(undefined, {
+                                                    hour12: false, weekday:'long', year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', second: '2-digit'})
+                                                return (
+                                                    <Layout style={styles.containerBox}>
+                                                        <Text>{dateString}</Text>
+                                                    </Layout>
+                                                )})}
+                                        </Layout>
+                                    )
+                                })}
+                            </ScrollView>
+                        </Layout>
                         <Layout style={styles.buttonContainer}>
                             <Button accessoryLeft={deleteIcon}
                                 status='danger'
@@ -496,6 +517,8 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 16,
+        borderRadius: 8,
+        borderColor: '#00b7ae',
     },
     title: {
         fontSize: 24,
@@ -531,6 +554,7 @@ const styles = StyleSheet.create({
     },
     formTitle: {
         fontSize: 18,
+        maxWidth: '80%',
     },
     backdrop: {
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -649,6 +673,14 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         marginBottom: "2%",
         marginTop: "2%",
+    },
+    responseContainer: {
+        backgroundColor: '#f2f2f2',
+        borderRadius: 8,
+        padding: 10,
+        paddingLeft: 20,
+        marginBottom: 10,
+        marginTop: 10,
     },
 })
 
