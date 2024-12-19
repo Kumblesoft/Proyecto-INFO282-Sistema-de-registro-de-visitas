@@ -54,7 +54,7 @@ const HourConstructor = ({ field = {}, onSave }) => {
 
     return (
         <View style={styles.container}>
-            <Text category='h5' style={styles.title}>Configurar Campo de Hora</Text>
+            <Text category='h5' style={styles.title}>{fieldName || 'Nuevo campo de Hora'}</Text>
 
             <Divider />
 
@@ -91,7 +91,7 @@ const HourConstructor = ({ field = {}, onSave }) => {
                             >
                             
                                 <Radio value={0} style={{ padding: 10 }}>
-                                    Hora Actual
+                                    La hora al momento de responder
                                 </Radio>
                                 <Radio value={1} style={{ padding: 10 }}>
                                     Hora Personalizada
@@ -108,6 +108,7 @@ const HourConstructor = ({ field = {}, onSave }) => {
                                     appearance="outline"
                                     size="large"
                                     style={{marginLeft: 40}}
+                                    accessoryRight={<Icon name='clock-outline'></Icon>}
                                 >
                                     {defaultHour}
                                 </Button>

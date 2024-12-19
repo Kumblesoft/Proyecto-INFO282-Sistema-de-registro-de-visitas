@@ -1,45 +1,45 @@
 import React, { useState, useEffect } from 'react'
 import { View, StyleSheet, Alert, TouchableOpacity } from 'react-native'
-import { Text, Input, Button, Datepicker, NativeDateService, Icon, CheckBox, Divider } from '@ui-kitten/components'	
+import { Text, Input, Button, Datepicker, NativeDateService, Icon, CheckBox, Divider, List, ListItem } from '@ui-kitten/components'	
+
+const formats = [
+    "DD/MM/YYYY",
+    "MM/DD/YYYY",
+    "YYYY/MM/DD",
+    "YYYY/DD/MM",
+    "MM/YYYY/DD",
+    "DD/YYYY/MM"
+]
 
 const DateConstructor = ({ field = {}, onSave }) => {
     const [fieldName, setFieldName] = useState(field.name || "")
-    const [defaultDate, setDefaultDate] = useState(field.defaultDate || "")
+    const [defaultDate, setDefaultDate] = useState(field.defaultDate || "hoy")
     const [date, setDate] = useState(new Date())
-    const [isEditable, setIsEditable] = useState(field.isEditable || false)
+    const [isEditable, setIsEditable] = useState(field.isEditable || true)
     const [dateFormat, setDateFormat] = useState("DD/MM/YYYY") // Formato por defecto
 
-    const saveIcon = props => <Icon name='save-outline' {...props} fill="#fff" style={[props.style, { width: 25, height: 25 }]}/>
+    const [showDefaultDate, setShowDefaultDate] = useState(false)
+    const [showDefaultDatePicker, setShowDefaultDatePicker] = useState(false)
+    const [showOptionalFeatures, setShowOptionalFeatures] = useState(false)
+    const [showDateFormats, setShowDateFormats] = useState(false)
 
     // Obtiene la fecha actual en el formato solicitado
-    const formatCurrentDate = (format) => {
+    const formatCurrentDate = format => {
         const today = new Date()
         const day = String(today.getDate()).padStart(2, "0")
         const month = String(today.getMonth() + 1).padStart(2, "0")
         const year = today.getFullYear()
 
         switch (format) {
-            case "DD/MM/YYYY":
-                return `${day}/${month}/${year}`
-            case "MM/DD/YYYY":
-                return `${month}/${day}/${year}`
-            case "YYYY/MM/DD":
-                return `${year}/${month}/${day}`
-            case "YYYY/DD/MM":
-                return `${year}/${day}/${month}`
-            case "MM/YYYY/DD":
-                return `${month}/${year}/${day}`
-            case "DD/YYYY/MM":
-                return `${day}/${year}/${month}`
-            default:
-                return `${day}/${month}/${year}`
+            case "DD/MM/YYYY": return `${day}/${month}/${year}`
+            case "MM/DD/YYYY": return `${month}/${day}/${year}`
+            case "YYYY/MM/DD": return `${year}/${month}/${day}`
+            case "YYYY/DD/MM": return `${year}/${day}/${month}`
+            case "MM/YYYY/DD": return `${month}/${year}/${day}`
+            case "DD/YYYY/MM": return `${day}/${year}/${month}`
+            default: return `${day}/${month}/${year}`
         }
     }
-
-    // Actualiza la fecha predeterminada cada vez que cambia el formato
-    useEffect(() => {
-        setDefaultDate(formatCurrentDate(dateFormat))
-    }, [dateFormat])
 
     const configureDDateService = new NativeDateService('en', {
         startDayOfWeek:1,
@@ -52,42 +52,12 @@ const DateConstructor = ({ field = {}, onSave }) => {
             return
         }
 
-        const formatPatterns = {
-            "DD/MM/YYYY": /^\d{2}\/\d{2}\/\d{4}$/,
-            "MM/DD/YYYY": /^\d{2}\/\d{2}\/\d{4}$/,
-            "YYYY/MM/DD": /^\d{4}\/\d{2}\/\d{2}$/,
-            "YYYY/DD/MM": /^\d{4}\/\d{2}\/\d{2}$/,
-            "MM/YYYY/DD": /^\d{2}\/\d{4}\/\d{2}$/,
-            "DD/YYYY/MM": /^\d{2}\/\d{4}\/\d{2}$/
-        }
-
-        const isValid = formatPatterns[dateFormat]?.test(defaultDate)
-
-        if (!isValid) {
-            Alert.alert(
-                "Error",
-                `La fecha predeterminada debe coincidir con el formato ${dateFormat}.`
-            )
-            return
-        }
-
         const field = {
             tipo: 'fecha',
             nombre: fieldName,
             salida: fieldName.toLowerCase().replace(/ /g, "_"),
-            obligatorio: false,
-            limitaciones: {
-                tipo: "ArregloFecha",
-                compatibilidadLimitaciones: [
-                    [1, 0],
-                    [0, 1]
-                ],
-                enumLimitaciones: isEditable ? "editable" : "no editable"
-            },
-            formato: {
-                tipo: "ArregloFecha",
-                enumFormato: dateFormat
-            },
+            limitaciones: [isEditable ? "editable" : "no editable"],
+            formato: dateFormat,
             "fecha predeterminada": defaultDate
         }
 
@@ -97,9 +67,11 @@ const DateConstructor = ({ field = {}, onSave }) => {
         }
     }
 
+    React.useEffect(() => { handleSave() }, [fieldName, isEditable, dateFormat, defaultDate])
+
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Configurar Campo de Fecha</Text>
+            <Text style={styles.title}>{fieldName || 'Nuevo campo de Fecha'}</Text>
 
             <Divider/>
 
@@ -116,74 +88,118 @@ const DateConstructor = ({ field = {}, onSave }) => {
             <Divider/>
 
             <View style={styles.field}>
-                <Text style={styles.subtitle}>Formato de Fecha</Text>
-                <View style={styles.buttonGroup}>
-                    {[
-                        "DD/MM/YYYY",
-                        "MM/DD/YYYY",
-                        "YYYY/MM/DD",
-                        "YYYY/DD/MM",
-                        "MM/YYYY/DD",
-                        "DD/YYYY/MM"
-                    ].map((format) => (
-                        <TouchableOpacity
+                <TouchableOpacity style={styles.headerRow} onPress={() => setShowDateFormats(!showDateFormats)}>
+                    <Text style={styles.subtitle}>Formato de Fecha</Text>
+                    <Button
+                        appearance='ghost'
+                        accessoryLeft={props => <Icon name={showDateFormats ? 'arrow-ios-upward-outline' : 'arrow-ios-downward-outline'} {...props} />}
+                        onPress={() => setShowDateFormats(!showDateFormats)}
+                        style={styles.toggleButton}
+                    />
+                </TouchableOpacity>
+                {showDateFormats && (
+                    <View style={styles.buttonGroup}>
+                        {formats.map((format) => (
+                            <TouchableOpacity
                             key={format}
                             style={[
                                 styles.formatButton,
                                 dateFormat === format && styles.selectedFormatButton
                             ]}
                             onPress={() => setDateFormat(format)}
-                        >
+                            accessibilityLabel={`Formato de fecha ${format}`}
+                            accessibilityRole="button"
+                            >
                             <Text
                                 style={[
-                                    styles.formatText,
-                                    dateFormat === format && styles.selectedFormatText
+                                styles.formatText,
+                                dateFormat === format && styles.selectedFormatText
                                 ]}
                             >
                                 {format}
                             </Text>
-                        </TouchableOpacity>
-                    ))}
-                </View>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
+                )}
             </View>
             
             <Divider />
 
-            <Datepicker
-                style={{marginBottom: "4%"}}
-                date={date}
-                onSelect={nextDate => {
-                    setDate(nextDate);
-                }}
-                placeholder={dateFormat}
-                min={new Date(1900, 0, 1)}
-                max={new Date(2100, 11, 31)}
-                dateService={configureDDateService}
-            />
+            <TouchableOpacity style={styles.headerRow} onPress={() => setShowDefaultDate(!showDefaultDate)}>
+                <Text style={styles.subtitle}>Fecha predeterminada</Text>
+                <Button
+                    appearance='ghost'
+                    accessoryLeft={(props) => <Icon name={showDefaultDate ? 'arrow-ios-upward-outline' : 'arrow-ios-downward-outline'} {...props} />}
+                    onPress={() => setShowDefaultDate(!showDefaultDate)}
+                    style={styles.toggleButton}
+                />
+            </TouchableOpacity>
+            {showDefaultDate &&
+                <View style={styles.submenu}>
+                    <List data={[
+                                { title: 'La fecha al momento de responder', checked: defaultDate === 'hoy', onPress: () => {setDefaultDate('hoy'); setShowDefaultDatePicker(false)}},
+                                { title: 'Usar una fecha predefinida', checked: defaultDate !== 'hoy', onPress: () => { setDefaultDate(formatCurrentDate(date)); setShowDefaultDatePicker(true) }}
+                            ]}
+                            renderItem={({ item }) => (
+                                <ListItem
+                                    title={item.title}
+                                    accessoryLeft={() => (
+                                        <CheckBox
+                                            status='success'
+                                            checked={item.checked}
+                                            onChange={item.onPress}
+                                            style={{ marginTop: '1%' }}
+                                        />
+                                    )}
+                                    onPress={item.onPress}
+                                />
+                            )}
+                        />
+                    {showDefaultDatePicker &&
+                        <Datepicker
+                            style={{paddingLeft:12}}
+                            date={date}
+                            onSelect={nextDate => {
+                                setDate(nextDate)
+                            }}
+                            placeholder={dateFormat}
+                            min={new Date(1900, 0, 1)}
+                            max={new Date(2100, 11, 31)}
+                            dateService={configureDDateService}
+                            accessoryRight={<Icon name='calendar-outline' />}
+                        />
+                    }
+                </View>
+            }
+
 
             <Divider/>
 
             <View style={styles.field}>
-                <Text style={styles.subtitle}>Características opcionales</Text>
-                <CheckBox
-                    style={{
-                        alignSelf: "flex-start",
-                        margin: "2%",
-                        marginTop: "4%",
-                    }}
-                    status='success'
-                    checked={isEditable}
-                    onChange={setIsEditable}
-                >
-                    Editable
-                </CheckBox>
+                <TouchableOpacity style={styles.headerRow} onPress={() => setShowOptionalFeatures(!showOptionalFeatures)}>
+                    <Text style={styles.subtitle}>Características opcionales</Text>
+                    <Button
+                    appearance='ghost'
+                    accessoryLeft={props => <Icon name={showOptionalFeatures ? 'arrow-ios-upward-outline' : 'arrow-ios-downward-outline'} {...props} />}
+                    onPress={() => setShowOptionalFeatures(!showOptionalFeatures)}
+                    style={styles.toggleButton}
+                    />
+                </TouchableOpacity>
+                {showOptionalFeatures && (
+                    <View style={styles.submenu}>
+                    <CheckBox
+                        style={[styles.checkbox, { padding: '4%', alignSelf: 'flex-start' }]}
+                        status='success'
+                        checked={!isEditable}
+                        onChange={setIsEditable}
+                    >
+                        Editable
+                    </CheckBox>
+                    </View>
+                )}
             </View>
 
-            <Divider/>
-
-            <View style={styles.saveButtonContainer}>
-                <Button accessoryLeft={saveIcon} title="Guardar Campo" onPress={handleSave} >Guardar Campo</Button>
-            </View>
         </View>
     )
 }
@@ -203,6 +219,7 @@ const styles = StyleSheet.create({
     subtitle: {
         fontSize: 16,
         marginBottom: 8,
+        fontWeight: 'bold',
     },
     field: {
         marginTop: "4%",
@@ -221,16 +238,16 @@ const styles = StyleSheet.create({
     buttonGroup: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
     },
     formatButton: {
-        padding: "1%",
-        borderRadius: 4,
+        padding: "3%",
+        borderRadius: 0,
         borderWidth: 1,
         borderColor: '#cccccc',
-        marginBottom: 8,
+        margin:0,
         backgroundColor: '#f9f9f9',
-        width: '30%',
+        width: '33%',
         alignItems: 'center',
     },
     selectedFormatButton: {
@@ -247,6 +264,24 @@ const styles = StyleSheet.create({
     saveButtonContainer: {
         marginTop: 20,
         alignSelf: 'center',
+    },
+
+
+    headerRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between', // Para que el botón esté a la derecha
+        borderRadius: 4, // Bordes redondeados
+    },
+    saveButtonContainer: {
+        marginTop: 20,
+        alignSelf: 'center',
+    },
+    submenu: {
+        marginLeft: "4%", // Mover los elementos levemente a la derecha
+        marginBottom: "4%", // Mover los elementos levemente hacia abajo
+        borderLeftWidth: 4, // Solo el borde izquierdo
+        borderLeftColor: '#cccccc', // Color del borde izquierdo
     },
 })
 
