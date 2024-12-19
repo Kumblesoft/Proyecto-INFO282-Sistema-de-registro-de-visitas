@@ -63,7 +63,7 @@ const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
      */
     const handleSubmit = async () => {
         const requiredFields = formData.campos.filter(field => field.obligatorio)
-        const emptyFields = requiredFields.some(field => !(formState.current.get(field.salida)[1] ===  null))
+        const emptyFields = requiredFields.some(field => (formState.current.get(field.salida)[1] ===  null))
 
         if (emptyFields) {
             requiredFieldRefs.current.forEach(ref => ref())
