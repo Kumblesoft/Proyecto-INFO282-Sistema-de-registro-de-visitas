@@ -39,10 +39,11 @@ const SavedForms = () => {
     const [isRangeMode, setIsRangeMode] = useState(false)
     const [isLastsMode, setIsLastsMode] = useState(false)
     const [isFilterVisible, setFilterVisible] = useState(false)
-    const [lasts, setLasts] = useState(0)
+    const [lasts, setLasts] = useState(null)
     const [confirmDelete, setConfirmDelete] = useState(false)
     const [expandedTypes, setExpandedTypes] = useState({})
     const [visible, setVisible] = useState(false)
+    const [rangeModal, setRangeModal] = useState(false)
 
     const database = getDatabaseInstance(useSQLiteContext())
 
@@ -73,7 +74,7 @@ const SavedForms = () => {
     const filters = [
         { value: "Fecha ↓", func: () => forms.sort((a, b) => b.fecha - a.fecha) },
         { value: "Fecha ↑", func: () => forms.sort((a, b) => a.fecha - b.fecha) },
-        { value: "Rango", func: () => setIsRangeMode(true) },
+        { value: "Rango", func: () => (setIsRangeMode(true), setRangeModal(true)) },
         { value: "Ultimos", func: () => setIsLastsMode(true) }
     ]
 
@@ -207,12 +208,6 @@ const SavedForms = () => {
         selectedItem.func(newForms)
         setForms(newForms)
     }
-    const handleLasts = value => {
-        setLasts(value)
-        const newForms = baseForms
-        newForms.sort((a, b) => b.fecha - a.fecha)
-        setForms(newForms.slice(newForms.length - value))
-    }
     const toggleSelectByFormName = formName => {
         setIsSelectionMode(true)
         const currentSelectedForms = new Set(selectedForms)
@@ -300,7 +295,7 @@ const SavedForms = () => {
             </TouchableOpacity>
             {expandedTypes[item] && (
                 <FlatList
-                    data={groupedForms[item]}
+                    data={isLastsMode && lasts ? groupedForms[item].reverse().slice(0,lasts) : groupedForms[item].reverse()}
                     renderItem={item => renderFormItem({item: item.item, highlightColor: highlightColor})}
                     keyExtractor={form => form.fecha.toString()}
                 />
@@ -308,6 +303,66 @@ const SavedForms = () => {
         </View>
     )}
 
+    const renderDeleteModal = () => {
+        const selectedGroup = forms.reduce((acc, form) => {
+            if (selectedForms.includes(form.fecha)) {
+                if (!acc[form.plantilla])
+                    acc[form.plantilla] = []
+                acc[form.plantilla].push(form)
+                return acc
+            }
+            return acc
+        }, {})
+
+
+        return (                    
+        <Layout style={styles.container}>
+            <Text>¿Está seguro/a de que desea eliminar los siguientes formularios?</Text>
+
+            <Layout style={styles.responseContainer}>
+                <ScrollView style={{ maxHeight: height * 0.5 }}>
+                    {Object.keys(selectedGroup).map(key => {
+                        return (
+                            <Layout style={styles.containerRespuestas}>
+                                <Text style={styles.key}>{key}</Text>
+                                {selectedGroup[key].map((item) => 
+                                    {const dateString = new Date(item.fecha).toLocaleString({}, {
+                                        hour12: false, weekday:'long', year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', second: '2-digit'})
+                                    return (
+                                        <Layout style={styles.containerBox}>
+                                            <Text>{dateString}</Text>
+                                        </Layout>
+                                    )})}
+                            </Layout>
+                        )
+                    })}
+                </ScrollView>
+            </Layout>
+            <Layout style={styles.buttonContainer}>
+                <Button
+                    accessoryLeft={BackIcon}
+                    style={{flex: 1, borderRadius: 0, borderTopLeftRadius: 10, borderBottomLeftRadius: 10}}
+                    onPress={() => confirmDelete[1] ? (setConfirmDelete([false, false]), setModalVisible(true)) : setConfirmDelete([false, false])}>
+                    <Text>
+                        Cancelar
+                    </Text>
+                </Button>
+                <Button accessoryLeft={deleteIcon}
+                    status='danger'
+                    style={{flex: 1, borderRadius: 0, borderTopRightRadius: 10, borderBottomRightRadius: 10}}
+                    onPress={() => {
+                        deleteSelectedForms()
+                        setConfirmDelete([false, false])
+                    }}>
+                    <Text>
+                        Eliminar
+                    </Text>
+                </Button>
+
+            </Layout>
+        </Layout>
+        )
+    }
 
     return (
         <>
@@ -339,7 +394,10 @@ const SavedForms = () => {
                                             <MenuItem
                                                 key={item.value}
                                                 title={item.value}
-                                                onPress={() => handleFilter({ row: index })} // Pasa un objeto con el índice
+                                                onPress={() => {
+                                                    setFilterVisible(false)
+                                                    handleFilter({ row: index })
+                                                }} 
                                             />
                                         ) : null
                                     ))}
@@ -353,31 +411,43 @@ const SavedForms = () => {
                         </Modal>
                     )}
 
-                    {index && index.row === 2 ?
-                        <Layout style={styles.buttonDateStyle}>
-                            <Text style={styles.textDateStyle}>
-                                {'Inicio: ' + (range.startDate ? configuredDateService.format(range.startDate) : '-') + ', Final: ' + (range.endDate ? configuredDateService.format(range.endDate) : '-')}
-                            </Text>
+                    {isRangeMode?
+                        <Layout style={{flexDirection: 'row', alignItems: 'center', maxWidth: '90%', justifyContent: 'center', backgroundColor:'#f3f3f3', paddingEnd: '10%'}}>
+                            <TouchableOpacity onPress={() => setRangeModal(true)} style={styles.buttonDateStyle}>
+                                <Layout >
+                                    <Text style={styles.textDateStyle}>
+                                        {'Inicio: ' + (range.startDate ? configuredDateService.format(range.startDate) : '-') + ', Final: ' + (range.endDate ? configuredDateService.format(range.endDate) : '-')}
+                                    </Text>
+                                </Layout>
+                            </TouchableOpacity>
+                            <Button appearance='ghost' accessoryRight={(<Icon name='close-outline' fill="#F32013" />)} onPress={() => {setIsRangeMode(false) 
+                                setRange({}) 
+                                setForms(baseForms)}}/>
                         </Layout> : <></>
                     }
-                    {index && index.row === 3 ? <Input style={styles.inputUltimos} placeholder='¿Cuantas respuestas desea?' value={lasts} OnChange={handleLasts} keyboardType='numeric' /> : <></>}
+                    {isLastsMode ? 
+                    <Layout style={{flexDirection: 'row', alignItems: 'center', maxWidth: '90%', justifyContent: 'center', backgroundColor:'#f3f3f3', paddingEnd: '10%'}}>
+                        <Input placeholder='¿Cuantas respuestas desea?' value={lasts} onChangeText={nextValue => {setLasts(nextValue)}} style={{width : '100%'}} keyboardType='numeric' />
+                        <Button appearance='ghost' accessoryRight={(<Icon name='close-outline' fill="#F32013" />)} onPress={() => (setIsLastsMode(false), setLasts(null))}/>
+                    </Layout>: <></>}
                 </Layout>
-                <FlatList
+                {lasts != 0 ? <FlatList
                     data={Object.keys(groupedForms)}
                     renderItem={renderTypeItem}
                     keyExtractor={item => item.toString()}
                     contentContainerStyle={styles.listContainer}
-                />
-                <Modal visible={isRangeMode}>
+                /> : <></>}
+                <Modal visible={rangeModal} backdropStyle={styles.backdrop}>
                     <Layout style={styles.containerCalendar}>
                         <RangeCalendar range={range} onSelect={nextrange => setRange(nextrange)} />
                         <View style={styles.buttonRangeContainer}>
-                            <Button style={{ marginRight: "3%" }} status='info' onPress={() => setIsRangeMode(false)}>
+                            <Button style={{ marginRight: "3%" }} status='info' onPress={() => (setRangeModal(false))}>
                                 <Text>Volver</Text>
                             </Button>
                             <Button style={{ marginLeft: "3%" }}
                                 onPress={() => {
-                                    setIsRangeMode(false)
+                                    setRangeModal(false)
+                                    setIsRangeMode(true)
                                     handleRange()
                                 }}>
                                 <Text>
@@ -388,52 +458,7 @@ const SavedForms = () => {
                     </Layout>
                 </Modal>
                 <Modal visible={confirmDelete[0]} backdropStyle={styles.backdrop}>
-                    <Layout style={styles.container}>
-                        <Text>¿Está seguro/a de que desea eliminar los siguientes formularios?</Text>
-
-                        <Layout style={styles.responseContainer}>
-                            <ScrollView style={{ maxHeight: height * 0.5 }}>
-                                {Object.keys(groupedForms).map(key => {
-                                    const selectedSet = new Set(selectedForms)
-                                    return (
-                                        <Layout style={styles.containerRespuestas}>
-                                            <Text style={styles.key}>{key}</Text>
-                                            {groupedForms[key].filter((value) => 
-                                                selectedSet.has(value.fecha)).map((item) => {const dateString = new Date(item.fecha).toLocaleString(undefined, {
-                                                    hour12: false, weekday:'long', year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', second: '2-digit'})
-                                                return (
-                                                    <Layout style={styles.containerBox}>
-                                                        <Text>{dateString}</Text>
-                                                    </Layout>
-                                                )})}
-                                        </Layout>
-                                    )
-                                })}
-                            </ScrollView>
-                        </Layout>
-                        <Layout style={styles.buttonContainer}>
-                            <Button
-                                accessoryLeft={BackIcon}
-                                style={{flex: 1, borderRadius: 0, borderTopLeftRadius: 10, borderBottomLeftRadius: 10}}
-                                onPress={() => confirmDelete[1] ? (setConfirmDelete([false, false]), setModalVisible(true)) : setConfirmDelete([false, false])}>
-                                <Text>
-                                    Cancelar
-                                </Text>
-                            </Button>
-                            <Button accessoryLeft={deleteIcon}
-                                status='danger'
-                                style={{flex: 1, borderRadius: 0, borderTopRightRadius: 10, borderBottomRightRadius: 10}}
-                                onPress={() => {
-                                    deleteSelectedForms()
-                                    setConfirmDelete([false, false])
-                                }}>
-                                <Text>
-                                    Eliminar
-                                </Text>
-                            </Button>
-
-                        </Layout>
-                    </Layout>
+                    {renderDeleteModal()}
                 </Modal>
 
 
@@ -539,18 +564,18 @@ const styles = StyleSheet.create({
         borderColor: '#D1D1D1',
     },
     buttonDateStyle: {
-        backgroundColor: '#ededed',
+        backgroundColor: '#f8f7fd',
         borderRadius: 6,
-        padding: "2%",
-        marginTop: "3%",
-        marginBottom: "3%",
         borderWidth: 1,
         borderColor: '#D1D1D1',
         alignItems: 'center',
         alignSelf: 'start',
+        height: 40,
+        width: '100%'
     },
     textDateStyle: {
         color: '#7D7D7D',
+        backgroundColor: '#f8f7fd',
         fontWeight: '500',
         textAlign: 'center',
     },
@@ -558,6 +583,7 @@ const styles = StyleSheet.create({
         margin: 0,
         height: height,
         justifyContent: 'flex-end',
+        zIndex: 10,
     },
     safeArea: {
         backgroundColor: '#00baa4'
