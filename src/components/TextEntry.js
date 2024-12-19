@@ -73,9 +73,7 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldR
 
 
   const isPermissionGranted = Boolean(permission?.granted)
-  useEffect(() => {
-    onSelect(null)
-  })
+  
   useEffect(() => {
     if (QRfield && !isPermissionGranted) {
       requestPermission()
