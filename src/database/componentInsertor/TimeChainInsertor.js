@@ -8,7 +8,7 @@ export default class TimeChainInsertor extends ChainInsertor {
             `INSERT INTO ${fieldTableName} (fk_field, default_time) VALUES (?,?)`,
             [fieldId, fieldObject['hora predeterminada']]
         )
-        fieldObject.limitatciones?.forEach(limitation => {
+        fieldObject.limitaciones?.forEach(limitation => {
             this.db.runSync(
                 'INSERT INTO limitations_intermediary (fk_field, fk_limitation) VALUES (?,?)',
                 [fieldId, this.db.getFirstSync('SELECT id FROM limitations WHERE name = ?', [limitation]).id]
@@ -34,7 +34,7 @@ export default class TimeChainInsertor extends ChainInsertor {
         limitations.forEach(limitation => outputLimitations.push(this.db.getFirstSync(`SELECT name FROM limitations WHERE id = ?`, [limitation]).name))
 
         const horaPredeterminada = this.db.getFirstSync(`SELECT default_time FROM ${fieldTableName} WHERE fk_field = ?`, [fieldId]).default_time
-
+        
         return {
             tipo: 'hora',
             "hora predeterminada": horaPredeterminada,

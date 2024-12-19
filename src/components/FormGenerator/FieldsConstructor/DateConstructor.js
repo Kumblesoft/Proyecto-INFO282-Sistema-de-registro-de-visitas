@@ -167,7 +167,7 @@ const DateConstructor = ({ field = {}, onSave }) => {
                             min={new Date(1900, 0, 1)}
                             max={new Date(2100, 11, 31)}
                             dateService={configureDDateService}
-                            accessoryRight={<Icon name='calendar-outline' />}
+                            accessoryRight={<Icon name='calendar-outline' fill='#666666'/>}
                         />
                     }
                 </View>

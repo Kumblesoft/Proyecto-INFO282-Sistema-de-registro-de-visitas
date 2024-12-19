@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Platform, View, StyleSheet } from 'react-native'
 import { Text, Layout, Icon, Datepicker, NativeDateService } from '@ui-kitten/components'
+import { decodeDate } from '../commonStructures/DateFuncions'
 /**
  * Converts a custom date format to a format compatible with date-fns.
  *
@@ -34,8 +35,8 @@ const manageDateFormat = (format) => {
 export const OptionDateFeatures = (options = {}) => {
   return {
     title: options.title ?? "",
-    defaultDate: options.defaultDate === "hoy" ? new Date() : new Date(options.defaultDate),
     dateFormat: manageDateFormat(options.dateFormat ?? 'DD/MM/YYYY'),
+    defaultDate: options.defaultDate === "hoy" ? new Date() : decodeDate(options.defaultDate, options.dateFormat ?? 'DD/MM/YYYY'),
     disabled: options.disabled ?? false,
     required: options.required ?? false,
   }
@@ -67,6 +68,7 @@ const DateSelector = ({ value, onChange, optionalFeatures, requiredFieldRef, ref
   useEffect(() => {
     if (defaultDate && !hasInitialized.current) {
       setSelectedDate(defaultDate)
+      console.log('defaultDate:', defaultDate, 'dateFormat:', dateFormat)
       const formattedDate = configuredDateService.format(defaultDate, dateFormat)
       onChange(formattedDate)
       setIsRequiredAlert(false)

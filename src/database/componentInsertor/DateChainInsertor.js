@@ -9,7 +9,7 @@ export default class DateChainInsertor extends ChainInsertor {
             `INSERT INTO ${fieldTableName} (fk_field, date_format, default_date) VALUES (?,?,?)`,
             [fieldId, fieldObject.formato, fieldObject['fecha predeterminada']]
         )
-        fieldObject.limitatciones?.forEach(limitation => {
+        fieldObject.limitaciones?.forEach(limitation => {
             this.db.runSync(
                 'INSERT INTO limitations_intermediary (fk_field, fk_limitation) VALUES (?,?)',
                 [fieldId, this.db.getFirstSync('SELECT id FROM limitations WHERE name = ?', [limitation]).id]
