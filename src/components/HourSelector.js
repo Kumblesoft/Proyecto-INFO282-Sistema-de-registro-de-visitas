@@ -76,7 +76,7 @@ export default function HourSelector({ onChange, optionalFeatures = {}, required
         <Layout style={styles.container}>
 
             <Layout style={styles.text}>
-                <Text style={styles.text} category={"p2"}>
+                <Text style={styles.text}>
                     {title}
                 </Text>
             </Layout>
@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
         height: 32,
     },
     text: {
-        fontSize: 18,
+        fontSize: 17,
         marginHorizontal: '1%',
         flexDirection: 'row',
         flexWrap: 'wrap',

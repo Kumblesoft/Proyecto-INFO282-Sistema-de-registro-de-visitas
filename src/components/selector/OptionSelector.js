@@ -92,7 +92,7 @@ export default function OptionSelector({ type, items, onSelect, requiredFieldRef
         <>
             <Layout style={styles.containerBox}>
                 {!title ? <></> : 
-                    <Text category="h6" style={styles.titles}>
+                    <Text style={styles.titles}>
                         {title}
                         {required ? <Text style={{ color: 'red' }}>*</Text> : ""}
                         {maxChecked != null ? ` (Seleccione ${maxChecked})` : ""}
@@ -142,6 +142,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 10,
         margin: 2,
+        fontSize: 17
     },
     alert: {
         flex: 1,

@@ -38,10 +38,10 @@ const RadioButtonGroup = forwardRef(({ items, onSelect, defaultOption ,error, di
 const styles = StyleSheet.create({
   radio: {
     marginVertical: 5,
-    fontSize: 18,
+    fontSize: 17,
   },
   radioText: {
-    fontSize: 18, 
+    fontSize: 17, 
   },
 })
 

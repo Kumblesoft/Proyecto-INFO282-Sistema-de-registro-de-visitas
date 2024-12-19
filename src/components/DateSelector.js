@@ -140,7 +140,7 @@ const DateSelector = ({ value, onChange, optionalFeatures, requiredFieldRef, ref
 
 const styles = StyleSheet.create({
   text: {
-    fontSize: 18,
+    fontSize: 17,
     marginHorizontal: '1%',
     flexDirection: 'row',
     flexWrap: 'wrap',

@@ -50,8 +50,7 @@ const styles = StyleSheet.create({
     marginVertical: 5, // Espacio entre los checkboxes
   },
   checkboxText: {
-    fontSize: 18, // Tamaño de fuente más grande
-    
+    fontSize: 17, // Tamaño de fuente más grande
   }
 })
 
