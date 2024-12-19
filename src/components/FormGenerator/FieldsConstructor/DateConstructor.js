@@ -15,7 +15,7 @@ const DateConstructor = ({ field = {}, onSave }) => {
     const [fieldName, setFieldName] = useState(field.name || "")
     const [defaultDate, setDefaultDate] = useState(field.defaultDate || "hoy")
     const [date, setDate] = useState(new Date())
-    const [isEditable, setIsEditable] = useState(field.isEditable || true)
+    const [isNotEditable, setIsNotEditable] = useState(field.isNotEditable || false)
     const [dateFormat, setDateFormat] = useState("DD/MM/YYYY") // Formato por defecto
 
     const [showDefaultDate, setShowDefaultDate] = useState(false)
@@ -56,7 +56,7 @@ const DateConstructor = ({ field = {}, onSave }) => {
             tipo: 'fecha',
             nombre: fieldName,
             salida: fieldName.toLowerCase().replace(/ /g, "_"),
-            limitaciones: [isEditable ? "editable" : "no editable"],
+            limitaciones: [isNotEditable ? "no editable" : "editable"],
             formato: dateFormat,
             "fecha predeterminada": defaultDate
         }
@@ -67,7 +67,7 @@ const DateConstructor = ({ field = {}, onSave }) => {
         }
     }
 
-    React.useEffect(() => { handleSave() }, [fieldName, isEditable, dateFormat, defaultDate])
+    React.useEffect(() => { handleSave() }, [fieldName, isNotEditable, dateFormat, defaultDate])
 
     return (
         <View style={styles.container}>
@@ -191,10 +191,10 @@ const DateConstructor = ({ field = {}, onSave }) => {
                     <CheckBox
                         style={[styles.checkbox, { padding: '4%', alignSelf: 'flex-start' }]}
                         status='success'
-                        checked={!isEditable}
-                        onChange={setIsEditable}
+                        checked={isNotEditable}
+                        onChange={setIsNotEditable}
                     >
-                        Editable
+                        No editable
                     </CheckBox>
                     </View>
                 )}
