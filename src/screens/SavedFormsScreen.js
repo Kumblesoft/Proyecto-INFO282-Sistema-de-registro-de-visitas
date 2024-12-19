@@ -39,10 +39,11 @@ const SavedForms = () => {
     const [isRangeMode, setIsRangeMode] = useState(false)
     const [isLastsMode, setIsLastsMode] = useState(false)
     const [isFilterVisible, setFilterVisible] = useState(false)
-    const [lasts, setLasts] = useState(0)
+    const [lasts, setLasts] = useState(null)
     const [confirmDelete, setConfirmDelete] = useState(false)
     const [expandedTypes, setExpandedTypes] = useState({})
     const [visible, setVisible] = useState(false)
+    const [rangeModal, setRangeModal] = useState(false)
 
     const database = getDatabaseInstance(useSQLiteContext())
 
@@ -58,22 +59,24 @@ const SavedForms = () => {
         format: 'DD/MM/YYYY'
     })
 
-    const handleRange = () => {
+    const handleRange = (isOn) => {
         const startInt = range.startDate ? range.startDate.getTime() : null
         const endInt = range.endDate ? range.endDate.getTime() : null
-        if (startInt) {
+        if (startInt && isOn) {
             endInt ? setForms(baseForms.filter((data) => {
                 return data.fecha >= startInt && data.fecha <= endInt + 86399999
             })) : setForms(baseForms.filter((data) => {
                 return data.fecha >= startInt
             }))
+        }else{
+            setForms(baseForms)
         }
     }
 
     const filters = [
         { value: "Fecha ↓", func: () => forms.sort((a, b) => b.fecha - a.fecha) },
         { value: "Fecha ↑", func: () => forms.sort((a, b) => a.fecha - b.fecha) },
-        { value: "Rango", func: () => setIsRangeMode(true) },
+        { value: "Rango", func: () => (setIsRangeMode(true), setRangeModal(true)) },
         { value: "Ultimos", func: () => setIsLastsMode(true) }
     ]
 
@@ -294,7 +297,7 @@ const SavedForms = () => {
             </TouchableOpacity>
             {expandedTypes[item] && (
                 <FlatList
-                    data={isLastsMode ? groupedForms[item].reverse().slice(0,lasts) : groupedForms[item].reverse()}
+                    data={isLastsMode && lasts ? groupedForms[item].reverse().slice(0,lasts) : groupedForms[item].reverse()}
                     renderItem={item => renderFormItem({item: item.item, highlightColor: highlightColor})}
                     keyExtractor={form => form.fecha.toString()}
                 />
@@ -396,7 +399,7 @@ const SavedForms = () => {
                                                 onPress={() => {
                                                     setFilterVisible(false)
                                                     handleFilter({ row: index })
-                                                }} // Pasa un objeto con el índice
+                                                }} 
                                             />
                                         ) : null
                                     ))}
@@ -410,36 +413,44 @@ const SavedForms = () => {
                         </Modal>
                     )}
 
-                    {index && index.row === 2 ?
-                        <Layout style={styles.buttonDateStyle}>
-                            <Text style={styles.textDateStyle}>
-                                {'Inicio: ' + (range.startDate ? configuredDateService.format(range.startDate) : '-') + ', Final: ' + (range.endDate ? configuredDateService.format(range.endDate) : '-')}
-                            </Text>
+                    {isRangeMode?
+                        <Layout style={{flexDirection: 'row', alignItems: 'center', maxWidth: '90%', justifyContent: 'center', backgroundColor:'#f3f3f3', paddingEnd: '10%'}}>
+                            <TouchableOpacity onPress={() => setRangeModal(true)} style={styles.buttonDateStyle}>
+                                <Layout >
+                                    <Text style={styles.textDateStyle}>
+                                        {'Inicio: ' + (range.startDate ? configuredDateService.format(range.startDate) : '-') + ', Final: ' + (range.endDate ? configuredDateService.format(range.endDate) : '-')}
+                                    </Text>
+                                </Layout>
+                            </TouchableOpacity>
+                            <Button appearance='ghost' accessoryRight={(<Icon name='close-outline' fill="#F32013" />)} onPress={() => {setIsRangeMode(false) 
+                                setRange({}) 
+                                handleRange(false)}}/>
                         </Layout> : <></>
                     }
                     {isLastsMode ? 
-                    <Layout style={{flexDirection: 'row', alignItems: 'center', maxWidth: '90%', justifyContent: 'center', backgroundColor:'#ededed', paddingEnd: '10%'}}>
+                    <Layout style={{flexDirection: 'row', alignItems: 'center', maxWidth: '90%', justifyContent: 'center', backgroundColor:'#f3f3f3', paddingEnd: '10%'}}>
                         <Input placeholder='¿Cuantas respuestas desea?' value={lasts} onChangeText={nextValue => {setLasts(nextValue)}} style={{width : '100%'}} keyboardType='numeric' />
-                        <Button accessoryRight={(<Icon name='close-outline' fill="#fff" />)} onPress={() => setIsLastsMode(false)}/>
+                        <Button appearance='ghost' accessoryRight={(<Icon name='close-outline' fill="#F32013" />)} onPress={() => (setIsLastsMode(false), setLasts(null))}/>
                     </Layout>: <></>}
                 </Layout>
-                <FlatList
+                {lasts != 0 ? <FlatList
                     data={Object.keys(groupedForms)}
                     renderItem={renderTypeItem}
                     keyExtractor={item => item.toString()}
                     contentContainerStyle={styles.listContainer}
-                />
-                <Modal visible={isRangeMode}>
+                /> : <></>}
+                <Modal visible={rangeModal} backdropStyle={styles.backdrop}>
                     <Layout style={styles.containerCalendar}>
                         <RangeCalendar range={range} onSelect={nextrange => setRange(nextrange)} />
                         <View style={styles.buttonRangeContainer}>
-                            <Button style={{ marginRight: "3%" }} status='info' onPress={() => setIsRangeMode(false)}>
+                            <Button style={{ marginRight: "3%" }} status='info' onPress={() => (setRangeModal(false))}>
                                 <Text>Volver</Text>
                             </Button>
                             <Button style={{ marginLeft: "3%" }}
                                 onPress={() => {
-                                    setIsRangeMode(false)
-                                    handleRange()
+                                    setRangeModal(false)
+                                    setIsRangeMode(true)
+                                    handleRange(true)
                                 }}>
                                 <Text>
                                     Confirmar
@@ -555,18 +566,18 @@ const styles = StyleSheet.create({
         borderColor: '#D1D1D1',
     },
     buttonDateStyle: {
-        backgroundColor: '#ededed',
+        backgroundColor: '#f8f7fd',
         borderRadius: 6,
-        padding: "2%",
-        marginTop: "3%",
-        marginBottom: "3%",
         borderWidth: 1,
         borderColor: '#D1D1D1',
         alignItems: 'center',
         alignSelf: 'start',
+        height: 40,
+        width: '100%'
     },
     textDateStyle: {
         color: '#7D7D7D',
+        backgroundColor: '#f8f7fd',
         fontWeight: '500',
         textAlign: 'center',
     },
