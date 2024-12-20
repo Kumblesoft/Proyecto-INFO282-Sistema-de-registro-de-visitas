@@ -22,6 +22,8 @@ export default class DateChainInsertor extends ChainInsertor {
         if (fieldTypeName != 'fecha')
             return this.next && this.next.delete(fieldId, fieldTableName, fieldTypeName)
 
+        this.db.runSync('DELETE FROM limitations_intermediary WHERE fk_field = ?', [fieldId])
+
         this.db.runSync(
             `DELETE FROM ${fieldTableName} WHERE fk_field = ?`,
             [fieldId]
