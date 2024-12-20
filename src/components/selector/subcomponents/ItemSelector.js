@@ -1,17 +1,21 @@
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react'
-import { Select, SelectItem } from '@ui-kitten/components'
+import { IndexPath, Select, SelectItem } from '@ui-kitten/components'
 import { StyleSheet } from 'react-native'
 
 
 
-const ItemSelector = forwardRef(({ items, onSelect, value,defaultOption, placeholder,error }, ref) => {
-  const [selectedIndex, setSelectedIndex] = useState(null) // Índice seleccionado
-  const [selectedValue, setSelectedValue] = useState(null) // Valor inicial
+const ItemSelector = forwardRef(({ items, onSelect, value, defaultOption, placeholder, error, disabled }, ref) => {
+  console.log(defaultOption)
+  
+  const [selectedOptionIndex, setSelectedOptionIndex] = useState(new IndexPath(defaultOption)) // Índice seleccionado
+  const [selectedValue, setSelectedValue] = useState(defaultOption ? items[defaultOption].nombre : placeholder) // Valor inicial
 
-
-  function refreshSelector(){
-    setSelectedIndex(null)
-    setSelectedValue(null)
+  function refreshSelector() {
+    
+    setSelectedOptionIndex(new IndexPath(defaultOption))
+    setSelectedValue(defaultOption ? items[defaultOption].nombre: placeholder)
+    if (onSelect) onSelect(defaultOption ? items[defaultOption].valor : null)
+    return defaultOption ? items[defaultOption].valor : null
   }
   useImperativeHandle(ref, () => ({
     refreshSelector,
@@ -20,28 +24,24 @@ const ItemSelector = forwardRef(({ items, onSelect, value,defaultOption, placeho
   const handleSelect = index => {
     const selectedItem = items[index.row] // Obtén el elemento seleccionado usando el índice
 
-    setSelectedIndex(index) // Actualiza el índice seleccionado
+    setSelectedOptionIndex(new IndexPath(index)) // Actualiza el índice seleccionado
     setSelectedValue(selectedItem.nombre) // Cambia aquí para mostrar el nombre
 
     if (onSelect) onSelect(selectedItem.valor) // Llama al callback con el valor seleccionado
   }
 
-  useEffect(() => {
-    const selectedItem = items.find(item => item.valor === value) // Encuentra el elemento por el valor
-    setSelectedValue(selectedItem ? selectedItem.nombre : null) // Muestra el nombre si se encuentra, o null
-  }, [value, items])
-
   return (
     <Select
-      selectedIndex={selectedIndex}
+      selectedIndex={selectedOptionIndex}
       onSelect={handleSelect}
-      status={error? 'danger':'primary'}
+      status={error ? 'danger' : 'primary'}
+      disabled={disabled}
       placeholder={placeholder} // Placeholder para el Select
-      value={selectedValue} // Muestra el nombre seleccionado o el placeholder
       style={styles.select} // Aplica estilo para el ancho mínimo 
+      value={selectedValue}
     >
       {items.map(item => (
-        <SelectItem key={item.valor} title={item.nombre} style={styles.colorItem}/> // Crea las opciones del dropdown
+        <SelectItem key={item.valor} title={item.nombre} style={styles.colorItem} /> // Crea las opciones del dropdown
       ))}
     </Select>
   )

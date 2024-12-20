@@ -1,11 +1,13 @@
-import { Result, Err, Ok } from '../commonStructures/resultEnum'
+import { Err, Ok } from '../commonStructures/resultEnum'
 import React, { useState } from 'react'
 import { Image, View, StyleSheet, Alert, Linking, TouchableOpacity, Modal, Text } from 'react-native'
-import {Button, Layout} from '@ui-kitten/components'
+import { Button, Layout } from '@ui-kitten/components'
 import * as ImagePicker from 'expo-image-picker'
 import * as MediaLibrary from 'expo-media-library'
+import * as FileSystem from 'expo-file-system'
 import cameraIcon from '../assets/camera.png'
 import galleryIcon from '../assets/gallery.png'
+
 /**
  * Class representing the configuration settings for the camera.
  */
@@ -17,14 +19,14 @@ class CameraConfiguration {
    * @param {Array<number>} [aspect=[4, 3]] - The aspect ratio for the camera.
    * @param {number} [quality=1] - The quality of the image (0 to 1).
    */
-  constructor(setImage = img => {}, allowsEditing = true, aspect = [4, 3], quality = 1) {
+  constructor(setImage = img => { }, allowsEditing = true, aspect = [4, 3], quality = 1) {
     this.setImage = setImage
     this.allowsEditing = allowsEditing
     this.aspect = aspect
     this.quality = quality
   }
 
-  
+
 
   /**
    * Get the camera configuration settings.
@@ -53,17 +55,17 @@ class CameraConfiguration {
  * 
  * @returns {JSX.Element} Rendered camera component.
  */
-export const Camera = ({ title, required, cameraConfiguration, requiredFieldRef , refreshFieldRef}) => {
+export const Camera = ({ title, required, cameraConfiguration, requiredFieldRef, refreshFieldRef, disabled }) => {
   const [image, setImage] = useState(null)
   const [isMenuVisible, setMenuVisible] = useState(false)
   const [isRequiredAlert, setIsRequiredAlert] = useState(false)
 
   async function openMedia(cameraConfiguration, launchFunction) {
-    
+    if (disabled) return new Err('Camera is disabled').show();
     let mediaPermissions = await ImagePicker.requestMediaLibraryPermissionsAsync()
-    let cameraPermissions = await ImagePicker.requestCameraPermissionsAsync()    
+    let cameraPermissions = await ImagePicker.requestCameraPermissionsAsync()
     let permissionsGranted = mediaPermissions.status === 'granted' && cameraPermissions.status === 'granted'
-    
+
     if (!permissionsGranted) {
       setMenuVisible(false)
       Alert.alert(
@@ -77,7 +79,7 @@ export const Camera = ({ title, required, cameraConfiguration, requiredFieldRef 
     }
     setMenuVisible(true)
     mediaPermissions = await ImagePicker.requestMediaLibraryPermissionsAsync()
-    cameraPermissions = await ImagePicker.requestCameraPermissionsAsync()    
+    cameraPermissions = await ImagePicker.requestCameraPermissionsAsync()
     permissionsGranted = mediaPermissions.status === 'granted' && cameraPermissions.status === 'granted'
     if (!permissionsGranted) return (new Err('Permissions not granted by user')).show()
 
@@ -85,7 +87,7 @@ export const Camera = ({ title, required, cameraConfiguration, requiredFieldRef 
     if (result.canceled) return new Err('Operation cancelled')
 
     const imageUri = result.assets[0].uri
-
+    const base64 = await FileSystem.readAsStringAsync(imageUri, { encoding: FileSystem.EncodingType.Base64 })
     if (launchFunction === ImagePicker.launchCameraAsync) {
       try {
         const asset = await MediaLibrary.createAssetAsync(imageUri)
@@ -95,7 +97,7 @@ export const Camera = ({ title, required, cameraConfiguration, requiredFieldRef 
       }
     }
 
-    cameraConfiguration.setImage(imageUri)
+    cameraConfiguration.setImage(base64)
     setImage(imageUri) // Actualiza la imagen seleccionada
     setIsRequiredAlert(false)
     setMenuVisible(false)
@@ -121,9 +123,9 @@ export const Camera = ({ title, required, cameraConfiguration, requiredFieldRef 
 
   requiredFieldRef.current = () => {
     if (required) {
-        setIsRequiredAlert(true)
+      setIsRequiredAlert(true)
     } else {
-        setIsRequiredAlert(false)
+      setIsRequiredAlert(false)
     }
   }
   refreshFieldRef.current = () => {
@@ -135,17 +137,18 @@ export const Camera = ({ title, required, cameraConfiguration, requiredFieldRef 
       {title && (
         <Text style={styles.title}>
           {title}
-          {required ? "*" : ""}
+          {required ? <Text style={{ color: 'red' }}>*</Text> : ""}
         </Text>
       )}
-      
+
       {/* Contenedor que muestra el icono o imagen seleccionada */}
-      <TouchableOpacity onPress={toggleMenu} 
-      style={[
-        styles.imageContainer, 
-        isRequiredAlert && { backgroundColor: '#FFCCCC' } // Change background to red if isRequiredAlert is true
-      ]}
-      activeOpacity={0.7}>
+      <TouchableOpacity onPress={toggleMenu}
+        disabled={disabled}
+        style={[
+          styles.imageContainer,
+          isRequiredAlert && { backgroundColor: '#FFCCCC' } // Change background to red if isRequiredAlert is true
+        ]}
+        activeOpacity={0.7}>
         {image ? (
           <Image source={{ uri: image }} style={styles.selectedImage} />
         ) : (
@@ -158,23 +161,29 @@ export const Camera = ({ title, required, cameraConfiguration, requiredFieldRef 
       <Modal visible={isMenuVisible} transparent={true} animationType="fade">
         <View style={styles.modalContainer}>
           <View style={styles.menu}>
-          <Text style={styles.title}>Seleccione una opción</Text>
+            <Text style={styles.title}>Seleccione una opción</Text>
+
+            {/* Ícono de cámara */}
             <TouchableOpacity onPress={openCamera} style={styles.menuItem}>
               <Image source={cameraIcon} style={styles.icon} />
               <Text style={styles.menuText}>Cámara</Text>
             </TouchableOpacity>
 
+            {/* Ícono de galería */}
             <TouchableOpacity onPress={openGallery} style={styles.menuItem}>
               <Image source={galleryIcon} style={styles.icon} />
               <Text style={styles.menuText}>Galería</Text>
             </TouchableOpacity>
 
-            {/* Mostrar el botón de eliminar sólo si hay una imagen */}
+            {/* Contenedor de botones (Eliminar y Cerrar) */}
             <Layout style={styles.buttonContainer}>
-              <Button onPress={removeImage} style={styles.deleteButton} status={image ? 'danger' : 'info'}>
-                {"Eliminar"}
-              </Button>
-              <Button onPress={toggleMenu} style = {styles.closeButton} status='info'>
+              {/* Mostrar el botón "Eliminar" solo si hay una imagen */}
+              {image && (
+                <Button onPress={removeImage} style={styles.deleteButton} status="danger">
+                  {"Eliminar"}
+                </Button>
+              )}
+              <Button onPress={toggleMenu} style={styles.closeButton} status="info">
                 {"Cerrar"}
               </Button>
             </Layout>
@@ -209,7 +218,7 @@ const styles = StyleSheet.create({
     marginBottom: 20, // Espacio inferior
     shadowColor: '#000', // Sombra para dar efecto de botón
     borderColor: '#00b7ae',
-    borderWidth: 1, 
+    borderWidth: 1,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
@@ -241,7 +250,7 @@ const styles = StyleSheet.create({
   menuItem: {
     flexDirection: 'row', // Ícono y texto en línea
     alignItems: 'center',
-    marginVertical: 10
+    marginVertical: 5 // Reduce el margen vertical entre los íconos
   },
   icon: {
     width: 40, // Ajusta el tamaño de los íconos del menú
@@ -260,9 +269,10 @@ const styles = StyleSheet.create({
     marginLeft: '3%',
   },
   buttonContainer: {
-      backgroundColor: 'transparent',
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignSelf: 'center',
+    backgroundColor: 'transparent',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignSelf: 'center',
+    marginTop: 20 // Espaciado entre los íconos y los botones
   },
 })

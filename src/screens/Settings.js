@@ -6,6 +6,7 @@ import { LinearGradient } from 'expo-linear-gradient'
 import { IdentifierContext } from '../context/IdentifierContext'
 import { IDInputComponent } from '../widgets/EditId'
 import { Audio } from 'expo-av'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 
 export default function Settings() {
@@ -52,6 +53,7 @@ export default function Settings() {
 
     return (
         <Layout style={styles.layoutContainer}>
+                <SafeAreaView style={styles.safeArea}>
                 <LinearGradient colors={['#2dafb9', '#17b2b6', '#00b4b2', '#00b7ad', '#00b9a7', '#00bba0', '#00bd98', '#00bf8f', '#00c185', '#00c27b']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
                     <TopNavigation
                         title={renderTitle()}
@@ -60,6 +62,7 @@ export default function Settings() {
                         alignment='start'
                     />
                 </LinearGradient>
+                </SafeAreaView>
                 <Divider />
                 <Menu>
                     <MenuItem 
@@ -68,37 +71,18 @@ export default function Settings() {
                         onPress={handleChangeID}
                     />
                     { showIDWidget && <IDInputComponent /> }
-                    <MenuItem 
-                        title={renderOption("Feddy?")}
-                        accessoryLeft={StarIcon}
-                        onPress={handleFeddy}
-                    />
-                    <MenuItem 
-                        title={renderOption("¿Santo tomas?")}
-                        accessoryLeft={STIcon}
-                        onPress={handlePlaySound}
-                    />
-                    <MenuItem 
-                        title={renderOption("Inacap")}
-                        accessoryLeft={InacapIcon}
-                    />
+
                     <Divider/>
                 </Menu>
-                { mostrarFeddy && (<>
-                    <Image 
-                        style={{ alignSelf: 'center', width: "100%", height: undefined, aspectRatio: 750/1000}} 
-                        source={require('../assets/working.png')}
-                        resizeMode='contain'
-                    />
-                    <Text style={{ alignSelf: 'center', fontSize: 40, fontWeight: 'bold' }}>
-                        we are working
-                    </Text>
-                </>)}
+                
         </Layout>
     )
 }
 
 const styles = StyleSheet.create({
+    safeArea: {
+        backgroundColor: '#00baa4'
+    },
     topNavigation: {
         backgroundColor: 'transparent'
     },

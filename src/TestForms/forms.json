@@ -88,6 +88,7 @@
 				"nombre": "Comentarios adicionales",
 				"obligatorio": false,
 				"salida": "comentarios",
+				"rellenarQR":true,
 				"limitaciones": [
 				],
 				"formato": [
@@ -117,6 +118,7 @@
 			  "nombre": "Ingrese un mensaje",
 			  "obligatorio": true,
 			  "salida": "mensaje",
+			  "rellenarQR":true,
 			  "limitaciones": [
 				"solo letras"
 			  ],
@@ -129,6 +131,7 @@
 			  "nombre": "Ingrese su nombre",
 			  "obligatorio": true,
 			  "salida": "nombre",
+			  "rellenarQR":true,
 			  "limitaciones": [
 				"solo letras"
 			  ],
@@ -139,6 +142,7 @@
 			  "nombre": "Ingrese su edad",
 			  "obligatorio": true,
 			  "salida": "edad",
+			  "rellenarQR":true,
 			  "limitaciones": [
 				"solo numeros"
 			  ],
@@ -149,6 +153,7 @@
 			  "nombre": "Ingrese su dirección",
 			  "obligatorio": false,
 			  "salida": "direccion",
+			  "rellenarQR":true,
 			  "limitaciones": [],
 			  "formato": []
 			},
@@ -157,6 +162,7 @@
 			  "nombre": "Ingrese un mensaje de error",
 			  "obligatorio": true,
 			  "salida": "mensajeError",
+			  "rellenarQR":true,
 			  "limitaciones": [
 				"solo letras",
 				"no numeros"
@@ -170,6 +176,7 @@
 			  "nombre": "Ingrese una descripción",
 			  "obligatorio": false,
 			  "salida": "descripcion",
+			  "rellenarQR":true,
 			  "limitaciones": [],
 			  "formato": [
 				"solo minusculas"
@@ -180,6 +187,7 @@
 			  "nombre": "Ingrese un código",
 			  "obligatorio": true,
 			  "salida": "codigo",
+			  "rellenarQR":true,
 			  "limitaciones": [
 				"solo letras"
 			  ],
@@ -309,7 +317,7 @@
 				{ "nombre": "19 años", "valor": "19" },
 				{ "nombre": "20 años", "valor": "20" }
 			  ],
-			  "opcion predeterminada": "18",
+			  "opcion predeterminada": 1,
 			  "texto predeterminado": "Selecciona tu edad",
 			  "obligatorio": true,
 			  "salida": "edadSeleccionada"
@@ -322,7 +330,6 @@
 				{ "nombre": "Diseño", "valor": "diseno" },
 				{ "nombre": "Marketing", "valor": "marketing" }
 			  ],
-			  "opcion predeterminada": null,
 			  "texto predeterminado": "Selecciona tus habilidades",
 			  "cantidad de elecciones": 2,
 			  "obligatorio": true,
@@ -336,7 +343,6 @@
 				{ "nombre": "Intermedio", "valor": "intermedio" },
 				{ "nombre": "Avanzado", "valor": "avanzado" }
 			  ],
-			  "opcion predeterminada": null,
 			  "texto predeterminado": "Selecciona tu nivel",
 			  "cantidad de elecciones": 1,
 			  "obligatorio": true,

@@ -1,34 +1,38 @@
 import React, { useState } from 'react'
-import { View, StyleSheet, FlatList, TouchableOpacity, Alert, Image } from 'react-native'
-import { Button, Text, TopNavigation, TopNavigationAction, Divider, Layout, Modal, Card, Icon } from '@ui-kitten/components'
-import { useFormContext } from '../context/FormContext'
-import { useNavigation } from '@react-navigation/native'
+import { Dimensions, Platform, View, StyleSheet, FlatList, TouchableOpacity, Alert, Image } from 'react-native'
+import { CheckBox, Button, Text, TopNavigation, TopNavigationAction, Divider, Layout, Modal, Card, Icon } from '@ui-kitten/components'
+import { useFormContext } from '../context/SelectedFormContext'
+import { StackActions, useNavigation } from '@react-navigation/native'
 import { LinearGradient } from 'expo-linear-gradient'
+import { SafeAreaView } from 'react-native-safe-area-context';
 import * as FileSystem from 'expo-file-system'
 import * as Sharing from 'expo-sharing'
 import * as Animatable from 'react-native-animatable'
 import shareTypes from '../commonStructures/shareTypes'
 import * as DocumentPicker from 'expo-document-picker'
-import { Ok } from '../commonStructures/resultEnum'
+import { useSQLiteContext } from 'expo-sqlite'
+import { getDatabaseInstance } from '../database/database'
 
+const { width, height } = Dimensions.get('window')
 
 const FormSelectorScreen = () => {
+  const db = getDatabaseInstance(useSQLiteContext())
   const navigation = useNavigation()
-  const forms = require("../TestForms/forms.json")
-  const [localForms, setForms] = useState(forms)
-  const [ isOptionModalVisible, setIsOptionModalVisible ] = useState(false)
-  const [ selectedItem, setSelectedItem ] = useState({"nombre formulario": "err"})
-  const { setSelectedForm } = useFormContext()
+  const [isOptionModalVisible, setIsOptionModalVisible] = useState(false)
+  const [selectedItem, setSelectedItem] = useState({ "nombre formulario": "err" })
+  const {selectedForm, setSelectedForm } = useFormContext()
   const [isSelectionMode, setIsSelectionMode] = useState(false) // Modo de selección
   const [selectedForms, setSelectedForms] = useState([]) // Formularios seleccionados
   const [file, setFile] = useState(null) // File picker function
+  const [forms, setForms] = useState(db.getAllForms())
 
-  const backIcon = () => <Icon name='arrow-ios-back-outline' fill='#fff' style={styles.topNavigationIcon}/>
-  const importIcon = () => <Icon name='cloud-download-outline' fill='#fff' style={styles.topNavigationIcon}/>
-  const deleteIcon = props => <Icon name='trash' {...props} />
-  const shareIcon = props => <Icon name='share' {...props}/>
+  const backIcon = () => <Icon name='arrow-ios-back-outline' fill='#fff' style={styles.topNavigationIcon} />
+  const importIcon = () => <Icon name='cloud-download-outline' fill='#fff' style={styles.topNavigationIcon} />
+  const deleteIcon = props => <Icon name='trash-outline' {...props} fill="#fff" animationConfig={{ cycles: Infinity }} animation='zoom' style={[props.style, { width: 30, height: 30 }]} />
+  const shareIcon = props => <Icon name='share-outline' {...props} fill="#fff" animationConfig={{ cycles: Infinity }} animation='zoom' style={[props.style, { width: 30, height: 30 }]} />
+  const plusIcon = props => <Icon name='plus-outline' {...props} fill="#fff" animationConfig={{ cycles: Infinity }} animation='zoom' style={[props.style, { width: 40, height: 40 }]} />
   const BackAction = () => <TopNavigationAction icon={backIcon} onPress={() => navigation.goBack()} />
-  const importAction = () => <TopNavigationAction icon={importIcon} onPress={() => pickDocument()} />
+  const SelectionIcon = props => <Icon name={isSelectionMode ? 'checkmark-square' : 'checkmark-square'} style={styles.backIcon} fill='#fff' {...props} />
   const optionBar = () => (
     <Layout style={styles.iconContainer}>
       <TopNavigationAction icon={SelectionIcon} onPress={toggleSelectionMode} />
@@ -36,6 +40,7 @@ const FormSelectorScreen = () => {
     </Layout>
   )
 
+  //File picker function
   const pickDocument = async () => {
     try {
       const result = await DocumentPicker.getDocumentAsync({
@@ -52,7 +57,7 @@ const FormSelectorScreen = () => {
         console.log("File Size:", pickedFile.size)
         console.log("MIME Type:", pickedFile.mimeType)
 
-        // Copy the file to a cache directory
+        // Copy the file to a cache director
         const fileUri = pickedFile.uri
         const newPath = `${FileSystem.cacheDirectory}${pickedFile.name}`
         await FileSystem.copyAsync({
@@ -60,12 +65,16 @@ const FormSelectorScreen = () => {
           to: newPath,
         })
 
-        const content = await FileSystem.readAsStringAsync(newPath) // Now read the file from the cache
-        // console.log("File Content:", content) // Log the content (JSON)
-        const tempo = localForms.concat(JSON.parse(content))
-        setForms(tempo)
-        console.log(localForms)
-      } 
+        let buffer = await FileSystem.readAsStringAsync(newPath) // Now read the file from the cache
+        buffer = JSON.parse(buffer)
+        Array.isArray(buffer.content) ? buffer = buffer.content : buffer = [buffer.content]
+        content.forEach(form => {
+          db.addForm(form)
+          console.log(db.getForm(form["nombre formulario"]))
+        })
+
+        console.log("File Content:", content)
+      }
       else if (result.canceled) { console.log("Action Canceled, no file selected.") }
       else { Alert.alert("Error", "Failed to pick a document. Please try again.") }
     } catch (err) {
@@ -76,58 +85,38 @@ const FormSelectorScreen = () => {
 
   const deleteSelectedForms = async () => {
     try {
-        const updatedForms = localForms.filter(form => !selectedForms.includes(form["nombre formulario"]))
-        
-
-        const filePath = `${FileSystem.cacheDirectory}forms.json`
-        const updatedFormsString = JSON.stringify(updatedForms)
-
-        await FileSystem.writeAsStringAsync(filePath, updatedFormsString)
-      
-
-        const newContent = await FileSystem.readAsStringAsync(filePath)
-        const loc = localForms.pop(JSON.parse(newContent))
-
-        setForms(loc)
-        setSelectedForms([]) 
-        setIsSelectionMode(false)
-        console.log(localForms)
-        console.log("Formularios restantes después de la eliminación:", updatedForms)
-        console.log("Archivo actualizado guardado en:", filePath)
-
+      // Quitar el seleccionado del contexto si se elimina
+      if (selectedForm && selectedForms.includes(selectedForm["nombre formulario"]))
+        setSelectedForm(null)
+      // Borrarlos de la base de datos
+      selectedForms.forEach(formID => db.deleteForm(formID))
+      // Quitarlos de la pantalla
+      setSelectedForms([])
+      setIsSelectionMode(false)
+      navigation.replace('FormSelector', {}, {animation: 'none', animationEnabled: false})
     } catch (error) {
-        console.error("Error al eliminar formularios seleccionados:", error)
-        Alert.alert("Error", "Hubo un problema al eliminar los formularios seleccionados")
+      Alert.alert("Error", "Debe seleccionar uno o varios formularios para eliminarlos")
     }
   }
-
-  const SelectionIcon = (props) => (
-    <Icon name={isSelectionMode ? 'checkmark-square' : 'checkmark-square'} style={styles.backIcon} fill='#fff' {...props} />
-  )
-
-  const SelectionAction = () => (
-      <TopNavigationAction icon={SelectionIcon} onPress={toggleSelectionMode} />
-  )
 
   const toggleSelectionMode = () => {
     setIsSelectionMode(!isSelectionMode)
     setSelectedForms([]) // Resetear selección al activar/desactivar modo
   }
 
-  const handleSelection = (item) => {
+  const handleSelection = item => {
     if (isSelectionMode) {
       setSelectedForms((prev) =>
-          prev.includes(item["nombre formulario"]) 
-              ? prev.filter((id) => id !== item["nombre formulario"]) 
-              : [...prev, item["nombre formulario"]]
+        prev.includes(item["nombre formulario"])
+          ? prev.filter((id) => id !== item["nombre formulario"])
+          : [...prev, item["nombre formulario"]]
       )
-    } 
+    }
   }
 
-  const handlePress = (form) => {
-    if (isSelectionMode) {
+  const handlePress = form => {
+    if (isSelectionMode) 
       handleSelection(form)
-    } 
     else {
       setSelectedForm(form)
       navigation.navigate('Menu')
@@ -143,16 +132,29 @@ const FormSelectorScreen = () => {
 
 
   const renderItem = ({ item }) => (
-
-    <TouchableOpacity 
+    <TouchableOpacity
       style={[styles.containerBox, selectedForms.includes(item["nombre formulario"]) && styles.selectedItem]}
-      onPress={() => handlePress(item)} 
+      onPress={() => handlePress(item)}
       onLongPress={toggleSelectionMode}
-    > 
-      <Text style={styles.itemText}>{item["nombre formulario"]}</Text>
+    >
+      {isSelectionMode ?
+        (
+          <View style={styles.selectionRow}>
+            <CheckBox
+              status='success'
+              checked={selectedForms.includes(item["nombre formulario"])}
+              onChange={() => handlePress(item)}
+              style={styles.checkbox}
+
+            />
+            <Text style={{ flex: 1, fontSize: 20, fontWeight: 'bold' }}>{item["nombre formulario"]}</Text>
+          </View>
+        ) : (
+          <Text numberOfLines={1} style={styles.itemText}>{item["nombre formulario"]}</Text>
+        )}
       <Button
         accessoryLeft={
-          <Icon name='menu-outline' style={{width:25, height:25}} fill='#000'/>
+          <Icon name='menu-outline' style={{ width: 25, height: 25 }} fill='#000' />
         }
         onPress={() => {
           setSelectedItem(item)
@@ -164,37 +166,41 @@ const FormSelectorScreen = () => {
     </TouchableOpacity>
   )
 
-  const shareFormTemplate = form => {
-      const filePath = `${FileSystem.cacheDirectory}plantillaFormulario.json`
-      const objectStringified = JSON.stringify({ 
-        share_content_type: shareTypes.SINGLE_FORM,
-        content           : form 
+  const shareFormTemplate = formItems => {
+    if (!formItems) return Alert.alert('Error', 'No se ha seleccionado un formulario')
+    if (formItems.constructor === Array) {
+      formItems = formItems.map(form => db.getForm(form))
+    }
+
+    const typeOfMedia = formItems.constructor === Array ? shareTypes.MULTIPLE_FORMS : shareTypes.SINGLE_FORM
+
+    const objectStringified = JSON.stringify({
+      share_content_type: typeOfMedia,
+      content: formItems
+    })
+    // Intentar compartir usando un archivo temporal
+    const filePath = `${FileSystem.cacheDirectory}plantillaFormulario.json`
+    FileSystem.writeAsStringAsync(filePath, objectStringified).then(
+      () => Sharing.shareAsync(filePath, {
+        dialogTitle: 'Compartir JSON como archivo',
+        mimeType: 'application/json',
+        UTI: 'public.json'
       })
-      
-      // Intentar compartir usando un archivo temporal
-      FileSystem.writeAsStringAsync(filePath, objectStringified).then( 
-        () => Sharing.shareAsync(filePath, 
-          {
-            dialogTitle : 'Compartir JSON como archivo',
-            mimeType    : 'application/json',
-            UTI         : 'public.json'
-          }
-        )
       // Si se compartio correctamente
-      ).catch(error => {
-          console.error('Error al crear archivo:', error)
-          Alert.alert('Error', 'Hubo un problema al intentar compartir el archivo')
+    ).catch(error => {
+      console.error('Error al crear archivo:', error)
+      Alert.alert('Error', 'Hubo un problema al intentar compartir el archivo')
       // Borrar el archivo temporal
-      }).finally(
-        async () => {
-          try {
-            const fileInfo = await FileSystem.getInfoAsync(filePath)
-            if (fileInfo.exists) await FileSystem.deleteAsync(filePath)
-          } catch (deleteError) {
-            console.error('Error al eliminar el archivo:', deleteError)
-          }
+    }).finally(
+      async () => {
+        try {
+          const fileInfo = await FileSystem.getInfoAsync(filePath)
+          if (fileInfo.exists) await FileSystem.deleteAsync(filePath)
+        } catch (deleteError) {
+          console.error('Error al eliminar el archivo:', deleteError)
         }
-      )
+      }
+    )
   }
 
   const OptionsModal = () => {
@@ -216,14 +222,14 @@ const FormSelectorScreen = () => {
         backdropStyle={newModalStyles.backdrop}
         onBackdropPress={() => setIsOptionModalVisible(false)}
       >
-        
+
         <Animatable.View
-        animation="fadeIn"
-        duration={300}
+          animation="fadeIn"
+          duration={300}
         >
           <Card disabled={true} style={newModalStyles.container}>
             <Text style={newModalStyles.title}>{selectedItem["nombre formulario"]}</Text>
-            
+
             <View style={newModalStyles.buttonGroup}>
               <Button
                 accessoryLeft={() => (
@@ -246,7 +252,7 @@ const FormSelectorScreen = () => {
                 onPress={() => onEdit(selectedItem)}
                 style={newModalStyles.actionButton}
               />
-            </View>        
+            </View>
 
             <Button
               onPress={() => onSelect(selectedItem)}
@@ -267,66 +273,73 @@ const FormSelectorScreen = () => {
           </Card>
         </Animatable.View>
       </Modal>
-  )}
+    )
+  }
 
   return (
     <>
       {OptionsModal()}
       <Layout style={styles.layoutContainer}>
-        <LinearGradient colors={['#2dafb9', '#17b2b6', '#00b4b2', '#00b7ad', '#00b9a7', '#00bba0', '#00bd98', '#00bf8f', '#00c185', '#00c27b']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
-          <TopNavigation
-            title={renderTitle}
-            style={styles.topNavigation}
-            accessoryLeft={BackAction}
-            accessoryRight={optionBar}
-            alignment='center'
-          />
-        </LinearGradient>
-        
+        <SafeAreaView style={styles.safeArea}>
+          <LinearGradient colors={['#2dafb9', '#17b2b6', '#00b4b2', '#00b7ad', '#00b9a7', '#00bba0', '#00bd98', '#00bf8f', '#00c185', '#00c27b']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+            <TopNavigation
+              title={renderTitle}
+              style={styles.topNavigation}
+              accessoryLeft={BackAction}
+              accessoryRight={optionBar}
+              alignment='center'
+            />
+          </LinearGradient>
+        </SafeAreaView>
         <Divider />
         <Layout style={styles.container}>
           <FlatList
-            data={forms.filter((form) => form !== null)}
+            data={forms}
             renderItem={renderItem}
             keyExtractor={(item) => item["nombre formulario"]}
             contentContainerStyle={styles.listContainer}
           />
-          {isSelectionMode && (
-              <Layout style={styles.buttonContainer}>
-                  <Button
-                      style={styles.deleteButton}
-                      onPress={() => deleteSelectedForms()} // Pasamos los datos al botón
-                      accessoryLeft={deleteIcon}
-                  >
-                      Eliminar 
-                  </Button>
+        </Layout>
+      </Layout>
 
-                    <Button status='info' style={styles.shareButton} accessoryLeft={shareIcon}>
-                        Compartir
-                    </Button>
-                </Layout>
-              )
-            }
-        <View style={styles.footerContainer}>
-          <Button status='info' style={styles.volverButton} onPress={() => navigation.goBack()}>
-            Volver
-          </Button>
-        </View>
-      </Layout>
-      </Layout>
+      {isSelectionMode &&
+        (selectedForms.length == 0 ?
+          <></>
+          :
+          <View style={styles.containerMenuBar}>
+
+            <Button style={styles.iconButton2} appearance="ghost" onPress={() => deleteSelectedForms()} accessoryLeft={deleteIcon} />
+
+            <Button style={styles.iconButton2} appearance="ghost" onPress={() => shareFormTemplate(selectedForms)} accessoryLeft={shareIcon} />
+
+          </View>
+        )
+      }
+      <Button style={styles.centerButton} onPress={() => navigation.navigate('FormEditor')} accessoryLeft={plusIcon} />
     </>
   )
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    backgroundColor: '#00baa4'
+  },
+  selectionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  checkbox: {
+    marginRight: '2%',
+  },
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: 'transparent',
     padding: 20,
     justifyContent: 'space-between', // Esto ayuda a distribuir el espacio entre la lista y el botón
   },
   listContainer: {
     paddingBottom: 60, // Espacio para el botón en la parte inferior
+    backgroundColor: 'transparent',
   },
 
   backButton: {
@@ -354,6 +367,7 @@ const styles = StyleSheet.create({
   itemText: {
     fontSize: 20,
     fontWeight: 'bold',
+    width: '80%',
   },
   optionsButton: {
     margin: 2,
@@ -377,13 +391,13 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 15,
     borderRadius: 8,
-    backgroundColor: '#ffffff', 
+    backgroundColor: '#ffffff',
     borderWidth: 1,
     borderColor: '#00b7ae',
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.9,
-    shadowRadius: 2,
+    shadowOffset: { width: 0, height: Platform.OS == "ios" ? 1 : 10 },
+    shadowOpacity: Platform.OS == "ios" ? 0.3 : 0.9,
+    shadowRadius: Platform.OS == "ios" ? 3 : 2,
     elevation: 3,
     alignItems: 'flex-start',
     justifyContent: 'space-between',
@@ -391,13 +405,13 @@ const styles = StyleSheet.create({
     height: 'auto'
   },
   title: {
-    fontSize: 22,   
+    fontSize: 22,
     fontWeight: 'bold',
     color: '#fff',
   },
-  topNavigationText:{
-    marginRight: 70,
-    fontSize: 24,   
+  topNavigationText: {
+    marginRight: Platform.OS == "ios" ? 50 : 50,
+    fontSize: Platform.OS == "ios" ? 22 : 22,
     fontWeight: 'bold',
     color: '#fff',
   },
@@ -410,9 +424,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignSelf: 'center',
-    marginBottom: 10,
+    alignItems: 'center',
+    zIndex: 1000,
+    position: 'absolute',
+    bottom: width * 0.05,
   },
-  layoutContainer:{
+  layoutContainer: {
     backgroundColor: '#fff',
     flex: 1,
   },
@@ -422,25 +439,78 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignSelf: 'center',
   },
+  formOptionBar: {
+    flexDirection: 'row', // Organiza los botones en una fila horizontal
+    justifyContent: 'space-between', // Distribuye los botones uniformemente
+    alignItems: 'center', // Centra verticalmente los botones
+    bottom: 0,
+    backgroundColor: 'black', // Color de fondo de la barras de opciones
+  },
   deleteButton: {
-    width: '35%',
-    marginRight: '3%'
+    marginLeft: "2%",
+    borderRadius: 5,
   },
   shareButton: {
-    width: '35%',
-    marginLeft: '3%'
-  },  
+    marginRight: "2%",
+    borderRadius: 5,
+  },
   shareIcon: {
     width: 20,
     height: 20,
   },
-  footerContainer: {
-    padding: 10,
-    backgroundColor: '#fff', // Color de fondo del pie de página
-    alignItems: 'center', // Centrar el botón
-    borderTopWidth: 1, // Línea superior (opcional)
-    borderTopColor: '#ccc', // Color de la línea
-  }
+
+  floatingButtonContainer: {
+    position: 'absolute',
+    bottom: height * 0.05, // Distancia desde la parte inferior
+    right: width * 0.2,  // Distancia desde el lado derecho
+    zIndex: 1000, // Asegura que esté encima de otros elementos
+  },
+  createButton: {
+    width: width * 0.15,  // Ajusta el tamaño según tus necesidades
+    height: width * 0.15,
+    borderRadius: (width * 0.15) / 2, // Hace el botón circular
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'flex-end',
+  },
+  containerMenuBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#00baa2',
+    paddingHorizontal: '4%',
+    paddingVertical: 0,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    position: 'relative',
+  },
+  iconButton2: {
+    flex: 1,
+    alignItems: 'center',
+
+  },
+  centerButtonContainer: {
+    position: 'absolute',
+    top: -30, // Elevar el botón
+    alignSelf: 'center',
+    marginTop: width * 0.9
+  },
+  centerButton: {
+    alignSelf: 'center',
+    position: 'absolute',
+    margin: height * 0.9,
+    top: -25,
+    width: 75,
+    height: 75,
+    borderRadius: 40,
+    backgroundColor: '#00e895',
+    borderColor: '#fff',
+    borderWidth: 6,
+  },
 })
 
 const newModalStyles = StyleSheet.create({
@@ -469,6 +539,7 @@ const newModalStyles = StyleSheet.create({
     fontWeight: '600',
     color: '#333',
     marginBottom: 20,
+    maxWidth: '80%',
     textAlign: 'center',
   },
   buttonGroup: {

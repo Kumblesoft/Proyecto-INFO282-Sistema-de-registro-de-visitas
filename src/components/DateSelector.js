@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { View, StyleSheet } from 'react-native'
+import { Platform, View, StyleSheet } from 'react-native'
 import { Text, Layout, Icon, Datepicker, NativeDateService } from '@ui-kitten/components'
+import { decodeDate } from '../commonStructures/DateFuncions'
 /**
  * Converts a custom date format to a format compatible with date-fns.
  *
@@ -31,11 +32,11 @@ const manageDateFormat = (format) => {
  * @param {boolean} [options.required=false] - Whether the field is required.
  * @returns {Object} An object containing the defined optional features.
  */
-export const OptionDateFeatures = (options ={}) => {
+export const OptionDateFeatures = (options = {}) => {
   return {
     title: options.title ?? "",
-    defaultDate: options.defaultDate === "hoy" ? new Date() : new Date(options.defaultDate),
     dateFormat: manageDateFormat(options.dateFormat ?? 'DD/MM/YYYY'),
+    defaultDate: options.defaultDate === "hoy" ? new Date() : decodeDate(options.defaultDate, options.dateFormat ?? 'DD/MM/YYYY'),
     disabled: options.disabled ?? false,
     required: options.required ?? false,
   }
@@ -48,7 +49,7 @@ export const OptionDateFeatures = (options ={}) => {
  * @param {Object} optionalFeatures - Configuration options for the DateSelector.
  * @returns {JSX.Element} The rendered DateSelector component.
  */
-const DateSelector = ({value, onChange, optionalFeatures,requiredFieldRef, refreshFieldRef}) => {
+const DateSelector = ({ value, onChange, optionalFeatures, requiredFieldRef, refreshFieldRef }) => {
   const hasInitialized = useRef(false)
   const {
     title = "",
@@ -61,12 +62,13 @@ const DateSelector = ({value, onChange, optionalFeatures,requiredFieldRef, refre
   const [selectedDate, setSelectedDate] = useState(null)
   const [isRequiredAlert, setIsRequiredAlert] = useState(null)
   const configuredDateService = new NativeDateService('en', {
-    startDayOfWeek:1,
+    startDayOfWeek: 1,
     format: dateFormat
   })
   useEffect(() => {
     if (defaultDate && !hasInitialized.current) {
-      setSelectedDate(defaultDate) 
+      setSelectedDate(defaultDate)
+      console.log('defaultDate:', defaultDate, 'dateFormat:', dateFormat)
       const formattedDate = configuredDateService.format(defaultDate, dateFormat)
       onChange(formattedDate)
       setIsRequiredAlert(false)
@@ -88,9 +90,9 @@ const DateSelector = ({value, onChange, optionalFeatures,requiredFieldRef, refre
 
   requiredFieldRef.current = () => {
     if (required && !selectedDate) {
-        setIsRequiredAlert(true)
+      setIsRequiredAlert(true)
     } else {
-        setIsRequiredAlert(false)
+      setIsRequiredAlert(false)
     }
   }
   refreshFieldRef.current = () => {
@@ -103,12 +105,14 @@ const DateSelector = ({value, onChange, optionalFeatures,requiredFieldRef, refre
     <Layout style={styles.containerBox}>
       {title && (
         <View style={styles.text}>
-          <Text style={styles.text} category={required ? "label" :"p2"}>
+          <Text style={styles.text} category={"p2"}>
             {title}
-          </Text> 
+          </Text>
+          {/*
           <Text status='danger'> 
             {required ? "*": " "} 
           </Text>
+          */}
         </View>
       )}
       <Datepicker
@@ -116,11 +120,13 @@ const DateSelector = ({value, onChange, optionalFeatures,requiredFieldRef, refre
         dateService={configuredDateService}
         onSelect={handleDateChange}
         disabled={disabled}
-        style={styles.datepicker}
+        min={new Date(1900, 0, 1)}
+        max={new Date(2100, 0, 1)}
+        style={disabled ? styles.disabledDate : styles.datepicker}
       />
-      { isRequiredAlert ?
+      {isRequiredAlert ?
         <Layout size='small' style={styles.alert}>
-          <Icon status='danger' fill='#FF0000' name='alert-circle'style={styles.icon}/> 
+          <Icon status='danger' fill='#FF0000' name='alert-circle' style={styles.icon} />
           <Text style={styles.alert} category="p2">
             Por favor seleccione una fecha
           </Text>
@@ -134,6 +140,7 @@ const DateSelector = ({value, onChange, optionalFeatures,requiredFieldRef, refre
 
 const styles = StyleSheet.create({
   text: {
+    fontSize: 18,
     marginHorizontal: '1%',
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -153,9 +160,9 @@ const styles = StyleSheet.create({
     height: 20,
   },
   titles: {
-        fontWeight: 'bold',
-        marginBottom: 10,
-        margin: 2,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    margin: 2,
   },
   containerBox: {
     padding: 10,
@@ -165,14 +172,20 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#00b7ae',
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.9,
-    shadowRadius: 2,
+    shadowOffset: { width: 0, height: Platform.OS == "ios" ? 1 : 10 },
+    shadowOpacity: Platform.OS == "ios" ? 0.2 : 0.9,
+    shadowRadius: Platform.OS == "ios" ? 2 : 2,
     elevation: 3,
     alignItems: 'flex-start'
   },
   datepicker: {
     width: '100%'
-  }
+  },
+  disabledDate:
+  {
+    width: '100%',
+    color: '#d3d3d3', // Color gris claro
+    textDecorationLine: 'line-through', // Línea tachada
+  },
 })
 export default DateSelector

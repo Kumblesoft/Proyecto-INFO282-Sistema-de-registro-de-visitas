@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react'
-import { View, StyleSheet, KeyboardAvoidingView, Platform,TouchableOpacity, Modal, SafeAreaView, StatusBar, Alert, Image } from 'react-native'
-import { Text, Input, Button, Layout, ViewPager, Icon } from '@ui-kitten/components'
+import React, { useState, useEffect, use } from 'react'
+import { View, StyleSheet, Platform, TouchableOpacity, Modal, SafeAreaView, StatusBar, Alert, Image } from 'react-native'
+import { Text, Input, Button, Layout, Icon } from '@ui-kitten/components'
 import { Err, Ok } from '../commonStructures/resultEnum'
 import { useCameraPermissions } from 'expo-camera'
 import { CameraView } from "expo-camera"
+import { getDatabaseInstance } from '../database/database'
+import { useSQLiteContext } from 'expo-sqlite'
 
 /**
  * Represents optional features for the TextEntry component.
@@ -16,7 +18,8 @@ import { CameraView } from "expo-camera"
  * @param {string} [options.variableName] - "Salida", used to diferentiate different fields with same title
  * @param {Array<string>} [options.format=[]] - An array of conditions to format the input value.
  * @param {boolean} [options.QRfield = false] - Indicates if the field can be filled by QR
- *  @returns {Object} An object containing the defined optional features.
+* @param {boolean} [options.disabled = false] - Indicates if the field is disabled
+*  @returns {Object} An object containing the defined optional features.
  */
 export const OptionalTextFeatures = (options = {}) => {
   return {
@@ -25,52 +28,9 @@ export const OptionalTextFeatures = (options = {}) => {
     limitations: options.limitations ?? [],
     format: options.format ?? [],
     QRfield: options.QRfield ?? false,
-    variableName: options.variableName ?? ""
+    variableName: options.variableName ?? "",
+    disabled: options.disabled ?? false
   }
-}
-
-/**
- * Map that defines the validator functions and behaviour of each limitation 
- */
-const limitationBehaviour = new Map([
-  ["solo letras", {
-    regex: ((/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/)),
-    keyboardType: "default"
-  }],
-  ["no numeros", {
-    regex: /^[^\d]*$/,
-    keyboardType: "default"
-  }],
-  ["solo numeros", {
-    regex: /^-?\d+([.,]\d+)?$/,
-    keyboardType: "numeric"
-  }],
-  ["solo enteros", {
-    regex: /^-?\d+$/,
-    keyboardType: "numeric"
-  }],
-  ["solo enteros positivos y cero", {
-    regex: /^\d+$/,
-    keyboardType: "numeric"
-  }],
-  ["email", {
-    regex: /^(([^<>()[\]\.,:\s@\"]+(\.[^<>()[\]\.,:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,:\s@\"]+\.)+[^<>()[\]\.,:\s@\"]{2,})$/i,
-    keyboardType: "default"
-  }]
-])
-
-/**
- * Debug version of get method for limitationBehaviour
- * @param {string} name 
- * @returns 
- */
-limitationBehaviour.dGet = function(name) {
-  const exists = this.has(name)
-  if (!exists) {
-    console.log(`No se encontro (${name}) en limitationBehaviour`)
-    return { regex: /$/, keyboardType: "default" }
-  }
-  return this.get(name)
 }
 
 /**
@@ -90,16 +50,32 @@ const formatMap = new Map([
  * @param {Function} props.onSelect - Callback function called when the input value changes.
  * @returns {JSX.Element} The rendered TextEntry component.
  */
-const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldRef}) => {
-  const { title, required, limitations, format, QRfield} = optionalFeatures
-  const [ inputValue, setInputValue ] = useState('')
-  const [ invalidLimitations, setInvalidLimitations ] = useState([])
-  const [ isRequiredAlert, setIsRequiredAlert] = useState(false)
+const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldRef }) => {
+  const db = getDatabaseInstance(useSQLiteContext())
+  const { title, required, limitations, format, QRfield, disabled } = optionalFeatures
+  const [inputValue, setInputValue] = useState('')
+  const [invalidLimitations, setInvalidLimitations] = useState([])
+  const [isRequiredAlert, setIsRequiredAlert] = useState(false)
   const [permission, requestPermission] = useCameraPermissions()
   const [isScanning, setIsScanning] = useState(false)
 
-  const isPermissionGranted = Boolean(permission?.granted)
 
+  const limitationBehaviour = limitations.reduce((acc, limName) => {
+    // Usamos una expresión regular para separar el patrón de los modificadores
+    const match = db.getRegexFromLimitation(limName).match(/^\/(.*)\/([a-z]*)$/)
+    const pattern = match[1]     // El patrón de la expresión regular
+    const modifiers = match[2]   // Los modificadores (g, i, m, etc.)
+
+    // Creamos el objeto RegExp
+    const regex = new RegExp(pattern, modifiers)
+    return (acc.set(limName, regex))
+  }, new Map())
+
+
+  const isPermissionGranted = Boolean(permission?.granted)
+  useEffect(() => {
+    if (inputValue === '') onSelect(null)
+  })
   useEffect(() => {
     if (QRfield && !isPermissionGranted) {
       requestPermission()
@@ -118,29 +94,35 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldR
     // Limitations
     setInvalidLimitations(!text.length ? [] : limitations.reduce(
       (acc, limName) => {
-        const limitationOk = limitationBehaviour.get(limName).regex.test(text)
-        console.log(limitationOk, limitationBehaviour.get(limName).regex, text)
+        const limitationOk = limitationBehaviour.get(limName).test(text)
+
         if (!limitationOk) {
           const limitationName = String.fromCharCode(limName.charCodeAt(0) - 32) + limName.substr(1)
           acc.push(limitationName)
+          text = text.slice(0, -1)
         }
-
         return acc
       }, []))
 
-    console.log(invalidLimitations)
+    //console.log(invalidLimitations)
 
     if (invalidLimitations.length) {
       setInputValue(text)
       setIsRequiredAlert(false)
-      if (onSelect) onSelect('') 
+      if (onSelect) onSelect('')
       return new Err("No cumple las limitaciones")
     }
     // Formatting
-    format.forEach(formattingOption => text = formatMap.get(formattingOption)(text))
-    if (onSelect) onSelect(text) 
+    if (text.length > inputValue.length) {
+      let lastChar = text.slice(-1)
+      format.forEach(formattingOption => {
+        lastChar = formatMap.get(formattingOption)(lastChar)
+      })
+      text = inputValue + lastChar
+    }
+    if (onSelect) onSelect(text)
     setInputValue(text)
-    setIsRequiredAlert(false) 
+    setIsRequiredAlert(false)
     return new Ok("Correct input")
   }
 
@@ -157,11 +139,11 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldR
     setInputValue('')
   }
 
-    const handleBarCodeScanned = ({ data }) => {
-      handleChange(data)  
-      setIsScanning(false) 
-      Alert.alert("Se ha escaneado exitosamente")
-    }
+  const handleBarCodeScanned = ({ data }) => {
+    handleChange(data)
+    setIsScanning(false)
+    Alert.alert("Se ha escaneado exitosamente")
+  }
 
   return (
     <Layout style={styles.containerBox}>
@@ -177,17 +159,18 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldR
       )}
       {invalidLimitations.length ? invalidLimitations.map((name, i) => <Text key={i} style={{ color: 'red' }}> -{name} </Text>) : <></>}
 
-      <Input 
-        style={[styles.input, isRequiredAlert && { borderColor: '#ff0000' },QRfield && {flex :0.75},]} 
-        value={inputValue} 
-        onChangeText={handleChange} 
-        keyboardType={limitations.length ? limitationBehaviour.dGet(limitations.at(0)).keyboardType : "default"}/>
-        {QRfield && (
-          <TouchableOpacity style={styles.qrButton} onPress={() => setIsScanning(true)}>
+      <Input
+        style={[styles.input, isRequiredAlert && { borderColor: '#ff0000' }, QRfield && { flex: 0.75 },]}
+        value={inputValue}
+        disabled={disabled}
+        onChangeText={handleChange}
+        keyboardType={limitations.length ? db.getKeyboardFromLimitation(limitations.at(0)) : "default"} />
+      {QRfield && (
+        <TouchableOpacity style={styles.qrButton} onPress={() => setIsScanning(true)}>
           <Image source={require('../assets/qr-code.png')} style={{ width: 40, height: 40 }} />
-          </TouchableOpacity>
-        )}
-      { isRequiredAlert ?
+        </TouchableOpacity>
+      )}
+      {isRequiredAlert ?
         <Layout size='small' style={styles.alert}>
           <Icon status='danger' fill='#FF0000' name='alert-circle' style={styles.icon} />
           <Text style={styles.alert} category="p2">
@@ -202,14 +185,14 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldR
           <SafeAreaView style={styles.cameraContainer}>
             {Platform.OS === "android" ? <StatusBar hidden /> : null}
             <CameraView
-                style={StyleSheet.absoluteFillObject}
-                facing="back"
-                barcodeScannerSettings={{
-                    barcodeTypes: ['qr']
-                }}
-                onBarcodeScanned={handleBarCodeScanned} 
+              style={StyleSheet.absoluteFillObject}
+              facing="back"
+              barcodeScannerSettings={{
+                barcodeTypes: ['qr']
+              }}
+              onBarcodeScanned={handleBarCodeScanned}
             />
-            <Button title="Cerrar Escáner" onPress={() => setIsScanning(false)}  style={styles.closeButton}>
+            <Button title="Cerrar Escáner" onPress={() => setIsScanning(false)} style={styles.closeButton}>
               <Text category='h5' style={styles.buttonText}>Cerrar Cámara</Text>
             </Button>
           </SafeAreaView>
@@ -228,12 +211,13 @@ const styles = StyleSheet.create({
     justifyContent: 'left',
   },
   label: {
-    fontSize: 10,
+    fontSize: 12,
     color: '#333',
     alignSelf: 'flex-start',
     marginBottom: 12,
   },
   text: {
+    fontSize: 18,
     marginHorizontal: '2%',
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -273,23 +257,23 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#00b7ae',
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.9,
-    shadowRadius: 2,
+    shadowOffset: { width: 0, height: Platform.OS == "ios" ? 1 : 10 },
+    shadowOpacity: Platform.OS == "ios" ? 0.2 : 0.9,
+    shadowRadius: Platform.OS == "ios" ? 2 : 2,
     elevation: 3,
     alignItems: 'flex-start'
   },
   qrButton: {
-    position: 'absolute',  
-    top: 0,                
-    right: 0,              
-    marginRight: 10,       
-    marginTop: 30,         
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    marginRight: 10,
+    marginTop: 30,
     width: 40,
     height: 40,
     justifyContent: 'center',
     alignItems: 'center',
-},
+  },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -315,8 +299,8 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'black',
     fontWeight: "bold",
-    
-},
+
+  },
 })
 
 export default TextEntry
