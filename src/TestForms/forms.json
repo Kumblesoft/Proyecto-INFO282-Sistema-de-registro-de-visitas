@@ -1,4 +1,4 @@
-export default testForms = [
+[
 	{
 		"nombre formulario": "Formulario 1",
 		"formato salida": "JSON",
