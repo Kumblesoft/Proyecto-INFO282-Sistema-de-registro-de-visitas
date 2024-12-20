@@ -106,6 +106,41 @@ export function getDatabaseInstance(db) {
     return instance
 }
 
+export function resetDatabase(instance){
+    const tables = [
+        'campo_respuesta',
+        'respuestas',
+        'compatibility_matrix',
+        'checkbox_options',
+        'radio_options',
+        'selector_options',
+        'is_formatted',
+        'format',
+        'limitations_intermediary',
+        'limitations',
+        'camera_properties',
+        'hour_properties',
+        'date_properties',
+        'radio_properties',
+        'checkbox_properties',
+        'selector_properties',
+        'text_properties',
+        'fields',
+        'field_table_name',
+        'forms'
+    ];
+
+    tables.forEach(table => {
+        instance.db.runSync(`DROP TABLE IF EXISTS ${table}`);
+    })
+
+    initializeDataBase(instance.db)
+    const testForms = require('../TestForms/forms.json')
+        testForms.forEach(test => {
+            instance.addForm(test)
+    })
+}
+
 export default class Database {
     constructor(db) {
         if (Database.instance) return Database.instance
