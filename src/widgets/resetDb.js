@@ -1,7 +1,5 @@
 import React, { useState } from 'react'
-import { Layout, Input, Button, Text, Modal, Card} from '@ui-kitten/components'
-import * as SecureStore from 'expo-secure-store'
-import { useIdentifierContext } from '../context/IdentifierContext'
+import { Layout, Icon,  Button, Text, Modal, Card, Divider} from '@ui-kitten/components'
 import { Alert, StyleSheet, View } from 'react-native'
 import { useSQLiteContext } from 'expo-sqlite'
 import { getDatabaseInstance } from '../database/database'
@@ -16,7 +14,7 @@ export const ResetDBComponent = () => {
     <>
       <Layout style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
         <Text category="h5">Reiniciar base de datos</Text>
-        <Button style={{ marginVertical: 10 }} onPress={() => setIsResetting(true)}> Resetear </Button>
+        <Button status='danger' style={{ marginVertical: 10 }} onPress={() => setIsResetting(true)}> Reiniciar </Button>
         
       </Layout>
       {isResetting && (
@@ -25,20 +23,29 @@ export const ResetDBComponent = () => {
           onBackdropPress={() => setIsResetting(false)}
           style={styles.changeIDWindowModal}
           animationType='slide'
+          backdropStyle={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
         >
           <Card disabled={true} style={{ borderRadius: 10 }}>
-            <Text>¿Desea reiniciar la base de datos?</Text>
-            <Text style={{fontWeight: 'bold'}}>Esta acción no se puede deshacer.</Text>
+            <View style={styles.header}>
+                <Text category='h5' style={{flex:1, textAlign: 'center'}}>Atención</Text>
+            </View>
+            <Divider/>
+            <Text category='h6' style={{flex:1, textAlign:'center', padding:10, color:'gray'}} >
+                ¿Desea reiniciar la <Text category='h6'>base de datos</Text>?</Text>
+            <Text style={{fontWeight: 'bold', textAlign: 'center'}}>Esta acción no se puede deshacer.</Text>
             <Layout style={styles.buttonContainer}>
-              <Button style={{ flex: 1, marginRight: '10%' }} status='danger' onPress={() => {
+              <Button style={{ flex: 1, marginRight: '10%' }} status='info' onPress={() => setIsResetting(false)}
+                accessoryLeft={props => <Icon name='close-outline' {...props} />}>
+                No
+              </Button>
+              <Button style={{ flex: 1, marginLeft: '10%' }} status='danger' onPress={() => {
                     resetDatabase(db)
                     setIsResetting(false)
                     Alert.alert('Base de datos reiniciada, exitosamente')
-                }}>
+                }}
+                accessoryLeft={props => <Icon name='checkmark-outline' {...props} />}
+                >
                 Sí
-              </Button>
-              <Button style={{ flex: 1, marginLeft: '10%' }} onPress={() => setIsResetting(false)}>
-                No
               </Button>
             </Layout>
           </Card>

@@ -16,9 +16,11 @@ const SelectorConstructor = ({ field, onSave }) => {
     const [showDefaultOption, setShowDefautlOption] = useState(field["opcion predeterminada"] !=null ? true : false)
 
     const handleAddOption = () => {
+        const lastOption = options[options.length - 1]
+        const newOptionNumber = lastOption ? parseInt(lastOption.valor.replace('opcion', '')) + 1 : 1
         setOptions((prevOptions) => [
             ...prevOptions,
-            { nombre: `Nueva opción ${prevOptions.length + 1}`, valor: `Opcion ${prevOptions.length + 1}`} 
+            { nombre: `Nueva opción ${newOptionNumber}`, valor: `opcion${newOptionNumber}` }
         ])
     }
 
