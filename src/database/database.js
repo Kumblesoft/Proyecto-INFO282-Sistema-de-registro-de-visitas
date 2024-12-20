@@ -6,6 +6,7 @@ import CameraChainInsertor from './componentInsertor/CameraChainInsertor'
 import CheckboxChainInsertor from './componentInsertor/CheckboxChainInsertor'
 import RadioChainInsertor from './componentInsertor/RadiusChainInsertor'
 import initDatabaseScript from './tables'
+import testForms from '../TestForms/forms'
 
 const { dbInit } = initDatabaseScript
 const tables = ['forms', 'fields', 'field_table_name', 'text_properties', 'selector_properties', 'checkbox_properties', 'radio_properties', 'date_properties', 'hour_properties', 'camera_properties', 'limitations',
@@ -81,7 +82,6 @@ function formExists(db, formName) {
 export function getDatabaseInstance(db) {
     if (!instance) {
         instance = new Database(db)
-        const testForms = require('../TestForms/forms.json')
         testForms.forEach(test => {
             if (!formExists(db, test["nombre formulario"])) {
                 instance.addForm(test);
