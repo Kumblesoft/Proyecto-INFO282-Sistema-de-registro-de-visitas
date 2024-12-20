@@ -5,51 +5,36 @@ import { useNavigation } from '@react-navigation/native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { IdentifierContext } from '../context/IdentifierContext'
 import { IDInputComponent } from '../widgets/EditId'
-import { Audio } from 'expo-av'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { ResetDBComponent } from '../widgets/resetDb'
 
 
 export default function Settings() {
 
     const navigation = useNavigation()
     const { identifier } = useContext(IdentifierContext) // Obtiene el identificador del contexto
-    const [ mostrarFeddy, setMostrarFeddy ] = useState(false)
-    const [ sound, setSound ] = useState(null)
     const [ showIDWidget, setShowIDWidget ] = useState(false)
-
-    const handlePlaySound = async () => {
-        // Cargar el sonido
-        const { sound } = await Audio.Sound.createAsync(require('../assets/ST.mp3'))
-        setSound(sound)
-        // Reproducir el sonido
-        await sound.playAsync()
-    }
+    const [ showResetWidget, setShowResetWidget ] = useState(false)
 
     const BackIcon = props => <Icon name='arrow-ios-back-outline' {...props} style={styles.backIcon} fill='#fff'/>
     const IdIcon = props => <Icon {...props} name='hash'/>
-    const StarIcon = props => <Icon {...props} name='star'/>
-    const STIcon = props => <Icon {...props} name='globe-2'/>
     const BackAction = () => <TopNavigationAction icon={BackIcon} onPress={() => navigation.goBack()} />
-    const InacapIcon = (props) => <Icon {...props} name='npm' />
+    const TrashIcon = props => <Icon {...props} name='trash-2-outline'/>
 
-    const renderTitle = () => 
+    const renderTitle = () => (
         <View style={styles.titleContainer}>
             <Text style={styles.title}>{"Settings"}</Text>
         </View>
+    )
 
-    const renderOption = option => 
+    const renderOption = option => (
         <View style={styles.titleContainer}>
             <Text style={styles.optionTitle}>{option}</Text>
         </View>
+    )
 
     const handleChangeID = () => setShowIDWidget(!showIDWidget)
-    const handleFeddy = () => setMostrarFeddy(!mostrarFeddy)
-
-    // Limpia el recurso de sonido al desmontar el componente
-    React.useEffect(() => {
-        console.log("Identifier from context:", identifier) // Para verificar en consola
-        return () => sound?.unloadAsync()
-    }, [sound, identifier])
+    const handleReset = () => setShowResetWidget(!showResetWidget)
 
     return (
         <Layout style={styles.layoutContainer}>
@@ -71,7 +56,12 @@ export default function Settings() {
                         onPress={handleChangeID}
                     />
                     { showIDWidget && <IDInputComponent /> }
-
+                    <MenuItem
+                        title={renderOption("Reiniciar la base de datos")}
+                        accessoryLeft={TrashIcon}
+                        onPress={handleReset}
+                    />
+                    { showResetWidget && <ResetDBComponent/> }
                     <Divider/>
                 </Menu>
                 
@@ -113,4 +103,3 @@ const styles = StyleSheet.create({
         flex: 1,
     }
 })
-

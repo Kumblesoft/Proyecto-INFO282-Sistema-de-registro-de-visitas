@@ -1,7 +1,7 @@
 import { Err, Ok } from '../commonStructures/resultEnum'
 import React, { useState } from 'react'
 import { Image, View, StyleSheet, Alert, Linking, TouchableOpacity, Modal, Text } from 'react-native'
-import { Button, Layout } from '@ui-kitten/components'
+import { Button, Icon, Layout } from '@ui-kitten/components'
 import * as ImagePicker from 'expo-image-picker'
 import * as MediaLibrary from 'expo-media-library'
 import * as FileSystem from 'expo-file-system'
@@ -135,7 +135,7 @@ export const Camera = ({ title, required, cameraConfiguration, requiredFieldRef,
   return (
     <View style={styles.container}>
       {title && (
-        <Text style={styles.title}>
+        <Text style={[styles.title, {alignSelf: 'flex-start'}]}>
           {title}
           {required ? <Text style={{ color: 'red' }}>*</Text> : ""}
         </Text>
@@ -161,30 +161,36 @@ export const Camera = ({ title, required, cameraConfiguration, requiredFieldRef,
       <Modal visible={isMenuVisible} transparent={true} animationType="fade">
         <View style={styles.modalContainer}>
           <View style={styles.menu}>
-            <Text style={styles.title}>Seleccione una opción</Text>
+            
+            <Text style={styles.title}>{image ? "¿Cómo reemplazar la imagen?" : "¿Cómo quiere adjuntar la imagen?"}</Text>
 
-            {/* Ícono de cámara */}
-            <TouchableOpacity onPress={openCamera} style={styles.menuItem}>
-              <Image source={cameraIcon} style={styles.icon} />
-              <Text style={styles.menuText}>Cámara</Text>
-            </TouchableOpacity>
+            <View style={styles.iconContainer}>
+              {/* Ícono de galería */}
+              <TouchableOpacity onPress={openGallery} style={styles.menuItem}>
+                <Image source={galleryIcon} style={styles.icon} />
+                <Text style={styles.menuText}>Galería</Text>
+              </TouchableOpacity>
 
-            {/* Ícono de galería */}
-            <TouchableOpacity onPress={openGallery} style={styles.menuItem}>
-              <Image source={galleryIcon} style={styles.icon} />
-              <Text style={styles.menuText}>Galería</Text>
-            </TouchableOpacity>
-
+              {/* Ícono de cámara */}
+              <TouchableOpacity onPress={openCamera} style={styles.menuItem}>
+                <Image source={cameraIcon} style={styles.icon} />
+                <Text style={styles.menuText}>Cámara</Text>
+              </TouchableOpacity>
+            </View>
             {/* Contenedor de botones (Eliminar y Cerrar) */}
             <Layout style={styles.buttonContainer}>
               {/* Mostrar el botón "Eliminar" solo si hay una imagen */}
               {image && (
-                <Button onPress={removeImage} style={styles.deleteButton} status="danger">
+                <Button onPress={removeImage} style={styles.deleteButton} status="danger"
+                  accessoryLeft={<Icon name='trash-2-outline' fill='white' />}
+                >
                   {"Eliminar"}
                 </Button>
               )}
-              <Button onPress={toggleMenu} style={styles.closeButton} status="info">
-                {"Cerrar"}
+              <Button onPress={toggleMenu} style={styles.closeButton} status="info"
+                accessoryLeft={<Icon name='close-outline' fill='white' />}
+              >
+                {"Volver"}
               </Button>
             </Layout>
           </View>
@@ -201,8 +207,7 @@ const styles = StyleSheet.create({
     fontSize: 20, // Tamaño de fuente
     fontWeight: 'bold', // Texto en negrita
     marginBottom: 10, // Espacio debajo del título
-    textAlign: 'left', // Alinear texto a la izquierda
-    alignSelf: 'flex-start' // Alinear el componente a la izquierda dentro de su contenedor
+    textAlign: 'center'
   },
   container: {
     marginVertical: 10,
@@ -244,29 +249,16 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     alignItems: 'center',
-    width: 300, // Ajusta el tamaño del contenedor
-    height: 260
-  },
-  menuItem: {
-    flexDirection: 'row', // Ícono y texto en línea
-    alignItems: 'center',
-    marginVertical: 5 // Reduce el margen vertical entre los íconos
-  },
-  icon: {
-    width: 40, // Ajusta el tamaño de los íconos del menú
-    height: 40,
-    marginRight: 10
+    width: '98%' // Ancho del menú emergente
   },
   menuText: {
     fontSize: 18
   },
   deleteButton: {
-    width: '40%',
-    marginRight: '3%'
+    width: '50%'
   },
   closeButton: {
-    width: '35%',
-    marginLeft: '3%',
+    width: '50%'
   },
   buttonContainer: {
     backgroundColor: 'transparent',
@@ -274,5 +266,22 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignSelf: 'center',
     marginTop: 20 // Espaciado entre los íconos y los botones
+  },
+  iconContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+  menuItem: {
+    alignItems: 'center',
+    flex: 1,
+    padding: 10,
+  },
+  icon: {
+    width: 35,
+    height: 35,
+    marginBottom: 5,
+  },
+  menuText: {
+    fontSize: 16,
   },
 })

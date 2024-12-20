@@ -27,7 +27,7 @@ const ItemSelector = forwardRef(({ items, onSelect, value, defaultOption, placeh
     setSelectedOptionIndex(new IndexPath(index)) // Actualiza el índice seleccionado
     setSelectedValue(selectedItem.nombre) // Cambia aquí para mostrar el nombre
 
-    if (onSelect) onSelect(selectedItem.valor) // Llama al callback con el valor seleccionado
+    if (onSelect) onSelect(selectedItem.nombre) // Llama al callback con el valor seleccionado
   }
 
   return (
@@ -50,6 +50,7 @@ const ItemSelector = forwardRef(({ items, onSelect, value, defaultOption, placeh
 const styles = StyleSheet.create({
   select: {
     minWidth: 300, // Establece un ancho mínimo
+    fontSize: 17,
     borderColor: '#fff'
   }
 })

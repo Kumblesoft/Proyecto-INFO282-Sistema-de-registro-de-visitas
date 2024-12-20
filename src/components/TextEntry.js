@@ -149,7 +149,7 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldR
     <Layout style={styles.containerBox}>
       {title && (
         <View style={styles.text}>
-          <Text style={styles.text} category={required ? "label" : "p2"}>
+          <Text style={[styles.text, {fontWeight: 'bold'}]}>
             {title}
           </Text>
           <Text status='danger'>
@@ -171,7 +171,7 @@ const TextEntry = ({ optionalFeatures, onSelect, requiredFieldRef, refreshFieldR
         </TouchableOpacity>
       )}
       {isRequiredAlert ?
-        <Layout size='small' style={styles.alert}>
+        <Layout style={styles.alert}>
           <Icon status='danger' fill='#FF0000' name='alert-circle' style={styles.icon} />
           <Text style={styles.alert} category="p2">
             Por favor rellene este campo
@@ -217,11 +217,11 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   text: {
-    fontSize: 18,
-    marginHorizontal: '2%',
+    fontSize: 17,
+    marginLeft: 3,
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'left',
+    justifyContent: 'left'
   },
   alert: {
     flex: 1,
@@ -248,6 +248,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     fontSize: 15,
     alignSelf: 'flex-start',
+    marginBottom: 10,
   },
   containerBox: {
     padding: 10,
