@@ -19,6 +19,9 @@ export default class TimeChainInsertor extends ChainInsertor {
     delete(fieldId, fieldTableName, fieldTypeName) {
         if (fieldTypeName != 'hora')
             return this.next && this.next.delete(fieldId, fieldTableName, fieldTypeName)
+        
+        this.db.runSync('DELETE FROM limitations_intermediary WHERE fk_field = ?', [fieldId])
+
         this.db.runSync(
             `DELETE FROM ${fieldTableName} WHERE fk_field = ?`,
             [fieldId]
