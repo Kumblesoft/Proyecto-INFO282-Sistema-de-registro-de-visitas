@@ -4,12 +4,10 @@ import { View, StyleSheet } from 'react-native'
 
 
 export default CheckboxGroup = forwardRef(({ items, onSelect, value, maxChecked, error, disabled, defaultOption},ref) => {
-  const [selectedValues] = useState(new Set()) // Usar el estado como referencia de un Set
-  if (value) [value].flat().map(value => selectedValues.add(value)) // Setear los valores iniciales
-
+  const [selectedItems, setSelectedItems] = useState([]) // Usar el estado como referencia de un Set
+  
   const refreshSelector = () =>{
-    items.map(item => selectedValues.has(item.valor) ? handleSelect(item.valor) : null)
-    selectedValues.clear()
+    setSelectedItems([])
     if (onSelect) onSelect(null)
     return null
   }
@@ -17,20 +15,27 @@ export default CheckboxGroup = forwardRef(({ items, onSelect, value, maxChecked,
     refreshSelector,
   }))
 
-  const handleSelect = itemValue => {
-    if (selectedValues.has(itemValue)) selectedValues.delete(itemValue) // Eliminar si ya estaba seleccionado
-    else if (selectedValues.size < (maxChecked || items.length)) selectedValues.add(itemValue) // Añadir si no está seleccionado y no excede el límite
+  const handleSelect = item => {
+    const positionOfItem = selectedItems.indexOf(item.nombre)
+    
+    let newSelectedItems = [...selectedItems]
+    if (positionOfItem !== -1){
+      newSelectedItems.splice(positionOfItem, 1)
+    } else if (newSelectedItems.length < (maxChecked || items.length)) {
+      newSelectedItems.push(item.nombre)
+    }
 
-		if (onSelect) onSelect(Array.from(selectedValues)) // Llamar al callback con los valores seleccionados
+    setSelectedItems(newSelectedItems)
+    if (onSelect) onSelect(newSelectedItems) // Llamar al callback con los valores seleccionados (values son los nombres)
   }
   return (
     <View style={styles.container}>
       {items.map(item => (
         <View key={item.value} style={styles.checkboxContainer}>
           <CheckBox
-            checked={selectedValues.has(item.valor)} // Verificar si el valor está seleccionado
-            onChange={() => handleSelect(item.valor)}
-            status={error? 'danger':'basic'}
+            checked={selectedItems.findIndex(si => si === item.nombre) !== -1} // Verificar si el valor está seleccionado
+            onChange={() => handleSelect(item)}
+            status={error ? 'danger':'basic'}
             disabled={disabled}
             style={styles.checkbox} // Estilo personalizado
           >
