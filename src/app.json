@@ -2,7 +2,7 @@
   "expo": {
     "name": "sistema-de-registro-de-visitas",
     "slug": "sistema-de-registro-de-visitas",
-    "version": "1.10.7",
+    "version": "1.10.12",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",

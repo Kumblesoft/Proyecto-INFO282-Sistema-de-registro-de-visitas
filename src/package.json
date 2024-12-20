@@ -1,6 +1,6 @@
 {
   "name": "sistema-de-registro-de-visitas",
-  "version": "1.10.7",
+  "version": "1.10.12",
   "main": "expo/AppEntry.js",
   "scheme": "formulapp-scheme",
   "scripts": {
