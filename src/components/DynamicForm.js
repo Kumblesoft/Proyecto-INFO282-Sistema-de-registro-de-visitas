@@ -27,6 +27,7 @@ const tickIcon = (props) => <Icon name='save' {...props} />
  */
 
 const DynamicForm = forwardRef(({ formData, disabledSave }, ref) => {
+    console.log(formData)
     const db = getDatabaseInstance(useSQLiteContext())
     const requiredFieldRefs = useRef([])
     const refreshFieldRefs = useRef([])

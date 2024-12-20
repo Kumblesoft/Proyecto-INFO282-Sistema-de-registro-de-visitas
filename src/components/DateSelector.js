@@ -120,6 +120,7 @@ const DateSelector = ({ value, onChange, optionalFeatures, requiredFieldRef, ref
         dateService={configuredDateService}
         onSelect={handleDateChange}
         disabled={disabled}
+        status={disabled ? 'basic' : 'success'}
         min={new Date(1900, 0, 1)}
         max={new Date(2100, 0, 1)}
         style={disabled ? styles.disabledDate : styles.datepicker}
