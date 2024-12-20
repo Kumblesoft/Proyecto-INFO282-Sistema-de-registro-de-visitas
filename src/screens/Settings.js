@@ -6,6 +6,7 @@ import { LinearGradient } from 'expo-linear-gradient'
 import { IdentifierContext } from '../context/IdentifierContext'
 import { IDInputComponent } from '../widgets/EditId'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { ResetDBComponent } from '../widgets/resetDb'
 
 
 export default function Settings() {
@@ -13,10 +14,12 @@ export default function Settings() {
     const navigation = useNavigation()
     const { identifier } = useContext(IdentifierContext) // Obtiene el identificador del contexto
     const [ showIDWidget, setShowIDWidget ] = useState(false)
+    const [ showResetWidget, setShowResetWidget ] = useState(false)
 
     const BackIcon = props => <Icon name='arrow-ios-back-outline' {...props} style={styles.backIcon} fill='#fff'/>
     const IdIcon = props => <Icon {...props} name='hash'/>
     const BackAction = () => <TopNavigationAction icon={BackIcon} onPress={() => navigation.goBack()} />
+    const TrashIcon = props => <Icon {...props} name='trash-2-outline'/>
 
     const renderTitle = () => (
         <View style={styles.titleContainer}>
@@ -31,6 +34,7 @@ export default function Settings() {
     )
 
     const handleChangeID = () => setShowIDWidget(!showIDWidget)
+    const handleReset = () => setShowResetWidget(!showResetWidget)
 
     return (
         <Layout style={styles.layoutContainer}>
@@ -52,7 +56,12 @@ export default function Settings() {
                         onPress={handleChangeID}
                     />
                     { showIDWidget && <IDInputComponent /> }
-
+                    <MenuItem
+                        title={renderOption("Reiniciar la base de datos")}
+                        accessoryLeft={TrashIcon}
+                        onPress={handleReset}
+                    />
+                    { showResetWidget && <ResetDBComponent/> }
                     <Divider/>
                 </Menu>
                 
@@ -94,4 +103,3 @@ const styles = StyleSheet.create({
         flex: 1,
     }
 })
-
