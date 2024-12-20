@@ -26,6 +26,7 @@ const FormSelectorScreen = () => {
   const [file, setFile] = useState(null) // File picker function
   const [forms, setForms] = useState(db.getAllForms())
 
+  console.log("Forms:", forms)
   const backIcon = () => <Icon name='arrow-ios-back-outline' fill='#fff' style={styles.topNavigationIcon} />
   const importIcon = () => <Icon name='cloud-download-outline' fill='#fff' style={styles.topNavigationIcon} />
   const deleteIcon = props => <Icon name='trash-outline' {...props} fill="#fff" animationConfig={{ cycles: Infinity }} animation='zoom' style={[props.style, { width: 30, height: 30 }]} />
@@ -69,6 +70,7 @@ const FormSelectorScreen = () => {
         buffer = JSON.parse(buffer)
         Array.isArray(buffer.content) ? buffer = buffer.content : buffer = [buffer.content]
         content.forEach(form => {
+          console.log(form)
           db.addForm(form)
           console.log(db.getForm(form["nombre formulario"]))
         })

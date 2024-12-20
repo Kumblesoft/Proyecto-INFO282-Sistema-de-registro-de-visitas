@@ -2,7 +2,7 @@
   "expo": {
     "name": "sistema-de-registro-de-visitas",
     "slug": "sistema-de-registro-de-visitas",
-    "version": "1.7.0",
+    "version": "1.10.7",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -26,6 +26,10 @@
       "favicon": "./assets/favicon.png"
     },
     "extra": {
+              "eas": {
+        "projectId": "a4615643-abed-4b90-8fe4-d01caffb6be2"
+      }
+
     },
     "owner": "sblader",
     "plugins": [
@@ -36,12 +40,10 @@
           "enableFTS": true,
           "useSQLCipher": true,
           "android": {
-            // Override the shared configuration for Android
             "enableFTS": false,
             "useSQLCipher": false
           },
           "ios": {
-            // You can also override the shared configurations for iOS
             "customBuildFlags": ["-DSQLITE_ENABLE_DBSTAT_VTAB=1 -DSQLITE_ENABLE_SNAPSHOT=1"]
           }
         }

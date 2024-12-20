@@ -30,52 +30,67 @@ export const setCompatibility = (db, firstElement, secondElement, typenameOfFiel
     return db.runSync('DELETE FROM compatibility_matrix WHERE fila = ? AND columna = ? AND fk_field_type_id = ? AND limitation_or_format = ?', [firstElement, secondElement, fieldTypeId, isFormat])
 }
 
+
 export async function initializeDataBase(db) {
     try {
-
-        db.execSync(dbInit)
-        console.log('Database initialized')
+        db.execSync(dbInit);
+        console.log('Database initialized');
     } catch (error) {
-        console.log(error)
-    }
-    if (!tableExists(db, 'field_table_name')) {
-        table_types.forEach(type =>
-            db.runSync('INSERT INTO field_table_name (table_name, field_type_name) VALUES (?,?)', type)
-        );
+        console.log(error);
     }
 
-    if(!tableExists(db, 'limitations')){
-        db.runSync('INSERT INTO limitations (name, regex, keyboard_type, value_enum_matrix) VALUES (?,?,?,?)', ["solo letras", String.raw`/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/`, "default", 0])
-        db.runSync('INSERT INTO limitations (name, regex, keyboard_type, value_enum_matrix) VALUES (?,?,?,?)', ["solo numeros", String.raw`/^-?\d+([.,]\d+)?$/`, "numeric", 1])
-        db.runSync('INSERT INTO limitations (name, regex, keyboard_type, value_enum_matrix) VALUES (?,?,?,?)', ["solo enteros", String.raw`/^-?\d+$/`, "numeric", 2])
-        db.runSync('INSERT INTO limitations (name, regex, keyboard_type, value_enum_matrix) VALUES (?,?,?,?)', ["solo enteros positivos y cero", String.raw`/^\d+$/`, "numeric", 3])
-        db.runSync('INSERT INTO limitations (name, regex, keyboard_type, value_enum_matrix) VALUES (?,?,?,?)', ["email", String.raw`/^(([^<>()[\]\.,:\s@\"]+(\.[^<>()[\]\.,:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,:\s@\"]+\.)+[^<>()[\]\.,:\s@\"]{2,})$/i`, "default", 4])
-        db.runSync('INSERT INTO limitations (name, regex, keyboard_type, value_enum_matrix) VALUES (?,?,?,?)', ["no numeros", String.raw`/^[^\d]*$/`, "default", 5])
-        db.runSync('INSERT INTO limitations (name, keyboard_type, value_enum_matrix) VALUES (?,?,?)', ["editable", "default", 0])
-        db.runSync('INSERT INTO limitations (name, keyboard_type, value_enum_matrix) VALUES (?,?,?)', ["no editable", "default", 1])
-    }
+    table_types.forEach(type => {
+        if (!typeExists(db, type[0], type[1])) {
+            db.runSync('INSERT INTO field_table_name (table_name, field_type_name) VALUES (?,?)', type);
+        }
+    });
 
-    if (!tableExists(db, 'format')) {
-        db.runSync('INSERT INTO format (name, value_enum_matrix) VALUES (?,?)', ["solo minusculas", 1])
-        db.runSync('INSERT INTO format (name, value_enum_matrix) VALUES (?,?)', ["solo mayusculas", 0])
-    }
+    const limitations = [
+        ["solo letras", String.raw`/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/`, "default", 0],
+        ["solo numeros", String.raw`/^-?\d+([.,]\d+)?$/`, "numeric", 1],
+        ["solo enteros", String.raw`/^-?\d+$/`, "numeric", 2],
+        ["solo enteros positivos y cero", String.raw`/^\d+$/`, "numeric", 3],
+        ["email", String.raw`/^(([^<>()[\]\.,:\s@\"]+(\.[^<>()[\]\.,:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,:\s@\"]+\.)+[^<>()[\]\.,:\s@\"]{2,})$/i`, "default", 4],
+        ["no numeros", String.raw`/^[^\d]*$/`, "default", 5],
+        ["editable",null, "default" , 0],
+        ["no editable",null, "default", 1]
+    ];
+    const formats = [
+        ["solo minusculas", 1],
+        ["solo mayusculas", 0]
+    ]
 
-        ;[[1, 2], [1, 3], [2, 3]].forEach(pair => setCompatibility(db, pair[0], pair[1], "texto", 1, 0))
+    limitations.forEach(limitation => {
+        const [name, regex, keyboardType, valueEnumMatrix] = limitation;
+        const result = db.getFirstSync("SELECT 1 FROM limitations WHERE name = ?", [name]);
+        if (!result) {
+            db.runSync('INSERT INTO limitations (name, regex, keyboard_type, value_enum_matrix) VALUES (?,?,?,?)', limitation);
+        }
+    })
+    formats.forEach(format => {
+        const [name, valueEnumMatrix] = format;
+        const result = db.getFirstSync("SELECT 1 FROM format WHERE name = ?", [name]);
+        if (!result) {
+            db.runSync('INSERT INTO format (name, value_enum_matrix) VALUES (?,?)', format);
+        }
+    })
 
+    ;[[1, 2], [1, 3], [2, 3]].forEach(pair => setCompatibility(db, pair[0], pair[1], "texto", 1, 0))
 
 }
 
-function tableExists(db, tableName) {
-    const result = db.getFirstSync("SELECT name FROM sqlite_master WHERE type='table' AND name=?", [tableName]);
-    return result !== undefined;
+function typeExists(db, tableName, fieldTypeName) {
+    const result = db.getFirstSync("SELECT 1 FROM field_table_name WHERE table_name = ? AND field_type_name = ?", [tableName, fieldTypeName]);
+    return result !== null && result !== undefined
 }
+
 
 // Singleton factory method to get the instance
 let instance = null
 
 function formExists(db, formName) {
-    const result = db.getFirstSync("SELECT name FROM forms WHERE name=?", [formName]);
-    return result !== undefined;
+    const result = db.getFirstSync("SELECT name FROM forms WHERE name=?", [formName])
+    return result !== null;
 }
 
 export function getDatabaseInstance(db) {

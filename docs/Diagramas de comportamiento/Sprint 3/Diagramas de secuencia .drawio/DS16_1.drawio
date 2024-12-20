@@ -1,0 +1,149 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36" version="25.0.3">
+  <diagram name="Página-1" id="otuWR3c3a-R4K6_GCiYR">
+    <mxGraphModel dx="1518" dy="2993" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="nCxLG1d1VlXPXzw9NWho-1" value="&lt;font style=&quot;font-size: 15px;&quot;&gt;US16_1: Como encargado de dirección quiero ser capaz de añadir campos a una plantilla de formulario&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+          <mxGeometry x="215" y="-1740" width="710" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="nCxLG1d1VlXPXzw9NWho-2" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Interfaz Anfitrion&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="243.75" y="-1660" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="nCxLG1d1VlXPXzw9NWho-3" value="" style="endArrow=none;html=1;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="1" target="nCxLG1d1VlXPXzw9NWho-2" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="304" y="-1360" as="sourcePoint" />
+            <mxPoint x="493.75" y="-1320" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nCxLG1d1VlXPXzw9NWho-4" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;Anfitrión&lt;/font&gt;" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" parent="1" vertex="1">
+          <mxGeometry x="20" y="-1680" width="50" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="nCxLG1d1VlXPXzw9NWho-5" value="" style="endArrow=none;html=1;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="1" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="45" y="-920" as="sourcePoint" />
+            <mxPoint x="44.5" y="-1570" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nCxLG1d1VlXPXzw9NWho-6" value="" style="rounded=1;whiteSpace=wrap;html=1;rotation=90;" parent="1" vertex="1">
+          <mxGeometry x="-215.93" y="-1291.55" width="520.81" height="18.97" as="geometry" />
+        </mxCell>
+        <mxCell id="nCxLG1d1VlXPXzw9NWho-7" value="" style="endArrow=none;html=1;rounded=0;" parent="1" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="303.75" y="-1410" as="sourcePoint" />
+            <mxPoint x="304" y="-920" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nCxLG1d1VlXPXzw9NWho-8" value="&lt;span style=&quot;font-size: 14px;&quot;&gt;Async Storage&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="1060" y="-1670" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="nCxLG1d1VlXPXzw9NWho-9" value="" style="endArrow=none;html=1;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="1" target="nCxLG1d1VlXPXzw9NWho-8" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1120" y="-920" as="sourcePoint" />
+            <mxPoint x="1080" y="-1320" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nCxLG1d1VlXPXzw9NWho-10" value="" style="html=1;points=[[0,0,0,0,5],[0,1,0,0,-5],[1,0,0,0,5],[1,1,0,0,-5]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};" parent="1" vertex="1">
+          <mxGeometry x="298.75" y="-1460" width="10" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="nCxLG1d1VlXPXzw9NWho-11" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;crearFormulario()&lt;/font&gt;" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;entryX=0;entryY=0;entryDx=0;entryDy=5;" parent="1" target="nCxLG1d1VlXPXzw9NWho-10" edge="1">
+          <mxGeometry x="-0.0028" relative="1" as="geometry">
+            <mxPoint x="55" y="-1455" as="sourcePoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nCxLG1d1VlXPXzw9NWho-12" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;return formulario vacío&lt;/font&gt;" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;curved=0;rounded=0;exitX=0;exitY=1;exitDx=0;exitDy=-5;" parent="1" source="nCxLG1d1VlXPXzw9NWho-10" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="52" y="-1385" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nCxLG1d1VlXPXzw9NWho-13" value="" style="html=1;points=[[0,0,0,0,5],[0,1,0,0,-5],[1,0,0,0,5],[1,1,0,0,-5]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};" parent="1" vertex="1">
+          <mxGeometry x="298.64" y="-1290" width="10" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="nCxLG1d1VlXPXzw9NWho-14" value="&lt;span style=&quot;font-size: 14px;&quot;&gt;agregarCampoAFormulario()&lt;/span&gt;" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;entryX=0;entryY=0;entryDx=0;entryDy=5;exitX=0.607;exitY=0.045;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" target="nCxLG1d1VlXPXzw9NWho-13" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="53.00135000000013" y="-1283.8817600000004" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nCxLG1d1VlXPXzw9NWho-15" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;return campo&lt;/font&gt;" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;curved=0;rounded=0;exitX=0;exitY=1;exitDx=0;exitDy=-5;" parent="1" edge="1">
+          <mxGeometry x="0.0001" relative="1" as="geometry">
+            <mxPoint x="54" y="-1220" as="targetPoint" />
+            <mxPoint as="offset" />
+            <mxPoint x="298.6399999999999" y="-1220.0000000000005" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nCxLG1d1VlXPXzw9NWho-16" value="&lt;span style=&quot;font-size: 14px;&quot;&gt;Pantalla de crear&lt;/span&gt;&lt;div&gt;&lt;span style=&quot;font-size: 14px;&quot;&gt;formulario&lt;/span&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="710" y="-1660" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="nCxLG1d1VlXPXzw9NWho-17" value="" style="endArrow=none;html=1;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="1" target="nCxLG1d1VlXPXzw9NWho-16" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="770" y="-920" as="sourcePoint" />
+            <mxPoint x="730" y="-1310" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nCxLG1d1VlXPXzw9NWho-25" value="&lt;span style=&quot;font-size: 14px;&quot;&gt;guardarPlantillaCreada()&lt;/span&gt;" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;entryX=0;entryY=0;entryDx=0;entryDy=5;" parent="1" target="nCxLG1d1VlXPXzw9NWho-27" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="51" y="-1111.1" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nCxLG1d1VlXPXzw9NWho-26" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;return formulario&lt;/font&gt;" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;curved=0;rounded=0;exitX=0;exitY=1;exitDx=0;exitDy=-5;entryX=0.377;entryY=-0.055;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="nCxLG1d1VlXPXzw9NWho-27" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="50" y="-1036.1" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nCxLG1d1VlXPXzw9NWho-27" value="" style="html=1;points=[[0,0,0,0,5],[0,1,0,0,-5],[1,0,0,0,5],[1,1,0,0,-5]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};" parent="1" vertex="1">
+          <mxGeometry x="293.75" y="-1116.1" width="10" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="nCxLG1d1VlXPXzw9NWho-28" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;insert form&lt;/font&gt;" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;entryX=0;entryY=0;entryDx=0;entryDy=5;entryPerimeter=0;" parent="1" target="nCxLG1d1VlXPXzw9NWho-30" edge="1">
+          <mxGeometry x="0.0003" relative="1" as="geometry">
+            <mxPoint x="305" y="-1106.1" as="sourcePoint" />
+            <mxPoint as="offset" />
+            <mxPoint x="1110" y="-1141.1" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nCxLG1d1VlXPXzw9NWho-29" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;return ok&lt;/font&gt;" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;curved=0;rounded=0;exitX=0;exitY=1;exitDx=0;exitDy=-5;exitPerimeter=0;" parent="1" source="nCxLG1d1VlXPXzw9NWho-30" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="304" y="-1071.1" as="targetPoint" />
+            <mxPoint x="1110" y="-1097.1" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nCxLG1d1VlXPXzw9NWho-30" value="" style="html=1;points=[[0,0,0,0,5],[0,1,0,0,-5],[1,0,0,0,5],[1,1,0,0,-5]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};" parent="1" vertex="1">
+          <mxGeometry x="1115" y="-1120" width="10" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="nCxLG1d1VlXPXzw9NWho-31" value="" style="html=1;points=[[0,0,0,0,5],[0,1,0,0,-5],[1,0,0,0,5],[1,1,0,0,-5]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};" parent="1" vertex="1">
+          <mxGeometry x="763.85" y="-1450" width="10" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="nCxLG1d1VlXPXzw9NWho-32" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;createForm()&lt;/font&gt;" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;entryX=0;entryY=0;entryDx=0;entryDy=5;" parent="1" source="nCxLG1d1VlXPXzw9NWho-10" target="nCxLG1d1VlXPXzw9NWho-31" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="693.85" y="-1445" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nCxLG1d1VlXPXzw9NWho-33" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;return form vacío&lt;/font&gt;" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;curved=0;rounded=0;entryX=1;entryY=1;entryDx=0;entryDy=-5;entryPerimeter=0;" parent="1" source="nCxLG1d1VlXPXzw9NWho-31" target="nCxLG1d1VlXPXzw9NWho-10" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="693.85" y="-1375" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nCxLG1d1VlXPXzw9NWho-34" value="" style="html=1;points=[[0,0,0,0,5],[0,1,0,0,-5],[1,0,0,0,5],[1,1,0,0,-5]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};" parent="1" vertex="1">
+          <mxGeometry x="764.0500000000001" y="-1290" width="10" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="nCxLG1d1VlXPXzw9NWho-35" value="&lt;span style=&quot;font-size: 14px;&quot;&gt;insert Campo&lt;/span&gt;" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;entryX=0;entryY=0;entryDx=0;entryDy=5;" parent="1" source="nCxLG1d1VlXPXzw9NWho-13" target="nCxLG1d1VlXPXzw9NWho-34" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="694.0500000000001" y="-1285" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nCxLG1d1VlXPXzw9NWho-36" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;return campo&lt;/font&gt;" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;curved=0;rounded=0;" parent="1" source="nCxLG1d1VlXPXzw9NWho-34" edge="1">
+          <mxGeometry x="-0.0576" y="-10" relative="1" as="geometry">
+            <mxPoint x="310.2" y="-1230" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nCxLG1d1VlXPXzw9NWho-37" value="Loop" style="shape=umlFrame;whiteSpace=wrap;html=1;pointerEvents=0;" parent="1" vertex="1">
+          <mxGeometry y="-1360" width="970" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="nCxLG1d1VlXPXzw9NWho-38" value="&lt;b&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;[ Mientras el anfitrión quiera agregar más campos ]&lt;/font&gt;&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+          <mxGeometry x="85" y="-1350" width="360" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
